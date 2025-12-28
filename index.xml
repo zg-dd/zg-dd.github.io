@@ -1,1 +1,33 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>小巷的博客</title><link>https://example.org/</link><description>Recent content on 小巷的博客</description><generator>Hugo -- 0.153.1</generator><language>en-us</language><lastBuildDate>Sun, 28 Dec 2025 17:40:50 +0800</lastBuildDate><atom:link href="https://example.org/index.xml" rel="self" type="application/rss+xml"/><item><title>First Post</title><link>https://example.org/posts/first-post/</link><pubDate>Sun, 28 Dec 2025 17:40:50 +0800</pubDate><guid>https://example.org/posts/first-post/</guid><description>&lt;p&gt;今天开始搭建个人博客啦，这是第一篇记录 😊&lt;/p&gt;</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>小巷的博客</title>
+    <link>http://localhost:1313/</link>
+    <description>Recent content on 小巷的博客</description>
+    <generator>Hugo -- 0.153.1</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 29 Dec 2025 07:35:46 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Test Post</title>
+      <link>http://localhost:1313/posts/test/test-post/</link>
+      <pubDate>Mon, 29 Dec 2025 07:35:46 +0800</pubDate>
+      <guid>http://localhost:1313/posts/test/test-post/</guid>
+      <description>&lt;p&gt;Test Post&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Second Post</title>
+      <link>http://localhost:1313/posts/second-post/</link>
+      <pubDate>Mon, 29 Dec 2025 07:35:17 +0800</pubDate>
+      <guid>http://localhost:1313/posts/second-post/</guid>
+      <description>&lt;p&gt;Second Post&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>First Post</title>
+      <link>http://localhost:1313/posts/first-post/</link>
+      <pubDate>Sun, 28 Dec 2025 17:40:50 +0800</pubDate>
+      <guid>http://localhost:1313/posts/first-post/</guid>
+      <description>&lt;p&gt;今天开始搭建个人博客啦，这是第一篇记录 😊&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
