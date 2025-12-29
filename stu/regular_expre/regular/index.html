@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="正则表达式部分理解\r[] 使用[]表示匹配[]中括号中的一个字符，比如[abc]，表示匹配a,b,c的任意一个字符，比如字符串中abcdabcdbd，会匹配到a,b,c,a,b,c,b，本意是只要出现一个字符就会匹配，不会合并到一起。 而[abc]+，代表的是匹配abc一次或出现多次，abcdabcdbd这个例子中会匹配到abc,abc,b，也就说匹配的是a,b,c中的任何字符，出现一次或多次都匹配，如果是连续出现的会当做一个字符串匹配到。 \\ \\表示转移符号，常用的转义字符有\\n(换行)、\\t(水平制表符，一个Tab键)、\\r(回车)、\\b(退格)、\\f(换页符)、\\n(换行符)、\\v(垂直制表符)、\\&rsquo;(代表 &rsquo; )、\\&quot;(代表 &ldquo;)、\\\\(代表 \\)等等。正则表达式中还有表示的很多符号，这里就不一一举例了，下面的图片中给出了所有符号。 这里要强调的是： 写正则表达式中，\\b、\\f、\\n、\\t、\\r、\\&rsquo; 这些都可以直接写，例如regex=&quot;\\n&rdquo;;它就表示匹配一个换行符，而regex=&quot;\\\\n&quot;；也表示一个换行符，这两种写法都可以，但是对于一些符号就不能这样写了，例如：\\w、\\W、\\B、\\S、\\s等等这些表示含义就不能这样写了，必须写成regex=&quot;\\\\w&quot;,才能使用，否则会报错。可以尝试一下，再复制这些转义字符时，会将\\自动写成\\\\，所以在写正则表达式使用到带有\\符号的，我建议使用\\\\表示。 注意： 并不是说所有的转义字符都要写成\\\\，例如：匹配 &quot; 字符，不能写成regex=&quot;\\\\&quot;&quot;，系统会将 &quot; 转义为本身 &quot; 含义，那么再java中上述这句话就会多出一个 &quot; 。所以应该写成regex=&quot;\\\\\\&quot;&quot;，写成regex=&quot;\\&quot;&quot;也是可以的。 如果要匹配的是 \\ 的话，java中的表示为regex= &quot; \\\\\\\\ &ldquo;，为四个 \\ ，其中两个的含义表示转义字符，前两个代表转义符号 \\ ，后两个代表另外一个符号 \\ ，使用第一个 \\ 再将第二个 \\ 转义为本身字符 (这是我自己的理解，也许不正确，但是表示方式是对的)，以此类推，如果要匹配\\\\,写法为regex=&rdquo; \\\\\\\\\\\\\\\\ &ldquo; | 这个符号在正则表达式中表示或的意思，对于正则表达式中的x|y，表示匹配x或者y，这里的 | 运算的优先级要高于x,y，也就是说，对于regex = &ldquo;[a][b]|[c][d]&rdquo;，来说，它匹配的是出现ab或者出现cd的字符串，不是匹配a(b或者c)d这样的字符串。 ?&lt;=和?= 这两个符号很重要，这算是个组合符号吧，匹配该某符号但不包含此符号，举个例子就能明白了，比如说要截取双引号（&rdquo; &ldquo;）中说的话，比如String str = &ldquo;he says,\\&ldquo;Hello,Java!\\&rdquo; &ldquo;；说出的话中通常使用&quot;&ldquo;号括起来，现在需要匹配说话的内容，正则表达式可以表示为regex = &ldquo;(?&lt;=\\&rdquo;)[^\\&rdquo;]+(?=\\&rdquo;)&quot;;这其中的意思是：(?&lt;=\\&quot;)代表首先匹配 &quot; ，但是不包含 &quot; ，[^\\&rdquo;]+代表其次匹配一次或者多次匹配不是 &quot; 的字符，(?=\\&quot;)代表再次匹配 &quot; ，但是不包含 &quot; 。这样子就能截取中间的句子了。这两个符号一般配合使用，表示不包含匹配字符，一个在前，一个在后 注：以上所有的单引号双引号都是英文，由于转义的问题，许多符号变成了中文，看本博客的时候需要注意 暂时学到的用到的就只有这些，后边如果再注意到新的点，之后再补充。\n">
+<title>正则表达式基础入门：常用符号解析([]、\、|、(?&lt;=))</title>
+
+<link rel='canonical' href='http://localhost:1313/stu/regular_expre/regular/'>
+
+<link rel="stylesheet" href="/scss/style.min.b9e9128fec450ebccecc4ec9900157f32b85d0609bcd5ee3293968bcaa1235f2.css"><meta property='og:title' content="正则表达式基础入门：常用符号解析([]、\\、|、(?<=))">
+<meta property='og:description' content="正则表达式部分理解\r[] 使用[]表示匹配[]中括号中的一个字符，比如[abc]，表示匹配a,b,c的任意一个字符，比如字符串中abcdabcdbd，会匹配到a,b,c,a,b,c,b，本意是只要出现一个字符就会匹配，不会合并到一起。 而[abc]+，代表的是匹配abc一次或出现多次，abcdabcdbd这个例子中会匹配到abc,abc,b，也就说匹配的是a,b,c中的任何字符，出现一次或多次都匹配，如果是连续出现的会当做一个字符串匹配到。 \\ \\表示转移符号，常用的转义字符有\\n(换行)、\\t(水平制表符，一个Tab键)、\\r(回车)、\\b(退格)、\\f(换页符)、\\n(换行符)、\\v(垂直制表符)、\\&rsquo;(代表 &rsquo; )、\\&quot;(代表 &ldquo;)、\\\\(代表 \\)等等。正则表达式中还有表示的很多符号，这里就不一一举例了，下面的图片中给出了所有符号。 这里要强调的是： 写正则表达式中，\\b、\\f、\\n、\\t、\\r、\\&rsquo; 这些都可以直接写，例如regex=&quot;\\n&rdquo;;它就表示匹配一个换行符，而regex=&quot;\\\\n&quot;；也表示一个换行符，这两种写法都可以，但是对于一些符号就不能这样写了，例如：\\w、\\W、\\B、\\S、\\s等等这些表示含义就不能这样写了，必须写成regex=&quot;\\\\w&quot;,才能使用，否则会报错。可以尝试一下，再复制这些转义字符时，会将\\自动写成\\\\，所以在写正则表达式使用到带有\\符号的，我建议使用\\\\表示。 注意： 并不是说所有的转义字符都要写成\\\\，例如：匹配 &quot; 字符，不能写成regex=&quot;\\\\&quot;&quot;，系统会将 &quot; 转义为本身 &quot; 含义，那么再java中上述这句话就会多出一个 &quot; 。所以应该写成regex=&quot;\\\\\\&quot;&quot;，写成regex=&quot;\\&quot;&quot;也是可以的。 如果要匹配的是 \\ 的话，java中的表示为regex= &quot; \\\\\\\\ &ldquo;，为四个 \\ ，其中两个的含义表示转义字符，前两个代表转义符号 \\ ，后两个代表另外一个符号 \\ ，使用第一个 \\ 再将第二个 \\ 转义为本身字符 (这是我自己的理解，也许不正确，但是表示方式是对的)，以此类推，如果要匹配\\\\,写法为regex=&rdquo; \\\\\\\\\\\\\\\\ &ldquo; | 这个符号在正则表达式中表示或的意思，对于正则表达式中的x|y，表示匹配x或者y，这里的 | 运算的优先级要高于x,y，也就是说，对于regex = &ldquo;[a][b]|[c][d]&rdquo;，来说，它匹配的是出现ab或者出现cd的字符串，不是匹配a(b或者c)d这样的字符串。 ?&lt;=和?= 这两个符号很重要，这算是个组合符号吧，匹配该某符号但不包含此符号，举个例子就能明白了，比如说要截取双引号（&rdquo; &ldquo;）中说的话，比如String str = &ldquo;he says,\\&ldquo;Hello,Java!\\&rdquo; &ldquo;；说出的话中通常使用&quot;&ldquo;号括起来，现在需要匹配说话的内容，正则表达式可以表示为regex = &ldquo;(?&lt;=\\&rdquo;)[^\\&rdquo;]+(?=\\&rdquo;)&quot;;这其中的意思是：(?&lt;=\\&quot;)代表首先匹配 &quot; ，但是不包含 &quot; ，[^\\&rdquo;]+代表其次匹配一次或者多次匹配不是 &quot; 的字符，(?=\\&quot;)代表再次匹配 &quot; ，但是不包含 &quot; 。这样子就能截取中间的句子了。这两个符号一般配合使用，表示不包含匹配字符，一个在前，一个在后 注：以上所有的单引号双引号都是英文，由于转义的问题，许多符号变成了中文，看本博客的时候需要注意 暂时学到的用到的就只有这些，后边如果再注意到新的点，之后再补充。\n">
+<meta property='og:url' content='http://localhost:1313/stu/regular_expre/regular/'>
+<meta property='og:site_name' content='小巷的博客'>
+<meta property='og:type' content='article'><meta property='article:section' content='Stu' /><meta property='article:published_time' content='2025-12-29T08:29:05&#43;08:00'/><meta property='article:modified_time' content='2025-12-29T08:29:05&#43;08:00'/>
+<meta name="twitter:title" content="正则表达式基础入门：常用符号解析([]、\\、|、(?<=))">
+<meta name="twitter:description" content="正则表达式部分理解\r[] 使用[]表示匹配[]中括号中的一个字符，比如[abc]，表示匹配a,b,c的任意一个字符，比如字符串中abcdabcdbd，会匹配到a,b,c,a,b,c,b，本意是只要出现一个字符就会匹配，不会合并到一起。 而[abc]+，代表的是匹配abc一次或出现多次，abcdabcdbd这个例子中会匹配到abc,abc,b，也就说匹配的是a,b,c中的任何字符，出现一次或多次都匹配，如果是连续出现的会当做一个字符串匹配到。 \\ \\表示转移符号，常用的转义字符有\\n(换行)、\\t(水平制表符，一个Tab键)、\\r(回车)、\\b(退格)、\\f(换页符)、\\n(换行符)、\\v(垂直制表符)、\\&rsquo;(代表 &rsquo; )、\\&quot;(代表 &ldquo;)、\\\\(代表 \\)等等。正则表达式中还有表示的很多符号，这里就不一一举例了，下面的图片中给出了所有符号。 这里要强调的是： 写正则表达式中，\\b、\\f、\\n、\\t、\\r、\\&rsquo; 这些都可以直接写，例如regex=&quot;\\n&rdquo;;它就表示匹配一个换行符，而regex=&quot;\\\\n&quot;；也表示一个换行符，这两种写法都可以，但是对于一些符号就不能这样写了，例如：\\w、\\W、\\B、\\S、\\s等等这些表示含义就不能这样写了，必须写成regex=&quot;\\\\w&quot;,才能使用，否则会报错。可以尝试一下，再复制这些转义字符时，会将\\自动写成\\\\，所以在写正则表达式使用到带有\\符号的，我建议使用\\\\表示。 注意： 并不是说所有的转义字符都要写成\\\\，例如：匹配 &quot; 字符，不能写成regex=&quot;\\\\&quot;&quot;，系统会将 &quot; 转义为本身 &quot; 含义，那么再java中上述这句话就会多出一个 &quot; 。所以应该写成regex=&quot;\\\\\\&quot;&quot;，写成regex=&quot;\\&quot;&quot;也是可以的。 如果要匹配的是 \\ 的话，java中的表示为regex= &quot; \\\\\\\\ &ldquo;，为四个 \\ ，其中两个的含义表示转义字符，前两个代表转义符号 \\ ，后两个代表另外一个符号 \\ ，使用第一个 \\ 再将第二个 \\ 转义为本身字符 (这是我自己的理解，也许不正确，但是表示方式是对的)，以此类推，如果要匹配\\\\,写法为regex=&rdquo; \\\\\\\\\\\\\\\\ &ldquo; | 这个符号在正则表达式中表示或的意思，对于正则表达式中的x|y，表示匹配x或者y，这里的 | 运算的优先级要高于x,y，也就是说，对于regex = &ldquo;[a][b]|[c][d]&rdquo;，来说，它匹配的是出现ab或者出现cd的字符串，不是匹配a(b或者c)d这样的字符串。 ?&lt;=和?= 这两个符号很重要，这算是个组合符号吧，匹配该某符号但不包含此符号，举个例子就能明白了，比如说要截取双引号（&rdquo; &ldquo;）中说的话，比如String str = &ldquo;he says,\\&ldquo;Hello,Java!\\&rdquo; &ldquo;；说出的话中通常使用&quot;&ldquo;号括起来，现在需要匹配说话的内容，正则表达式可以表示为regex = &ldquo;(?&lt;=\\&rdquo;)[^\\&rdquo;]+(?=\\&rdquo;)&quot;;这其中的意思是：(?&lt;=\\&quot;)代表首先匹配 &quot; ，但是不包含 &quot; ，[^\\&rdquo;]+代表其次匹配一次或者多次匹配不是 &quot; 的字符，(?=\\&quot;)代表再次匹配 &quot; ，但是不包含 &quot; 。这样子就能截取中间的句子了。这两个符号一般配合使用，表示不包含匹配字符，一个在前，一个在后 注：以上所有的单引号双引号都是英文，由于转义的问题，许多符号变成了中文，看本博客的时候需要注意 暂时学到的用到的就只有这些，后边如果再注意到新的点，之后再补充。\n">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_a0cc1cf57968b27d.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">😃</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">小巷的博客</a></h1>
+            <h2 class="site-description"></h2>
+        </div>
+    </header><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/page/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li  class='current' >
+            <a href='/stu/' >
+                
+                
+                
+                <span>学习笔记</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/blog/' >
+                
+                
+                
+                <span>随笔思考</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/life/' >
+                
+                
+                
+                <span>生活记录</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+                    
+                        <li id="i18n-switch">  
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                            <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
+                                
+                                    <option value="http://localhost:1313/" selected>简体中文</option>
+                                
+                                    <option value="http://localhost:1313/en/" >English</option>
+                                
+                            </select>
+                        </li>
+                    
+                
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/stu/regular_expre/regular/">正则表达式基础入门：常用符号解析([]、\、|、(?&lt;=))</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published" datetime='2025-12-29T08:29:05&#43;08:00'>Dec 29, 2025</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 4 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+        <footer class="article-translations">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+            <div>
+                
+                    <a href="http://localhost:1313/en/stu/regular_expre/regular/" class="link">English</a>
+                
+            </div>
+        </footer>
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="正则表达式部分理解">正则表达式部分理解
+</h2><ol>
+<li>[]
+使用[]表示匹配[]中括号中的一个字符，比如[abc]，表示匹配a,b,c的任意一个字符，比如字符串中abcdabcdbd，会匹配到a,b,c,a,b,c,b，本意是只要出现一个字符就会匹配，不会合并到一起。
+而[abc]+，代表的是匹配abc一次或出现多次，abcdabcdbd这个例子中会匹配到abc,abc,b，也就说匹配的是a,b,c中的任何字符，出现一次或多次都匹配，如果是连续出现的会当做一个字符串匹配到。</li>
+<li>\
+\表示转移符号，常用的转义字符有\n(换行)、\t(水平制表符，一个Tab键)、\r(回车)、\b(退格)、\f(换页符)、\n(换行符)、\v(垂直制表符)、\&rsquo;(代表 &rsquo; )、\&quot;(代表 &ldquo;)、\\(代表 \)等等。正则表达式中还有表示的很多符号，这里就不一一举例了，下面的图片中给出了所有符号。
+<strong>这里要强调的是：</strong> 写正则表达式中，\b、\f、\n、\t、\r、\&rsquo; 这些都可以直接写，例如<strong>regex=&quot;\n&rdquo;</strong>;它就表示匹配一个换行符，而<strong>regex=&quot;\\n&quot;</strong>；也表示一个换行符，这两种写法都可以，但是对于一些符号就不能这样写了，例如：\w、\W、\B、\S、\s等等这些表示含义就不能这样写了，必须写成<strong>regex=&quot;\\w&quot;</strong>,才能使用，否则会报错。可以尝试一下，再复制这些转义字符时，会将\自动写成\\，<strong>所以在写正则表达式使用到带有\符号的，我建议使用\\表示。</strong>
+<strong>注意：</strong> 并不是说所有的转义字符都要写成\\，例如：匹配 &quot; 字符，不能写成regex=&quot;\\&quot;&quot;，系统会将 &quot; 转义为本身 &quot; 含义，那么再java中上述这句话就会多出一个 &quot; 。所以应该写成<strong>regex=&quot;\\\&quot;&quot;</strong>，写成<strong>regex=&quot;\&quot;&quot;<strong>也是可以的。
+如果要匹配的是 \ 的话，java中的表示为</strong>regex= &quot; \\\\ &ldquo;</strong>，为四个 \ ，其中两个的含义表示转义字符，前两个代表转义符号 \ ，后两个代表另外一个符号 \ ，使用第一个 \ 再将第二个 \ 转义为本身字符 (这是我自己的理解，也许不正确，但是表示方式是对的)，以此类推，如果要匹配\\,写法为<strong>regex=&rdquo; \\\\\\\\ &ldquo;</strong></li>
+<li>|
+这个符号在正则表达式中表示或的意思，对于正则表达式中的x|y，表示匹配x或者y，这里的 | 运算的优先级要高于x,y，也就是说，对于<strong>regex = &ldquo;[a][b]|[c][d]&rdquo;</strong>，来说，它匹配的是出现ab或者出现cd的字符串，不是匹配a(b或者c)d这样的字符串。</li>
+<li>?&lt;=和?=
+这两个符号很重要，这算是个组合符号吧，匹配该某符号但不包含此符号，举个例子就能明白了，比如说要截取双引号（&rdquo; &ldquo;）中说的话，比如String str = &ldquo;he says,\&ldquo;Hello,Java!\&rdquo; &ldquo;；说出的话中通常使用&quot;&ldquo;号括起来，现在需要匹配说话的内容，正则表达式可以表示为regex = &ldquo;(?&lt;=\&rdquo;)[^\&rdquo;]+(?=\&rdquo;)&quot;;这其中的意思是：(?&lt;=\&quot;)代表首先匹配 &quot; ，但是不包含 &quot; ，[^\&rdquo;]+代表其次匹配一次或者多次匹配不是 &quot; 的字符，(?=\&quot;)代表再次匹配 &quot; ，但是不包含 &quot; 。这样子就能截取中间的句子了。<strong>这两个符号一般配合使用，表示不包含匹配字符，一个在前，一个在后</strong></li>
+</ol>
+<p><strong>注：以上所有的单引号双引号都是英文，由于转义的问题，许多符号变成了中文，看本博客的时候需要注意</strong>
+暂时学到的用到的就只有这些，后边如果再注意到新的点，之后再补充。</p>
+<h2 id="正则表达式表">正则表达式表
+</h2><p><img src="/img/image.png#pic_center"
+	
+	
+	
+	loading="lazy"
+	
+		alt="在这里插入图片描述"
+	
+	
+></p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2025 小巷的博客
+    </section>
+    
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.33.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+    
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.45aad63e0378c1185109134874d406d25af802b2faa021ec5fd0dfa8bbfa4d2a.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

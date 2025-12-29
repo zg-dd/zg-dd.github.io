@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>正则表达式基础入门：常用符号解析([]、\、|、(?&lt;=)) | 小巷的博客</title>
+<meta name="keywords" content="">
+<meta name="description" content="正则表达式部分理解
+
+[]
+使用[]表示匹配[]中括号中的一个字符，比如[abc]，表示匹配a,b,c的任意一个字符，比如字符串中abcdabcdbd，会匹配到a,b,c,a,b,c,b，本意是只要出现一个字符就会匹配，不会合并到一起。
+而[abc]&#43;，代表的是匹配abc一次或出现多次，abcdabcdbd这个例子中会匹配到abc,abc,b，也就说匹配的是a,b,c中的任何字符，出现一次或多次都匹配，如果是连续出现的会当做一个字符串匹配到。
+\
+\表示转移符号，常用的转义字符有\n(换行)、\t(水平制表符，一个Tab键)、\r(回车)、\b(退格)、\f(换页符)、\n(换行符)、\v(垂直制表符)、\&rsquo;(代表 &rsquo; )、\&quot;(代表 &ldquo;)、\\(代表 \)等等。正则表达式中还有表示的很多符号，这里就不一一举例了，下面的图片中给出了所有符号。
+这里要强调的是： 写正则表达式中，\b、\f、\n、\t、\r、\&rsquo; 这些都可以直接写，例如regex=&quot;\n&rdquo;;它就表示匹配一个换行符，而regex=&quot;\\n&quot;；也表示一个换行符，这两种写法都可以，但是对于一些符号就不能这样写了，例如：\w、\W、\B、\S、\s等等这些表示含义就不能这样写了，必须写成regex=&quot;\\w&quot;,才能使用，否则会报错。可以尝试一下，再复制这些转义字符时，会将\自动写成\\，所以在写正则表达式使用到带有\符号的，我建议使用\\表示。
+注意： 并不是说所有的转义字符都要写成\\，例如：匹配 &quot; 字符，不能写成regex=&quot;\\&quot;&quot;，系统会将 &quot; 转义为本身 &quot; 含义，那么再java中上述这句话就会多出一个 &quot; 。所以应该写成regex=&quot;\\\&quot;&quot;，写成regex=&quot;\&quot;&quot;也是可以的。
+如果要匹配的是 \ 的话，java中的表示为regex= &quot; \\\\ &ldquo;，为四个 \ ，其中两个的含义表示转义字符，前两个代表转义符号 \ ，后两个代表另外一个符号 \ ，使用第一个 \ 再将第二个 \ 转义为本身字符 (这是我自己的理解，也许不正确，但是表示方式是对的)，以此类推，如果要匹配\\,写法为regex=&rdquo; \\\\\\\\ &ldquo;
+|
+这个符号在正则表达式中表示或的意思，对于正则表达式中的x|y，表示匹配x或者y，这里的 | 运算的优先级要高于x,y，也就是说，对于regex = &ldquo;[a][b]|[c][d]&rdquo;，来说，它匹配的是出现ab或者出现cd的字符串，不是匹配a(b或者c)d这样的字符串。
+?&lt;=和?=
+这两个符号很重要，这算是个组合符号吧，匹配该某符号但不包含此符号，举个例子就能明白了，比如说要截取双引号（&rdquo; &ldquo;）中说的话，比如String str = &ldquo;he says,\&ldquo;Hello,Java!\&rdquo; &ldquo;；说出的话中通常使用&quot;&ldquo;号括起来，现在需要匹配说话的内容，正则表达式可以表示为regex = &ldquo;(?&lt;=\&rdquo;)[^\&rdquo;]&#43;(?=\&rdquo;)&quot;;这其中的意思是：(?&lt;=\&quot;)代表首先匹配 &quot; ，但是不包含 &quot; ，[^\&rdquo;]&#43;代表其次匹配一次或者多次匹配不是 &quot; 的字符，(?=\&quot;)代表再次匹配 &quot; ，但是不包含 &quot; 。这样子就能截取中间的句子了。这两个符号一般配合使用，表示不包含匹配字符，一个在前，一个在后
+
+注：以上所有的单引号双引号都是英文，由于转义的问题，许多符号变成了中文，看本博客的时候需要注意
+暂时学到的用到的就只有这些，后边如果再注意到新的点，之后再补充。">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/stu/regular/regular/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.fd5566c526ae48aadabd950798a2dc3568536401560eae5caac3765a42a9e7b5.css" integrity="sha256-/VVmxSauSKravZUHmKLcNWhTZAFWDq5cqsN2WkKp57U=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/stu/regular/regular/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="小巷的博客 (Alt + H)">小巷的博客</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/stu/" title="学习笔记">
+                    <span>学习笔记</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/blog/" title="随笔思考">
+                    <span>随笔思考</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/life/" title="生活记录">
+                    <span>生活记录</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      正则表达式基础入门：常用符号解析([]、\、|、(?&lt;=))
+    </h1>
+    <div class="post-meta"><span title='2025-12-29 08:29:05 +0800 CST'>December 29, 2025</span>
+
+</div>
+  </header> 
+  <div class="post-content"><h2 id="正则表达式部分理解">正则表达式部分理解<a hidden class="anchor" aria-hidden="true" href="#正则表达式部分理解">#</a></h2>
+<ol>
+<li>[]
+使用[]表示匹配[]中括号中的一个字符，比如[abc]，表示匹配a,b,c的任意一个字符，比如字符串中abcdabcdbd，会匹配到a,b,c,a,b,c,b，本意是只要出现一个字符就会匹配，不会合并到一起。
+而[abc]+，代表的是匹配abc一次或出现多次，abcdabcdbd这个例子中会匹配到abc,abc,b，也就说匹配的是a,b,c中的任何字符，出现一次或多次都匹配，如果是连续出现的会当做一个字符串匹配到。</li>
+<li>\
+\表示转移符号，常用的转义字符有\n(换行)、\t(水平制表符，一个Tab键)、\r(回车)、\b(退格)、\f(换页符)、\n(换行符)、\v(垂直制表符)、\&rsquo;(代表 &rsquo; )、\&quot;(代表 &ldquo;)、\\(代表 \)等等。正则表达式中还有表示的很多符号，这里就不一一举例了，下面的图片中给出了所有符号。
+<strong>这里要强调的是：</strong> 写正则表达式中，\b、\f、\n、\t、\r、\&rsquo; 这些都可以直接写，例如<strong>regex=&quot;\n&rdquo;</strong>;它就表示匹配一个换行符，而<strong>regex=&quot;\\n&quot;</strong>；也表示一个换行符，这两种写法都可以，但是对于一些符号就不能这样写了，例如：\w、\W、\B、\S、\s等等这些表示含义就不能这样写了，必须写成<strong>regex=&quot;\\w&quot;</strong>,才能使用，否则会报错。可以尝试一下，再复制这些转义字符时，会将\自动写成\\，<strong>所以在写正则表达式使用到带有\符号的，我建议使用\\表示。</strong>
+<strong>注意：</strong> 并不是说所有的转义字符都要写成\\，例如：匹配 &quot; 字符，不能写成regex=&quot;\\&quot;&quot;，系统会将 &quot; 转义为本身 &quot; 含义，那么再java中上述这句话就会多出一个 &quot; 。所以应该写成<strong>regex=&quot;\\\&quot;&quot;</strong>，写成<strong>regex=&quot;\&quot;&quot;<strong>也是可以的。
+如果要匹配的是 \ 的话，java中的表示为</strong>regex= &quot; \\\\ &ldquo;</strong>，为四个 \ ，其中两个的含义表示转义字符，前两个代表转义符号 \ ，后两个代表另外一个符号 \ ，使用第一个 \ 再将第二个 \ 转义为本身字符 (这是我自己的理解，也许不正确，但是表示方式是对的)，以此类推，如果要匹配\\,写法为<strong>regex=&rdquo; \\\\\\\\ &ldquo;</strong></li>
+<li>|
+这个符号在正则表达式中表示或的意思，对于正则表达式中的x|y，表示匹配x或者y，这里的 | 运算的优先级要高于x,y，也就是说，对于<strong>regex = &ldquo;[a][b]|[c][d]&rdquo;</strong>，来说，它匹配的是出现ab或者出现cd的字符串，不是匹配a(b或者c)d这样的字符串。</li>
+<li>?&lt;=和?=
+这两个符号很重要，这算是个组合符号吧，匹配该某符号但不包含此符号，举个例子就能明白了，比如说要截取双引号（&rdquo; &ldquo;）中说的话，比如String str = &ldquo;he says,\&ldquo;Hello,Java!\&rdquo; &ldquo;；说出的话中通常使用&quot;&ldquo;号括起来，现在需要匹配说话的内容，正则表达式可以表示为regex = &ldquo;(?&lt;=\&rdquo;)[^\&rdquo;]+(?=\&rdquo;)&quot;;这其中的意思是：(?&lt;=\&quot;)代表首先匹配 &quot; ，但是不包含 &quot; ，[^\&rdquo;]+代表其次匹配一次或者多次匹配不是 &quot; 的字符，(?=\&quot;)代表再次匹配 &quot; ，但是不包含 &quot; 。这样子就能截取中间的句子了。<strong>这两个符号一般配合使用，表示不包含匹配字符，一个在前，一个在后</strong></li>
+</ol>
+<p><strong>注：以上所有的单引号双引号都是英文，由于转义的问题，许多符号变成了中文，看本博客的时候需要注意</strong>
+暂时学到的用到的就只有这些，后边如果再注意到新的点，之后再补充。</p>
+<h2 id="正则表达式表">正则表达式表<a hidden class="anchor" aria-hidden="true" href="#正则表达式表">#</a></h2>
+<p><img alt="在这里插入图片描述" loading="lazy" src="https://i-blog.csdnimg.cn/blog_migrate/b320d7f9eb4aec2b2134ab0c952a7ffd.png#pic_center"></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="http://localhost:1313/">小巷的博客</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>
