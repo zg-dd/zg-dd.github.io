@@ -1,18 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-    <channel>
-        <title>学习笔记 on 小巷的随笔</title>
-        <link>http://localhost:1313/stu/</link>
-        <description>Recent content in 学习笔记 on 小巷的随笔</description>
-        <generator>Hugo -- gohugo.io</generator>
-        <language>zh-cn</language>
-        <lastBuildDate>Mon, 27 Apr 2020 18:00:00 +0800</lastBuildDate><atom:link href="http://localhost:1313/stu/index.xml" rel="self" type="application/rss+xml" /><item>
-        <title>正则表达式基础入门：常用符号解析([]、\、|、(?&lt;=))</title>
-        <link>http://localhost:1313/stu/regular/</link>
-        <pubDate>Mon, 27 Apr 2020 18:00:00 +0800</pubDate>
-        
-        <guid>http://localhost:1313/stu/regular/</guid>
-        <description>&lt;h2 id=&#34;正则表达式部分理解&#34;&gt;正则表达式部分理解
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>学习笔记 on 小巷的随笔</title><link>https://zg-dd.github.io/stu/</link><description>Recent content in 学习笔记 on 小巷的随笔</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Mon, 27 Apr 2020 18:00:00 +0800</lastBuildDate><atom:link href="https://zg-dd.github.io/stu/index.xml" rel="self" type="application/rss+xml"/><item><title>正则表达式基础入门：常用符号解析([]、\、|、(?&lt;=))</title><link>https://zg-dd.github.io/stu/regular/</link><pubDate>Mon, 27 Apr 2020 18:00:00 +0800</pubDate><guid>https://zg-dd.github.io/stu/regular/</guid><description>&lt;h2 id="正则表达式部分理解"&gt;正则表达式部分理解
 &lt;/h2&gt;&lt;ol&gt;
 &lt;li&gt;[]
 使用[]表示匹配[]中括号中的一个字符，比如[abc]，表示匹配a,b,c的任意一个字符，比如字符串中abcdabcdbd，会匹配到a,b,c,a,b,c,b，本意是只要出现一个字符就会匹配，不会合并到一起。
@@ -29,19 +15,8 @@
 &lt;/ol&gt;
 &lt;p&gt;&lt;strong&gt;注：以上所有的单引号双引号都是英文，由于转义的问题，许多符号变成了中文，看本博客的时候需要注意&lt;/strong&gt;
 暂时学到的用到的就只有这些，后边如果再注意到新的点，之后再补充。&lt;/p&gt;
-&lt;h2 id=&#34;正则表达式表&#34;&gt;正则表达式表
-&lt;/h2&gt;&lt;p&gt;&lt;img src=&#34;http://localhost:1313/img/regular_01.png#pic_center&#34;
-	
-	
-	
-	loading=&#34;lazy&#34;
-	
-		alt=&#34;在这里插入图片描述&#34;
-	
-	
-&gt;&lt;/p&gt;
-</description>
-        </item>
-        
-    </channel>
-</rss>
+&lt;h2 id="正则表达式表"&gt;正则表达式表
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://zg-dd.github.io/img/regular_01.png#pic_center"
+loading="lazy"
+alt="在这里插入图片描述"
+&gt;&lt;/p&gt;</description></item></channel></rss>
