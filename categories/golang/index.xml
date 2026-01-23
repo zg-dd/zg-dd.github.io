@@ -534,7 +534,453 @@ Map结构为&lt;strong&gt;引用数据类型&lt;/strong&gt;&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; * add8 3 + 4 = 7
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; */&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description></item><item><title>Golang学习历程【第四篇 运算符&amp;流程控制】</title><link>https://zg-dd.github.io/stu/golang_stu_04/</link><pubDate>Wed, 01 Jan 2025 11:03:08 +0800</pubDate><guid>https://zg-dd.github.io/stu/golang_stu_04/</guid><description>&lt;h1 id="1-运算符"&gt;1. 运算符
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description></item><item><title>Golang学习历程【第五篇 复合数据类型：数组&amp;切片】</title><link>https://zg-dd.github.io/stu/golang_stu_05/</link><pubDate>Wed, 08 Jan 2025 22:05:33 +0800</pubDate><guid>https://zg-dd.github.io/stu/golang_stu_05/</guid><description>&lt;h1 id="1-数组array"&gt;1. 数组（Array）
+&lt;/h1&gt;&lt;blockquote&gt;
+&lt;p&gt;数组: 一系列&lt;strong&gt;固定长度&lt;/strong&gt;、&lt;strong&gt;同一类型&lt;/strong&gt;数据的集合。&lt;strong&gt;数组为值类型&lt;/strong&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id="11-数组的定义"&gt;1.1 数组的定义
+&lt;/h2&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;var&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;变量名&lt;/span&gt; = [&lt;span style="color:#a6e22e"&gt;元素个数&lt;/span&gt;]&amp;lt;&lt;span style="color:#a6e22e"&gt;数据类型&lt;/span&gt;&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 声明 + 初始化，此时可将[元素个数]替换为[...]，表示初始化任意多个数据&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;var&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;变量名&lt;/span&gt; = [&lt;span style="color:#a6e22e"&gt;元素个数&lt;/span&gt;]&amp;lt;&lt;span style="color:#a6e22e"&gt;数据类型&lt;/span&gt;&amp;gt;{}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;变量名&lt;/span&gt;&lt;span style="color:#f92672"&gt;:=&lt;/span&gt; [&lt;span style="color:#a6e22e"&gt;元素个数&lt;/span&gt;]&amp;lt;&lt;span style="color:#a6e22e"&gt;数据类型&lt;/span&gt;&amp;gt;{}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;示例：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 数组的定义&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;var&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt; [&lt;span style="color:#ae81ff"&gt;4&lt;/span&gt;]&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// len获取数据长度&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;类型：%T; \t数组长度：%v; \t数据：%v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;结果：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;类型：&lt;span style="color:#f92672"&gt;[&lt;/span&gt;4&lt;span style="color:#f92672"&gt;]&lt;/span&gt;int; 数组长度：4; 数据：&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; 0&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="12-初始化数组"&gt;1.2 初始化数组
+&lt;/h2&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 数组的定义&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;var&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt; [&lt;span style="color:#ae81ff"&gt;4&lt;/span&gt;]&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// len获取数据长度&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;类型：%T; \t数组长度：%v; \t数据：%v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;/* 数组初始化 */&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 1.方式一&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt;[&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;] = &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt;[&lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;] = &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;方式一: 类型：%T; \t数组长度：%v; \t数据：%v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 2. 方式二 var 变量名 = [元素个数]&amp;lt;数据类型&amp;gt;{}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;var&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;arr2&lt;/span&gt; = [&lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;]&lt;span style="color:#66d9ef"&gt;float64&lt;/span&gt;{&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;4.6&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;方式二: 类型：%T; \t数组长度：%v; \t数据：%v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;arr2&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;arr2&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;arr2&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 3. 方式三 变量名:= [元素个数]&amp;lt;数据类型&amp;gt;{}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;arr3&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; [&lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;]&lt;span style="color:#66d9ef"&gt;string&lt;/span&gt;{&lt;span style="color:#e6db74"&gt;&amp;#34;java&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;Golang&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;Python&amp;#34;&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;方式三: 类型：%T; \t数组长度：%v; \t数据：%v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;arr3&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;arr3&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;arr3&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 4. 方式四 var 变量名 = [...]&amp;lt;数据类型&amp;gt;{} 或 变量名:= [...]&amp;lt;数据类型&amp;gt;{}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;arr4&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; [&lt;span style="color:#f92672"&gt;...&lt;/span&gt;]&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;{&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;6&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;7&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;8&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;方式四: 类型：%T; \t数组长度：%v; \t数据：%v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;arr4&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;arr4&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;arr4&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 5. 方式五 指定下标索引初始化索引&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;arr5&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; [&lt;span style="color:#f92672"&gt;...&lt;/span&gt;]&lt;span style="color:#66d9ef"&gt;float64&lt;/span&gt;{&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;3.5&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;5&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;4.6&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;7&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;9&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;方式五: 类型：%T; \t数组长度：%v; \t数据：%v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;arr5&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;arr5&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;arr5&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;结果：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;类型：&lt;span style="color:#f92672"&gt;[&lt;/span&gt;4&lt;span style="color:#f92672"&gt;]&lt;/span&gt;int; 数组长度：4; 数据：&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; 0&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;方式一: 类型：&lt;span style="color:#f92672"&gt;[&lt;/span&gt;4&lt;span style="color:#f92672"&gt;]&lt;/span&gt;int; 数组长度：4; 数据：&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; 4&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;方式二: 类型：&lt;span style="color:#f92672"&gt;[&lt;/span&gt;3&lt;span style="color:#f92672"&gt;]&lt;/span&gt;float64; 数组长度：3; 数据：&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;2&lt;/span&gt; 4.6&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;方式三: 类型：&lt;span style="color:#f92672"&gt;[&lt;/span&gt;3&lt;span style="color:#f92672"&gt;]&lt;/span&gt;string; 数组长度：3; 数据：&lt;span style="color:#f92672"&gt;[&lt;/span&gt;java Golang Python&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;方式四: 类型：&lt;span style="color:#f92672"&gt;[&lt;/span&gt;5&lt;span style="color:#f92672"&gt;]&lt;/span&gt;int; 数组长度：5; 数据：&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;6&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;7&lt;/span&gt; 8&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;方式五: 类型：&lt;span style="color:#f92672"&gt;[&lt;/span&gt;8&lt;span style="color:#f92672"&gt;]&lt;/span&gt;float64; 数组长度：8; 数据：&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; 3.5 &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; 4.6 &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; 9&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="13-数据的循环遍历"&gt;1.3 数据的循环遍历
+&lt;/h2&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;/* 数组的循环遍历 */&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;arr6&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; [&lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;]&lt;span style="color:#66d9ef"&gt;string&lt;/span&gt;{&lt;span style="color:#e6db74"&gt;&amp;#34;java&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;Golang&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;Python&amp;#34;&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 1. 使用fori循环&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;fori循环 &amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;for&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;i&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;; &lt;span style="color:#a6e22e"&gt;i&lt;/span&gt; &amp;lt; len(&lt;span style="color:#a6e22e"&gt;arr6&lt;/span&gt;); &lt;span style="color:#a6e22e"&gt;i&lt;/span&gt;&lt;span style="color:#f92672"&gt;++&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;下标%v: 值：%v; \t&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;i&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;arr6&lt;/span&gt;[&lt;span style="color:#a6e22e"&gt;i&lt;/span&gt;])
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Println&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 2. 使用for range&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;for range循环 &amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;for&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;index&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;value&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;range&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;arr6&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;下标%v: 值：%v; \t&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;index&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;value&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;结果：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;fori循环 下标0: 值：java; 下标1: 值：Golang; 下标2: 值：Python;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;for&lt;/span&gt; range循环 下标0: 值：java; 下标1: 值：Golang; 下标2: 值：Python;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="14-多维数组"&gt;1.4 多维数组
+&lt;/h2&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 2维数组为例 var 变量名 = [行个数][列个数]数据类型{{}}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;var&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;arr7&lt;/span&gt; = [&lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;][&lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;]&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;}, &lt;span style="color:#75715e"&gt;// 每一行数据&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {&lt;span style="color:#ae81ff"&gt;4&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;5&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;6&lt;/span&gt;},
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {&lt;span style="color:#ae81ff"&gt;7&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;8&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;9&lt;/span&gt;},
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;类型：%T; \t数组长度：%v; \t数据：%v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;arr7&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;arr7&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;arr7&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 可以忽略行的数据个数，列的数据个数不允许忽略&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;var&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;arr8&lt;/span&gt; = [&lt;span style="color:#f92672"&gt;...&lt;/span&gt;][&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;]&lt;span style="color:#66d9ef"&gt;string&lt;/span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {&lt;span style="color:#e6db74"&gt;&amp;#34;a&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;b&amp;#34;&lt;/span&gt;},
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {&lt;span style="color:#e6db74"&gt;&amp;#34;c&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;d&amp;#34;&lt;/span&gt;},
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;类型：%T; \t数组长度：%v; \t数据：%v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;arr8&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;arr8&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;arr8&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 二维数组循环&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;for&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;i&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;; &lt;span style="color:#a6e22e"&gt;i&lt;/span&gt; &amp;lt; len(&lt;span style="color:#a6e22e"&gt;arr7&lt;/span&gt;); &lt;span style="color:#a6e22e"&gt;i&lt;/span&gt;&lt;span style="color:#f92672"&gt;++&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;for&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;j&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;; &lt;span style="color:#a6e22e"&gt;j&lt;/span&gt; &amp;lt; len(&lt;span style="color:#a6e22e"&gt;arr7&lt;/span&gt;[&lt;span style="color:#a6e22e"&gt;i&lt;/span&gt;]); &lt;span style="color:#a6e22e"&gt;j&lt;/span&gt;&lt;span style="color:#f92672"&gt;++&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;%v行%v列: 值：%v; \t&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;i&lt;/span&gt;&lt;span style="color:#f92672"&gt;+&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;j&lt;/span&gt;&lt;span style="color:#f92672"&gt;+&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;arr7&lt;/span&gt;[&lt;span style="color:#a6e22e"&gt;i&lt;/span&gt;][&lt;span style="color:#a6e22e"&gt;j&lt;/span&gt;])
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Println&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;for&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;row&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;rowValue&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;range&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;arr8&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;for&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;col&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;value&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;range&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;rowValue&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;%v行%v列: 值：%v; \t&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;row&lt;/span&gt;&lt;span style="color:#f92672"&gt;+&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;col&lt;/span&gt;&lt;span style="color:#f92672"&gt;+&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;value&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Println&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;结果：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;类型&lt;/span&gt;&lt;span style="color:#960050;background-color:#1e0010"&gt;：&lt;/span&gt;[&lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;][&lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;]&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;; &lt;span style="color:#a6e22e"&gt;数组长度&lt;/span&gt;&lt;span style="color:#960050;background-color:#1e0010"&gt;：&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;; &lt;span style="color:#a6e22e"&gt;数据&lt;/span&gt;&lt;span style="color:#960050;background-color:#1e0010"&gt;：&lt;/span&gt;[[&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;2&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;] [&lt;span style="color:#ae81ff"&gt;4&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;5&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;6&lt;/span&gt;] [&lt;span style="color:#ae81ff"&gt;7&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;8&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;9&lt;/span&gt;]]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;类型&lt;/span&gt;&lt;span style="color:#960050;background-color:#1e0010"&gt;：&lt;/span&gt;[&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;][&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;]&lt;span style="color:#66d9ef"&gt;string&lt;/span&gt;; &lt;span style="color:#a6e22e"&gt;数组长度&lt;/span&gt;&lt;span style="color:#960050;background-color:#1e0010"&gt;：&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;; &lt;span style="color:#a6e22e"&gt;数据&lt;/span&gt;&lt;span style="color:#960050;background-color:#1e0010"&gt;：&lt;/span&gt;[[&lt;span style="color:#a6e22e"&gt;a&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;b&lt;/span&gt;] [&lt;span style="color:#a6e22e"&gt;c&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;d&lt;/span&gt;]]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;行1列&lt;/span&gt;: &lt;span style="color:#a6e22e"&gt;值&lt;/span&gt;&lt;span style="color:#960050;background-color:#1e0010"&gt;：&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;; &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;行2列&lt;/span&gt;: &lt;span style="color:#a6e22e"&gt;值&lt;/span&gt;&lt;span style="color:#960050;background-color:#1e0010"&gt;：&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;; &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;行3列&lt;/span&gt;: &lt;span style="color:#a6e22e"&gt;值&lt;/span&gt;&lt;span style="color:#960050;background-color:#1e0010"&gt;：&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;行1列&lt;/span&gt;: &lt;span style="color:#a6e22e"&gt;值&lt;/span&gt;&lt;span style="color:#960050;background-color:#1e0010"&gt;：&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;4&lt;/span&gt;; &lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;行2列&lt;/span&gt;: &lt;span style="color:#a6e22e"&gt;值&lt;/span&gt;&lt;span style="color:#960050;background-color:#1e0010"&gt;：&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;5&lt;/span&gt;; &lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;行3列&lt;/span&gt;: &lt;span style="color:#a6e22e"&gt;值&lt;/span&gt;&lt;span style="color:#960050;background-color:#1e0010"&gt;：&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;6&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;行1列&lt;/span&gt;: &lt;span style="color:#a6e22e"&gt;值&lt;/span&gt;&lt;span style="color:#960050;background-color:#1e0010"&gt;：&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;7&lt;/span&gt;; &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;行2列&lt;/span&gt;: &lt;span style="color:#a6e22e"&gt;值&lt;/span&gt;&lt;span style="color:#960050;background-color:#1e0010"&gt;：&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;8&lt;/span&gt;; &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;行3列&lt;/span&gt;: &lt;span style="color:#a6e22e"&gt;值&lt;/span&gt;&lt;span style="color:#960050;background-color:#1e0010"&gt;：&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;9&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;行1列&lt;/span&gt;: &lt;span style="color:#a6e22e"&gt;值&lt;/span&gt;&lt;span style="color:#960050;background-color:#1e0010"&gt;：&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;a&lt;/span&gt;; &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;行2列&lt;/span&gt;: &lt;span style="color:#a6e22e"&gt;值&lt;/span&gt;&lt;span style="color:#960050;background-color:#1e0010"&gt;：&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;b&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;行1列&lt;/span&gt;: &lt;span style="color:#a6e22e"&gt;值&lt;/span&gt;&lt;span style="color:#960050;background-color:#1e0010"&gt;：&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;c&lt;/span&gt;; &lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;行2列&lt;/span&gt;: &lt;span style="color:#a6e22e"&gt;值&lt;/span&gt;&lt;span style="color:#960050;background-color:#1e0010"&gt;：&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;d&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id="2-切片slice"&gt;2. 切片（Slice）
+&lt;/h1&gt;&lt;blockquote&gt;
+&lt;p&gt;切片：基于数组实现的一层封装，&lt;strong&gt;可变长度的序列，可自动扩容&lt;/strong&gt;。&lt;strong&gt;切片为引用类型&lt;/strong&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id="21-切片声明初始化"&gt;2.1 切片声明、初始化
+&lt;/h2&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;var&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;变量名&lt;/span&gt; = []&amp;lt;&lt;span style="color:#a6e22e"&gt;数据类型&lt;/span&gt;&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 声明 + 初始化&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;var&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;变量名&lt;/span&gt; = []&amp;lt;&lt;span style="color:#a6e22e"&gt;数据类型&lt;/span&gt;&amp;gt;{}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;变量名&lt;/span&gt;&lt;span style="color:#f92672"&gt;:=&lt;/span&gt; []&amp;lt;&lt;span style="color:#a6e22e"&gt;数据类型&lt;/span&gt;&amp;gt;{}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;示例：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 切片的定义&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;var&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt; []&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// len获取数据长度&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;类型：%T; \t切片长度：%v; \t数据：%v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;/* 切片初始化 */&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 1. 方式一 var 变量名 = []&amp;lt;数据类型&amp;gt;{}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;var&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;arr2&lt;/span&gt; = []&lt;span style="color:#66d9ef"&gt;float64&lt;/span&gt;{&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;4.6&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;方式一: 类型：%T; \t切片长度：%v; \t数据：%v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;arr2&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;arr2&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;arr2&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 2. 方式二 变量名:= []&amp;lt;数据类型&amp;gt;{}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;arr3&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; []&lt;span style="color:#66d9ef"&gt;string&lt;/span&gt;{&lt;span style="color:#e6db74"&gt;&amp;#34;java&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;Golang&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;Python&amp;#34;&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;方式二: 类型：%T; \t切片长度：%v; \t数据：%v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;arr3&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;arr3&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;arr3&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 3. 方式三 var 变量名 = []&amp;lt;数据类型&amp;gt;{} 或 变量名:= []&amp;lt;数据类型&amp;gt;{}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;arr4&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; []&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;{&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;6&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;7&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;8&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;方式三: 类型：%T; \t切片长度：%v; \t数据：%v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;arr4&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;arr4&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;arr4&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 4. 方式四 指定下标索引初始化索引&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;arr5&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; []&lt;span style="color:#66d9ef"&gt;float64&lt;/span&gt;{&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;3.5&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;5&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;4.6&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;7&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;9&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;方式四: 类型：%T; \t切片长度：%v; \t数据：%v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;arr5&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;arr5&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;arr5&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 5. 切片的循环和数组一致，这里不例举&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;结果：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;类型：&lt;span style="color:#f92672"&gt;[]&lt;/span&gt;int; 切片长度：0; 数据：&lt;span style="color:#f92672"&gt;[]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;方式一: 类型：&lt;span style="color:#f92672"&gt;[]&lt;/span&gt;float64; 切片长度：3; 数据：&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;2&lt;/span&gt; 4.6&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;方式二: 类型：&lt;span style="color:#f92672"&gt;[]&lt;/span&gt;string; 切片长度：3; 数据：&lt;span style="color:#f92672"&gt;[&lt;/span&gt;java Golang Python&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;方式三: 类型：&lt;span style="color:#f92672"&gt;[]&lt;/span&gt;int; 切片长度：5; 数据：&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;6&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;7&lt;/span&gt; 8&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;方式四: 类型：&lt;span style="color:#f92672"&gt;[]&lt;/span&gt;float64; 切片长度：8; 数据：&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; 3.5 &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; 4.6 &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; 9&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="22-基于数组创建切片"&gt;2.2 基于数组创建切片
+&lt;/h2&gt;&lt;p&gt;示例：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 基于数组定义切片&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;var&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt; = [&lt;span style="color:#ae81ff"&gt;5&lt;/span&gt;]&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;{&lt;span style="color:#ae81ff"&gt;10&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;29&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;49&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;58&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;32&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;类型：%T; \t长度：%v; \t数据：%v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 1. 切片获取，arr1[:]获取arr1中所有的数据&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;s1&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt;[:]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 切片数据类型为[]int,数组数据类型为[5]int&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;获取所有数据--类型：%T; \t长度：%v; \t数据：%v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;s1&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;s1&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;s1&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 2. 切片获取，arr1[2:]获取arr1中从下标为2开始之后所有的数据【包含下标2】&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;s2&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt;[&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;:]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;获取下标为2开始之后所有的数据--类型：%T; \t长度：%v; \t数据：%v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;s1&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;s2&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;s2&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 3. 切片获取，arr1[:2]获取arr1中从下标为2之前所有的数据【不包含下标2】&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;s3&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt;[:&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;获取下标为2之前所有的数据--类型：%T; \t长度：%v; \t数据：%v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;s3&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;s3&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;s3&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;结果：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;类型：&lt;span style="color:#f92672"&gt;[&lt;/span&gt;5&lt;span style="color:#f92672"&gt;]&lt;/span&gt;int; 长度：5; 数据：&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;10&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;29&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;49&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;58&lt;/span&gt; 32&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;获取所有数据--类型：&lt;span style="color:#f92672"&gt;[]&lt;/span&gt;int; 长度：5; 数据：&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;10&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;29&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;49&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;58&lt;/span&gt; 32&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;获取下标为2开始之后所有的数据--类型：&lt;span style="color:#f92672"&gt;[]&lt;/span&gt;int; 长度：3; 数据：&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;49&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;58&lt;/span&gt; 32&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;获取下标为2之前所有的数据--类型：&lt;span style="color:#f92672"&gt;[]&lt;/span&gt;int; 长度：2; 数据：&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;10&lt;/span&gt; 29&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;总结：数据的拆分：arr[start:end] 中，含义为：&lt;strong&gt;获取arr对应下标区间[start,end)的值，start,end可省略，表示其前或后的所有值。&lt;/strong&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id="22-切片的长度len和容量cap"&gt;2.2 切片的长度(len)和容量(cap)&lt;!-- raw HTML omitted --&gt;*&lt;!-- raw HTML omitted --&gt;
+&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;切片拥有自己的长度和容量：
+长度：切片的长度是切片所包含的元素个数。用**len()&lt;strong&gt;函数获取
+容量：切片的容量从他第一个元素开始，到底层数组元素末尾的个数。用&lt;/strong&gt;cap()**函数获取&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;a&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; []&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;{&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;5&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;6&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;7&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;类型：%T, 长度：%v, 容量：%v, 数据：%v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;a&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;a&lt;/span&gt;), cap(&lt;span style="color:#a6e22e"&gt;a&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;a&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;b&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;a&lt;/span&gt;[&lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;:]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;类型：%T, 长度：%v, 容量：%v, 数据：%v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;b&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;b&lt;/span&gt;), cap(&lt;span style="color:#a6e22e"&gt;b&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;b&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;c&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;a&lt;/span&gt;[:&lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;类型：%T, 长度：%v, 容量：%v, 数据：%v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;c&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;c&lt;/span&gt;), cap(&lt;span style="color:#a6e22e"&gt;c&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;c&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;结果：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;类型：&lt;span style="color:#f92672"&gt;[]&lt;/span&gt;int, 长度：6, 容量：6, 数据：&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;5&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;6&lt;/span&gt; 7&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;类型：&lt;span style="color:#f92672"&gt;[]&lt;/span&gt;int, 长度：3, 容量：3, 数据：&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;5&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;6&lt;/span&gt; 7&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;类型：&lt;span style="color:#f92672"&gt;[]&lt;/span&gt;int, 长度：3, 容量：6, 数据：&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt; 4&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;figure&gt;&lt;img src="https://zg-dd.github.io/img/golang_stu/go_stu_051.png"&gt;
+&lt;/figure&gt;
+&lt;h1 id="3-nil值"&gt;3. nil值
+&lt;/h1&gt;&lt;blockquote&gt;
+&lt;p&gt;nil是一个预先声明的标识符，表示指针、通道、函数、接口、集合或切片类型的零值。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;数据类型&lt;/th&gt;
+&lt;th&gt;声明默认值&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;bool&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;int,float&lt;/td&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;string&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;&amp;quot;&amp;quot;&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;指针（pointers）&lt;/td&gt;
+&lt;td&gt;nil&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;数组（array）&lt;/td&gt;
+&lt;td&gt;基本类型默认值的数组&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;切片（slices）&lt;/td&gt;
+&lt;td&gt;nil&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;集合（maps）&lt;/td&gt;
+&lt;td&gt;nil&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;通道（channels）&lt;/td&gt;
+&lt;td&gt;nil&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;函数（function）&lt;/td&gt;
+&lt;td&gt;nil&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 数组默认值&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;var&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;arr&lt;/span&gt; [&lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;]&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Println&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;arr&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 切片默认值&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;var&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;slices1&lt;/span&gt; []&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;var&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;slices2&lt;/span&gt; = []&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;{&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Println&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;slices1&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;slices1&lt;/span&gt; &lt;span style="color:#f92672"&gt;==&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;nil&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;slices2&lt;/span&gt; &lt;span style="color:#f92672"&gt;==&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;nil&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;结果：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; 0&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;[]&lt;/span&gt; true false
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id="4-值类型和引用数据类型"&gt;4. 值类型和引用数据类型
+&lt;/h1&gt;&lt;blockquote&gt;
+&lt;p&gt;值类型: 值类型赋值的两个变量为独立个体，A变化不会引起B的同步更新
+引用数据类型：引用数据类型赋值的两个变量为引用同一个变量，A变化会引起B的变化。实际上是因为指向同一片内存空间。&lt;strong&gt;典型的示例即：切片&lt;/strong&gt;
+示例：&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;a1&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; [&lt;span style="color:#f92672"&gt;...&lt;/span&gt;]&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;{&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;5&lt;/span&gt;} &lt;span style="color:#75715e"&gt;// 数组 值复制&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;a2&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; []&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;{&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;5&lt;/span&gt;} &lt;span style="color:#75715e"&gt;// 切片 引用赋值&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;b1&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;a1&lt;/span&gt; &lt;span style="color:#75715e"&gt;// 赋值给b1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;b2&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;a2&lt;/span&gt; &lt;span style="color:#75715e"&gt;// 赋值给b2&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;b1&lt;/span&gt;[&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;] = &lt;span style="color:#ae81ff"&gt;6&lt;/span&gt; &lt;span style="color:#75715e"&gt;// 同样修改第一个元素值为6&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;b2&lt;/span&gt;[&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;] = &lt;span style="color:#ae81ff"&gt;6&lt;/span&gt; &lt;span style="color:#75715e"&gt;// 同样修改第一个元素值为6&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;a1=%v,b1=%v \n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;a1&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;b1&lt;/span&gt;) &lt;span style="color:#75715e"&gt;// 值类型赋值：b1的修改不会影响a1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;a2=%v,b2=%v \n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;a2&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;b2&lt;/span&gt;) &lt;span style="color:#75715e"&gt;// 引用类型赋值：b2的修改影响了a2&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;结果：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;a1&lt;span style="color:#f92672"&gt;=[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt; 5&lt;span style="color:#f92672"&gt;]&lt;/span&gt;,b1&lt;span style="color:#f92672"&gt;=[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;6&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt; 5&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;a2&lt;span style="color:#f92672"&gt;=[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;6&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt; 5&lt;span style="color:#f92672"&gt;]&lt;/span&gt;,b2&lt;span style="color:#f92672"&gt;=[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;6&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt; 5&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id="5-切片常用函数"&gt;5. 切片常用函数
+&lt;/h1&gt;&lt;h2 id="51-创建切片make"&gt;5.1 创建切片：make
+&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;make创建切片，&lt;code&gt;make([]int, 10, 11)&lt;/code&gt; 分配一个底层数组大小为10，返回长度为11、容量为10的切片int类型切片&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;var&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;slice1&lt;/span&gt; = make([]&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;10&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;11&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;slice1&lt;/span&gt;[&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;] = &lt;span style="color:#ae81ff"&gt;6&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;slice1&lt;/span&gt;[&lt;span style="color:#ae81ff"&gt;9&lt;/span&gt;] = &lt;span style="color:#ae81ff"&gt;20&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;类型：%T, 长度：%v, 容量：%v, 数据：%v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;slice1&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;slice1&lt;/span&gt;), cap(&lt;span style="color:#a6e22e"&gt;slice1&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;slice1&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;/* 结果：
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;类型：[]int, 长度：10, 容量：11, 数据：[0 0 6 0 0 0 0 0 0 20]
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;*/&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="52-扩容切片append"&gt;5.2 扩容切片：append
+&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;切片扩容： &lt;code&gt;append(slice, elem1, elem2)或者append(slice, anotherSlice...)&lt;/code&gt;，slice表示需要扩容的切片，elem*表示添加的元素，anotherSlice表示其他切片&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 切片的扩容不能通过slice[2]下标越界方式，会报错下标越界：index out of range [2] with length 0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;var&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;slice2&lt;/span&gt; = make([]&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 切片中追加一个元素，并返回最终元素&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;slice2&lt;/span&gt; = append(&lt;span style="color:#a6e22e"&gt;slice2&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;12&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;14&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;24&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;类型：%T, 长度：%v, 容量：%v, 数据：%v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;slice2&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;slice2&lt;/span&gt;), cap(&lt;span style="color:#a6e22e"&gt;slice2&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;slice2&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;slice3&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; []&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;{&lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;5&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 切片的合并，slice3...代表slice3中所有的元素列举&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;var&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;slice4&lt;/span&gt; = append(&lt;span style="color:#a6e22e"&gt;slice2&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;slice3&lt;/span&gt;&lt;span style="color:#f92672"&gt;...&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;类型：%T, 长度：%v, 容量：%v, 数据：%v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;slice2&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;slice4&lt;/span&gt;), cap(&lt;span style="color:#a6e22e"&gt;slice4&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;slice4&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;/* 结果：
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;类型：[]int, 长度：3, 容量：3, 数据：[12 14 24]
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;类型：[]int, 长度：6, 容量：6, 数据：[12 14 24 3 4 5]
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; */&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="53-复制切片深克隆copy"&gt;5.3 复制切片【深克隆】：copy
+&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;深克隆：指的是克隆前后的对象为两个独立的个体，后续修改变更互不影响
+浅克隆：指的是克隆前后的对象为同一个引用类型，后续修改A同样影响B的值
+copy(dst, src []Type)，dst是destination，表示目的变量，src是source，表示对象源，即将src复制给dst&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 切片的扩容不能通过slice[2]下标越界方式，会报错下标越界：index out of range [2] with length 0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;var&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;slice2&lt;/span&gt; = make([]&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 切片中追加一个元素，并返回最终元素&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;slice2&lt;/span&gt; = append(&lt;span style="color:#a6e22e"&gt;slice2&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;12&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;14&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;24&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;类型：%T, 长度：%v, 容量：%v, 数据：%v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;slice2&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;slice2&lt;/span&gt;), cap(&lt;span style="color:#a6e22e"&gt;slice2&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;slice2&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;slice3&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; []&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;{&lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;5&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 切片的合并，slice3...代表slice3中所有的元素列举&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;var&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;slice4&lt;/span&gt; = append(&lt;span style="color:#a6e22e"&gt;slice2&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;slice3&lt;/span&gt;&lt;span style="color:#f92672"&gt;...&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;类型：%T, 长度：%v, 容量：%v, 数据：%v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;slice2&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;slice4&lt;/span&gt;), cap(&lt;span style="color:#a6e22e"&gt;slice4&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;slice4&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 切片的复制深克隆&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;slice4Copy&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; make([]&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;slice4&lt;/span&gt;))
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;copy(&lt;span style="color:#a6e22e"&gt;slice4Copy&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;slice4&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;slice4Copy&lt;/span&gt;[&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;] = &lt;span style="color:#ae81ff"&gt;6666&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Println&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;slice4&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;slice4Copy&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;/* 结果：
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;类型：[]int, 长度：3, 容量：3, 数据：[12 14 24]
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;类型：[]int, 长度：6, 容量：6, 数据：[12 14 24 3 4 5]
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;[12 14 24 3 4 5] [6666 14 24 3 4 5]
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; */&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="54-切片的删除"&gt;5.4 切片的删除
+&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;Go语言中没有内置删除切片方法，可以使用append方法，与切片再切片结合实现&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 切片的删除&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;s1&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; []&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;{&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;5&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;6&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 删除元素的索引下标&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;delIndx&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 通过切片append方法，与切片再切片结合实现，即截取[0,3)和[4,5]的切片数据再合并达到删除效果&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;s1&lt;/span&gt; = append(&lt;span style="color:#a6e22e"&gt;s1&lt;/span&gt;[:&lt;span style="color:#a6e22e"&gt;delIndx&lt;/span&gt;], &lt;span style="color:#a6e22e"&gt;s1&lt;/span&gt;[&lt;span style="color:#a6e22e"&gt;delIndx&lt;/span&gt;&lt;span style="color:#f92672"&gt;+&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;:]&lt;span style="color:#f92672"&gt;...&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Println&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;s1&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;/* 结果：
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;[1 2 3 5 6]
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; */&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="55-sort排序"&gt;5.5 sort排序
+&lt;/h2&gt;&lt;h3 id="551-升序排序"&gt;5.5.1 升序排序
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;使用sort.Ints、sort.Float64s、sort.Strings进行排序&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;intList&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; []&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;{&lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;32&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;32&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;423&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;12&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;float64List&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; []&lt;span style="color:#66d9ef"&gt;float64&lt;/span&gt;{&lt;span style="color:#ae81ff"&gt;3.13&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;4.2&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;5.3&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;1.1&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;stringList&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; []&lt;span style="color:#66d9ef"&gt;string&lt;/span&gt;{&lt;span style="color:#e6db74"&gt;&amp;#34;D&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;S&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;A&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;C&amp;#34;&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 升序排序&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;sort&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Ints&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;intList&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;sort&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Float64s&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;float64List&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;sort&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Strings&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;stringList&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Println&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;intList&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Println&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;float64List&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Println&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;stringList&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;/* 结果：
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;[3 4 12 32 32 423]
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;[1.1 3.13 4.2 5.3]
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;[A C D S]
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; */&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="552-降序排序"&gt;5.5.2 降序排序
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;结合sort.XXXSlice、sort.Reverse和sort.Sort实现&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;intList&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; []&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;{&lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;32&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;32&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;423&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;12&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;float64List&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; []&lt;span style="color:#66d9ef"&gt;float64&lt;/span&gt;{&lt;span style="color:#ae81ff"&gt;3.13&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;4.2&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;5.3&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;1.1&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;stringList&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; []&lt;span style="color:#66d9ef"&gt;string&lt;/span&gt;{&lt;span style="color:#e6db74"&gt;&amp;#34;D&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;S&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;A&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;C&amp;#34;&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;/*
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; 降序排序
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; 1. sort.IntSlice(intList)表示对intList转成interface，简单理解为将切片转为排序器接口,返回结果类型：data sort.Interface
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; 2. sort.Reverse(data sort.Interface)表示翻转切片，返回结果类型：data sort.Interface
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; 3. sort.Sort(data sort.Interface) 表示将结果排序返回数据
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; 默认当做固定写法：sort.Sort(sort.Reverse(sort.XXXSlice(intList)))
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; 另外也可以自定义排序算法实现降序排序
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;*/&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;sort&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Sort&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;sort&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Reverse&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;sort&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;IntSlice&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;intList&lt;/span&gt;)))
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;sort&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Sort&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;sort&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Reverse&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;sort&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Float64Slice&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;float64List&lt;/span&gt;)))
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;sort&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Sort&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;sort&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Reverse&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;sort&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;StringSlice&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;stringList&lt;/span&gt;)))
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Println&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;intList&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Println&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;float64List&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Println&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;stringList&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;/* 结果:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;[423 32 32 12 4 3]
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;[5.3 4.2 3.13 1.1]
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;[S D C A]
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; */&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id="6-扩展技巧"&gt;6. 扩展技巧
+&lt;/h1&gt;&lt;h2 id="61-语法提示"&gt;6.1 语法提示
+&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;对一个变量输入“.”符号时，编译器自动提示语法命令，后缀携带!的表示为功能快捷提示，并生成对应的半成品代码&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;figure&gt;&lt;img src="https://zg-dd.github.io/img/golang_stu/go_stu_052.png"&gt;
+&lt;/figure&gt;
+截图中提示语功能&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;功能提示语句&lt;/th&gt;
+&lt;th&gt;含义&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;append!&lt;/td&gt;
+&lt;td&gt;切片追加数据&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;copy!&lt;/td&gt;
+&lt;td&gt;copy克隆切片&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;for!&lt;/td&gt;
+&lt;td&gt;fori循环&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;forr!&lt;/td&gt;
+&lt;td&gt;for range循环&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;ifnotnil!&lt;/td&gt;
+&lt;td&gt;if not nil 条件判断&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;last!&lt;/td&gt;
+&lt;td&gt;等价于a[len(a -1)]获取最后一个元素&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;len!&lt;/td&gt;
+&lt;td&gt;等价于len(a)获取长度&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;print!&lt;/td&gt;
+&lt;td&gt;打印变量&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;range!&lt;/td&gt;
+&lt;td&gt;等价于forr!&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;reverse!&lt;/td&gt;
+&lt;td&gt;翻转切片&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;sort!&lt;/td&gt;
+&lt;td&gt;自定定排序&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;var!&lt;/td&gt;
+&lt;td&gt;将a赋值于新的变量&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id="62-方法参数含义使用探究"&gt;6.2 方法参数、含义使用探究
+&lt;/h2&gt;&lt;blockquote&gt;
+&lt;ol&gt;
+&lt;li&gt;鼠标移动至方法名1s以上，显示方法名参数、返回值，含义，描述详情等信息&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/blockquote&gt;
+&lt;figure&gt;&lt;img src="https://zg-dd.github.io/img/golang_stu/go_stu_053.png"&gt;
+&lt;/figure&gt;
+&lt;blockquote&gt;
+&lt;ol start="2"&gt;
+&lt;li&gt;用ctrl按键+鼠标左键，点击方法名，即可进入方法名参数、返回值，含义，描述详情等信息，如果不懂英文，可以通过翻译工具认识逐步了解学习
+&lt;figure&gt;&lt;img src="https://zg-dd.github.io/img/golang_stu/go_stu_054.png"&gt;
+&lt;/figure&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/blockquote&gt;</description></item><item><title>Golang学习历程【第四篇 运算符&amp;流程控制】</title><link>https://zg-dd.github.io/stu/golang_stu_04/</link><pubDate>Wed, 01 Jan 2025 11:03:08 +0800</pubDate><guid>https://zg-dd.github.io/stu/golang_stu_04/</guid><description>&lt;h1 id="1-运算符"&gt;1. 运算符
 &lt;/h1&gt;&lt;h2 id="11-算术运算符"&gt;1.1 算术运算符
 &lt;/h2&gt;&lt;table&gt;
 &lt;thead&gt;
