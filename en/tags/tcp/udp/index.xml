@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>TCP/UDP on 小巷 Blog</title><link>https://zg-dd.github.io/en/tags/tcp/udp/</link><description>Recent content in TCP/UDP on 小巷 Blog</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Fri, 15 Aug 2025 19:08:51 +0800</lastBuildDate><atom:link href="https://zg-dd.github.io/en/tags/tcp/udp/index.xml" rel="self" type="application/rss+xml"/><item><title>Core Knowledge of Network Communication</title><link>https://zg-dd.github.io/en/stu/socket/</link><pubDate>Fri, 15 Aug 2025 19:08:51 +0800</pubDate><guid>https://zg-dd.github.io/en/stu/socket/</guid><description>&lt;h1 id="core-knowledge-of-network-communication"&gt;Core Knowledge of Network Communication
+&lt;/h1&gt;&lt;h2 id="1-core-concepts"&gt;1. Core concepts
+&lt;/h2&gt;&lt;h3 id="1-socket"&gt;1. Socket
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;What it is&lt;/strong&gt;: An extension mechanism for inter‑process communication (IPC)&lt;br&gt;
+&lt;strong&gt;Use&lt;/strong&gt;: Establish network communication channels (TCP/UDP)&lt;br&gt;
+&lt;strong&gt;Flow&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Server: socket → bind → listen → accept&lt;/li&gt;
+&lt;li&gt;Client: socket → connect → write/read → close&lt;br&gt;
+&lt;strong&gt;Note&lt;/strong&gt;: handle byte‑order conversion (htonl/ntohl)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="2-tcp-vs-udp"&gt;2. TCP vs UDP
+&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Feature&lt;/th&gt;
+&lt;th&gt;TCP&lt;/th&gt;
+&lt;th&gt;UDP&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Connection&lt;/td&gt;
+&lt;td&gt;Connection‑oriented (3‑way handshake)&lt;/td&gt;
+&lt;td&gt;Connectionless&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Reliability&lt;/td&gt;
+&lt;td&gt;Reliable (retransmission)&lt;/td&gt;
+&lt;td&gt;Unreliable&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Data form&lt;/td&gt;
+&lt;td&gt;Stream socket&lt;/td&gt;
+&lt;td&gt;Datagram socket&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Use cases&lt;/td&gt;
+&lt;td&gt;File transfer, web browsing&lt;/td&gt;
+&lt;td&gt;Real‑time video, DNS&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id="2-server-models"&gt;2. Server models
+&lt;/h2&gt;&lt;h3 id="1-iterative-server"&gt;1. Iterative server
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;Limitation&lt;/strong&gt;: Single‑threaded blocking; cannot handle concurrent requests.&lt;/p&gt;
+&lt;h3 id="2-processthread-model"&gt;2. Process/Thread model
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;Process approach&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Use &lt;code&gt;waitpid()&lt;/code&gt; to avoid zombie processes&lt;/li&gt;
+&lt;li&gt;Parent must reap child resources&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Zombie handling details&lt;/strong&gt;:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Cause&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Child terminates but parent never calls &lt;code&gt;wait()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Consumes process table resources&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Solutions&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Synchronous reap&lt;/strong&gt;:
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;waitpid&lt;/span&gt;(pid, NULL, &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Async reap&lt;/strong&gt; (recommended):
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;signal&lt;/span&gt;(SIGCHLD, [](&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;while&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;waitpid&lt;/span&gt;(&lt;span style="color:#f92672"&gt;-&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, NULL, WNOHANG) &lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;});
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Special cases&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;If parent exits first, init adopts and reaps&lt;/li&gt;
+&lt;li&gt;Batch reaping requires a loop&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;Thread approach&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Must synchronize shared variables&lt;/li&gt;
+&lt;li&gt;More complex critical‑section control&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="3-process-pool-optimization"&gt;3. Process pool optimization
+&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Type&lt;/th&gt;
+&lt;th&gt;Characteristics&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Static pool&lt;/td&gt;
+&lt;td&gt;Pre‑created processes, fixed concurrency&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Dynamic pool&lt;/td&gt;
+&lt;td&gt;Maintain min/max idle processes&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id="3-highperformance-io-models"&gt;3. High‑performance I/O models
+&lt;/h2&gt;&lt;h3 id="1-traditional-blocking"&gt;1. Traditional blocking
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;Characteristics&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Single thread blocks on I/O&lt;/li&gt;
+&lt;li&gt;Low resource utilization&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="2-selectpoll"&gt;2. Select/Poll
+&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Feature&lt;/th&gt;
+&lt;th&gt;Select&lt;/th&gt;
+&lt;th&gt;Poll&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Mechanism&lt;/td&gt;
+&lt;td&gt;Bitmap FD scan&lt;/td&gt;
+&lt;td&gt;Linked list FD scan&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Max connections&lt;/td&gt;
+&lt;td&gt;1024 (FD_SETSIZE)&lt;/td&gt;
+&lt;td&gt;No hard limit&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Efficiency&lt;/td&gt;
+&lt;td&gt;O(n) scan&lt;/td&gt;
+&lt;td&gt;O(n) scan&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Portability&lt;/td&gt;
+&lt;td&gt;All platforms&lt;/td&gt;
+&lt;td&gt;All platforms&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="3-epoll"&gt;3. Epoll
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;Core mechanism&lt;/strong&gt;:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Registration&lt;/strong&gt; via epoll_ctl (red‑black tree)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Ready list&lt;/strong&gt; maintained by kernel&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Trigger modes&lt;/strong&gt;:
+&lt;ul&gt;
+&lt;li&gt;LT (level‑triggered)&lt;/li&gt;
+&lt;li&gt;ET (edge‑triggered)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;Advantages&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;O(1) event notification&lt;/li&gt;
+&lt;li&gt;Supports massive connections (C1000K)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="4-nio-nonblocking-io"&gt;4. NIO (Non‑blocking I/O)
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;Core components&lt;/strong&gt;:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Channel&lt;/strong&gt;: full‑duplex pipes (SocketChannel/FileChannel)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Buffer&lt;/strong&gt;: ByteBuffer/CharBuffer&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Selector&lt;/strong&gt;: multiplexer (based on epoll/kqueue)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;Workflow&lt;/strong&gt;:&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code class="language-plantuml" data-lang="plantuml"&gt;start
+: Create Selector;
+: Register Channel;
+repeat
+: select() for ready events;
+: Handle SelectionKey;
+repeat while (events?)
+stop
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id="5-aio-asynchronous-io"&gt;5. AIO (Asynchronous I/O)
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;Principle&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Kernel completes I/O and calls back&lt;/li&gt;
+&lt;li&gt;No user‑thread polling&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Typical use cases&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Large file async read/write&lt;/li&gt;
+&lt;li&gt;High‑latency network ops&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="6-comparison"&gt;6. Comparison
+&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Model&lt;/th&gt;
+&lt;th&gt;Blocking&lt;/th&gt;
+&lt;th&gt;Threading&lt;/th&gt;
+&lt;th&gt;Trigger&lt;/th&gt;
+&lt;th&gt;Use case&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Blocking I/O&lt;/td&gt;
+&lt;td&gt;Blocking&lt;/td&gt;
+&lt;td&gt;1:1&lt;/td&gt;
+&lt;td&gt;-&lt;/td&gt;
+&lt;td&gt;Low concurrency&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Select&lt;/td&gt;
+&lt;td&gt;Non‑blocking&lt;/td&gt;
+&lt;td&gt;1:N&lt;/td&gt;
+&lt;td&gt;Polling&lt;/td&gt;
+&lt;td&gt;Cross‑platform medium load&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Poll&lt;/td&gt;
+&lt;td&gt;Non‑blocking&lt;/td&gt;
+&lt;td&gt;1:N&lt;/td&gt;
+&lt;td&gt;Polling&lt;/td&gt;
+&lt;td&gt;&amp;lt;10K connections&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Epoll&lt;/td&gt;
+&lt;td&gt;Non‑blocking&lt;/td&gt;
+&lt;td&gt;1:N&lt;/td&gt;
+&lt;td&gt;Event‑driven&lt;/td&gt;
+&lt;td&gt;Linux high concurrency&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;NIO&lt;/td&gt;
+&lt;td&gt;Non‑blocking&lt;/td&gt;
+&lt;td&gt;1:N&lt;/td&gt;
+&lt;td&gt;Readiness&lt;/td&gt;
+&lt;td&gt;High throughput&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;AIO&lt;/td&gt;
+&lt;td&gt;Async&lt;/td&gt;
+&lt;td&gt;0:1&lt;/td&gt;
+&lt;td&gt;Callback&lt;/td&gt;
+&lt;td&gt;Latency‑sensitive&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id="notes"&gt;Notes
+&lt;/h2&gt;&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Kernel support&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Windows: IOCP is true async I/O&lt;/li&gt;
+&lt;li&gt;Linux: io_uring (&amp;gt;=5.1) is close to true async&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Performance thresholds&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;C10K: Select/Poll bottleneck&lt;/li&gt;
+&lt;li&gt;C100K: Epoll/NIO required&lt;/li&gt;
+&lt;li&gt;C1000K: Epoll + zero‑copy optimization&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Complexity&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Blocking &amp;lt; Select &amp;lt; Poll &amp;lt; Epoll &amp;lt; NIO &amp;lt; AIO&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id="4-practical-points"&gt;4. Practical points
+&lt;/h2&gt;&lt;h3 id="1-daemons"&gt;1. Daemons
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;Key steps&lt;/strong&gt;:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;fork()&lt;/li&gt;
+&lt;li&gt;setsid()&lt;br&gt;
+Redirect standard I/O to /dev/null&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id="2-udp-server"&gt;2. UDP server
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;Traits&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;No listen()/accept()&lt;/li&gt;
+&lt;li&gt;Use recvfrom()/sendto()&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="3-other-tips"&gt;3. Other tips
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Reuse Address&lt;/strong&gt;: avoid TIME_WAIT port blocking&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Thundering herd&lt;/strong&gt;: multi‑process accept contention, needs kernel lock optimizations
+&lt;strong&gt;Server types&lt;/strong&gt;:&lt;/li&gt;
+&lt;li&gt;I/O‑bound: LNMP (nginx)&lt;/li&gt;
+&lt;li&gt;CPU‑bound: LAMP (Apache)&lt;/li&gt;
+&lt;li&gt;Coroutines: user‑mode threads with lower context switch cost than kernel threads&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="5-learning-suggestions"&gt;5. Learning suggestions
+&lt;/h2&gt;&lt;h3 id="1-diagnostic-tools"&gt;1. Diagnostic tools
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;netstat -anp &lt;span style="color:#75715e"&gt;# list network connections&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="2-classic-books"&gt;2. Classic books
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;Unix Network Programming&lt;/li&gt;
+&lt;li&gt;Advanced Programming in the UNIX Environment&lt;/li&gt;
+&lt;/ul&gt;</description></item></channel></rss>

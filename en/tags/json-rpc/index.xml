@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>JSON-RPC on 小巷 Blog</title><link>https://zg-dd.github.io/en/tags/json-rpc/</link><description>Recent content in JSON-RPC on 小巷 Blog</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Wed, 06 Aug 2025 15:14:07 +0800</lastBuildDate><atom:link href="https://zg-dd.github.io/en/tags/json-rpc/index.xml" rel="self" type="application/rss+xml"/><item><title>MCP Protocol: Intro and Core Mechanisms</title><link>https://zg-dd.github.io/en/stu/mcp-protocol-core/</link><pubDate>Wed, 06 Aug 2025 15:14:07 +0800</pubDate><guid>https://zg-dd.github.io/en/stu/mcp-protocol-core/</guid><description>&lt;blockquote&gt;
+&lt;p&gt;Personal study notes&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1 id="1-what-is-mcp"&gt;1. What is MCP?
+&lt;/h1&gt;&lt;p&gt;MCP (Model Content Protocol) is an &lt;strong&gt;open standard&lt;/strong&gt; introduced by Anthropic in 2024. It provides a unified interaction framework between LLMs and external tools, data sources, and services. The core goal is to solve data silos in the AI ecosystem by standardizing interfaces so models can connect to external resources seamlessly—like a &amp;ldquo;USB‑C&amp;rdquo; for AI or a universal adapter.&lt;/p&gt;
+&lt;h1 id="2-core-features-and-principles"&gt;2. Core features and principles
+&lt;/h1&gt;&lt;h2 id="21-standardized-3layer-architecture"&gt;2.1 Standardized 3‑layer architecture
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Host&lt;/strong&gt;: the main app running the model (e.g., Claude Desktop, IDE plugins)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Client&lt;/strong&gt;: establishes a 1:1 connection with the server, wraps and forwards requests&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Server&lt;/strong&gt;: lightweight adapter to real tools/data sources (databases, APIs, file systems)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="22-communication-jsonrpc-20"&gt;2.2 Communication: JSON‑RPC 2.0
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Local&lt;/strong&gt;: JSON‑RPC over stdio for local tool calls&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Remote&lt;/strong&gt;: long-lived HTTP via SSE (Server‑Sent Events) and &lt;a class="link" href="https://blog.csdn.net/shykevin/article/details/147525192" target="_blank" rel="noopener"
+&gt;Streamable HTTP&lt;/a&gt; for async streaming&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Message format&lt;/strong&gt;: all requests/responses follow JSON‑RPC 2.0&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="23-dynamic-discovery"&gt;2.3 Dynamic discovery
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Tool-level discovery&lt;/strong&gt;: tools describe themselves (e.g., via OpenAPI) so models can call them without hard‑coded integration&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Service-level discovery&lt;/strong&gt; (uncertain): &lt;strong&gt;URI‑driven discovery&lt;/strong&gt;. The client parses a custom URI like &lt;code&gt;mcp://api.service.com&lt;/code&gt; and fetches metadata (e.g., &lt;code&gt;https://api.service.com/llms.txt&lt;/code&gt;). The server returns a JSON description including capabilities, docs, and auth. The client auto‑configures access. &lt;strong&gt;Example&lt;/strong&gt;: paste an MCP URI into chat and the LLM auto‑integrates the service (e.g., stock API) without manual config.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id="3-security-and-permissions"&gt;3. Security and permissions
+&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Local execution&lt;/strong&gt; by default to avoid data leakage&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;User confirmation&lt;/strong&gt; for high‑risk operations (e.g., file deletion)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Enterprise extensions&lt;/strong&gt;: JWT, RBAC, IPsec tunnels for regulated scenarios&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id="4-how-it-differs-from-traditional-approaches"&gt;4. How it differs from traditional approaches
+&lt;/h1&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Feature&lt;/th&gt;
+&lt;th&gt;MCP&lt;/th&gt;
+&lt;th&gt;Traditional API&lt;/th&gt;
+&lt;th&gt;Function Calling&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Integration&lt;/td&gt;
+&lt;td&gt;Unified protocol, dynamic discovery&lt;/td&gt;
+&lt;td&gt;Per‑API custom integration&lt;/td&gt;
+&lt;td&gt;Hard‑coded bindings&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Communication&lt;/td&gt;
+&lt;td&gt;Bi‑directional, real‑time&lt;/td&gt;
+&lt;td&gt;Request‑response&lt;/td&gt;
+&lt;td&gt;Synchronous, no streaming&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Flexibility&lt;/td&gt;
+&lt;td&gt;Plug‑and‑play, multi‑tool composition&lt;/td&gt;
+&lt;td&gt;Re‑development required&lt;/td&gt;
+&lt;td&gt;Vendor‑specific&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h1 id="5-summary"&gt;5. Summary
+&lt;/h1&gt;&lt;p&gt;MCP combines &lt;strong&gt;client‑server decoupling&lt;/strong&gt;, &lt;strong&gt;JSON‑RPC messaging&lt;/strong&gt;, and &lt;strong&gt;dynamic discovery&lt;/strong&gt; to solve three pain points for LLM‑tool integration:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Flexibility&lt;/strong&gt;: tools can be hot‑plugged and services can expand dynamically&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Security&lt;/strong&gt;: local execution plus permission control&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Standardization&lt;/strong&gt;: unified protocol lowers integration cost and pushes openness&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;By decoupling models from tools at the protocol layer, MCP moves AI from “chat assistant” to “execution agent,” forming a foundation for complex agent systems. As enterprise adoption grows (e.g., Changhong Hongxin EADP integrating MCP), it is becoming core infrastructure for next‑generation AI agents.&lt;/p&gt;</description></item></channel></rss>

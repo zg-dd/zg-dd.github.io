@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="1. Arrays\rAn array is a fixed-length collection of elements of the same type. Arrays are value types.\n1.1 Declaring an array\rvar name = [length]&lt;type&gt; var name = [length]&lt;type&gt;{} name := [length]&lt;type&gt;{} Example:\nvar arr1 [4]int fmt.Printf(&#34;Type: %T; length: %v; data: %v\\n&#34;, arr1, len(arr1), arr1) Output:\nType: [4]int; length: 4; data: [0 0 0 0] 1.2 Initializing arrays\rvar arr1 [4]int arr1[0] = 1 arr1[3] = 4 fmt.Printf(&#34;Method1: %T length: %v data: %v\\n&#34;, arr1, len(arr1), arr1) var arr2 = [3]float64{1, 2, 4.6} fmt.Printf(&#34;Method2: %T length: %v data: %v\\n&#34;, arr2, len(arr2), arr2) arr3 := [3]string{&#34;java&#34;, &#34;Golang&#34;, &#34;Python&#34;} fmt.Printf(&#34;Method3: %T length: %v data: %v\\n&#34;, arr3, len(arr3), arr3) arr4 := [...]int{2, 4, 6, 7, 8} fmt.Printf(&#34;Method4: %T length: %v data: %v\\n&#34;, arr4, len(arr4), arr4) arr5 := [...]float64{0: 2, 2: 3.5, 5: 4.6, 7: 9} fmt.Printf(&#34;Method5: %T length: %v data: %v\\n&#34;, arr5, len(arr5), arr5) Output:\n">
+<title>Golang Learning Journey [Part 5: Composite Types – Arrays &amp; Slices]</title>
+
+<link rel='canonical' href='http://localhost:1313/en/stu/golang_stu_05/'>
+
+<link rel="stylesheet" href="/scss/style.min.b9e9128fec450ebccecc4ec9900157f32b85d0609bcd5ee3293968bcaa1235f2.css"><meta property='og:title' content="Golang Learning Journey [Part 5: Composite Types – Arrays & Slices]">
+<meta property='og:description' content="1. Arrays\rAn array is a fixed-length collection of elements of the same type. Arrays are value types.\n1.1 Declaring an array\rvar name = [length]&lt;type&gt; var name = [length]&lt;type&gt;{} name := [length]&lt;type&gt;{} Example:\nvar arr1 [4]int fmt.Printf(&#34;Type: %T; length: %v; data: %v\\n&#34;, arr1, len(arr1), arr1) Output:\nType: [4]int; length: 4; data: [0 0 0 0] 1.2 Initializing arrays\rvar arr1 [4]int arr1[0] = 1 arr1[3] = 4 fmt.Printf(&#34;Method1: %T length: %v data: %v\\n&#34;, arr1, len(arr1), arr1) var arr2 = [3]float64{1, 2, 4.6} fmt.Printf(&#34;Method2: %T length: %v data: %v\\n&#34;, arr2, len(arr2), arr2) arr3 := [3]string{&#34;java&#34;, &#34;Golang&#34;, &#34;Python&#34;} fmt.Printf(&#34;Method3: %T length: %v data: %v\\n&#34;, arr3, len(arr3), arr3) arr4 := [...]int{2, 4, 6, 7, 8} fmt.Printf(&#34;Method4: %T length: %v data: %v\\n&#34;, arr4, len(arr4), arr4) arr5 := [...]float64{0: 2, 2: 3.5, 5: 4.6, 7: 9} fmt.Printf(&#34;Method5: %T length: %v data: %v\\n&#34;, arr5, len(arr5), arr5) Output:\n">
+<meta property='og:url' content='http://localhost:1313/en/stu/golang_stu_05/'>
+<meta property='og:site_name' content='小巷 Blog'>
+<meta property='og:type' content='article'><meta property='article:section' content='Stu' /><meta property='article:tag' content='Golang Syntax' /><meta property='article:published_time' content='2025-01-08T22:05:33&#43;08:00'/><meta property='article:modified_time' content='2025-01-08T22:05:33&#43;08:00'/>
+<meta name="twitter:title" content="Golang Learning Journey [Part 5: Composite Types – Arrays & Slices]">
+<meta name="twitter:description" content="1. Arrays\rAn array is a fixed-length collection of elements of the same type. Arrays are value types.\n1.1 Declaring an array\rvar name = [length]&lt;type&gt; var name = [length]&lt;type&gt;{} name := [length]&lt;type&gt;{} Example:\nvar arr1 [4]int fmt.Printf(&#34;Type: %T; length: %v; data: %v\\n&#34;, arr1, len(arr1), arr1) Output:\nType: [4]int; length: 4; data: [0 0 0 0] 1.2 Initializing arrays\rvar arr1 [4]int arr1[0] = 1 arr1[3] = 4 fmt.Printf(&#34;Method1: %T length: %v data: %v\\n&#34;, arr1, len(arr1), arr1) var arr2 = [3]float64{1, 2, 4.6} fmt.Printf(&#34;Method2: %T length: %v data: %v\\n&#34;, arr2, len(arr2), arr2) arr3 := [3]string{&#34;java&#34;, &#34;Golang&#34;, &#34;Python&#34;} fmt.Printf(&#34;Method3: %T length: %v data: %v\\n&#34;, arr3, len(arr3), arr3) arr4 := [...]int{2, 4, 6, 7, 8} fmt.Printf(&#34;Method4: %T length: %v data: %v\\n&#34;, arr4, len(arr4), arr4) arr5 := [...]float64{0: 2, 2: 3.5, 5: 4.6, 7: 9} fmt.Printf(&#34;Method5: %T length: %v data: %v\\n&#34;, arr5, len(arr5), arr5) Output:\n">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/en/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_a0cc1cf57968b27d.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🌱</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/en">小巷 Blog</a></h1>
+            <h2 class="site-description">Recording is not to prove myself; rather, to make a habit of &#39;solving problems → thinking → sedimentation&#39;.</h2>
+        </div>
+    </header><ol class="menu" id="main-menu">
+        
+        
+        
+        <li  class='current' >
+            <a href='/en/stu/' >
+                
+                
+                
+                <span>Study Notes</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/en/blog/' >
+                
+                
+                
+                <span>Essays</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/en/life/' >
+                
+                
+                
+                <span>Life</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/categories/' >
+                
+                
+                
+                <span>Categories</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/tags/' >
+                
+                
+                
+                <span>Tags</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+                    
+                        <li id="i18n-switch">  
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                            <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
+                                
+                                    <option value="http://localhost:1313/" >简体中文</option>
+                                
+                                    <option value="http://localhost:1313/en/" selected>English</option>
+                                
+                            </select>
+                        </li>
+                    
+                
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>Dark Mode</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">Table of contents</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ul>
+    <li><a href="#11-declaring-an-array">1.1 Declaring an array</a></li>
+    <li><a href="#12-initializing-arrays">1.2 Initializing arrays</a></li>
+    <li><a href="#13-looping-through-arrays">1.3 Looping through arrays</a></li>
+    <li><a href="#14-multidimensional-arrays">1.4 Multidimensional arrays</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#21-declaring-and-initializing-slices">2.1 Declaring and initializing slices</a></li>
+    <li><a href="#22-creating-slices-from-arrays">2.2 Creating slices from arrays</a></li>
+    <li><a href="#23-slice-length-and-capacity">2.3 Slice length and capacity</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#51-make">5.1 make</a></li>
+    <li><a href="#52-append">5.2 append</a></li>
+    <li><a href="#53-copy-deep-clone">5.3 copy (deep clone)</a></li>
+    <li><a href="#54-deleting-from-a-slice">5.4 Deleting from a slice</a></li>
+    <li><a href="#55-sorting-slices">5.5 Sorting slices</a>
+      <ul>
+        <li><a href="#551-ascending">5.5.1 Ascending</a></li>
+        <li><a href="#552-descending">5.5.2 Descending</a></li>
+      </ul>
+    </li>
+  </ul>
+
+  <ul>
+    <li><a href="#61-editor-hints">6.1 Editor hints</a></li>
+    <li><a href="#62-inspecting-signatures">6.2 Inspecting signatures</a></li>
+  </ul>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/en/categories/golang/" >
+                Golang
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/en/stu/golang_stu_05/">Golang Learning Journey [Part 5: Composite Types – Arrays &amp; Slices]</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published" datetime='2025-01-08T22:05:33&#43;08:00'>Jan 08, 2025</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    7 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+        <footer class="article-translations">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+            <div>
+                
+                    <a href="http://localhost:1313/stu/golang_stu_05/" class="link">简体中文</a>
+                
+            </div>
+        </footer>
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h1 id="1-arrays">1. Arrays
+</h1><blockquote>
+<p>An array is a fixed-length collection of elements of the same type. Arrays are value types.</p>
+</blockquote>
+<h2 id="11-declaring-an-array">1.1 Declaring an array
+</h2><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">name</span> = [<span style="color:#a6e22e">length</span>]&lt;<span style="color:#66d9ef">type</span>&gt;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">name</span> = [<span style="color:#a6e22e">length</span>]&lt;<span style="color:#66d9ef">type</span>&gt;{}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">name</span> <span style="color:#f92672">:=</span> [<span style="color:#a6e22e">length</span>]&lt;<span style="color:#66d9ef">type</span>&gt;{}
+</span></span></code></pre></div><p>Example:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">arr1</span> [<span style="color:#ae81ff">4</span>]<span style="color:#66d9ef">int</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;Type: %T; length: %v; data: %v\n&#34;</span>, <span style="color:#a6e22e">arr1</span>, len(<span style="color:#a6e22e">arr1</span>), <span style="color:#a6e22e">arr1</span>)
+</span></span></code></pre></div><p>Output:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>Type: <span style="color:#f92672">[</span>4<span style="color:#f92672">]</span>int; length: 4; data: <span style="color:#f92672">[</span><span style="color:#ae81ff">0</span> <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">0</span> 0<span style="color:#f92672">]</span>
+</span></span></code></pre></div><h2 id="12-initializing-arrays">1.2 Initializing arrays
+</h2><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">arr1</span> [<span style="color:#ae81ff">4</span>]<span style="color:#66d9ef">int</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">arr1</span>[<span style="color:#ae81ff">0</span>] = <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">arr1</span>[<span style="color:#ae81ff">3</span>] = <span style="color:#ae81ff">4</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;Method1: %T length: %v data: %v\n&#34;</span>, <span style="color:#a6e22e">arr1</span>, len(<span style="color:#a6e22e">arr1</span>), <span style="color:#a6e22e">arr1</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">arr2</span> = [<span style="color:#ae81ff">3</span>]<span style="color:#66d9ef">float64</span>{<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">4.6</span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;Method2: %T length: %v data: %v\n&#34;</span>, <span style="color:#a6e22e">arr2</span>, len(<span style="color:#a6e22e">arr2</span>), <span style="color:#a6e22e">arr2</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">arr3</span> <span style="color:#f92672">:=</span> [<span style="color:#ae81ff">3</span>]<span style="color:#66d9ef">string</span>{<span style="color:#e6db74">&#34;java&#34;</span>, <span style="color:#e6db74">&#34;Golang&#34;</span>, <span style="color:#e6db74">&#34;Python&#34;</span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;Method3: %T length: %v data: %v\n&#34;</span>, <span style="color:#a6e22e">arr3</span>, len(<span style="color:#a6e22e">arr3</span>), <span style="color:#a6e22e">arr3</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">arr4</span> <span style="color:#f92672">:=</span> [<span style="color:#f92672">...</span>]<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">6</span>, <span style="color:#ae81ff">7</span>, <span style="color:#ae81ff">8</span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;Method4: %T length: %v data: %v\n&#34;</span>, <span style="color:#a6e22e">arr4</span>, len(<span style="color:#a6e22e">arr4</span>), <span style="color:#a6e22e">arr4</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">arr5</span> <span style="color:#f92672">:=</span> [<span style="color:#f92672">...</span>]<span style="color:#66d9ef">float64</span>{<span style="color:#ae81ff">0</span>: <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">2</span>: <span style="color:#ae81ff">3.5</span>, <span style="color:#ae81ff">5</span>: <span style="color:#ae81ff">4.6</span>, <span style="color:#ae81ff">7</span>: <span style="color:#ae81ff">9</span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;Method5: %T length: %v data: %v\n&#34;</span>, <span style="color:#a6e22e">arr5</span>, len(<span style="color:#a6e22e">arr5</span>), <span style="color:#a6e22e">arr5</span>)
+</span></span></code></pre></div><p>Output:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>Type: <span style="color:#f92672">[</span>4<span style="color:#f92672">]</span>int; length: 4; data: <span style="color:#f92672">[</span><span style="color:#ae81ff">0</span> <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">0</span> 0<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>Method1: <span style="color:#f92672">[</span>4<span style="color:#f92672">]</span>int; length: 4; data: <span style="color:#f92672">[</span><span style="color:#ae81ff">1</span> <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">0</span> 4<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>Method2: <span style="color:#f92672">[</span>3<span style="color:#f92672">]</span>float64; length: 3; data: <span style="color:#f92672">[</span><span style="color:#ae81ff">1</span> <span style="color:#ae81ff">2</span> 4.6<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>Method3: <span style="color:#f92672">[</span>3<span style="color:#f92672">]</span>string; length: 3; data: <span style="color:#f92672">[</span>java Golang Python<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>Method4: <span style="color:#f92672">[</span>5<span style="color:#f92672">]</span>int; length: 5; data: <span style="color:#f92672">[</span><span style="color:#ae81ff">2</span> <span style="color:#ae81ff">4</span> <span style="color:#ae81ff">6</span> <span style="color:#ae81ff">7</span> 8<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>Method5: <span style="color:#f92672">[</span>8<span style="color:#f92672">]</span>float64; length: 8; data: <span style="color:#f92672">[</span><span style="color:#ae81ff">2</span> <span style="color:#ae81ff">0</span> 3.5 <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">0</span> 4.6 <span style="color:#ae81ff">0</span> 9<span style="color:#f92672">]</span>
+</span></span></code></pre></div><h2 id="13-looping-through-arrays">1.3 Looping through arrays
+</h2><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">arr6</span> <span style="color:#f92672">:=</span> [<span style="color:#ae81ff">3</span>]<span style="color:#66d9ef">string</span>{<span style="color:#e6db74">&#34;java&#34;</span>, <span style="color:#e6db74">&#34;Golang&#34;</span>, <span style="color:#e6db74">&#34;Python&#34;</span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; len(<span style="color:#a6e22e">arr6</span>); <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;idx%v: %v\t&#34;</span>, <span style="color:#a6e22e">i</span>, <span style="color:#a6e22e">arr6</span>[<span style="color:#a6e22e">i</span>])
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>()
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> <span style="color:#a6e22e">index</span>, <span style="color:#a6e22e">value</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">arr6</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;idx%v: %v\t&#34;</span>, <span style="color:#a6e22e">index</span>, <span style="color:#a6e22e">value</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Output:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>fori loop idx0: java; idx1: Golang; idx2: Python;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> range loop idx0: java; idx1: Golang; idx2: Python;
+</span></span></code></pre></div><h2 id="14-multidimensional-arrays">1.4 Multidimensional arrays
+</h2><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">arr7</span> <span style="color:#f92672">:=</span> [<span style="color:#ae81ff">3</span>][<span style="color:#ae81ff">3</span>]<span style="color:#66d9ef">int</span>{
+</span></span><span style="display:flex;"><span>    {<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>},
+</span></span><span style="display:flex;"><span>    {<span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">6</span>},
+</span></span><span style="display:flex;"><span>    {<span style="color:#ae81ff">7</span>, <span style="color:#ae81ff">8</span>, <span style="color:#ae81ff">9</span>},
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;Type: %T; length: %v; data: %v\n&#34;</span>, <span style="color:#a6e22e">arr7</span>, len(<span style="color:#a6e22e">arr7</span>), <span style="color:#a6e22e">arr7</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">arr8</span> <span style="color:#f92672">:=</span> [<span style="color:#f92672">...</span>][<span style="color:#ae81ff">2</span>]<span style="color:#66d9ef">string</span>{{<span style="color:#e6db74">&#34;a&#34;</span>, <span style="color:#e6db74">&#34;b&#34;</span>}, {<span style="color:#e6db74">&#34;c&#34;</span>, <span style="color:#e6db74">&#34;d&#34;</span>}}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;Type: %T; length: %v; data: %v\n&#34;</span>, <span style="color:#a6e22e">arr8</span>, len(<span style="color:#a6e22e">arr8</span>), <span style="color:#a6e22e">arr8</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; len(<span style="color:#a6e22e">arr7</span>); <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">j</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">j</span> &lt; len(<span style="color:#a6e22e">arr7</span>[<span style="color:#a6e22e">i</span>]); <span style="color:#a6e22e">j</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;row%v col%v: %v\t&#34;</span>, <span style="color:#a6e22e">i</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">j</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">arr7</span>[<span style="color:#a6e22e">i</span>][<span style="color:#a6e22e">j</span>])
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>()
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> <span style="color:#a6e22e">row</span>, <span style="color:#a6e22e">rowValue</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">arr8</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">col</span>, <span style="color:#a6e22e">value</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">rowValue</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;row%v col%v: %v\t&#34;</span>, <span style="color:#a6e22e">row</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">col</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">value</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>()
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Output:</p>
+<pre tabindex="0"><code>Type: [3][3]int; length: 3; data: [[1 2 3] [4 5 6] [7 8 9]]
+Type: [2][2]string; length: 2; data: [[a b] [c d]]
+row1 col1: 1; row1 col2: 2; row1 col3: 3;
+row2 col1: 4; row2 col2: 5; row2 col3: 6;
+row3 col1: 7; row3 col2: 8; row3 col3: 9;
+row1 col1: a; row1 col2: b;
+row2 col1: c; row2 col2: d;
+</code></pre><h1 id="2-slices">2. Slices
+</h1><blockquote>
+<p>A slice is a wrapper over an array and represents a dynamic-length view. Slices are reference types.</p>
+</blockquote>
+<h2 id="21-declaring-and-initializing-slices">2.1 Declaring and initializing slices
+</h2><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">arr1</span> []<span style="color:#66d9ef">int</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;Type: %T; len: %v; data: %v\n&#34;</span>, <span style="color:#a6e22e">arr1</span>, len(<span style="color:#a6e22e">arr1</span>), <span style="color:#a6e22e">arr1</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">arr2</span> = []<span style="color:#66d9ef">float64</span>{<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">4.6</span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;Method1: %T; len: %v; data: %v\n&#34;</span>, <span style="color:#a6e22e">arr2</span>, len(<span style="color:#a6e22e">arr2</span>), <span style="color:#a6e22e">arr2</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">arr3</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">string</span>{<span style="color:#e6db74">&#34;java&#34;</span>, <span style="color:#e6db74">&#34;Golang&#34;</span>, <span style="color:#e6db74">&#34;Python&#34;</span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;Method2: %T; len: %v; data: %v\n&#34;</span>, <span style="color:#a6e22e">arr3</span>, len(<span style="color:#a6e22e">arr3</span>), <span style="color:#a6e22e">arr3</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">arr4</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">6</span>, <span style="color:#ae81ff">7</span>, <span style="color:#ae81ff">8</span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;Method3: %T; len: %v; data: %v\n&#34;</span>, <span style="color:#a6e22e">arr4</span>, len(<span style="color:#a6e22e">arr4</span>), <span style="color:#a6e22e">arr4</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">arr5</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">float64</span>{<span style="color:#ae81ff">0</span>: <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">2</span>: <span style="color:#ae81ff">3.5</span>, <span style="color:#ae81ff">5</span>: <span style="color:#ae81ff">4.6</span>, <span style="color:#ae81ff">7</span>: <span style="color:#ae81ff">9</span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;Method4: %T; len: %v; data: %v\n&#34;</span>, <span style="color:#a6e22e">arr5</span>, len(<span style="color:#a6e22e">arr5</span>), <span style="color:#a6e22e">arr5</span>)
+</span></span></code></pre></div><p>Output:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>Type: <span style="color:#f92672">[]</span>int; len: 0; data: <span style="color:#f92672">[]</span>
+</span></span><span style="display:flex;"><span>Method1: <span style="color:#f92672">[]</span>float64; len: 3; data: <span style="color:#f92672">[</span><span style="color:#ae81ff">1</span> <span style="color:#ae81ff">2</span> 4.6<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>Method2: <span style="color:#f92672">[]</span>string; len: 3; data: <span style="color:#f92672">[</span>java Golang Python<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>Method3: <span style="color:#f92672">[]</span>int; len: 5; data: <span style="color:#f92672">[</span><span style="color:#ae81ff">2</span> <span style="color:#ae81ff">4</span> <span style="color:#ae81ff">6</span> <span style="color:#ae81ff">7</span> 8<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>Method4: <span style="color:#f92672">[]</span>float64; len: 8; data: <span style="color:#f92672">[</span><span style="color:#ae81ff">2</span> <span style="color:#ae81ff">0</span> 3.5 <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">0</span> 4.6 <span style="color:#ae81ff">0</span> 9<span style="color:#f92672">]</span>
+</span></span></code></pre></div><h2 id="22-creating-slices-from-arrays">2.2 Creating slices from arrays
+</h2><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">arr1</span> <span style="color:#f92672">:=</span> [<span style="color:#ae81ff">5</span>]<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">29</span>, <span style="color:#ae81ff">49</span>, <span style="color:#ae81ff">58</span>, <span style="color:#ae81ff">32</span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;Type: %T; length: %v; data: %v\n&#34;</span>, <span style="color:#a6e22e">arr1</span>, len(<span style="color:#a6e22e">arr1</span>), <span style="color:#a6e22e">arr1</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">s1</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">arr1</span>[:]
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">s2</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">arr1</span>[<span style="color:#ae81ff">2</span>:]
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">s3</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">arr1</span>[:<span style="color:#ae81ff">2</span>]
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;Full slice: %T; len: %v; data: %v\n&#34;</span>, <span style="color:#a6e22e">s1</span>, len(<span style="color:#a6e22e">s1</span>), <span style="color:#a6e22e">s1</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;From idx2: %T; len: %v; data: %v\n&#34;</span>, <span style="color:#a6e22e">s2</span>, len(<span style="color:#a6e22e">s2</span>), <span style="color:#a6e22e">s2</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;Before idx2: %T; len: %v; data: %v\n&#34;</span>, <span style="color:#a6e22e">s3</span>, len(<span style="color:#a6e22e">s3</span>), <span style="color:#a6e22e">s3</span>)
+</span></span></code></pre></div><p>Output:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>Type: <span style="color:#f92672">[</span>5<span style="color:#f92672">]</span>int; length: 5; data: <span style="color:#f92672">[</span><span style="color:#ae81ff">10</span> <span style="color:#ae81ff">29</span> <span style="color:#ae81ff">49</span> <span style="color:#ae81ff">58</span> 32<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>Full slice: <span style="color:#f92672">[]</span>int; len: 5; data: <span style="color:#f92672">[</span><span style="color:#ae81ff">10</span> <span style="color:#ae81ff">29</span> <span style="color:#ae81ff">49</span> <span style="color:#ae81ff">58</span> 32<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>From idx2: <span style="color:#f92672">[]</span>int; len: 3; data: <span style="color:#f92672">[</span><span style="color:#ae81ff">49</span> <span style="color:#ae81ff">58</span> 32<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>Before idx2: <span style="color:#f92672">[]</span>int; len: 2; data: <span style="color:#f92672">[</span><span style="color:#ae81ff">10</span> 29<span style="color:#f92672">]</span>
+</span></span></code></pre></div><blockquote>
+<p>Summary: <code>arr[start:end]</code> extracts elements from index <code>start</code> (inclusive) to <code>end</code> (exclusive). Omit start or end to mean the beginning or end of the array.</p>
+</blockquote>
+<h2 id="23-slice-length-and-capacity">2.3 Slice length and capacity
+</h2><blockquote>
+<p>A slice has its own length and capacity: len returns the number of elements; cap counts how many elements remain from the first element to the end of the underlying array.</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">a</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">6</span>, <span style="color:#ae81ff">7</span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;Type: %T, len: %v, cap: %v, data: %v\n&#34;</span>, <span style="color:#a6e22e">a</span>, len(<span style="color:#a6e22e">a</span>), cap(<span style="color:#a6e22e">a</span>), <span style="color:#a6e22e">a</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">b</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">a</span>[<span style="color:#ae81ff">3</span>:]
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">c</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">a</span>[:<span style="color:#ae81ff">3</span>]
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%T, len: %v, cap: %v, data: %v\n&#34;</span>, <span style="color:#a6e22e">b</span>, len(<span style="color:#a6e22e">b</span>), cap(<span style="color:#a6e22e">b</span>), <span style="color:#a6e22e">b</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%T, len: %v, cap: %v, data: %v\n&#34;</span>, <span style="color:#a6e22e">c</span>, len(<span style="color:#a6e22e">c</span>), cap(<span style="color:#a6e22e">c</span>), <span style="color:#a6e22e">c</span>)
+</span></span></code></pre></div><p>Output:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>Type: <span style="color:#f92672">[]</span>int, len: 6, cap: 6, data: <span style="color:#f92672">[</span><span style="color:#ae81ff">2</span> <span style="color:#ae81ff">3</span> <span style="color:#ae81ff">4</span> <span style="color:#ae81ff">5</span> <span style="color:#ae81ff">6</span> 7<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>Type: <span style="color:#f92672">[]</span>int, len: 3, cap: 3, data: <span style="color:#f92672">[</span><span style="color:#ae81ff">5</span> <span style="color:#ae81ff">6</span> 7<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>Type: <span style="color:#f92672">[]</span>int, len: 3, cap: 6, data: <span style="color:#f92672">[</span><span style="color:#ae81ff">2</span> <span style="color:#ae81ff">3</span> 4<span style="color:#f92672">]</span>
+</span></span></code></pre></div><figure><img src="/img/golang_stu/go_stu_051.png">
+</figure>
+
+<h1 id="3-nil">3. nil
+</h1><blockquote>
+<p>The predefined identifier <code>nil</code> represents the zero value for pointers, channels, functions, interfaces, maps, slices, etc.</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>Type</th>
+          <th>Default value</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>bool</td>
+          <td>false</td>
+      </tr>
+      <tr>
+          <td>int, float</td>
+          <td>0</td>
+      </tr>
+      <tr>
+          <td>string</td>
+          <td>&quot;&quot;</td>
+      </tr>
+      <tr>
+          <td>pointers</td>
+          <td>nil</td>
+      </tr>
+      <tr>
+          <td>arrays</td>
+          <td>zero value array</td>
+      </tr>
+      <tr>
+          <td>slices</td>
+          <td>nil</td>
+      </tr>
+      <tr>
+          <td>maps</td>
+          <td>nil</td>
+      </tr>
+      <tr>
+          <td>channels</td>
+          <td>nil</td>
+      </tr>
+      <tr>
+          <td>functions</td>
+          <td>nil</td>
+      </tr>
+  </tbody>
+</table></div>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">arr</span> [<span style="color:#ae81ff">3</span>]<span style="color:#66d9ef">int</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">slices1</span> []<span style="color:#66d9ef">int</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">slices2</span> = []<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">1</span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">arr</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">slices1</span>, <span style="color:#a6e22e">slices1</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">slices2</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span>)
+</span></span></code></pre></div><p>Output:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#f92672">[</span><span style="color:#ae81ff">0</span> <span style="color:#ae81ff">0</span> 0<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[]</span> true false
+</span></span></code></pre></div><h1 id="4-value-vs-reference-types">4. Value vs. reference types
+</h1><blockquote>
+<p>Value types store independent copies, so updating one variable does not affect another. Reference types share the same underlying data, so modifying one reflects in the other. Slices are typical reference types.</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">a1</span> <span style="color:#f92672">:=</span> [<span style="color:#f92672">...</span>]<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">a2</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">b1</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">a1</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">b2</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">a2</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">b1</span>[<span style="color:#ae81ff">0</span>] = <span style="color:#ae81ff">6</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">b2</span>[<span style="color:#ae81ff">0</span>] = <span style="color:#ae81ff">6</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;a1=%v,b1=%v\n&#34;</span>, <span style="color:#a6e22e">a1</span>, <span style="color:#a6e22e">b1</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;a2=%v,b2=%v\n&#34;</span>, <span style="color:#a6e22e">a2</span>, <span style="color:#a6e22e">b2</span>)
+</span></span></code></pre></div><p>Output:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>a1<span style="color:#f92672">=[</span><span style="color:#ae81ff">2</span> <span style="color:#ae81ff">3</span> <span style="color:#ae81ff">4</span> 5<span style="color:#f92672">]</span>,b1<span style="color:#f92672">=[</span><span style="color:#ae81ff">6</span> <span style="color:#ae81ff">3</span> <span style="color:#ae81ff">4</span> 5<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>a2<span style="color:#f92672">=[</span><span style="color:#ae81ff">6</span> <span style="color:#ae81ff">3</span> <span style="color:#ae81ff">4</span> 5<span style="color:#f92672">]</span>,b2<span style="color:#f92672">=[</span><span style="color:#ae81ff">6</span> <span style="color:#ae81ff">3</span> <span style="color:#ae81ff">4</span> 5<span style="color:#f92672">]</span>
+</span></span></code></pre></div><h1 id="5-common-slice-utilities">5. Common slice utilities
+</h1><h2 id="51-make">5.1 make
+</h2><blockquote>
+<p><code>make([]int, 10, 11)</code> allocates a slice with length 10 and capacity 11.</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">slice1</span> <span style="color:#f92672">:=</span> make([]<span style="color:#66d9ef">int</span>, <span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">11</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">slice1</span>[<span style="color:#ae81ff">2</span>] = <span style="color:#ae81ff">6</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">slice1</span>[<span style="color:#ae81ff">9</span>] = <span style="color:#ae81ff">20</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;Type: %T, len: %v, cap: %v, data: %v\n&#34;</span>, <span style="color:#a6e22e">slice1</span>, len(<span style="color:#a6e22e">slice1</span>), cap(<span style="color:#a6e22e">slice1</span>), <span style="color:#a6e22e">slice1</span>)
+</span></span></code></pre></div><p>Output:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>Type: <span style="color:#f92672">[]</span>int, len: 10, cap: 11, data: <span style="color:#f92672">[</span><span style="color:#ae81ff">0</span> <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">6</span> <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">0</span> 20<span style="color:#f92672">]</span>
+</span></span></code></pre></div><h2 id="52-append">5.2 append
+</h2><blockquote>
+<p>Use <code>append(slice, elems...)</code> to grow slices.</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">slice2</span> <span style="color:#f92672">:=</span> make([]<span style="color:#66d9ef">int</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">slice2</span> = append(<span style="color:#a6e22e">slice2</span>, <span style="color:#ae81ff">12</span>, <span style="color:#ae81ff">14</span>, <span style="color:#ae81ff">24</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%T len: %v cap: %v data: %v\n&#34;</span>, <span style="color:#a6e22e">slice2</span>, len(<span style="color:#a6e22e">slice2</span>), cap(<span style="color:#a6e22e">slice2</span>), <span style="color:#a6e22e">slice2</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">slice3</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">slice4</span> <span style="color:#f92672">:=</span> append(<span style="color:#a6e22e">slice2</span>, <span style="color:#a6e22e">slice3</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%T len: %v cap: %v data: %v\n&#34;</span>, <span style="color:#a6e22e">slice4</span>, len(<span style="color:#a6e22e">slice4</span>), cap(<span style="color:#a6e22e">slice4</span>), <span style="color:#a6e22e">slice4</span>)
+</span></span></code></pre></div><p>Output:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>Type: <span style="color:#f92672">[]</span>int, len: 3, cap: 3, data: <span style="color:#f92672">[</span><span style="color:#ae81ff">12</span> <span style="color:#ae81ff">14</span> 24<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>Type: <span style="color:#f92672">[]</span>int, len: 6, cap: 6, data: <span style="color:#f92672">[</span><span style="color:#ae81ff">12</span> <span style="color:#ae81ff">14</span> <span style="color:#ae81ff">24</span> <span style="color:#ae81ff">3</span> <span style="color:#ae81ff">4</span> 5<span style="color:#f92672">]</span>
+</span></span></code></pre></div><h2 id="53-copy-deep-clone">5.3 copy (deep clone)
+</h2><blockquote>
+<p><code>copy(dst, src)</code> copies src into dst. Use it to avoid sharing the same backing array.</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">slice2</span> <span style="color:#f92672">:=</span> make([]<span style="color:#66d9ef">int</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">slice2</span> = append(<span style="color:#a6e22e">slice2</span>, <span style="color:#ae81ff">12</span>, <span style="color:#ae81ff">14</span>, <span style="color:#ae81ff">24</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">slice3</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">slice4</span> <span style="color:#f92672">:=</span> append(<span style="color:#a6e22e">slice2</span>, <span style="color:#a6e22e">slice3</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">slice4Copy</span> <span style="color:#f92672">:=</span> make([]<span style="color:#66d9ef">int</span>, len(<span style="color:#a6e22e">slice4</span>))
+</span></span><span style="display:flex;"><span>copy(<span style="color:#a6e22e">slice4Copy</span>, <span style="color:#a6e22e">slice4</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">slice4Copy</span>[<span style="color:#ae81ff">0</span>] = <span style="color:#ae81ff">6666</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">slice4</span>, <span style="color:#a6e22e">slice4Copy</span>)
+</span></span></code></pre></div><p>Output:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#f92672">[</span><span style="color:#ae81ff">12</span> <span style="color:#ae81ff">14</span> <span style="color:#ae81ff">24</span> <span style="color:#ae81ff">3</span> <span style="color:#ae81ff">4</span> 5<span style="color:#f92672">]</span> <span style="color:#f92672">[</span><span style="color:#ae81ff">6666</span> <span style="color:#ae81ff">14</span> <span style="color:#ae81ff">24</span> <span style="color:#ae81ff">3</span> <span style="color:#ae81ff">4</span> 5<span style="color:#f92672">]</span>
+</span></span></code></pre></div><h2 id="54-deleting-from-a-slice">5.4 Deleting from a slice
+</h2><blockquote>
+<p>Go has no built-in delete. Combine slicing with append to drop a range.</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">s1</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">6</span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">delIdx</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">s1</span> = append(<span style="color:#a6e22e">s1</span>[:<span style="color:#a6e22e">delIdx</span>], <span style="color:#a6e22e">s1</span>[<span style="color:#a6e22e">delIdx</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>:]<span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">s1</span>)
+</span></span></code></pre></div><p>Output:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#f92672">[</span><span style="color:#ae81ff">1</span> <span style="color:#ae81ff">2</span> <span style="color:#ae81ff">3</span> <span style="color:#ae81ff">5</span> 6<span style="color:#f92672">]</span>
+</span></span></code></pre></div><h2 id="55-sorting-slices">5.5 Sorting slices
+</h2><h3 id="551-ascending">5.5.1 Ascending
+</h3><blockquote>
+<p>Use <code>sort.Ints</code>, <code>sort.Float64s</code>, or <code>sort.Strings</code>.</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">intList</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">32</span>, <span style="color:#ae81ff">32</span>, <span style="color:#ae81ff">423</span>, <span style="color:#ae81ff">12</span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">floatList</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">float64</span>{<span style="color:#ae81ff">3.13</span>, <span style="color:#ae81ff">4.2</span>, <span style="color:#ae81ff">5.3</span>, <span style="color:#ae81ff">1.1</span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">stringList</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">string</span>{<span style="color:#e6db74">&#34;D&#34;</span>, <span style="color:#e6db74">&#34;S&#34;</span>, <span style="color:#e6db74">&#34;A&#34;</span>, <span style="color:#e6db74">&#34;C&#34;</span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">sort</span>.<span style="color:#a6e22e">Ints</span>(<span style="color:#a6e22e">intList</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">sort</span>.<span style="color:#a6e22e">Float64s</span>(<span style="color:#a6e22e">floatList</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">sort</span>.<span style="color:#a6e22e">Strings</span>(<span style="color:#a6e22e">stringList</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">intList</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">floatList</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">stringList</span>)
+</span></span></code></pre></div><p>Output:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#f92672">[</span><span style="color:#ae81ff">3</span> <span style="color:#ae81ff">4</span> <span style="color:#ae81ff">12</span> <span style="color:#ae81ff">32</span> <span style="color:#ae81ff">32</span> 423<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>1.1 3.13 4.2 5.3<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>A C D S<span style="color:#f92672">]</span>
+</span></span></code></pre></div><h3 id="552-descending">5.5.2 Descending
+</h3><blockquote>
+<p>Combine <code>sort.XXXSlice</code>, <code>sort.Reverse</code>, and <code>sort.Sort</code>.</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">intList</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">32</span>, <span style="color:#ae81ff">32</span>, <span style="color:#ae81ff">423</span>, <span style="color:#ae81ff">12</span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">floatList</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">float64</span>{<span style="color:#ae81ff">3.13</span>, <span style="color:#ae81ff">4.2</span>, <span style="color:#ae81ff">5.3</span>, <span style="color:#ae81ff">1.1</span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">stringList</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">string</span>{<span style="color:#e6db74">&#34;D&#34;</span>, <span style="color:#e6db74">&#34;S&#34;</span>, <span style="color:#e6db74">&#34;A&#34;</span>, <span style="color:#e6db74">&#34;C&#34;</span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">sort</span>.<span style="color:#a6e22e">Sort</span>(<span style="color:#a6e22e">sort</span>.<span style="color:#a6e22e">Reverse</span>(<span style="color:#a6e22e">sort</span>.<span style="color:#a6e22e">IntSlice</span>(<span style="color:#a6e22e">intList</span>)))
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">sort</span>.<span style="color:#a6e22e">Sort</span>(<span style="color:#a6e22e">sort</span>.<span style="color:#a6e22e">Reverse</span>(<span style="color:#a6e22e">sort</span>.<span style="color:#a6e22e">Float64Slice</span>(<span style="color:#a6e22e">floatList</span>)))
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">sort</span>.<span style="color:#a6e22e">Sort</span>(<span style="color:#a6e22e">sort</span>.<span style="color:#a6e22e">Reverse</span>(<span style="color:#a6e22e">sort</span>.<span style="color:#a6e22e">StringSlice</span>(<span style="color:#a6e22e">stringList</span>)))
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">intList</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">floatList</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">stringList</span>)
+</span></span></code></pre></div><p>Output:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#f92672">[</span><span style="color:#ae81ff">423</span> <span style="color:#ae81ff">32</span> <span style="color:#ae81ff">32</span> <span style="color:#ae81ff">12</span> <span style="color:#ae81ff">4</span> 3<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>5.3 4.2 3.13 1.1<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>S D C A<span style="color:#f92672">]</span>
+</span></span></code></pre></div><h1 id="6-tips-and-tricks">6. Tips and tricks
+</h1><h2 id="61-editor-hints">6.1 Editor hints
+</h2><blockquote>
+<p>When you type <code>.</code> after a variable the editor shows suggestions. Items ending with <code>!</code> insert scaffolding code.
+<figure><img src="/img/golang_stu/go_stu_052.png">
+</figure>
+</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>Hint</th>
+          <th>Meaning</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>append!</td>
+          <td>Append slice items</td>
+      </tr>
+      <tr>
+          <td>copy!</td>
+          <td>Copy slice</td>
+      </tr>
+      <tr>
+          <td>for!</td>
+          <td>standard for loop</td>
+      </tr>
+      <tr>
+          <td>forr!</td>
+          <td>for range loop</td>
+      </tr>
+      <tr>
+          <td>ifnotnil!</td>
+          <td><code>if var != nil</code> guard</td>
+      </tr>
+      <tr>
+          <td>last!</td>
+          <td>shorthand for <code>a[len(a)-1]</code></td>
+      </tr>
+      <tr>
+          <td>len!</td>
+          <td>shorthand for <code>len(a)</code></td>
+      </tr>
+      <tr>
+          <td>print!</td>
+          <td>print variable</td>
+      </tr>
+      <tr>
+          <td>range!</td>
+          <td>alias for <code>forr!</code></td>
+      </tr>
+      <tr>
+          <td>reverse!</td>
+          <td>reverse slice</td>
+      </tr>
+      <tr>
+          <td>sort!</td>
+          <td>custom sort scaffolding</td>
+      </tr>
+      <tr>
+          <td>var!</td>
+          <td>assign to a new variable</td>
+      </tr>
+  </tbody>
+</table></div>
+</blockquote>
+<h2 id="62-inspecting-signatures">6.2 Inspecting signatures
+</h2><blockquote>
+<ol>
+<li>Hover for over 1s to view parameter and return metadata.
+<figure><img src="/img/golang_stu/go_stu_053.png">
+</figure>
+</li>
+<li>Ctrl+Click enters the definition with full documentation. Use translation tools if needed.
+<figure><img src="/img/golang_stu/go_stu_054.png">
+</figure>
+</li>
+</ol>
+</blockquote>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/en/tags/golang-syntax/">Golang Syntax</a>
+        
+    </section>
+
+
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    <script
+    src="https://giscus.app/client.js"
+    data-repo="zg-dd/zg-dd.github.io"
+    data-repo-id="R_kgDOQwB7tw"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOQwB7t84C0WGD"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="bottom"
+    data-theme="preferred_color_scheme"
+    data-lang="zh-CN"
+    data-loading=""
+    crossorigin="anonymous"
+    async
+></script>
+<script>
+    function setGiscusTheme(theme) {
+        let giscus = document.querySelector("iframe.giscus-frame");
+        if (giscus) {
+            giscus.contentWindow.postMessage(
+                {
+                    giscus: {
+                        setConfig: {
+                            theme: theme,
+                        },
+                    },
+                },
+                "https://giscus.app"
+            );
+        }
+    }
+
+    (function () {
+        addEventListener("message", (e) => {
+            if (event.origin !== "https://giscus.app") return;
+            handler();
+        });
+        window.addEventListener("onColorSchemeChange", handler);
+
+        function handler() {
+            if (document.documentElement.dataset.scheme === "light") {
+                setGiscusTheme('preferred_color_scheme');
+            } else {
+                setGiscusTheme('preferred_color_scheme');
+            }
+        }
+    })();
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2026 小巷 Blog
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.33.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+    
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.45aad63e0378c1185109134874d406d25af802b2faa021ec5fd0dfa8bbfa4d2a.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

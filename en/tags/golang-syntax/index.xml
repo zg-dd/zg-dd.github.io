@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Golang Syntax on 小巷 Blog</title><link>https://zg-dd.github.io/en/tags/golang-syntax/</link><description>Recent content in Golang Syntax on 小巷 Blog</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Thu, 13 Feb 2025 17:45:37 +0800</lastBuildDate><atom:link href="https://zg-dd.github.io/en/tags/golang-syntax/index.xml" rel="self" type="application/rss+xml"/><item><title>Golang Learning Journey [Part 7: closures, types, defer, panic/recover &amp; the time package]</title><link>https://zg-dd.github.io/en/stu/golang_stu_07/</link><pubDate>Thu, 13 Feb 2025 17:45:37 +0800</pubDate><guid>https://zg-dd.github.io/en/stu/golang_stu_07/</guid><description>&lt;h1 id="1-closures"&gt;1. Closures
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Golang Syntax on 小巷 Blog</title><link>https://zg-dd.github.io/en/tags/golang-syntax/</link><description>Recent content in Golang Syntax on 小巷 Blog</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Thu, 13 Feb 2025 17:45:37 +0800</lastBuildDate><atom:link href="https://zg-dd.github.io/en/tags/golang-syntax/index.xml" rel="self" type="application/rss+xml"/><item><title>Golang Learning Journey [Part 7: closures, types, defer, panic/recover &amp; the time package]</title><link>https://zg-dd.github.io/en/stu/golang-stu-07/</link><pubDate>Thu, 13 Feb 2025 17:45:37 +0800</pubDate><guid>https://zg-dd.github.io/en/stu/golang-stu-07/</guid><description>&lt;h1 id="1-closures"&gt;1. Closures
 &lt;/h1&gt;&lt;h2 id="11-what-is-a-closure"&gt;1.1 What is a closure?
 &lt;/h2&gt;&lt;blockquote&gt;
 &lt;p&gt;A closure is a function combined with the environment that it captures. In Go, closures can access and modify variables defined in their enclosing scopes even after the outer function returns.&lt;/p&gt;
@@ -140,7 +140,7 @@
 &lt;li&gt;&lt;code&gt;time.Duration(10) * time.Second&lt;/code&gt;&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;currentTime.Add(duration)&lt;/code&gt;&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;currentTime.Before/After/Equal(parsedTime)&lt;/code&gt;&lt;/li&gt;
-&lt;/ol&gt;</description></item><item><title>Golang Learning Journey [Part 6: Composite Types – Map &amp; Function Primer]</title><link>https://zg-dd.github.io/en/stu/golang_stu_06/</link><pubDate>Tue, 11 Feb 2025 20:05:09 +0800</pubDate><guid>https://zg-dd.github.io/en/stu/golang_stu_06/</guid><description>&lt;h1 id="1-map-data-type"&gt;1. Map Data Type
+&lt;/ol&gt;</description></item><item><title>Golang Learning Journey [Part 6: Composite Types – Map &amp; Function Primer]</title><link>https://zg-dd.github.io/en/stu/golang-stu-06/</link><pubDate>Tue, 11 Feb 2025 20:05:09 +0800</pubDate><guid>https://zg-dd.github.io/en/stu/golang-stu-06/</guid><description>&lt;h1 id="1-map-data-type"&gt;1. Map Data Type
 &lt;/h1&gt;&lt;blockquote&gt;
 &lt;p&gt;A map is a collection of key-value pairs where each key is unique and maps to a value.
 Maps are unordered, so iteration order is undefined.
@@ -317,7 +317,369 @@ Maps are reference types.&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;opreate &lt;span style="color:#ae81ff"&gt;8&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;add7 &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt; + 2 &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;add8 &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt; + 4 &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;7&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description></item><item><title>Golang Learning Journey [Part 4: Operators &amp; Control Flow]</title><link>https://zg-dd.github.io/en/stu/golang_stu_04/</link><pubDate>Wed, 01 Jan 2025 11:03:08 +0800</pubDate><guid>https://zg-dd.github.io/en/stu/golang_stu_04/</guid><description>&lt;h1 id="1-operators"&gt;1. Operators
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description></item><item><title>Golang Learning Journey [Part 5: Composite Types – Arrays &amp; Slices]</title><link>https://zg-dd.github.io/en/stu/golang-stu-05/</link><pubDate>Wed, 08 Jan 2025 22:05:33 +0800</pubDate><guid>https://zg-dd.github.io/en/stu/golang-stu-05/</guid><description>&lt;h1 id="1-arrays"&gt;1. Arrays
+&lt;/h1&gt;&lt;blockquote&gt;
+&lt;p&gt;An array is a fixed-length collection of elements of the same type. Arrays are value types.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id="11-declaring-an-array"&gt;1.1 Declaring an array
+&lt;/h2&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;var&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;name&lt;/span&gt; = [&lt;span style="color:#a6e22e"&gt;length&lt;/span&gt;]&amp;lt;&lt;span style="color:#66d9ef"&gt;type&lt;/span&gt;&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;var&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;name&lt;/span&gt; = [&lt;span style="color:#a6e22e"&gt;length&lt;/span&gt;]&amp;lt;&lt;span style="color:#66d9ef"&gt;type&lt;/span&gt;&amp;gt;{}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;name&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; [&lt;span style="color:#a6e22e"&gt;length&lt;/span&gt;]&amp;lt;&lt;span style="color:#66d9ef"&gt;type&lt;/span&gt;&amp;gt;{}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Example:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;var&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt; [&lt;span style="color:#ae81ff"&gt;4&lt;/span&gt;]&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;Type: %T; length: %v; data: %v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Output:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Type: &lt;span style="color:#f92672"&gt;[&lt;/span&gt;4&lt;span style="color:#f92672"&gt;]&lt;/span&gt;int; length: 4; data: &lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; 0&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="12-initializing-arrays"&gt;1.2 Initializing arrays
+&lt;/h2&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;var&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt; [&lt;span style="color:#ae81ff"&gt;4&lt;/span&gt;]&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt;[&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;] = &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt;[&lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;] = &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;Method1: %T length: %v data: %v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;var&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;arr2&lt;/span&gt; = [&lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;]&lt;span style="color:#66d9ef"&gt;float64&lt;/span&gt;{&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;4.6&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;Method2: %T length: %v data: %v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;arr2&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;arr2&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;arr2&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;arr3&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; [&lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;]&lt;span style="color:#66d9ef"&gt;string&lt;/span&gt;{&lt;span style="color:#e6db74"&gt;&amp;#34;java&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;Golang&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;Python&amp;#34;&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;Method3: %T length: %v data: %v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;arr3&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;arr3&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;arr3&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;arr4&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; [&lt;span style="color:#f92672"&gt;...&lt;/span&gt;]&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;{&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;6&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;7&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;8&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;Method4: %T length: %v data: %v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;arr4&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;arr4&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;arr4&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;arr5&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; [&lt;span style="color:#f92672"&gt;...&lt;/span&gt;]&lt;span style="color:#66d9ef"&gt;float64&lt;/span&gt;{&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;3.5&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;5&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;4.6&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;7&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;9&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;Method5: %T length: %v data: %v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;arr5&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;arr5&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;arr5&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Output:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Type: &lt;span style="color:#f92672"&gt;[&lt;/span&gt;4&lt;span style="color:#f92672"&gt;]&lt;/span&gt;int; length: 4; data: &lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; 0&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Method1: &lt;span style="color:#f92672"&gt;[&lt;/span&gt;4&lt;span style="color:#f92672"&gt;]&lt;/span&gt;int; length: 4; data: &lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; 4&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Method2: &lt;span style="color:#f92672"&gt;[&lt;/span&gt;3&lt;span style="color:#f92672"&gt;]&lt;/span&gt;float64; length: 3; data: &lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;2&lt;/span&gt; 4.6&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Method3: &lt;span style="color:#f92672"&gt;[&lt;/span&gt;3&lt;span style="color:#f92672"&gt;]&lt;/span&gt;string; length: 3; data: &lt;span style="color:#f92672"&gt;[&lt;/span&gt;java Golang Python&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Method4: &lt;span style="color:#f92672"&gt;[&lt;/span&gt;5&lt;span style="color:#f92672"&gt;]&lt;/span&gt;int; length: 5; data: &lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;6&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;7&lt;/span&gt; 8&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Method5: &lt;span style="color:#f92672"&gt;[&lt;/span&gt;8&lt;span style="color:#f92672"&gt;]&lt;/span&gt;float64; length: 8; data: &lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; 3.5 &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; 4.6 &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; 9&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="13-looping-through-arrays"&gt;1.3 Looping through arrays
+&lt;/h2&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;arr6&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; [&lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;]&lt;span style="color:#66d9ef"&gt;string&lt;/span&gt;{&lt;span style="color:#e6db74"&gt;&amp;#34;java&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;Golang&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;Python&amp;#34;&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;for&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;i&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;; &lt;span style="color:#a6e22e"&gt;i&lt;/span&gt; &amp;lt; len(&lt;span style="color:#a6e22e"&gt;arr6&lt;/span&gt;); &lt;span style="color:#a6e22e"&gt;i&lt;/span&gt;&lt;span style="color:#f92672"&gt;++&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;idx%v: %v\t&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;i&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;arr6&lt;/span&gt;[&lt;span style="color:#a6e22e"&gt;i&lt;/span&gt;])
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Println&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;for&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;index&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;value&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;range&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;arr6&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;idx%v: %v\t&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;index&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;value&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Output:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;fori loop idx0: java; idx1: Golang; idx2: Python;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;for&lt;/span&gt; range loop idx0: java; idx1: Golang; idx2: Python;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="14-multidimensional-arrays"&gt;1.4 Multidimensional arrays
+&lt;/h2&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;arr7&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; [&lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;][&lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;]&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;},
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {&lt;span style="color:#ae81ff"&gt;4&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;5&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;6&lt;/span&gt;},
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {&lt;span style="color:#ae81ff"&gt;7&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;8&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;9&lt;/span&gt;},
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;Type: %T; length: %v; data: %v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;arr7&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;arr7&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;arr7&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;arr8&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; [&lt;span style="color:#f92672"&gt;...&lt;/span&gt;][&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;]&lt;span style="color:#66d9ef"&gt;string&lt;/span&gt;{{&lt;span style="color:#e6db74"&gt;&amp;#34;a&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;b&amp;#34;&lt;/span&gt;}, {&lt;span style="color:#e6db74"&gt;&amp;#34;c&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;d&amp;#34;&lt;/span&gt;}}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;Type: %T; length: %v; data: %v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;arr8&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;arr8&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;arr8&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;for&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;i&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;; &lt;span style="color:#a6e22e"&gt;i&lt;/span&gt; &amp;lt; len(&lt;span style="color:#a6e22e"&gt;arr7&lt;/span&gt;); &lt;span style="color:#a6e22e"&gt;i&lt;/span&gt;&lt;span style="color:#f92672"&gt;++&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;for&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;j&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;; &lt;span style="color:#a6e22e"&gt;j&lt;/span&gt; &amp;lt; len(&lt;span style="color:#a6e22e"&gt;arr7&lt;/span&gt;[&lt;span style="color:#a6e22e"&gt;i&lt;/span&gt;]); &lt;span style="color:#a6e22e"&gt;j&lt;/span&gt;&lt;span style="color:#f92672"&gt;++&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;row%v col%v: %v\t&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;i&lt;/span&gt;&lt;span style="color:#f92672"&gt;+&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;j&lt;/span&gt;&lt;span style="color:#f92672"&gt;+&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;arr7&lt;/span&gt;[&lt;span style="color:#a6e22e"&gt;i&lt;/span&gt;][&lt;span style="color:#a6e22e"&gt;j&lt;/span&gt;])
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Println&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;for&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;row&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;rowValue&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;range&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;arr8&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;for&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;col&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;value&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;range&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;rowValue&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;row%v col%v: %v\t&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;row&lt;/span&gt;&lt;span style="color:#f92672"&gt;+&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;col&lt;/span&gt;&lt;span style="color:#f92672"&gt;+&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;value&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Println&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Output:&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;Type: [3][3]int; length: 3; data: [[1 2 3] [4 5 6] [7 8 9]]
+Type: [2][2]string; length: 2; data: [[a b] [c d]]
+row1 col1: 1; row1 col2: 2; row1 col3: 3;
+row2 col1: 4; row2 col2: 5; row2 col3: 6;
+row3 col1: 7; row3 col2: 8; row3 col3: 9;
+row1 col1: a; row1 col2: b;
+row2 col1: c; row2 col2: d;
+&lt;/code&gt;&lt;/pre&gt;&lt;h1 id="2-slices"&gt;2. Slices
+&lt;/h1&gt;&lt;blockquote&gt;
+&lt;p&gt;A slice is a wrapper over an array and represents a dynamic-length view. Slices are reference types.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id="21-declaring-and-initializing-slices"&gt;2.1 Declaring and initializing slices
+&lt;/h2&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;var&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt; []&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;Type: %T; len: %v; data: %v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;var&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;arr2&lt;/span&gt; = []&lt;span style="color:#66d9ef"&gt;float64&lt;/span&gt;{&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;4.6&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;Method1: %T; len: %v; data: %v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;arr2&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;arr2&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;arr2&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;arr3&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; []&lt;span style="color:#66d9ef"&gt;string&lt;/span&gt;{&lt;span style="color:#e6db74"&gt;&amp;#34;java&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;Golang&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;Python&amp;#34;&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;Method2: %T; len: %v; data: %v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;arr3&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;arr3&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;arr3&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;arr4&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; []&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;{&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;6&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;7&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;8&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;Method3: %T; len: %v; data: %v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;arr4&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;arr4&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;arr4&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;arr5&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; []&lt;span style="color:#66d9ef"&gt;float64&lt;/span&gt;{&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;3.5&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;5&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;4.6&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;7&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;9&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;Method4: %T; len: %v; data: %v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;arr5&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;arr5&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;arr5&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Output:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Type: &lt;span style="color:#f92672"&gt;[]&lt;/span&gt;int; len: 0; data: &lt;span style="color:#f92672"&gt;[]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Method1: &lt;span style="color:#f92672"&gt;[]&lt;/span&gt;float64; len: 3; data: &lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;2&lt;/span&gt; 4.6&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Method2: &lt;span style="color:#f92672"&gt;[]&lt;/span&gt;string; len: 3; data: &lt;span style="color:#f92672"&gt;[&lt;/span&gt;java Golang Python&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Method3: &lt;span style="color:#f92672"&gt;[]&lt;/span&gt;int; len: 5; data: &lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;6&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;7&lt;/span&gt; 8&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Method4: &lt;span style="color:#f92672"&gt;[]&lt;/span&gt;float64; len: 8; data: &lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; 3.5 &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; 4.6 &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; 9&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="22-creating-slices-from-arrays"&gt;2.2 Creating slices from arrays
+&lt;/h2&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; [&lt;span style="color:#ae81ff"&gt;5&lt;/span&gt;]&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;{&lt;span style="color:#ae81ff"&gt;10&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;29&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;49&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;58&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;32&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;Type: %T; length: %v; data: %v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;s1&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt;[:]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;s2&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt;[&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;:]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;s3&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;arr1&lt;/span&gt;[:&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;Full slice: %T; len: %v; data: %v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;s1&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;s1&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;s1&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;From idx2: %T; len: %v; data: %v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;s2&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;s2&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;s2&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;Before idx2: %T; len: %v; data: %v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;s3&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;s3&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;s3&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Output:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Type: &lt;span style="color:#f92672"&gt;[&lt;/span&gt;5&lt;span style="color:#f92672"&gt;]&lt;/span&gt;int; length: 5; data: &lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;10&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;29&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;49&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;58&lt;/span&gt; 32&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Full slice: &lt;span style="color:#f92672"&gt;[]&lt;/span&gt;int; len: 5; data: &lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;10&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;29&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;49&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;58&lt;/span&gt; 32&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;From idx2: &lt;span style="color:#f92672"&gt;[]&lt;/span&gt;int; len: 3; data: &lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;49&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;58&lt;/span&gt; 32&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Before idx2: &lt;span style="color:#f92672"&gt;[]&lt;/span&gt;int; len: 2; data: &lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;10&lt;/span&gt; 29&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;Summary: &lt;code&gt;arr[start:end]&lt;/code&gt; extracts elements from index &lt;code&gt;start&lt;/code&gt; (inclusive) to &lt;code&gt;end&lt;/code&gt; (exclusive). Omit start or end to mean the beginning or end of the array.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id="23-slice-length-and-capacity"&gt;2.3 Slice length and capacity
+&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;A slice has its own length and capacity: len returns the number of elements; cap counts how many elements remain from the first element to the end of the underlying array.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;a&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; []&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;{&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;5&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;6&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;7&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;Type: %T, len: %v, cap: %v, data: %v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;a&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;a&lt;/span&gt;), cap(&lt;span style="color:#a6e22e"&gt;a&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;a&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;b&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;a&lt;/span&gt;[&lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;:]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;c&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;a&lt;/span&gt;[:&lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;%T, len: %v, cap: %v, data: %v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;b&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;b&lt;/span&gt;), cap(&lt;span style="color:#a6e22e"&gt;b&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;b&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;%T, len: %v, cap: %v, data: %v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;c&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;c&lt;/span&gt;), cap(&lt;span style="color:#a6e22e"&gt;c&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;c&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Output:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Type: &lt;span style="color:#f92672"&gt;[]&lt;/span&gt;int, len: 6, cap: 6, data: &lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;5&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;6&lt;/span&gt; 7&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Type: &lt;span style="color:#f92672"&gt;[]&lt;/span&gt;int, len: 3, cap: 3, data: &lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;5&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;6&lt;/span&gt; 7&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Type: &lt;span style="color:#f92672"&gt;[]&lt;/span&gt;int, len: 3, cap: 6, data: &lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt; 4&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;figure&gt;&lt;img src="https://zg-dd.github.io/img/golang_stu/go_stu_051.png"&gt;
+&lt;/figure&gt;
+&lt;h1 id="3-nil"&gt;3. nil
+&lt;/h1&gt;&lt;blockquote&gt;
+&lt;p&gt;The predefined identifier &lt;code&gt;nil&lt;/code&gt; represents the zero value for pointers, channels, functions, interfaces, maps, slices, etc.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Type&lt;/th&gt;
+&lt;th&gt;Default value&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;bool&lt;/td&gt;
+&lt;td&gt;false&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;int, float&lt;/td&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;string&lt;/td&gt;
+&lt;td&gt;&amp;quot;&amp;quot;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;pointers&lt;/td&gt;
+&lt;td&gt;nil&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;arrays&lt;/td&gt;
+&lt;td&gt;zero value array&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;slices&lt;/td&gt;
+&lt;td&gt;nil&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;maps&lt;/td&gt;
+&lt;td&gt;nil&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;channels&lt;/td&gt;
+&lt;td&gt;nil&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;functions&lt;/td&gt;
+&lt;td&gt;nil&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/blockquote&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;var&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;arr&lt;/span&gt; [&lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;]&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;var&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;slices1&lt;/span&gt; []&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;var&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;slices2&lt;/span&gt; = []&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;{&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Println&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;arr&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Println&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;slices1&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;slices1&lt;/span&gt; &lt;span style="color:#f92672"&gt;==&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;nil&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;slices2&lt;/span&gt; &lt;span style="color:#f92672"&gt;==&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;nil&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Output:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; 0&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;[]&lt;/span&gt; true false
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id="4-value-vs-reference-types"&gt;4. Value vs. reference types
+&lt;/h1&gt;&lt;blockquote&gt;
+&lt;p&gt;Value types store independent copies, so updating one variable does not affect another. Reference types share the same underlying data, so modifying one reflects in the other. Slices are typical reference types.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;a1&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; [&lt;span style="color:#f92672"&gt;...&lt;/span&gt;]&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;{&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;5&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;a2&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; []&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;{&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;5&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;b1&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;a1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;b2&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;a2&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;b1&lt;/span&gt;[&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;] = &lt;span style="color:#ae81ff"&gt;6&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;b2&lt;/span&gt;[&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;] = &lt;span style="color:#ae81ff"&gt;6&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;a1=%v,b1=%v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;a1&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;b1&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;a2=%v,b2=%v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;a2&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;b2&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Output:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;a1&lt;span style="color:#f92672"&gt;=[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt; 5&lt;span style="color:#f92672"&gt;]&lt;/span&gt;,b1&lt;span style="color:#f92672"&gt;=[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;6&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt; 5&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;a2&lt;span style="color:#f92672"&gt;=[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;6&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt; 5&lt;span style="color:#f92672"&gt;]&lt;/span&gt;,b2&lt;span style="color:#f92672"&gt;=[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;6&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt; 5&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id="5-common-slice-utilities"&gt;5. Common slice utilities
+&lt;/h1&gt;&lt;h2 id="51-make"&gt;5.1 make
+&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;&lt;code&gt;make([]int, 10, 11)&lt;/code&gt; allocates a slice with length 10 and capacity 11.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;slice1&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; make([]&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;10&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;11&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;slice1&lt;/span&gt;[&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;] = &lt;span style="color:#ae81ff"&gt;6&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;slice1&lt;/span&gt;[&lt;span style="color:#ae81ff"&gt;9&lt;/span&gt;] = &lt;span style="color:#ae81ff"&gt;20&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;Type: %T, len: %v, cap: %v, data: %v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;slice1&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;slice1&lt;/span&gt;), cap(&lt;span style="color:#a6e22e"&gt;slice1&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;slice1&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Output:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Type: &lt;span style="color:#f92672"&gt;[]&lt;/span&gt;int, len: 10, cap: 11, data: &lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;6&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; 20&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="52-append"&gt;5.2 append
+&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;Use &lt;code&gt;append(slice, elems...)&lt;/code&gt; to grow slices.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;slice2&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; make([]&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;slice2&lt;/span&gt; = append(&lt;span style="color:#a6e22e"&gt;slice2&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;12&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;14&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;24&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;%T len: %v cap: %v data: %v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;slice2&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;slice2&lt;/span&gt;), cap(&lt;span style="color:#a6e22e"&gt;slice2&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;slice2&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;slice3&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; []&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;{&lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;5&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;slice4&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; append(&lt;span style="color:#a6e22e"&gt;slice2&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;slice3&lt;/span&gt;&lt;span style="color:#f92672"&gt;...&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;%T len: %v cap: %v data: %v\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;slice4&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;slice4&lt;/span&gt;), cap(&lt;span style="color:#a6e22e"&gt;slice4&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;slice4&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Output:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Type: &lt;span style="color:#f92672"&gt;[]&lt;/span&gt;int, len: 3, cap: 3, data: &lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;12&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;14&lt;/span&gt; 24&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Type: &lt;span style="color:#f92672"&gt;[]&lt;/span&gt;int, len: 6, cap: 6, data: &lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;12&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;14&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;24&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt; 5&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="53-copy-deep-clone"&gt;5.3 copy (deep clone)
+&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;&lt;code&gt;copy(dst, src)&lt;/code&gt; copies src into dst. Use it to avoid sharing the same backing array.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;slice2&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; make([]&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;slice2&lt;/span&gt; = append(&lt;span style="color:#a6e22e"&gt;slice2&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;12&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;14&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;24&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;slice3&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; []&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;{&lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;5&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;slice4&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; append(&lt;span style="color:#a6e22e"&gt;slice2&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;slice3&lt;/span&gt;&lt;span style="color:#f92672"&gt;...&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;slice4Copy&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; make([]&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;, len(&lt;span style="color:#a6e22e"&gt;slice4&lt;/span&gt;))
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;copy(&lt;span style="color:#a6e22e"&gt;slice4Copy&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;slice4&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;slice4Copy&lt;/span&gt;[&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;] = &lt;span style="color:#ae81ff"&gt;6666&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Println&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;slice4&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;slice4Copy&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Output:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;12&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;14&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;24&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt; 5&lt;span style="color:#f92672"&gt;]&lt;/span&gt; &lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;6666&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;14&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;24&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt; 5&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="54-deleting-from-a-slice"&gt;5.4 Deleting from a slice
+&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;Go has no built-in delete. Combine slicing with append to drop a range.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;s1&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; []&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;{&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;5&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;6&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;delIdx&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;s1&lt;/span&gt; = append(&lt;span style="color:#a6e22e"&gt;s1&lt;/span&gt;[:&lt;span style="color:#a6e22e"&gt;delIdx&lt;/span&gt;], &lt;span style="color:#a6e22e"&gt;s1&lt;/span&gt;[&lt;span style="color:#a6e22e"&gt;delIdx&lt;/span&gt;&lt;span style="color:#f92672"&gt;+&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;:]&lt;span style="color:#f92672"&gt;...&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Println&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;s1&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Output:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;2&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;5&lt;/span&gt; 6&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="55-sorting-slices"&gt;5.5 Sorting slices
+&lt;/h2&gt;&lt;h3 id="551-ascending"&gt;5.5.1 Ascending
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;Use &lt;code&gt;sort.Ints&lt;/code&gt;, &lt;code&gt;sort.Float64s&lt;/code&gt;, or &lt;code&gt;sort.Strings&lt;/code&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;intList&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; []&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;{&lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;32&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;32&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;423&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;12&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;floatList&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; []&lt;span style="color:#66d9ef"&gt;float64&lt;/span&gt;{&lt;span style="color:#ae81ff"&gt;3.13&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;4.2&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;5.3&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;1.1&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;stringList&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; []&lt;span style="color:#66d9ef"&gt;string&lt;/span&gt;{&lt;span style="color:#e6db74"&gt;&amp;#34;D&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;S&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;A&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;C&amp;#34;&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;sort&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Ints&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;intList&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;sort&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Float64s&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;floatList&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;sort&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Strings&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;stringList&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Println&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;intList&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Println&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;floatList&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Println&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;stringList&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Output:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;3&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;12&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;32&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;32&lt;/span&gt; 423&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;[&lt;/span&gt;1.1 3.13 4.2 5.3&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;[&lt;/span&gt;A C D S&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="552-descending"&gt;5.5.2 Descending
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;Combine &lt;code&gt;sort.XXXSlice&lt;/code&gt;, &lt;code&gt;sort.Reverse&lt;/code&gt;, and &lt;code&gt;sort.Sort&lt;/code&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;intList&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; []&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;{&lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;32&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;32&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;423&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;12&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;floatList&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; []&lt;span style="color:#66d9ef"&gt;float64&lt;/span&gt;{&lt;span style="color:#ae81ff"&gt;3.13&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;4.2&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;5.3&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;1.1&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;stringList&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; []&lt;span style="color:#66d9ef"&gt;string&lt;/span&gt;{&lt;span style="color:#e6db74"&gt;&amp;#34;D&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;S&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;A&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;C&amp;#34;&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;sort&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Sort&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;sort&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Reverse&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;sort&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;IntSlice&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;intList&lt;/span&gt;)))
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;sort&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Sort&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;sort&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Reverse&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;sort&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Float64Slice&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;floatList&lt;/span&gt;)))
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;sort&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Sort&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;sort&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Reverse&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;sort&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;StringSlice&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;stringList&lt;/span&gt;)))
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Println&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;intList&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Println&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;floatList&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Println&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;stringList&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Output:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;[&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;423&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;32&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;32&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;12&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt; 3&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;[&lt;/span&gt;5.3 4.2 3.13 1.1&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;[&lt;/span&gt;S D C A&lt;span style="color:#f92672"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id="6-tips-and-tricks"&gt;6. Tips and tricks
+&lt;/h1&gt;&lt;h2 id="61-editor-hints"&gt;6.1 Editor hints
+&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;When you type &lt;code&gt;.&lt;/code&gt; after a variable the editor shows suggestions. Items ending with &lt;code&gt;!&lt;/code&gt; insert scaffolding code.
+&lt;figure&gt;&lt;img src="https://zg-dd.github.io/img/golang_stu/go_stu_052.png"&gt;
+&lt;/figure&gt;
+&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Hint&lt;/th&gt;
+&lt;th&gt;Meaning&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;append!&lt;/td&gt;
+&lt;td&gt;Append slice items&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;copy!&lt;/td&gt;
+&lt;td&gt;Copy slice&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;for!&lt;/td&gt;
+&lt;td&gt;standard for loop&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;forr!&lt;/td&gt;
+&lt;td&gt;for range loop&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;ifnotnil!&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;if var != nil&lt;/code&gt; guard&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;last!&lt;/td&gt;
+&lt;td&gt;shorthand for &lt;code&gt;a[len(a)-1]&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;len!&lt;/td&gt;
+&lt;td&gt;shorthand for &lt;code&gt;len(a)&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;print!&lt;/td&gt;
+&lt;td&gt;print variable&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;range!&lt;/td&gt;
+&lt;td&gt;alias for &lt;code&gt;forr!&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;reverse!&lt;/td&gt;
+&lt;td&gt;reverse slice&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;sort!&lt;/td&gt;
+&lt;td&gt;custom sort scaffolding&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;var!&lt;/td&gt;
+&lt;td&gt;assign to a new variable&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/blockquote&gt;
+&lt;h2 id="62-inspecting-signatures"&gt;6.2 Inspecting signatures
+&lt;/h2&gt;&lt;blockquote&gt;
+&lt;ol&gt;
+&lt;li&gt;Hover for over 1s to view parameter and return metadata.
+&lt;figure&gt;&lt;img src="https://zg-dd.github.io/img/golang_stu/go_stu_053.png"&gt;
+&lt;/figure&gt;
+&lt;/li&gt;
+&lt;li&gt;Ctrl+Click enters the definition with full documentation. Use translation tools if needed.
+&lt;figure&gt;&lt;img src="https://zg-dd.github.io/img/golang_stu/go_stu_054.png"&gt;
+&lt;/figure&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/blockquote&gt;</description></item><item><title>Golang Learning Journey [Part 4: Operators &amp; Control Flow]</title><link>https://zg-dd.github.io/en/stu/golang-stu-04/</link><pubDate>Wed, 01 Jan 2025 11:03:08 +0800</pubDate><guid>https://zg-dd.github.io/en/stu/golang-stu-04/</guid><description>&lt;h1 id="1-operators"&gt;1. Operators
 &lt;/h1&gt;&lt;h2 id="11-arithmetic-operators"&gt;1.1 Arithmetic operators
 &lt;/h2&gt;&lt;table&gt;
 &lt;thead&gt;
@@ -877,7 +1239,7 @@ Binary ops are useful for fast hardware-level control, such as address or IP man
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;statement &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;statement &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;statement &lt;span style="color:#ae81ff"&gt;4&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description></item><item><title>Golang Learning Journey [Part 3: Basic Data Types and Type Conversion]</title><link>https://zg-dd.github.io/en/stu/golang_stu_03/</link><pubDate>Sat, 21 Dec 2024 19:37:51 +0800</pubDate><guid>https://zg-dd.github.io/en/stu/golang_stu_03/</guid><description>&lt;h1 id="1-overview"&gt;1. Overview
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description></item><item><title>Golang Learning Journey [Part 3: Basic Data Types and Type Conversion]</title><link>https://zg-dd.github.io/en/stu/golang-stu-03/</link><pubDate>Sat, 21 Dec 2024 19:37:51 +0800</pubDate><guid>https://zg-dd.github.io/en/stu/golang-stu-03/</guid><description>&lt;h1 id="1-overview"&gt;1. Overview
 &lt;/h1&gt;&lt;p&gt;Go data types are split into basic types and composite types.&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;&lt;strong&gt;Basic types&lt;/strong&gt; include integers, floating-point numbers, booleans, and strings.
@@ -1267,7 +1629,7 @@ Common ones include:&lt;/p&gt;
 &lt;/h3&gt;&lt;blockquote&gt;
 &lt;p&gt;strconv also includes helpers like Append (to append to byte slices), IsPrint, IsGraphic, Quote, Unquote, and CanBackquote. Study them when needed; this &lt;a class="link" href="https://www.jb51.net/jiaoben/290715618.htm" target="_blank" rel="noopener"
 &gt;reference&lt;/a&gt; is handy.&lt;/p&gt;
-&lt;/blockquote&gt;</description></item><item><title>Golang Learning Journey [Part 2: fmt Package and Variables/Constants]</title><link>https://zg-dd.github.io/en/stu/golang_stu_02/</link><pubDate>Sat, 21 Dec 2024 19:36:53 +0800</pubDate><guid>https://zg-dd.github.io/en/stu/golang_stu_02/</guid><description>&lt;blockquote&gt;
+&lt;/blockquote&gt;</description></item><item><title>Golang Learning Journey [Part 2: fmt Package and Variables/Constants]</title><link>https://zg-dd.github.io/en/stu/golang-stu-02/</link><pubDate>Sat, 21 Dec 2024 19:36:53 +0800</pubDate><guid>https://zg-dd.github.io/en/stu/golang-stu-02/</guid><description>&lt;blockquote&gt;
 &lt;p&gt;Preface: Packages in Go are collections of functionality provided either by the standard library or by custom code. You need to import a package before using it—for today we focus on the fmt package, imported with &lt;code&gt;import &amp;quot;fmt&amp;quot;&lt;/code&gt;.&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h1 id="1-fmt-package"&gt;1. fmt Package
@@ -1629,7 +1991,7 @@ Common ones include:&lt;/p&gt;
 &lt;li&gt;Names are case-sensitive: &lt;code&gt;name&lt;/code&gt;, &lt;code&gt;Name&lt;/code&gt;, &lt;code&gt;NAme&lt;/code&gt;, and &lt;code&gt;NAME&lt;/code&gt; are different.&lt;/li&gt;
 &lt;li&gt;Choose descriptive names.&lt;/li&gt;
 &lt;li&gt;CamelCase is preferred; for example &lt;code&gt;maxAge&lt;/code&gt;. Acronyms such as &lt;code&gt;DNS&lt;/code&gt; or &lt;code&gt;IP&lt;/code&gt; can stay uppercase.&lt;/li&gt;
-&lt;/ol&gt;</description></item><item><title>Golang Learning Journey [Part 1: Getting Started]</title><link>https://zg-dd.github.io/en/stu/golang_stu_01/</link><pubDate>Sat, 21 Dec 2024 10:51:49 +0800</pubDate><guid>https://zg-dd.github.io/en/stu/golang_stu_01/</guid><description>&lt;blockquote&gt;
+&lt;/ol&gt;</description></item><item><title>Golang Learning Journey [Part 1: Getting Started]</title><link>https://zg-dd.github.io/en/stu/golang-stu-01/</link><pubDate>Sat, 21 Dec 2024 10:51:49 +0800</pubDate><guid>https://zg-dd.github.io/en/stu/golang-stu-01/</guid><description>&lt;blockquote&gt;
 &lt;p&gt;Preface: Go (also called Golang) is an open-source programming language developed by Google and first released publicly in 2009. It aims to provide concise, efficient, and reliable tools for software development. Golang is statically typed and compiled, and it is expressive thanks to its concurrency features. Programs written in Go can make very effective use of multi-core and networked computers, and its novel type system keeps the code modular and flexible. Compiling Go code to machine code is fast, and the language also offers convenient garbage collection plus a powerful reflection runtime.&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;blockquote&gt;

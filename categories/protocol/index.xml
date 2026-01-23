@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Protocol on 小巷的随笔</title><link>https://zg-dd.github.io/categories/protocol/</link><description>Recent content in Protocol on 小巷的随笔</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Wed, 06 Aug 2025 15:14:07 +0800</lastBuildDate><atom:link href="https://zg-dd.github.io/categories/protocol/index.xml" rel="self" type="application/rss+xml"/><item><title>MCP 协议入门与核心机制</title><link>https://zg-dd.github.io/stu/mcp-protocol-core/</link><pubDate>Wed, 06 Aug 2025 15:14:07 +0800</pubDate><guid>https://zg-dd.github.io/stu/mcp-protocol-core/</guid><description>&lt;blockquote&gt;
+&lt;p&gt;个人学习笔记&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1 id="1-mcp的定义"&gt;1. MCP的定义
+&lt;/h1&gt;&lt;p&gt;MCP全称（Model Content Protocol, 模型上下文协议）是2024年由Anthropic公司推出的一项&lt;strong&gt;开放标准协议&lt;/strong&gt;，旨在大模型（LLM）与外部工具、数据源和服务提供统一的交互框架。其核心目标是解决AI生态中的“数据孤岛”问题，通过标准化接口实现模型与外部资源的无缝连接，类似于“AI领域的USB-C接口”或者“万能适配器”。&lt;/p&gt;
+&lt;h1 id="2-核心特性与技术原理"&gt;2. 核心特性与技术原理
+&lt;/h1&gt;&lt;h2 id="21-标准化三层架构"&gt;2.1 标准化三层架构
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;主机（Host）&lt;/strong&gt;：运行AI模型的核心应用（如Claude、Desktop、IDE插件）&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;客户端（Client）&lt;/strong&gt;：与服务器建立1:1连接，封装请求并转发&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;服务器（Server）&lt;/strong&gt;：轻量级适配器，连接具体工具或数据源（如数据库、API、文件系统）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="22-通信机制json-rpc-20协议"&gt;2.2 通信机制：JSON-RPC 2.0协议
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;本地通信&lt;/strong&gt;：通过stdio(标准输入输出)传输JSON-RPC消息，适用于本地工具调用&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;远程通信&lt;/strong&gt;：基于SSE(Server-Sent Events)和&lt;a class="link" href="https://blog.csdn.net/shykevin/article/details/147525192" target="_blank" rel="noopener"
+&gt;Streamable HTTP&lt;/a&gt;的HTTP长连接，支持异步数据流&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;消息格式&lt;/strong&gt;：所有请求和响应均遵循JSON-RPC 2.0规范&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="23-动态发现机制"&gt;2.3 动态发现机制
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;工具级动态发现&lt;/strong&gt;：工具通过&lt;strong&gt;自描述接口&lt;/strong&gt;（如OpenAPI）声明能力，AI模型可自动识别并调用，无需要硬编码集成&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;服务级动态发现&lt;/strong&gt;（不懂）： &lt;strong&gt;URI驱动发现&lt;/strong&gt;，客户端通过解析自定义URI（如mcp://api.service.com）发现远程服务：客户端访问URI对应的元数据端点（如https://api.service.com/llms.txt）。服务端返回JSON描述文件，包含功能列表，API文档和认证方式。Client根据元数据自动配置工具调用权限。&lt;strong&gt;应用场景&lt;/strong&gt;：用户粘贴一个MCP URI到聊天窗口，LLM自动识别并集成该服务（如股票API），无需手动配置。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id="3-安全与权限控制"&gt;3. 安全与权限控制
+&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;本地化执行&lt;/strong&gt;：默认MCP Server运行在本地，避免敏感数据外泄&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;操作确认机制&lt;/strong&gt;：高风险操作（如删除文件）需用户手动授权&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;企业级安全员扩展&lt;/strong&gt;：支持JWT令牌、RBAC权限模型和IPsec隧道加密，满足金融、医疗等场景需求&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id="4-与传统技术的区别"&gt;4. 与传统技术的区别
+&lt;/h1&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;特性&lt;/th&gt;
+&lt;th&gt;MCP&lt;/th&gt;
+&lt;th&gt;传统API&lt;/th&gt;
+&lt;th&gt;Function Calling​&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;集成方式​&lt;/td&gt;
+&lt;td&gt;统一协议，动态发现工具&lt;/td&gt;
+&lt;td&gt;每个API独立定制&lt;/td&gt;
+&lt;td&gt;需硬编码绑定特定函数&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;通信模式​&lt;/td&gt;
+&lt;td&gt;双向实时交互&lt;/td&gt;
+&lt;td&gt;单向请求-响应&lt;/td&gt;
+&lt;td&gt;同步执行，无实时推送&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;灵活性​&lt;/td&gt;
+&lt;td&gt;即插即用，支持多工具组合&lt;/td&gt;
+&lt;td&gt;扩展需重新开发&lt;/td&gt;
+&lt;td&gt;依赖模型供应商接口&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h1 id="5-总结"&gt;5. 总结
+&lt;/h1&gt;&lt;p&gt;MCP协议通过 &lt;strong&gt;“客户端-服务器解耦” + “JSON-RPC通信” + “动态发现机制”，&lt;/strong&gt; 解决了LLM与外部资源交互的三大痛点：
+&lt;strong&gt;灵活性&lt;/strong&gt;：工具可热插拔，服务可动态扩展；
+&lt;strong&gt;安全性&lt;/strong&gt;：本地化执行与权限控制兼顾效率与隐私；
+&lt;strong&gt;标准化&lt;/strong&gt;：统一协议降低集成成本，推动AI生态开放。&lt;/p&gt;
+&lt;p&gt;MCP通过协议层解耦AI模型与工具，推动AI从“对话助手”升级为“执行代理”，成为构建&lt;strong&gt;复杂Agent系统的底层基础&lt;/strong&gt;。随着企业智能化升级加速（如长虹虹信EADP平台集成MCP），该协议已成为构建下一代AI Agent的核心基础设施。&lt;/p&gt;</description></item></channel></rss>

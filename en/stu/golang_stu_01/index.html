@@ -1,36 +1,680 @@
-<!doctype html><html lang=en dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content=" Preface: Go (also called Golang) is an open-source programming language developed by Google and first released publicly in 2009. It aims to provide concise, efficient, and reliable tools for software development. Golang is statically typed and compiled, and it is expressive thanks to its concurrency features. Programs written in Go can make very effective use of multi-core and networked computers, and its novel type system keeps the code modular and flexible. Compiling Go code to machine code is fast, and the language also offers convenient garbage collection plus a powerful reflection runtime.\n"><title>Golang Learning Journey [Part 1: Getting Started]</title><link rel=canonical href=https://zg-dd.github.io/en/stu/golang_stu_01/><link rel=stylesheet href=/scss/style.min.b9e9128fec450ebccecc4ec9900157f32b85d0609bcd5ee3293968bcaa1235f2.css><meta property='og:title' content="Golang Learning Journey [Part 1: Getting Started]"><meta property='og:description' content=" Preface: Go (also called Golang) is an open-source programming language developed by Google and first released publicly in 2009. It aims to provide concise, efficient, and reliable tools for software development. Golang is statically typed and compiled, and it is expressive thanks to its concurrency features. Programs written in Go can make very effective use of multi-core and networked computers, and its novel type system keeps the code modular and flexible. Compiling Go code to machine code is fast, and the language also offers convenient garbage collection plus a powerful reflection runtime.\n"><meta property='og:url' content='https://zg-dd.github.io/en/stu/golang_stu_01/'><meta property='og:site_name' content='小巷 Blog'><meta property='og:type' content='article'><meta property='article:section' content='Stu'><meta property='article:tag' content='Golang Syntax'><meta property='article:published_time' content='2024-12-21T10:51:49+08:00'><meta property='article:modified_time' content='2024-12-21T10:51:49+08:00'><meta name=twitter:title content="Golang Learning Journey [Part 1: Getting Started]"><meta name=twitter:description content=" Preface: Go (also called Golang) is an open-source programming language developed by Google and first released publicly in 2009. It aims to provide concise, efficient, and reliable tools for software development. Golang is statically typed and compiled, and it is expressive thanks to its concurrency features. Programs written in Go can make very effective use of multi-core and networked computers, and its novel type system keeps the code modular and flexible. Compiling Go code to machine code is fast, and the language also offers convenient garbage collection plus a powerful reflection runtime.\n"></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label="Toggle Menu">
-<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/en/><img src=/img/avatar_hu_a0cc1cf57968b27d.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
-</a><span class=emoji>🌱</span></figure><div class=site-meta><h1 class=site-name><a href=/en>小巷 Blog</a></h1><h2 class=site-description>Recording is not to prove myself; rather, to make a habit of 'solving problems → thinking → sedimentation'.</h2></div></header><ol class=menu id=main-menu><li class=current><a href=/en/stu/><span>Study Notes</span></a></li><li><a href=/en/blog/><span>Essays</span></a></li><li><a href=/en/life/><span>Life</span></a></li><li><a href=/categories/><span>Categories</span></a></li><li><a href=/tags/><span>Tags</span></a></li><li class=menu-bottom-section><ol class=menu><li id=i18n-switch><svg class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5h7"/><path d="M9 3v2c0 4.418-2.239 8-5 8"/><path d="M5 9c-.003 2.144 2.952 3.908 6.7 4"/><path d="M12 20l4-9 4 9"/><path d="M19.1 18h-6.2"/></svg>
-<select name=language title=language onchange="window.location.href=this.selectedOptions[0].value"><option value=https://zg-dd.github.io/>简体中文</option><option value=https://zg-dd.github.io/en/ selected>English</option></select></li><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
-<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
-<span>Dark Mode</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">Table of contents</h2><div class=widget--toc><nav id=TableOfContents><ul><li><a href=#21-installation>2.1 Installation</a></li><li><a href=#22-verification>2.2 Verification</a></li></ul><ul><li><a href=#31-installing-vscode>3.1 Installing VsCode</a></li><li><a href=#32-install-extensions>3.2 Install Extensions</a><ul><li><a href=#321-language-localization-extension>3.2.1 Language localization extension</a></li><li><a href=#322-go-extension>3.2.2 Go extension</a></li></ul></li></ul><ul><li><a href=#41-create-the-project>4.1 Create the project</a></li><li><a href=#42-create-the-project-file>4.2 Create the project file</a></li><li><a href=#43-write-the-hello-world-program>4.3 Write the Hello World program</a></li><li><a href=#44-fix-vscode-code-suggestions>4.4 Fix VsCode code suggestions</a></li><li><a href=#45-run-the-program>4.5 Run the program</a></li><li><a href=#46-build-the-executable>4.6 Build the executable</a></li></ul></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/en/categories/golang/>Golang</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/en/stu/golang_stu_01/>Golang Learning Journey [Part 1: Getting Started]</a></h2></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
-<time class=article-time--published datetime=2024-12-21T10:51:49+08:00>Dec 21, 2024</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
-<time class=article-time--reading>3 minute read</time></div></footer><footer class=article-translations><svg class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5h7"/><path d="M9 3v2c0 4.418-2.239 8-5 8"/><path d="M5 9c-.003 2.144 2.952 3.908 6.7 4"/><path d="M12 20l4-9 4 9"/><path d="M19.1 18h-6.2"/></svg><div><a href=https://zg-dd.github.io/stu/golang_stu_01/ class=link>简体中文</a></div></footer></div></header><section class=article-content><blockquote><p>Preface: Go (also called Golang) is an open-source programming language developed by Google and first released publicly in 2009. It aims to provide concise, efficient, and reliable tools for software development. Golang is statically typed and compiled, and it is expressive thanks to its concurrency features. Programs written in Go can make very effective use of multi-core and networked computers, and its novel type system keeps the code modular and flexible. Compiling Go code to machine code is fast, and the language also offers convenient garbage collection plus a powerful reflection runtime.</p></blockquote><blockquote><p><strong>Notes from this journey:</strong> I will supplement this section after finishing the lessons.</p></blockquote><h1 id=1-learning-resources>1. Learning Resources</h1><p><a class=link href=https://go.p2hp.com/ target=_blank rel=noopener>Chinese documentation</a>: <a class=link href=https://go.p2hp.com/ target=_blank rel=noopener>https://go.p2hp.com/</a> 【Not recommended—lagging behind the official docs】</p><p><a class=link href=https://go.dev/ target=_blank rel=noopener>Official documentation</a>: <a class=link href=https://go.dev/ target=_blank rel=noopener>https://go.dev/</a> 【Recommended—the latest, in English】</p><p>Practice while learning: <a class=link href=https://go.p2hp.com/tour/welcome/1 target=_blank rel=noopener>Chinese tour</a> | <a class=link href=https://go.dev/tour/welcome/1 target=_blank rel=noopener>English tour</a></p><p><a class=link href="https://www.bilibili.com/video/BV1Rm421N7Jy?spm_id_from=333.788.videopod.episodes&amp;vd_source=01346eb530fb4dd830f23ec34cb4d8b2" target=_blank rel=noopener>Bilibili study video</a></p><h1 id=2-installing-go-on-windows>2. Installing Go on Windows</h1><h2 id=21-installation>2.1 Installation</h2><p>Follow the screenshots below step by step:<figure><img src=/img/golang_stu/go_stu_0101.png></figure></p><p>Click the arrow to download the installer and follow the prompts. Note: Developers typically avoid installing the newest release because it may have bugs, but the latest version is fine for learning.<figure><img src=/img/golang_stu/go_stu_0102.png></figure></p><p>Double-click the downloaded <code>go1.23.4.windows-amd64.msi</code> file to install.</p><figure><img src=/img/golang_stu/go_stu_0103.png></figure><figure><img src=/img/golang_stu/go_stu_0104.png></figure><figure><img src=/img/golang_stu/go_stu_0105.png></figure><figure><img src=/img/golang_stu/go_stu_0106.png></figure><h2 id=22-verification>2.2 Verification</h2><p><a class=link href=https://www.chunjingban.net/jiaocheng/25409.html target=_blank rel=noopener>Windows environment variables tutorial</a><figure><img src=/img/golang_stu/go_stu_0107.png></figure></p><p>You can also verify the Go installation via commands:</p><ol><li><p>Press Win + R, type <code>cmd</code>, and press Enter.<figure><img src=/img/golang_stu/go_stu_0108.png></figure></p></li><li><p>Run the following commands:</p></li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Go version</span>
-</span></span><span style=display:flex><span>go version
-</span></span><span style=display:flex><span><span style=color:#75715e># Go environment</span>
-</span></span><span style=display:flex><span>go env
-</span></span></code></pre></div><figure><img src=/img/golang_stu/go_stu_0109.png></figure><p><strong>Tip: If you accidentally left-click and see the terminal highlighted (pay attention to the selection indicator in the top-left), the cmd window is paused. Right-click to release and continue.</strong><figure><img src=/img/golang_stu/go_stu_0110.png></figure></p><h1 id=3-development-environmentvscode>3. Development Environment—VsCode</h1><h2 id=31-installing-vscode>3.1 Installing VsCode</h2><p><a class=link href=https://code.visualstudio.com/Download target=_blank rel=noopener>Download VsCode</a><figure><img src=/img/golang_stu/go_stu_0111.png></figure></p><p>After downloading, extract the archive and be sure to click “Extract” or “Extract to "VsCode-win***"”; otherwise the files scatter across the current directory. Place the extracted folder anywhere you like on your chosen drive.</p><figure><img src=/img/golang_stu/go_stu_0112.png></figure><p>Click “Extract” to proceed:<figure><img src=/img/golang_stu/go_stu_0113.png></figure></p><p>Put a shortcut on the desktop.<figure><img src=/img/golang_stu/go_stu_0114.png></figure></p><p>Open the software and review the quick overview.<figure><img src=/img/golang_stu/go_stu_0115.png></figure></p><h2 id=32-install-extensions>3.2 Install Extensions</h2><h3 id=321-language-localization-extension>3.2.1 Language localization extension</h3><figure><img src=/img/golang_stu/go_stu_0116.png></figure><figure><img src=/img/golang_stu/go_stu_0117.png></figure><h3 id=322-go-extension>3.2.2 Go extension</h3><p>Install the Go extension in the same way.<figure><img src=/img/golang_stu/go_stu_0118.png></figure></p><h1 id=4-hello-world-walkthrough>4. Hello World Walkthrough</h1><h2 id=41-create-the-project>4.1 Create the project</h2><figure><img src=/img/golang_stu/go_stu_0119.png></figure><p>Open the project folder in VsCode.<figure><img src=/img/golang_stu/go_stu_0120.png></figure></p><figure><img src=/img/golang_stu/go_stu_0121.png></figure><p>When prompted, trust the author.<figure><img src=/img/golang_stu/go_stu_0122.png></figure></p><h2 id=42-create-the-project-file>4.2 Create the project file</h2><figure><img src=/img/golang_stu/go_stu_0123.png></figure><h2 id=43-write-the-hello-world-program>4.3 Write the Hello World program</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#75715e>// package declaration: Think of it as a folder</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span> 
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e>// import: usually brings in standard library or custom packages</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e>// main function: the entry point</span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>()  {
-</span></span><span style=display:flex><span>    <span style=color:#75715e>// Print the Hello World string; semicolons are optional</span>
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;Hello World&#34;</span>)
-</span></span><span style=display:flex><span>}
-</span></span></code></pre></div><figure><img src=/img/golang_stu/go_stu_0124.png></figure><h2 id=44-fix-vscode-code-suggestions>4.4 Fix VsCode code suggestions</h2><p>Open a cmd terminal and configure the Go proxy:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>go env -w GOPROXY<span style=color:#f92672>=</span>https://goproxy.io/
-</span></span></code></pre></div><figure><img src=/img/golang_stu/go_stu_0125.png></figure><p>Restart VsCode a few times until the tools finish installing and code completion works.<figure><img src=/img/golang_stu/go_stu_0126.png></figure></p><h2 id=45-run-the-program>4.5 Run the program</h2><p>Open a terminal (it is just the Windows cmd window) and run the Go file:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># run a Go file</span>
-</span></span><span style=display:flex><span>go run main.go
-</span></span><span style=display:flex><span><span style=color:#75715e># output</span>
-</span></span><span style=display:flex><span><span style=color:#75715e># Hello World</span>
-</span></span></code></pre></div><figure><img src=/img/golang_stu/go_stu_0127.png></figure><h2 id=46-build-the-executable>4.6 Build the executable</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># compile the Go file into an executable</span>
-</span></span><span style=display:flex><span>go build main.go
-</span></span></code></pre></div><figure><img src=/img/golang_stu/go_stu_0128.png></figure><p>After the build you can double-click the exe to run it. <strong>Tip: The program exits immediately after finishing, so the terminal window closes at once, which makes it look like nothing happened.</strong></p></section><footer class=article-footer><section class=article-tags><a href=/en/tags/golang-syntax/>Golang Syntax</a></section></footer></article><script src=https://giscus.app/client.js data-repo=zg-dd/zg-dd.github.io data-repo-id=R_kgDOQwB7tw data-category=Announcements data-category-id=DIC_kwDOQwB7t84C0WGD data-mapping=pathname data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=preferred_color_scheme data-lang=zh-CN data-loading crossorigin=anonymous async></script><script>function setGiscusTheme(e){let t=document.querySelector("iframe.giscus-frame");t&&t.contentWindow.postMessage({giscus:{setConfig:{theme:e}}},"https://giscus.app")}(function(){addEventListener("message",t=>{if(event.origin!=="https://giscus.app")return;e()}),window.addEventListener("onColorSchemeChange",e);function e(){setGiscusTheme(document.documentElement.dataset.scheme==="light"?"preferred_color_scheme":"preferred_color_scheme")}})()</script><footer class=site-footer><section class=copyright>&copy;
-2026 小巷 Blog</section><section class=powerby>Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a><br>Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.33.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a></section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
-<button class="pswp__button pswp__button--share" title=Share></button>
-<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
-<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
-</button>
-<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.c922af694cc257bf1ecc41c0dd7b0430f9114ec280ccf67cd2c6ad55f5316c4e.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content=" Preface: Go (also called Golang) is an open-source programming language developed by Google and first released publicly in 2009. It aims to provide concise, efficient, and reliable tools for software development. Golang is statically typed and compiled, and it is expressive thanks to its concurrency features. Programs written in Go can make very effective use of multi-core and networked computers, and its novel type system keeps the code modular and flexible. Compiling Go code to machine code is fast, and the language also offers convenient garbage collection plus a powerful reflection runtime.\n">
+<title>Golang Learning Journey [Part 1: Getting Started]</title>
+
+<link rel='canonical' href='http://localhost:1313/en/stu/golang_stu_01/'>
+
+<link rel="stylesheet" href="/scss/style.min.b9e9128fec450ebccecc4ec9900157f32b85d0609bcd5ee3293968bcaa1235f2.css"><meta property='og:title' content="Golang Learning Journey [Part 1: Getting Started]">
+<meta property='og:description' content=" Preface: Go (also called Golang) is an open-source programming language developed by Google and first released publicly in 2009. It aims to provide concise, efficient, and reliable tools for software development. Golang is statically typed and compiled, and it is expressive thanks to its concurrency features. Programs written in Go can make very effective use of multi-core and networked computers, and its novel type system keeps the code modular and flexible. Compiling Go code to machine code is fast, and the language also offers convenient garbage collection plus a powerful reflection runtime.\n">
+<meta property='og:url' content='http://localhost:1313/en/stu/golang_stu_01/'>
+<meta property='og:site_name' content='小巷 Blog'>
+<meta property='og:type' content='article'><meta property='article:section' content='Stu' /><meta property='article:tag' content='Golang Syntax' /><meta property='article:published_time' content='2024-12-21T10:51:49&#43;08:00'/><meta property='article:modified_time' content='2024-12-21T10:51:49&#43;08:00'/>
+<meta name="twitter:title" content="Golang Learning Journey [Part 1: Getting Started]">
+<meta name="twitter:description" content=" Preface: Go (also called Golang) is an open-source programming language developed by Google and first released publicly in 2009. It aims to provide concise, efficient, and reliable tools for software development. Golang is statically typed and compiled, and it is expressive thanks to its concurrency features. Programs written in Go can make very effective use of multi-core and networked computers, and its novel type system keeps the code modular and flexible. Compiling Go code to machine code is fast, and the language also offers convenient garbage collection plus a powerful reflection runtime.\n">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/en/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_a0cc1cf57968b27d.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🌱</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/en">小巷 Blog</a></h1>
+            <h2 class="site-description">Recording is not to prove myself; rather, to make a habit of &#39;solving problems → thinking → sedimentation&#39;.</h2>
+        </div>
+    </header><ol class="menu" id="main-menu">
+        
+        
+        
+        <li  class='current' >
+            <a href='/en/stu/' >
+                
+                
+                
+                <span>Study Notes</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/en/blog/' >
+                
+                
+                
+                <span>Essays</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/en/life/' >
+                
+                
+                
+                <span>Life</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/categories/' >
+                
+                
+                
+                <span>Categories</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/tags/' >
+                
+                
+                
+                <span>Tags</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+                    
+                        <li id="i18n-switch">  
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                            <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
+                                
+                                    <option value="http://localhost:1313/" >简体中文</option>
+                                
+                                    <option value="http://localhost:1313/en/" selected>English</option>
+                                
+                            </select>
+                        </li>
+                    
+                
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>Dark Mode</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">Table of contents</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ul>
+    <li><a href="#21-installation">2.1 Installation</a></li>
+    <li><a href="#22-verification">2.2 Verification</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#31-installing-vscode">3.1 Installing VsCode</a></li>
+    <li><a href="#32-install-extensions">3.2 Install Extensions</a>
+      <ul>
+        <li><a href="#321-language-localization-extension">3.2.1 Language localization extension</a></li>
+        <li><a href="#322-go-extension">3.2.2 Go extension</a></li>
+      </ul>
+    </li>
+  </ul>
+
+  <ul>
+    <li><a href="#41-create-the-project">4.1 Create the project</a></li>
+    <li><a href="#42-create-the-project-file">4.2 Create the project file</a></li>
+    <li><a href="#43-write-the-hello-world-program">4.3 Write the Hello World program</a></li>
+    <li><a href="#44-fix-vscode-code-suggestions">4.4 Fix VsCode code suggestions</a></li>
+    <li><a href="#45-run-the-program">4.5 Run the program</a></li>
+    <li><a href="#46-build-the-executable">4.6 Build the executable</a></li>
+  </ul>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/en/categories/golang/" >
+                Golang
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/en/stu/golang_stu_01/">Golang Learning Journey [Part 1: Getting Started]</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published" datetime='2024-12-21T10:51:49&#43;08:00'>Dec 21, 2024</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    3 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+        <footer class="article-translations">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+            <div>
+                
+                    <a href="http://localhost:1313/stu/golang_stu_01/" class="link">简体中文</a>
+                
+            </div>
+        </footer>
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <blockquote>
+<p>Preface: Go (also called Golang) is an open-source programming language developed by Google and first released publicly in 2009. It aims to provide concise, efficient, and reliable tools for software development. Golang is statically typed and compiled, and it is expressive thanks to its concurrency features. Programs written in Go can make very effective use of multi-core and networked computers, and its novel type system keeps the code modular and flexible. Compiling Go code to machine code is fast, and the language also offers convenient garbage collection plus a powerful reflection runtime.</p>
+</blockquote>
+<blockquote>
+<p><strong>Notes from this journey:</strong> I will supplement this section after finishing the lessons.</p>
+</blockquote>
+<h1 id="1-learning-resources">1. Learning Resources
+</h1><p><a class="link" href="https://go.p2hp.com/"  target="_blank" rel="noopener"
+    >Chinese documentation</a>: <a class="link" href="https://go.p2hp.com/"  target="_blank" rel="noopener"
+    >https://go.p2hp.com/</a> 【Not recommended—lagging behind the official docs】</p>
+<p><a class="link" href="https://go.dev/"  target="_blank" rel="noopener"
+    >Official documentation</a>: <a class="link" href="https://go.dev/"  target="_blank" rel="noopener"
+    >https://go.dev/</a> 【Recommended—the latest, in English】</p>
+<p>Practice while learning: <a class="link" href="https://go.p2hp.com/tour/welcome/1"  target="_blank" rel="noopener"
+    >Chinese tour</a> | <a class="link" href="https://go.dev/tour/welcome/1"  target="_blank" rel="noopener"
+    >English tour</a></p>
+<p><a class="link" href="https://www.bilibili.com/video/BV1Rm421N7Jy?spm_id_from=333.788.videopod.episodes&amp;vd_source=01346eb530fb4dd830f23ec34cb4d8b2"  target="_blank" rel="noopener"
+    >Bilibili study video</a></p>
+<h1 id="2-installing-go-on-windows">2. Installing Go on Windows
+</h1><h2 id="21-installation">2.1 Installation
+</h2><p>Follow the screenshots below step by step:
+<figure><img src="/img/golang_stu/go_stu_0101.png">
+</figure>
+</p>
+<p>Click the arrow to download the installer and follow the prompts. <!-- raw HTML omitted -->Note: Developers typically avoid installing the newest release because it may have bugs, but the latest version is fine for learning.<!-- raw HTML omitted -->
+<figure><img src="/img/golang_stu/go_stu_0102.png">
+</figure>
+</p>
+<p>Double-click the downloaded <code>go1.23.4.windows-amd64.msi</code> file to install.</p>
+<figure><img src="/img/golang_stu/go_stu_0103.png">
+</figure>
+
+<figure><img src="/img/golang_stu/go_stu_0104.png">
+</figure>
+
+<figure><img src="/img/golang_stu/go_stu_0105.png">
+</figure>
+
+<figure><img src="/img/golang_stu/go_stu_0106.png">
+</figure>
+
+<h2 id="22-verification">2.2 Verification
+</h2><p><a class="link" href="https://www.chunjingban.net/jiaocheng/25409.html"  target="_blank" rel="noopener"
+    >Windows environment variables tutorial</a>
+<figure><img src="/img/golang_stu/go_stu_0107.png">
+</figure>
+</p>
+<p>You can also verify the Go installation via commands:</p>
+<ol>
+<li>
+<p>Press Win + R, type <code>cmd</code>, and press Enter.
+<figure><img src="/img/golang_stu/go_stu_0108.png">
+</figure>
+</p>
+</li>
+<li>
+<p>Run the following commands:</p>
+</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Go version</span>
+</span></span><span style="display:flex;"><span>go version
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Go environment</span>
+</span></span><span style="display:flex;"><span>go env
+</span></span></code></pre></div><figure><img src="/img/golang_stu/go_stu_0109.png">
+</figure>
+
+<p><strong><!-- raw HTML omitted -->Tip: If you accidentally left-click and see the terminal highlighted (pay attention to the selection indicator in the top-left), the cmd window is paused. Right-click to release and continue.<!-- raw HTML omitted --></strong>
+<figure><img src="/img/golang_stu/go_stu_0110.png">
+</figure>
+</p>
+<h1 id="3-development-environmentvscode">3. Development Environment—VsCode
+</h1><h2 id="31-installing-vscode">3.1 Installing VsCode
+</h2><p><a class="link" href="https://code.visualstudio.com/Download"  target="_blank" rel="noopener"
+    >Download VsCode</a>
+<figure><img src="/img/golang_stu/go_stu_0111.png">
+</figure>
+</p>
+<p>After downloading, extract the archive and be sure to click “Extract” or “Extract to &quot;VsCode-win***&quot;”; otherwise the files scatter across the current directory. Place the extracted folder anywhere you like on your chosen drive.</p>
+<figure><img src="/img/golang_stu/go_stu_0112.png">
+</figure>
+
+<p>Click “Extract” to proceed:
+<figure><img src="/img/golang_stu/go_stu_0113.png">
+</figure>
+</p>
+<p>Put a shortcut on the desktop.
+<figure><img src="/img/golang_stu/go_stu_0114.png">
+</figure>
+</p>
+<p>Open the software and review the quick overview.
+<figure><img src="/img/golang_stu/go_stu_0115.png">
+</figure>
+</p>
+<h2 id="32-install-extensions">3.2 Install Extensions
+</h2><h3 id="321-language-localization-extension">3.2.1 Language localization extension
+</h3><figure><img src="/img/golang_stu/go_stu_0116.png">
+</figure>
+
+<figure><img src="/img/golang_stu/go_stu_0117.png">
+</figure>
+
+<h3 id="322-go-extension">3.2.2 Go extension
+</h3><p>Install the Go extension in the same way.
+<figure><img src="/img/golang_stu/go_stu_0118.png">
+</figure>
+</p>
+<h1 id="4-hello-world-walkthrough">4. Hello World Walkthrough
+</h1><h2 id="41-create-the-project">4.1 Create the project
+</h2><figure><img src="/img/golang_stu/go_stu_0119.png">
+</figure>
+
+<p>Open the project folder in VsCode.
+<figure><img src="/img/golang_stu/go_stu_0120.png">
+</figure>
+</p>
+<figure><img src="/img/golang_stu/go_stu_0121.png">
+</figure>
+
+<p>When prompted, trust the author.
+<figure><img src="/img/golang_stu/go_stu_0122.png">
+</figure>
+</p>
+<h2 id="42-create-the-project-file">4.2 Create the project file
+</h2><figure><img src="/img/golang_stu/go_stu_0123.png">
+</figure>
+
+<h2 id="43-write-the-hello-world-program">4.3 Write the Hello World program
+</h2><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// package declaration: Think of it as a folder</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span> 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// import: usually brings in standard library or custom packages</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// main function: the entry point</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>()  {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Print the Hello World string; semicolons are optional</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;Hello World&#34;</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><figure><img src="/img/golang_stu/go_stu_0124.png">
+</figure>
+
+<h2 id="44-fix-vscode-code-suggestions">4.4 Fix VsCode code suggestions
+</h2><p>Open a cmd terminal and configure the Go proxy:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>go env -w GOPROXY<span style="color:#f92672">=</span>https://goproxy.io/
+</span></span></code></pre></div><figure><img src="/img/golang_stu/go_stu_0125.png">
+</figure>
+
+<p>Restart VsCode a few times until the tools finish installing and code completion works.
+<figure><img src="/img/golang_stu/go_stu_0126.png">
+</figure>
+</p>
+<h2 id="45-run-the-program">4.5 Run the program
+</h2><p>Open a terminal (it is just the Windows cmd window) and run the Go file:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># run a Go file</span>
+</span></span><span style="display:flex;"><span>go run main.go
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># output</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Hello World</span>
+</span></span></code></pre></div><figure><img src="/img/golang_stu/go_stu_0127.png">
+</figure>
+
+<h2 id="46-build-the-executable">4.6 Build the executable
+</h2><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># compile the Go file into an executable</span>
+</span></span><span style="display:flex;"><span>go build main.go
+</span></span></code></pre></div><figure><img src="/img/golang_stu/go_stu_0128.png">
+</figure>
+
+<p>After the build you can double-click the exe to run it. <!-- raw HTML omitted --><strong>Tip: The program exits immediately after finishing, so the terminal window closes at once, which makes it look like nothing happened.</strong><!-- raw HTML omitted --></p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/en/tags/golang-syntax/">Golang Syntax</a>
+        
+    </section>
+
+
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    <script
+    src="https://giscus.app/client.js"
+    data-repo="zg-dd/zg-dd.github.io"
+    data-repo-id="R_kgDOQwB7tw"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOQwB7t84C0WGD"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="bottom"
+    data-theme="preferred_color_scheme"
+    data-lang="zh-CN"
+    data-loading=""
+    crossorigin="anonymous"
+    async
+></script>
+<script>
+    function setGiscusTheme(theme) {
+        let giscus = document.querySelector("iframe.giscus-frame");
+        if (giscus) {
+            giscus.contentWindow.postMessage(
+                {
+                    giscus: {
+                        setConfig: {
+                            theme: theme,
+                        },
+                    },
+                },
+                "https://giscus.app"
+            );
+        }
+    }
+
+    (function () {
+        addEventListener("message", (e) => {
+            if (event.origin !== "https://giscus.app") return;
+            handler();
+        });
+        window.addEventListener("onColorSchemeChange", handler);
+
+        function handler() {
+            if (document.documentElement.dataset.scheme === "light") {
+                setGiscusTheme('preferred_color_scheme');
+            } else {
+                setGiscusTheme('preferred_color_scheme');
+            }
+        }
+    })();
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2026 小巷 Blog
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.33.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+    
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.45aad63e0378c1185109134874d406d25af802b2faa021ec5fd0dfa8bbfa4d2a.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

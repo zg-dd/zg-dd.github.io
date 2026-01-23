@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Golang语法 on 小巷的随笔</title><link>https://zg-dd.github.io/tags/golang%E8%AF%AD%E6%B3%95/</link><description>Recent content in Golang语法 on 小巷的随笔</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Thu, 13 Feb 2025 17:45:37 +0800</lastBuildDate><atom:link href="https://zg-dd.github.io/tags/golang%E8%AF%AD%E6%B3%95/index.xml" rel="self" type="application/rss+xml"/><item><title>Golang学习历程【第七篇 闭包&amp;type defer panic recover了解&amp;time包】</title><link>https://zg-dd.github.io/stu/golang_stu_07/</link><pubDate>Thu, 13 Feb 2025 17:45:37 +0800</pubDate><guid>https://zg-dd.github.io/stu/golang_stu_07/</guid><description>&lt;h1 id="1-闭包"&gt;1. 闭包
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Golang语法 on 小巷的随笔</title><link>https://zg-dd.github.io/tags/golang%E8%AF%AD%E6%B3%95/</link><description>Recent content in Golang语法 on 小巷的随笔</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Thu, 13 Feb 2025 17:45:37 +0800</lastBuildDate><atom:link href="https://zg-dd.github.io/tags/golang%E8%AF%AD%E6%B3%95/index.xml" rel="self" type="application/rss+xml"/><item><title>Golang学习历程【第七篇 闭包&amp;type defer panic recover了解&amp;time包】</title><link>https://zg-dd.github.io/stu/golang-stu-07/</link><pubDate>Thu, 13 Feb 2025 17:45:37 +0800</pubDate><guid>https://zg-dd.github.io/stu/golang-stu-07/</guid><description>&lt;h1 id="1-闭包"&gt;1. 闭包
 &lt;/h1&gt;&lt;h2 id="11-闭包的定义"&gt;1.1 闭包的定义
 &lt;/h2&gt;&lt;blockquote&gt;
 &lt;p&gt;闭包函数（Closure）是函数式编程中的一个重要概念。在Go语言中，闭包函数是指一个函数与其引用的环境的组合。闭包函数可以访问并修改其外部函数中的变量，即使外部函数已经执行完毕。&lt;/p&gt;
@@ -215,7 +215,7 @@ time包中的Now函数可以获取当前时间，它返回一个Time类型的值
 &lt;li&gt;时间间隔： time.Duration(10) * time.Second&lt;/li&gt;
 &lt;li&gt;时间操作： currentTime.Add(duration)&lt;/li&gt;
 &lt;li&gt;时间比较： currentTime.Before(parsedTime) | currentTime.After(parsedTime) | currentTime.Equal(parsedTime)&lt;/li&gt;
-&lt;/ol&gt;</description></item><item><title>Golang学习历程【第六篇 复合数据类型map&amp;函数初识】</title><link>https://zg-dd.github.io/stu/golang_stu_06/</link><pubDate>Tue, 11 Feb 2025 20:05:09 +0800</pubDate><guid>https://zg-dd.github.io/stu/golang_stu_06/</guid><description>&lt;h1 id="1-map数据类型"&gt;1. Map数据类型
+&lt;/ol&gt;</description></item><item><title>Golang学习历程【第六篇 复合数据类型map&amp;函数初识】</title><link>https://zg-dd.github.io/stu/golang-stu-06/</link><pubDate>Tue, 11 Feb 2025 20:05:09 +0800</pubDate><guid>https://zg-dd.github.io/stu/golang-stu-06/</guid><description>&lt;h1 id="1-map数据类型"&gt;1. Map数据类型
 &lt;/h1&gt;&lt;blockquote&gt;
 &lt;p&gt;Map结构是键值对的集合，其中每个键都是唯一的，并且每个键都映射到一个值。
 Map是无序的，即元素的顺序是不确定的。
@@ -534,7 +534,7 @@ Map结构为&lt;strong&gt;引用数据类型&lt;/strong&gt;&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; * add8 3 + 4 = 7
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; */&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description></item><item><title>Golang学习历程【第五篇 复合数据类型：数组&amp;切片】</title><link>https://zg-dd.github.io/stu/golang_stu_05/</link><pubDate>Wed, 08 Jan 2025 22:05:33 +0800</pubDate><guid>https://zg-dd.github.io/stu/golang_stu_05/</guid><description>&lt;h1 id="1-数组array"&gt;1. 数组（Array）
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description></item><item><title>Golang学习历程【第五篇 复合数据类型：数组&amp;切片】</title><link>https://zg-dd.github.io/stu/golang-stu-05/</link><pubDate>Wed, 08 Jan 2025 22:05:33 +0800</pubDate><guid>https://zg-dd.github.io/stu/golang-stu-05/</guid><description>&lt;h1 id="1-数组array"&gt;1. 数组（Array）
 &lt;/h1&gt;&lt;blockquote&gt;
 &lt;p&gt;数组: 一系列&lt;strong&gt;固定长度&lt;/strong&gt;、&lt;strong&gt;同一类型&lt;/strong&gt;数据的集合。&lt;strong&gt;数组为值类型&lt;/strong&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -980,7 +980,7 @@ copy(dst, src []Type)，dst是destination，表示目的变量，src是source，
 &lt;/figure&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/blockquote&gt;</description></item><item><title>Golang学习历程【第四篇 运算符&amp;流程控制】</title><link>https://zg-dd.github.io/stu/golang_stu_04/</link><pubDate>Wed, 01 Jan 2025 11:03:08 +0800</pubDate><guid>https://zg-dd.github.io/stu/golang_stu_04/</guid><description>&lt;h1 id="1-运算符"&gt;1. 运算符
+&lt;/blockquote&gt;</description></item><item><title>Golang学习历程【第四篇 运算符&amp;流程控制】</title><link>https://zg-dd.github.io/stu/golang-stu-04/</link><pubDate>Wed, 01 Jan 2025 11:03:08 +0800</pubDate><guid>https://zg-dd.github.io/stu/golang-stu-04/</guid><description>&lt;h1 id="1-运算符"&gt;1. 运算符
 &lt;/h1&gt;&lt;h2 id="11-算术运算符"&gt;1.1 算术运算符
 &lt;/h2&gt;&lt;table&gt;
 &lt;thead&gt;
@@ -1708,7 +1708,7 @@ copy(dst, src []Type)，dst是destination，表示目的变量，src是source，
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;执行语句3
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;执行语句1
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;执行语句4
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description></item><item><title>Golang学习历程【第三篇 基本数据类型&amp;类型转换】</title><link>https://zg-dd.github.io/stu/golang_stu_03/</link><pubDate>Sat, 21 Dec 2024 19:37:51 +0800</pubDate><guid>https://zg-dd.github.io/stu/golang_stu_03/</guid><description>&lt;h1 id="1-总览"&gt;1. 总览
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description></item><item><title>Golang学习历程【第三篇 基本数据类型&amp;类型转换】</title><link>https://zg-dd.github.io/stu/golang-stu-03/</link><pubDate>Sat, 21 Dec 2024 19:37:51 +0800</pubDate><guid>https://zg-dd.github.io/stu/golang-stu-03/</guid><description>&lt;h1 id="1-总览"&gt;1. 总览
 &lt;/h1&gt;&lt;p&gt;Go语言中数据类型分为：基本数据类型和复合数据类型&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;&lt;strong&gt;基本数据类型&lt;/strong&gt;：整型，浮点型，布尔型，字符串
@@ -2205,7 +2205,7 @@ copy(dst, src []Type)，dst是destination，表示目的变量，src是source，
 &lt;p&gt;其他还包含strconv.Append(字符换追加)、strconv.IsPrint（是否可打印） 和 strconv.IsGraphic（是否图形字符）、strconv.Quote（字符串转义） 和 strconv.Unquote（取出转义）、strconv.CanBackquote（判断是否可以表示为单行反引号字符串）等。
 这里学习到这，不做详细示例分析，有印象即可，需要时再学习；可参考&lt;a class="link" href="https://www.jb51.net/jiaoben/290715618.htm" target="_blank" rel="noopener"
 &gt;链接&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;</description></item><item><title>Golang学习历程【第二篇 fmt包&amp;变量、常量的定义】</title><link>https://zg-dd.github.io/stu/golang_stu_02/</link><pubDate>Sat, 21 Dec 2024 19:36:53 +0800</pubDate><guid>https://zg-dd.github.io/stu/golang_stu_02/</guid><description>&lt;blockquote&gt;
+&lt;/blockquote&gt;</description></item><item><title>Golang学习历程【第二篇 fmt包&amp;变量、常量的定义】</title><link>https://zg-dd.github.io/stu/golang-stu-02/</link><pubDate>Sat, 21 Dec 2024 19:36:53 +0800</pubDate><guid>https://zg-dd.github.io/stu/golang-stu-02/</guid><description>&lt;blockquote&gt;
 &lt;p&gt;前言：包是指由官方或者自定义的一系列功能集合体。使用前需要先引入，例如今日所讲的fmt包。引入方式如下： &lt;code&gt;import &amp;quot;fmt&amp;quot;&lt;/code&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h1 id="1-fmt-包"&gt;1. fmt 包
@@ -2602,7 +2602,7 @@ copy(dst, src []Type)，dst是destination，表示目的变量，src是source，
 &lt;li&gt;变量的名字是严格区分大小写的，name、Name、NAme以及NAME是不同的四个变量。Go语法支持，但不推荐这样写。&lt;/li&gt;
 &lt;li&gt;变量定义尽可能见名思意&lt;/li&gt;
 &lt;li&gt;变量名一般采用驼峰命名法。驼峰命名：首字母小写，后续每个单子首字母大写，例如：maxAge。如果是专属名词，例如DNS,IP等，可直接采用大写。&lt;/li&gt;
-&lt;/ol&gt;</description></item><item><title>Golang学习历程【第一篇 入门】</title><link>https://zg-dd.github.io/stu/golang_stu_01/</link><pubDate>Sat, 21 Dec 2024 10:51:49 +0800</pubDate><guid>https://zg-dd.github.io/stu/golang_stu_01/</guid><description>&lt;blockquote&gt;
+&lt;/ol&gt;</description></item><item><title>Golang学习历程【第一篇 入门】</title><link>https://zg-dd.github.io/stu/golang-stu-01/</link><pubDate>Sat, 21 Dec 2024 10:51:49 +0800</pubDate><guid>https://zg-dd.github.io/stu/golang-stu-01/</guid><description>&lt;blockquote&gt;
 &lt;p&gt;引言：Go（又称为Golang）是一种开源的编程语言，由Google开发，于2009年首次公开发布。它旨在提供简洁、高效、可靠的软件开发解决方案。Golang是一种静态强类型、编译型语言，Golang具有很强的表达能力，得益于其并发机制，用它编写的程序能够非常有效地利用多核与联网的计算机，其新颖的类型系统则使程序结构变得灵活而模块化。 Go 代码编译成机器码不仅非常迅速，还具有方便的垃圾收集机制和强大的运行时反射机制。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;blockquote&gt;

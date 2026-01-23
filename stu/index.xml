@@ -1,4 +1,1005 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>学习笔记 on 小巷的随笔</title><link>https://zg-dd.github.io/stu/</link><description>Recent content in 学习笔记 on 小巷的随笔</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Thu, 13 Feb 2025 17:45:37 +0800</lastBuildDate><atom:link href="https://zg-dd.github.io/stu/index.xml" rel="self" type="application/rss+xml"/><item><title>Golang学习历程【第七篇 闭包&amp;type defer panic recover了解&amp;time包】</title><link>https://zg-dd.github.io/stu/golang_stu_07/</link><pubDate>Thu, 13 Feb 2025 17:45:37 +0800</pubDate><guid>https://zg-dd.github.io/stu/golang_stu_07/</guid><description>&lt;h1 id="1-闭包"&gt;1. 闭包
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>学习笔记 on 小巷的随笔</title><link>https://zg-dd.github.io/stu/</link><description>Recent content in 学习笔记 on 小巷的随笔</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Wed, 19 Nov 2025 11:00:42 +0800</lastBuildDate><atom:link href="https://zg-dd.github.io/stu/index.xml" rel="self" type="application/rss+xml"/><item><title>Go 语言调试器 Delve (dlv) 学习笔记</title><link>https://zg-dd.github.io/stu/go-delve/</link><pubDate>Wed, 19 Nov 2025 11:00:42 +0800</pubDate><guid>https://zg-dd.github.io/stu/go-delve/</guid><description>&lt;h2 id="概述"&gt;概述
+&lt;/h2&gt;&lt;p&gt;Delve（简称 dlv）是 Go 语言的官方调试器，专门为 Go 的并发模型和运行时特性设计。它是目前 Go 生态中最主流、功能最强大的调试工具。&lt;/p&gt;
+&lt;h2 id="安装"&gt;安装
+&lt;/h2&gt;&lt;h3 id="推荐安装方式"&gt;推荐安装方式
+&lt;/h3&gt;&lt;p&gt;使用 Go Module 模式安装最新版本：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;go install github.com/go-delve/delve/cmd/dlv@latest
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="验证安装"&gt;验证安装
+&lt;/h3&gt;&lt;p&gt;安装完成后，在终端输入以下命令验证：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;dlv version
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;如果 &lt;code&gt;$GOPATH/bin&lt;/code&gt; 不在你的 &lt;code&gt;PATH&lt;/code&gt; 环境变量中，需要将其加入，或者直接使用完整路径：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;~/go/bin/dlv version
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="核心功能"&gt;核心功能
+&lt;/h2&gt;&lt;p&gt;Delve 提供以下核心功能：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;设置断点&lt;/strong&gt;：在特定行、函数名处暂停程序执行&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;单步执行&lt;/strong&gt;：逐行或进入函数内部执行代码&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;变量查看&lt;/strong&gt;：打印变量值、检查复杂数据结构&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Goroutine 管理&lt;/strong&gt;：查看所有 Goroutine，在特定 Goroutine 上下文中调试&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;运行时修改变量&lt;/strong&gt;：动态改变变量值进行测试&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;调用栈查看&lt;/strong&gt;：了解程序执行路径&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="基本用法"&gt;基本用法
+&lt;/h2&gt;&lt;h3 id="示例代码"&gt;示例代码
+&lt;/h3&gt;&lt;p&gt;创建测试文件 &lt;code&gt;main.go&lt;/code&gt;：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;package&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;main&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;import&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;func&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;main&lt;/span&gt;() {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;message&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;Hello, Delve!&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Println&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;message&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;result&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;add&lt;/span&gt;(&lt;span style="color:#ae81ff"&gt;23&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;19&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;fmt&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Printf&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;Result: %d\n&amp;#34;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;result&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;func&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;add&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;a&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;b&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;) &lt;span style="color:#66d9ef"&gt;int&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;sum&lt;/span&gt; &lt;span style="color:#f92672"&gt;:=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;a&lt;/span&gt; &lt;span style="color:#f92672"&gt;+&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;b&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;return&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;sum&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="启动调试会话"&gt;启动调试会话
+&lt;/h3&gt;&lt;h4 id="模式1直接调试源代码"&gt;模式1：直接调试源代码
+&lt;/h4&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;dlv debug main.go
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id="模式2调试已编译的可执行文件"&gt;模式2：调试已编译的可执行文件
+&lt;/h4&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;go build -o myapp main.go
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;dlv exec ./myapp
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id="模式3附加到运行中的进程"&gt;模式3：附加到运行中的进程
+&lt;/h4&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 编译并启动程序&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;go build -gcflags&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;all=-N -l&amp;#34;&lt;/span&gt; -o myapp main.go
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;./myapp &amp;amp;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 获取进程ID并附加&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;PID&lt;span style="color:#f92672"&gt;=&lt;/span&gt;$!
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;dlv attach $PID
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="常用调试命令"&gt;常用调试命令
+&lt;/h3&gt;&lt;h4 id="断点管理"&gt;断点管理
+&lt;/h4&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;命令&lt;/th&gt;
+&lt;th&gt;缩写&lt;/th&gt;
+&lt;th&gt;功能&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;break main.main&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;b main.main&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;在 main 函数设断点&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;break main.go:10&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;b main.go:10&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;在第10行设断点&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;breakpoints&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;bp&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;列出所有断点&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;clear 1&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;-&lt;/td&gt;
+&lt;td&gt;删除ID为1的断点&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;clearall&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;-&lt;/td&gt;
+&lt;td&gt;删除所有断点&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h4 id="程序执行控制"&gt;程序执行控制
+&lt;/h4&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;命令&lt;/th&gt;
+&lt;th&gt;缩写&lt;/th&gt;
+&lt;th&gt;功能&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;continue&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;c&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;继续执行直到下一个断点&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;next&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;n&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;执行当前行，不进入函数&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;step&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;s&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;执行当前行，进入函数内部&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;stepout&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;so&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;执行完当前函数，返回调用者&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;restart&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;r&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;重新运行程序&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h4 id="变量和表达式查看"&gt;变量和表达式查看
+&lt;/h4&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;命令&lt;/th&gt;
+&lt;th&gt;缩写&lt;/th&gt;
+&lt;th&gt;功能&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;print message&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;p message&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;打印变量值&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;locals&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;-&lt;/td&gt;
+&lt;td&gt;打印当前函数所有局部变量&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;args&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;-&lt;/td&gt;
+&lt;td&gt;打印当前函数参数&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h4 id="其他实用命令"&gt;其他实用命令
+&lt;/h4&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;命令&lt;/th&gt;
+&lt;th&gt;缩写&lt;/th&gt;
+&lt;th&gt;功能&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;stack&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;bt&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;打印调用栈&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;goroutines&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;-&lt;/td&gt;
+&lt;td&gt;列出所有 Goroutine&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;goroutine 1&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;g 1&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;切换到指定 Goroutine&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;exit&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;q&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;退出调试器&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="完整调试会话示例"&gt;完整调试会话示例
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;$ dlv debug main.go
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Type &lt;span style="color:#e6db74"&gt;&amp;#39;help&amp;#39;&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;for&lt;/span&gt; list of commands.
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 设置断点&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;(&lt;/span&gt;dlv&lt;span style="color:#f92672"&gt;)&lt;/span&gt; b main.main
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Breakpoint &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt; set at 0x... &lt;span style="color:#66d9ef"&gt;for&lt;/span&gt; main.main&lt;span style="color:#f92672"&gt;()&lt;/span&gt; ./main.go:5
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;(&lt;/span&gt;dlv&lt;span style="color:#f92672"&gt;)&lt;/span&gt; b main.go:11
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Breakpoint &lt;span style="color:#ae81ff"&gt;2&lt;/span&gt; set at 0x... &lt;span style="color:#66d9ef"&gt;for&lt;/span&gt; main.main&lt;span style="color:#f92672"&gt;()&lt;/span&gt; ./main.go:11
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 开始执行&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;(&lt;/span&gt;dlv&lt;span style="color:#f92672"&gt;)&lt;/span&gt; c
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&amp;gt; main.main&lt;span style="color:#f92672"&gt;()&lt;/span&gt; ./main.go:5 &lt;span style="color:#f92672"&gt;(&lt;/span&gt;hits goroutine&lt;span style="color:#f92672"&gt;(&lt;/span&gt;1&lt;span style="color:#f92672"&gt;)&lt;/span&gt;:1 total:1&lt;span style="color:#f92672"&gt;)&lt;/span&gt; &lt;span style="color:#f92672"&gt;(&lt;/span&gt;PC: 0x...&lt;span style="color:#f92672"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; 1: package main
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; 2:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; 3: import &lt;span style="color:#e6db74"&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; 4:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&amp;gt; 5: func main&lt;span style="color:#f92672"&gt;()&lt;/span&gt; &lt;span style="color:#f92672"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; 6: message :&lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;Hello, Delve!&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; 7: fmt.Println&lt;span style="color:#f92672"&gt;(&lt;/span&gt;message&lt;span style="color:#f92672"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; 8: result :&lt;span style="color:#f92672"&gt;=&lt;/span&gt; add&lt;span style="color:#f92672"&gt;(&lt;/span&gt;23, 19&lt;span style="color:#f92672"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; 9: fmt.Printf&lt;span style="color:#f92672"&gt;(&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;Result: %d\n&amp;#34;&lt;/span&gt;, result&lt;span style="color:#f92672"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; 10: &lt;span style="color:#f92672"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 单步执行&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;(&lt;/span&gt;dlv&lt;span style="color:#f92672"&gt;)&lt;/span&gt; n
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&amp;gt; main.main&lt;span style="color:#f92672"&gt;()&lt;/span&gt; ./main.go:6 &lt;span style="color:#f92672"&gt;(&lt;/span&gt;PC: 0x...&lt;span style="color:#f92672"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; 5: func main&lt;span style="color:#f92672"&gt;()&lt;/span&gt; &lt;span style="color:#f92672"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&amp;gt; 6: message :&lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;Hello, Delve!&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; 7: fmt.Println&lt;span style="color:#f92672"&gt;(&lt;/span&gt;message&lt;span style="color:#f92672"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; 8: result :&lt;span style="color:#f92672"&gt;=&lt;/span&gt; add&lt;span style="color:#f92672"&gt;(&lt;/span&gt;23, 19&lt;span style="color:#f92672"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; 9: fmt.Printf&lt;span style="color:#f92672"&gt;(&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;Result: %d\n&amp;#34;&lt;/span&gt;, result&lt;span style="color:#f92672"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; 10: &lt;span style="color:#f92672"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 查看变量&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;(&lt;/span&gt;dlv&lt;span style="color:#f92672"&gt;)&lt;/span&gt; p message
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;(&lt;/span&gt;dlv&lt;span style="color:#f92672"&gt;)&lt;/span&gt; n
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&amp;gt; main.main&lt;span style="color:#f92672"&gt;()&lt;/span&gt; ./main.go:7 &lt;span style="color:#f92672"&gt;(&lt;/span&gt;PC: 0x...&lt;span style="color:#f92672"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;(&lt;/span&gt;dlv&lt;span style="color:#f92672"&gt;)&lt;/span&gt; p message
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;Hello, Delve!&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 步入函数&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;(&lt;/span&gt;dlv&lt;span style="color:#f92672"&gt;)&lt;/span&gt; s
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&amp;gt; fmt.Println&lt;span style="color:#f92672"&gt;(&lt;/span&gt;...&lt;span style="color:#f92672"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 步出函数&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;(&lt;/span&gt;dlv&lt;span style="color:#f92672"&gt;)&lt;/span&gt; so
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Hello, Delve!
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&amp;gt; main.main&lt;span style="color:#f92672"&gt;()&lt;/span&gt; ./main.go:8 &lt;span style="color:#f92672"&gt;(&lt;/span&gt;PC: 0x...&lt;span style="color:#f92672"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 继续执行&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;(&lt;/span&gt;dlv&lt;span style="color:#f92672"&gt;)&lt;/span&gt; c
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Result: &lt;span style="color:#ae81ff"&gt;42&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&amp;gt; main.main&lt;span style="color:#f92672"&gt;()&lt;/span&gt; ./main.go:11 &lt;span style="color:#f92672"&gt;(&lt;/span&gt;hits goroutine&lt;span style="color:#f92672"&gt;(&lt;/span&gt;1&lt;span style="color:#f92672"&gt;)&lt;/span&gt;:1 total:1&lt;span style="color:#f92672"&gt;)&lt;/span&gt; &lt;span style="color:#f92672"&gt;(&lt;/span&gt;PC: 0x...&lt;span style="color:#f92672"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;(&lt;/span&gt;dlv&lt;span style="color:#f92672"&gt;)&lt;/span&gt; p result
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#ae81ff"&gt;42&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 退出&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;(&lt;/span&gt;dlv&lt;span style="color:#f92672"&gt;)&lt;/span&gt; q
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="高级功能"&gt;高级功能
+&lt;/h2&gt;&lt;h3 id="条件断点"&gt;条件断点
+&lt;/h3&gt;&lt;p&gt;设置只在特定条件下触发的断点：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 当 i == 5 时才在第10行暂停&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;(&lt;/span&gt;dlv&lt;span style="color:#f92672"&gt;)&lt;/span&gt; b main.go:10
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Breakpoint &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt; set at main.go:10
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;(&lt;/span&gt;dlv&lt;span style="color:#f92672"&gt;)&lt;/span&gt; cond &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt; i &lt;span style="color:#f92672"&gt;==&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;5&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="调试测试代码"&gt;调试测试代码
+&lt;/h3&gt;&lt;p&gt;Delve 可以直接调试测试用例：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;dlv test main_test.go
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;在测试函数上设置断点：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;(&lt;/span&gt;dlv&lt;span style="color:#f92672"&gt;)&lt;/span&gt; b TestMyFunction
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="传递命令行参数"&gt;传递命令行参数
+&lt;/h3&gt;&lt;p&gt;如果程序需要命令行参数：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;dlv debug -- arg1 arg2
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 或&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;dlv exec ./myapp -- arg1 arg2
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="goroutine-调试"&gt;Goroutine 调试
+&lt;/h3&gt;&lt;p&gt;调试并发程序时的 Goroutine 操作：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 查看所有 Goroutine&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;(&lt;/span&gt;dlv&lt;span style="color:#f92672"&gt;)&lt;/span&gt; goroutines
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 切换到特定 Goroutine&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;(&lt;/span&gt;dlv&lt;span style="color:#f92672"&gt;)&lt;/span&gt; goroutine &lt;span style="color:#ae81ff"&gt;5&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 在当前 Goroutine 上下文中查看变量&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;(&lt;/span&gt;dlv&lt;span style="color:#f92672"&gt;)&lt;/span&gt; p localVar
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="实用技巧"&gt;实用技巧
+&lt;/h2&gt;&lt;h3 id="1-生产环境调试"&gt;1. 生产环境调试
+&lt;/h3&gt;&lt;p&gt;对于生产环境程序，编译时禁用优化：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;go build -gcflags&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;all=-N -l&amp;#34;&lt;/span&gt; -o myapp main.go
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="2-性能考虑"&gt;2. 性能考虑
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;调试版本程序运行较慢，仅用于调试目的&lt;/li&gt;
+&lt;li&gt;生产环境使用标准编译选项&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="3-ide-集成"&gt;3. IDE 集成
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;VS Code&lt;/strong&gt;：安装 Go 扩展，使用内置调试界面&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Goland&lt;/strong&gt;：原生支持 Delve，提供图形化调试界面&lt;/li&gt;
+&lt;li&gt;掌握命令行操作有助于理解 IDE 调试过程&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="4-常见问题排查"&gt;4. 常见问题排查
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;问题&lt;/strong&gt;：断点无法命中&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;检查代码优化选项，确保使用 &lt;code&gt;-gcflags=&amp;quot;all=-N -l&amp;quot;&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;确认断点设置在正确的行号和函数&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;问题&lt;/strong&gt;：变量显示优化值&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;由于编译器优化，变量值可能显示不准确&lt;/li&gt;
+&lt;li&gt;使用禁用优化的方式编译调试版本&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="总结"&gt;总结
+&lt;/h2&gt;&lt;p&gt;Delve 是 Go 开发者必备的调试工具，通过熟练掌握其使用方法，可以：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;快速定位问题&lt;/strong&gt;：通过断点和单步执行精准定位 bug&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;深入理解代码&lt;/strong&gt;：观察变量变化和程序执行流程&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;调试并发程序&lt;/strong&gt;：管理 Goroutine 和排查并发问题&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;提高开发效率&lt;/strong&gt;：减少调试时间，增加开发信心&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;建议从简单程序开始练习，逐步熟悉各种命令和场景，最终能够熟练运用 Delve 解决复杂的调试问题。&lt;/p&gt;</description></item><item><title>Docker 常用命令速查</title><link>https://zg-dd.github.io/stu/docker-command/</link><pubDate>Thu, 25 Sep 2025 11:57:50 +0800</pubDate><guid>https://zg-dd.github.io/stu/docker-command/</guid><description>&lt;h1 id="dockerdocker-complete常用命令大全"&gt;Docker&amp;amp;Docker Complete常用命令大全
+&lt;/h1&gt;&lt;h2 id="一镜像image管理"&gt;一、镜像（Image）管理
+&lt;/h2&gt;&lt;p&gt;镜像就像是软件的安装包或模板。&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="text-align: left"&gt;命令&lt;/th&gt;
+&lt;th style="text-align: left"&gt;描述&lt;/th&gt;
+&lt;th style="text-align: left"&gt;示例&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker images&lt;/code&gt;&lt;!-- raw HTML omitted --&gt;&lt;code&gt;docker image ls&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;列出本地所有镜像&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker images&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker search &amp;lt;名称&amp;gt;&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;从仓库搜索镜像&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker search nginx&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker pull &amp;lt;镜像名&amp;gt;:&amp;lt;标签&amp;gt;&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;下载镜像&lt;/strong&gt;（不指定标签则默认为 &lt;code&gt;latest&lt;/code&gt;）&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker pull nginx:alpine&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker rmi &amp;lt;镜像ID或名&amp;gt;&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;删除本地镜像&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker rmi nginx&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker image prune&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;清理未被使用的镜像（悬空镜像）&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker image prune&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker build -t &amp;lt;标签&amp;gt; .&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;根据 Dockerfile 构建镜像&lt;/strong&gt;（&lt;code&gt;.&lt;/code&gt; 代表当前目录）&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker build -t my-app:1.0 .&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h2 id="二容器container管理"&gt;二、容器（Container）管理
+&lt;/h2&gt;&lt;p&gt;容器是从镜像运行起来的实例。&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="text-align: left"&gt;命令&lt;/th&gt;
+&lt;th style="text-align: left"&gt;描述&lt;/th&gt;
+&lt;th style="text-align: left"&gt;示例&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker run [选项] &amp;lt;镜像&amp;gt;&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;创建并启动一个新容器&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker run -d -p 80:80 nginx&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker start &amp;lt;容器名/ID&amp;gt;&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;启动一个已停止的容器&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker start my_nginx&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker stop &amp;lt;容器名/ID&amp;gt;&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;停止一个运行中的容器&lt;/strong&gt;（优雅停止）&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker stop my_nginx&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker restart &amp;lt;容器名/ID&amp;gt;&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;重启容器&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker restart my_nginx&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker rm &amp;lt;容器名/ID&amp;gt;&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;删除一个已停止的容器&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker rm my_nginx&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker container prune&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;删除所有已停止的容器&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker container prune&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker ps&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;列出正在运行的容器&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker ps&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker ps -a&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;列出所有容器（包括已停止的）&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker ps -a&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker logs &amp;lt;容器名/ID&amp;gt;&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;查看容器的日志输出&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker logs my_nginx&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker logs -f &amp;lt;容器名/ID&amp;gt;&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;实时跟踪（跟随）日志输出&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker logs -f my_nginx&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker exec -it &amp;lt;容器名/ID&amp;gt; &amp;lt;命令&amp;gt;&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;在运行中的容器内执行命令&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker exec -it my_nginx /bin/bash&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h2 id="三网络network管理"&gt;三、网络（Network）管理
+&lt;/h2&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="text-align: left"&gt;命令&lt;/th&gt;
+&lt;th style="text-align: left"&gt;描述&lt;/th&gt;
+&lt;th style="text-align: left"&gt;示例&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker network ls&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;列出所有网络&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker network ls&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker network create &amp;lt;网络名&amp;gt;&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;创建一个新网络&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker network create my_net&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker network inspect &amp;lt;网络名&amp;gt;&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;查看网络详细信息&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker network inspect bridge&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h2 id="四数据卷volume管理"&gt;四、数据卷（Volume）管理
+&lt;/h2&gt;&lt;p&gt;数据卷用于持久化存储数据。&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="text-align: left"&gt;命令&lt;/th&gt;
+&lt;th style="text-align: left"&gt;描述&lt;/th&gt;
+&lt;th style="text-align: left"&gt;示例&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker volume ls&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;列出所有数据卷&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker volume ls&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker volume create &amp;lt;卷名&amp;gt;&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;创建一个数据卷&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker volume create my_data&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker volume rm &amp;lt;卷名&amp;gt;&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;删除一个数据卷&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker volume rm my_data&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker volume prune&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;清理未被使用的数据卷&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker volume prune&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h2 id="五系统与信息"&gt;五、系统与信息
+&lt;/h2&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="text-align: left"&gt;命令&lt;/th&gt;
+&lt;th style="text-align: left"&gt;描述&lt;/th&gt;
+&lt;th style="text-align: left"&gt;示例&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker info&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;显示 Docker 系统信息&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker info&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker version&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;显示 Docker 版本信息&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker version&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker stats&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;实时显示容器资源使用统计&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker stats&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker system df&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;查看 Docker 磁盘使用情况&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker system df&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h2 id="六docker-compose-常用命令"&gt;六、Docker Compose 常用命令
+&lt;/h2&gt;&lt;p&gt;用于管理多容器应用。&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="text-align: left"&gt;命令&lt;/th&gt;
+&lt;th style="text-align: left"&gt;描述&lt;/th&gt;
+&lt;th style="text-align: left"&gt;示例&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker compose up&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;创建并启动所有服务&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker compose up&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker compose up -d&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;在后台创建并启动所有服务&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker compose up -d&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker compose down&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;停止并删除所有容器、网络&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker compose down&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker compose ps&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;列出本项目下的所有容器&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker compose ps&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker compose logs&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;查看所有服务的日志&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker compose logs&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker compose logs -f &amp;lt;服务名&amp;gt;&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;实时跟踪特定服务的日志&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker compose logs -f web&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker compose exec &amp;lt;服务名&amp;gt; &amp;lt;命令&amp;gt;&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;在指定服务的容器中执行命令&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker compose exec db mysql -u root -p&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h2 id="命令中的常用选项flags释义"&gt;命令中的常用选项（Flags）释义
+&lt;/h2&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="text-align: left"&gt;选项&lt;/th&gt;
+&lt;th style="text-align: left"&gt;全称&lt;/th&gt;
+&lt;th style="text-align: left"&gt;含义&lt;/th&gt;
+&lt;th style="text-align: left"&gt;示例&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;-d&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;--detach&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;后台运行容器&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker run -d nginx&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;-it&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;-i -t&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;交互式运行&lt;/strong&gt;（分配伪终端，通常与 &lt;code&gt;/bin/bash&lt;/code&gt; 连用）&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker run -it ubuntu /bin/bash&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;-p&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;--publish&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;端口映射&lt;/strong&gt;（主机端口:容器端口）&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker run -p 8080:80 nginx&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;-v&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;--volume&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;挂载数据卷或目录&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker run -v /host/data:/container/data nginx&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;-e&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;--env&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;设置环境变量&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker run -e MY_VAR=value nginx&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;--name&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;为容器指定一个名称&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker run --name my_nginx nginx&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;--rm&lt;/code&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;容器退出时自动删除&lt;/strong&gt;（常用于测试）&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;code&gt;docker run --rm alpine echo &amp;quot;hello&amp;quot;&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h2 id="-最常用命令总结快速上手"&gt;🚀 最常用命令总结（快速上手）
+&lt;/h2&gt;&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;看状态&lt;/strong&gt;: &lt;code&gt;docker ps&lt;/code&gt; (看容器), &lt;code&gt;docker images&lt;/code&gt; (看镜像)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;拉镜像&lt;/strong&gt;: &lt;code&gt;docker pull &amp;lt;名字&amp;gt;&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;启容器&lt;/strong&gt;: &lt;code&gt;docker run -d -p ... --name ... &amp;lt;镜像名&amp;gt;&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;停容器&lt;/strong&gt;: &lt;code&gt;docker stop &amp;lt;名字&amp;gt;&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;进容器&lt;/strong&gt;: &lt;code&gt;docker exec -it &amp;lt;名字&amp;gt; /bin/bash&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;看日志&lt;/strong&gt;: &lt;code&gt;docker logs -f &amp;lt;名字&amp;gt;&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;删容器&lt;/strong&gt;: &lt;code&gt;docker rm &amp;lt;名字&amp;gt;&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;删镜像&lt;/strong&gt;: &lt;code&gt;docker rmi &amp;lt;名字&amp;gt;&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;建议&lt;/strong&gt;: 将这份列表保存下来，作为日常操作的速查手册。&lt;/p&gt;
+&lt;/blockquote&gt;</description></item><item><title>网络通讯核心知识</title><link>https://zg-dd.github.io/stu/socket/</link><pubDate>Fri, 15 Aug 2025 19:08:51 +0800</pubDate><guid>https://zg-dd.github.io/stu/socket/</guid><description>&lt;h1 id="网络通讯核心知识"&gt;网络通讯核心知识
+&lt;/h1&gt;&lt;h2 id="一核心概念"&gt;一、核心概念
+&lt;/h2&gt;&lt;h3 id="1-socket"&gt;1. Socket
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;是什么&lt;/strong&gt;：进程间通信(IPC)的扩展机制&lt;br&gt;
+&lt;strong&gt;用途&lt;/strong&gt;：建立网络通信通道（TCP/UDP）&lt;br&gt;
+&lt;strong&gt;流程&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;服务端：socket → bind → listen → accept&lt;/li&gt;
+&lt;li&gt;客户端：socket → connect → write/read → close&lt;br&gt;
+&lt;strong&gt;注意事项&lt;/strong&gt;：需处理字节序转换(htonl/ntohl)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="2-tcp-vs-udp"&gt;2. TCP vs UDP
+&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;特性&lt;/th&gt;
+&lt;th&gt;TCP&lt;/th&gt;
+&lt;th&gt;UDP&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;连接方式&lt;/td&gt;
+&lt;td&gt;面向连接（三次握手）&lt;/td&gt;
+&lt;td&gt;无连接&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;可靠性&lt;/td&gt;
+&lt;td&gt;可靠传输（重传机制）&lt;/td&gt;
+&lt;td&gt;不可靠传输&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;数据形式&lt;/td&gt;
+&lt;td&gt;流式套接字&lt;/td&gt;
+&lt;td&gt;数据报套接字&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;适用场景&lt;/td&gt;
+&lt;td&gt;文件传输、网页浏览&lt;/td&gt;
+&lt;td&gt;实时视频、DNS查询&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id="二服务器模型"&gt;二、服务器模型
+&lt;/h2&gt;&lt;h3 id="1-迭代服务器"&gt;1. 迭代服务器
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;缺陷&lt;/strong&gt;：单线程阻塞，无法并发处理请求&lt;/p&gt;
+&lt;h3 id="2-进程线程模型"&gt;2. 进程/线程模型
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;进程方案&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;需用waitpid()避免僵尸进程&lt;/li&gt;
+&lt;li&gt;注意：子进程结束需父进程回收资源&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;僵尸进程处理详解&lt;/strong&gt;：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;产生原因&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;子进程终止但未被父进程wait()&lt;/li&gt;
+&lt;li&gt;会占用系统进程表资源&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;处理方法&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;同步回收&lt;/strong&gt;：
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;waitpid&lt;/span&gt;(pid, NULL, &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;); &lt;span style="color:#75715e"&gt;// 阻塞等待
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;异步回收&lt;/strong&gt;（推荐）：
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;signal&lt;/span&gt;(SIGCHLD, [](&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;while&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;waitpid&lt;/span&gt;(&lt;span style="color:#f92672"&gt;-&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, NULL, WNOHANG) &lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;});
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;特殊情形&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;父进程先终止时，僵尸进程由init进程接管并回收&lt;/li&gt;
+&lt;li&gt;批量回收时需循环调用waitpid()&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;线程方案&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;需处理共享变量加锁问题&lt;/li&gt;
+&lt;li&gt;线程同步更复杂（临界区/锁机制）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="3-进程池优化"&gt;3. 进程池优化
+&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;类型&lt;/th&gt;
+&lt;th&gt;特点&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;静态进程池&lt;/td&gt;
+&lt;td&gt;预创建进程，限制并发上限&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;动态进程池&lt;/td&gt;
+&lt;td&gt;维护最小/最大空闲进程数&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id="三高性能io模型"&gt;三、高性能I/O模型
+&lt;/h2&gt;&lt;h3 id="1-传统阻塞模型"&gt;1. 传统阻塞模型
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;特点&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;单线程阻塞等待I/O就绪&lt;/li&gt;
+&lt;li&gt;资源利用率低&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="2-selectpoll"&gt;2. Select/Poll
+&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;特性&lt;/th&gt;
+&lt;th&gt;Select&lt;/th&gt;
+&lt;th&gt;Poll&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;实现原理&lt;/td&gt;
+&lt;td&gt;位图轮询FD(描述符集)&lt;/td&gt;
+&lt;td&gt;链表轮询FD(描述符集)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;最大连接数&lt;/td&gt;
+&lt;td&gt;1024（FD_SETSIZE限制）&lt;/td&gt;
+&lt;td&gt;无硬性限制&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;效率缺陷&lt;/td&gt;
+&lt;td&gt;O(n)线性扫描&lt;/td&gt;
+&lt;td&gt;O(n)线性扫描&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;跨平台性&lt;/td&gt;
+&lt;td&gt;所有平台支持&lt;/td&gt;
+&lt;td&gt;所有平台支持&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="3-epoll"&gt;3. Epoll
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;核心机制&lt;/strong&gt;：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;事件注册&lt;/strong&gt;：通过epoll_ctl维护红黑树&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;就绪列表&lt;/strong&gt;：内核维护就绪FD双向链表&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;触发模式&lt;/strong&gt;：
+&lt;ul&gt;
+&lt;li&gt;LT（Level Trigger）：类似Poll的触发方式&lt;/li&gt;
+&lt;li&gt;ET（Edge Trigger）：状态变化时单次通知&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;性能优势&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;O(1)事件通知复杂度&lt;/li&gt;
+&lt;li&gt;百万级连接支持（C1000K场景）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="4-nionon-blocking-io"&gt;4. NIO（Non-blocking I/O）
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;核心组件&lt;/strong&gt;：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Channel&lt;/strong&gt;：全双工通信管道（SocketChannel/FileChannel）&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Buffer&lt;/strong&gt;：结构化数据容器（ByteBuffer/CharBuffer）&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Selector&lt;/strong&gt;：多路复用器（基于系统epoll/kqueue实现）&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;工作流程&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code class="language-plantuml" data-lang="plantuml"&gt;start
+: 创建Selector;
+: 注册Channel到Selector;
+repeat
+: select()查询就绪事件;
+: 处理SelectionKey事件;
+repeat while (有事件?)
+stop
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id="5-aioasynchronous-io"&gt;5. AIO（Asynchronous I/O）
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;实现原理&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;内核完成I/O操作后主动回调&lt;/li&gt;
+&lt;li&gt;无需用户线程轮询&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;典型场景&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;大文件异步读写&lt;/li&gt;
+&lt;li&gt;高延迟网络操作&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="6-完整对比表"&gt;6. 完整对比表
+&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;模型&lt;/th&gt;
+&lt;th&gt;阻塞性&lt;/th&gt;
+&lt;th&gt;线程要求&lt;/th&gt;
+&lt;th&gt;触发方式&lt;/th&gt;
+&lt;th&gt;适用场景&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;阻塞I/O&lt;/td&gt;
+&lt;td&gt;完全阻塞&lt;/td&gt;
+&lt;td&gt;1:1&lt;/td&gt;
+&lt;td&gt;-&lt;/td&gt;
+&lt;td&gt;低并发简单场景&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Select&lt;/td&gt;
+&lt;td&gt;非阻塞&lt;/td&gt;
+&lt;td&gt;1:N&lt;/td&gt;
+&lt;td&gt;轮询通知&lt;/td&gt;
+&lt;td&gt;跨平台中等并发&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Poll&lt;/td&gt;
+&lt;td&gt;非阻塞&lt;/td&gt;
+&lt;td&gt;1:N&lt;/td&gt;
+&lt;td&gt;轮询通知&lt;/td&gt;
+&lt;td&gt;连接数&amp;lt;10K&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Epoll&lt;/td&gt;
+&lt;td&gt;非阻塞&lt;/td&gt;
+&lt;td&gt;1:N&lt;/td&gt;
+&lt;td&gt;事件驱动&lt;/td&gt;
+&lt;td&gt;Linux高并发系统&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;NIO&lt;/td&gt;
+&lt;td&gt;非阻塞&lt;/td&gt;
+&lt;td&gt;1:N&lt;/td&gt;
+&lt;td&gt;就绪选择&lt;/td&gt;
+&lt;td&gt;高吞吐应用&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;AIO&lt;/td&gt;
+&lt;td&gt;异步&lt;/td&gt;
+&lt;td&gt;0:1&lt;/td&gt;
+&lt;td&gt;完成回调&lt;/td&gt;
+&lt;td&gt;延迟敏感型操作&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id="补充说明"&gt;补充说明
+&lt;/h2&gt;&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;内核支持&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Windows：IOCP是真正的异步I/O&lt;/li&gt;
+&lt;li&gt;Linux：5.1+内核的io_uring接近真异步&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;性能临界点&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;C10K：Select/Poll达到性能瓶颈&lt;/li&gt;
+&lt;li&gt;C100K：必须使用Epoll/NIO&lt;/li&gt;
+&lt;li&gt;C1000K：需要Epoll+零拷贝优化&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;编程复杂度&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;阻塞I/O &amp;lt; Select &amp;lt; Poll &amp;lt; Epoll &amp;lt; NIO &amp;lt; AIO&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id="四实践要点"&gt;四、实践要点
+&lt;/h2&gt;&lt;h3 id="1-守护进程"&gt;1. 守护进程
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;关键步骤&lt;/strong&gt;：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;fork()&lt;/li&gt;
+&lt;li&gt;setsid()&lt;br&gt;
+&lt;strong&gt;需重定向&lt;/strong&gt;标准I/O至/dev/null&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id="2-udp服务器"&gt;2. UDP服务器
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;特点&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;无需listen()/accept()&lt;/li&gt;
+&lt;li&gt;直接使用recvfrom()/sendto()&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="3-其他"&gt;3. 其他
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Reuse Address&lt;/strong&gt;：避免TIME_WAIT状态占用端口&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;惊群效应&lt;/strong&gt;：多进程Accept互相竞争导致，需内核锁优化&lt;br&gt;
+&lt;strong&gt;服务器类型&lt;/strong&gt;：&lt;/li&gt;
+&lt;li&gt;IO密集型：LNMP(nginx)&lt;/li&gt;
+&lt;li&gt;CPU密集型：LAMP(Apache)&lt;/li&gt;
+&lt;li&gt;协程：是用户态线程，用户态调度，避免内核切换开销，线程是内核调用。对比线程：切换速度更快，资源消耗更低&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="五学习建议"&gt;五、学习建议
+&lt;/h2&gt;&lt;h3 id="1-诊断工具"&gt;1. 诊断工具
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;netstat -anp &lt;span style="color:#75715e"&gt;# 查看网络连接&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="2-经典书籍"&gt;2. 经典书籍
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;《Unix网络编程》&lt;/li&gt;
+&lt;li&gt;《Unix环境高级编程》&lt;/li&gt;
+&lt;/ul&gt;</description></item><item><title>MCP 协议入门与核心机制</title><link>https://zg-dd.github.io/stu/mcp-protocol-core/</link><pubDate>Wed, 06 Aug 2025 15:14:07 +0800</pubDate><guid>https://zg-dd.github.io/stu/mcp-protocol-core/</guid><description>&lt;blockquote&gt;
+&lt;p&gt;个人学习笔记&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1 id="1-mcp的定义"&gt;1. MCP的定义
+&lt;/h1&gt;&lt;p&gt;MCP全称（Model Content Protocol, 模型上下文协议）是2024年由Anthropic公司推出的一项&lt;strong&gt;开放标准协议&lt;/strong&gt;，旨在大模型（LLM）与外部工具、数据源和服务提供统一的交互框架。其核心目标是解决AI生态中的“数据孤岛”问题，通过标准化接口实现模型与外部资源的无缝连接，类似于“AI领域的USB-C接口”或者“万能适配器”。&lt;/p&gt;
+&lt;h1 id="2-核心特性与技术原理"&gt;2. 核心特性与技术原理
+&lt;/h1&gt;&lt;h2 id="21-标准化三层架构"&gt;2.1 标准化三层架构
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;主机（Host）&lt;/strong&gt;：运行AI模型的核心应用（如Claude、Desktop、IDE插件）&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;客户端（Client）&lt;/strong&gt;：与服务器建立1:1连接，封装请求并转发&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;服务器（Server）&lt;/strong&gt;：轻量级适配器，连接具体工具或数据源（如数据库、API、文件系统）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="22-通信机制json-rpc-20协议"&gt;2.2 通信机制：JSON-RPC 2.0协议
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;本地通信&lt;/strong&gt;：通过stdio(标准输入输出)传输JSON-RPC消息，适用于本地工具调用&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;远程通信&lt;/strong&gt;：基于SSE(Server-Sent Events)和&lt;a class="link" href="https://blog.csdn.net/shykevin/article/details/147525192" target="_blank" rel="noopener"
+&gt;Streamable HTTP&lt;/a&gt;的HTTP长连接，支持异步数据流&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;消息格式&lt;/strong&gt;：所有请求和响应均遵循JSON-RPC 2.0规范&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="23-动态发现机制"&gt;2.3 动态发现机制
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;工具级动态发现&lt;/strong&gt;：工具通过&lt;strong&gt;自描述接口&lt;/strong&gt;（如OpenAPI）声明能力，AI模型可自动识别并调用，无需要硬编码集成&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;服务级动态发现&lt;/strong&gt;（不懂）： &lt;strong&gt;URI驱动发现&lt;/strong&gt;，客户端通过解析自定义URI（如mcp://api.service.com）发现远程服务：客户端访问URI对应的元数据端点（如https://api.service.com/llms.txt）。服务端返回JSON描述文件，包含功能列表，API文档和认证方式。Client根据元数据自动配置工具调用权限。&lt;strong&gt;应用场景&lt;/strong&gt;：用户粘贴一个MCP URI到聊天窗口，LLM自动识别并集成该服务（如股票API），无需手动配置。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id="3-安全与权限控制"&gt;3. 安全与权限控制
+&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;本地化执行&lt;/strong&gt;：默认MCP Server运行在本地，避免敏感数据外泄&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;操作确认机制&lt;/strong&gt;：高风险操作（如删除文件）需用户手动授权&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;企业级安全员扩展&lt;/strong&gt;：支持JWT令牌、RBAC权限模型和IPsec隧道加密，满足金融、医疗等场景需求&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id="4-与传统技术的区别"&gt;4. 与传统技术的区别
+&lt;/h1&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;特性&lt;/th&gt;
+&lt;th&gt;MCP&lt;/th&gt;
+&lt;th&gt;传统API&lt;/th&gt;
+&lt;th&gt;Function Calling​&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;集成方式​&lt;/td&gt;
+&lt;td&gt;统一协议，动态发现工具&lt;/td&gt;
+&lt;td&gt;每个API独立定制&lt;/td&gt;
+&lt;td&gt;需硬编码绑定特定函数&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;通信模式​&lt;/td&gt;
+&lt;td&gt;双向实时交互&lt;/td&gt;
+&lt;td&gt;单向请求-响应&lt;/td&gt;
+&lt;td&gt;同步执行，无实时推送&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;灵活性​&lt;/td&gt;
+&lt;td&gt;即插即用，支持多工具组合&lt;/td&gt;
+&lt;td&gt;扩展需重新开发&lt;/td&gt;
+&lt;td&gt;依赖模型供应商接口&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h1 id="5-总结"&gt;5. 总结
+&lt;/h1&gt;&lt;p&gt;MCP协议通过 &lt;strong&gt;“客户端-服务器解耦” + “JSON-RPC通信” + “动态发现机制”，&lt;/strong&gt; 解决了LLM与外部资源交互的三大痛点：
+&lt;strong&gt;灵活性&lt;/strong&gt;：工具可热插拔，服务可动态扩展；
+&lt;strong&gt;安全性&lt;/strong&gt;：本地化执行与权限控制兼顾效率与隐私；
+&lt;strong&gt;标准化&lt;/strong&gt;：统一协议降低集成成本，推动AI生态开放。&lt;/p&gt;
+&lt;p&gt;MCP通过协议层解耦AI模型与工具，推动AI从“对话助手”升级为“执行代理”，成为构建&lt;strong&gt;复杂Agent系统的底层基础&lt;/strong&gt;。随着企业智能化升级加速（如长虹虹信EADP平台集成MCP），该协议已成为构建下一代AI Agent的核心基础设施。&lt;/p&gt;</description></item><item><title>Golang学习历程【第七篇 闭包&amp;type defer panic recover了解&amp;time包】</title><link>https://zg-dd.github.io/stu/golang-stu-07/</link><pubDate>Thu, 13 Feb 2025 17:45:37 +0800</pubDate><guid>https://zg-dd.github.io/stu/golang-stu-07/</guid><description>&lt;h1 id="1-闭包"&gt;1. 闭包
 &lt;/h1&gt;&lt;h2 id="11-闭包的定义"&gt;1.1 闭包的定义
 &lt;/h2&gt;&lt;blockquote&gt;
 &lt;p&gt;闭包函数（Closure）是函数式编程中的一个重要概念。在Go语言中，闭包函数是指一个函数与其引用的环境的组合。闭包函数可以访问并修改其外部函数中的变量，即使外部函数已经执行完毕。&lt;/p&gt;
@@ -215,7 +1216,7 @@ time包中的Now函数可以获取当前时间，它返回一个Time类型的值
 &lt;li&gt;时间间隔： time.Duration(10) * time.Second&lt;/li&gt;
 &lt;li&gt;时间操作： currentTime.Add(duration)&lt;/li&gt;
 &lt;li&gt;时间比较： currentTime.Before(parsedTime) | currentTime.After(parsedTime) | currentTime.Equal(parsedTime)&lt;/li&gt;
-&lt;/ol&gt;</description></item><item><title>Golang学习历程【第六篇 复合数据类型map&amp;函数初识】</title><link>https://zg-dd.github.io/stu/golang_stu_06/</link><pubDate>Tue, 11 Feb 2025 20:05:09 +0800</pubDate><guid>https://zg-dd.github.io/stu/golang_stu_06/</guid><description>&lt;h1 id="1-map数据类型"&gt;1. Map数据类型
+&lt;/ol&gt;</description></item><item><title>Golang学习历程【第六篇 复合数据类型map&amp;函数初识】</title><link>https://zg-dd.github.io/stu/golang-stu-06/</link><pubDate>Tue, 11 Feb 2025 20:05:09 +0800</pubDate><guid>https://zg-dd.github.io/stu/golang-stu-06/</guid><description>&lt;h1 id="1-map数据类型"&gt;1. Map数据类型
 &lt;/h1&gt;&lt;blockquote&gt;
 &lt;p&gt;Map结构是键值对的集合，其中每个键都是唯一的，并且每个键都映射到一个值。
 Map是无序的，即元素的顺序是不确定的。
@@ -534,7 +1535,7 @@ Map结构为&lt;strong&gt;引用数据类型&lt;/strong&gt;&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; * add8 3 + 4 = 7
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; */&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description></item><item><title>Golang学习历程【第五篇 复合数据类型：数组&amp;切片】</title><link>https://zg-dd.github.io/stu/golang_stu_05/</link><pubDate>Wed, 08 Jan 2025 22:05:33 +0800</pubDate><guid>https://zg-dd.github.io/stu/golang_stu_05/</guid><description>&lt;h1 id="1-数组array"&gt;1. 数组（Array）
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description></item><item><title>Golang学习历程【第五篇 复合数据类型：数组&amp;切片】</title><link>https://zg-dd.github.io/stu/golang-stu-05/</link><pubDate>Wed, 08 Jan 2025 22:05:33 +0800</pubDate><guid>https://zg-dd.github.io/stu/golang-stu-05/</guid><description>&lt;h1 id="1-数组array"&gt;1. 数组（Array）
 &lt;/h1&gt;&lt;blockquote&gt;
 &lt;p&gt;数组: 一系列&lt;strong&gt;固定长度&lt;/strong&gt;、&lt;strong&gt;同一类型&lt;/strong&gt;数据的集合。&lt;strong&gt;数组为值类型&lt;/strong&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -980,7 +1981,7 @@ copy(dst, src []Type)，dst是destination，表示目的变量，src是source，
 &lt;/figure&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;/blockquote&gt;</description></item><item><title>Golang学习历程【第四篇 运算符&amp;流程控制】</title><link>https://zg-dd.github.io/stu/golang_stu_04/</link><pubDate>Wed, 01 Jan 2025 11:03:08 +0800</pubDate><guid>https://zg-dd.github.io/stu/golang_stu_04/</guid><description>&lt;h1 id="1-运算符"&gt;1. 运算符
+&lt;/blockquote&gt;</description></item><item><title>Golang学习历程【第四篇 运算符&amp;流程控制】</title><link>https://zg-dd.github.io/stu/golang-stu-04/</link><pubDate>Wed, 01 Jan 2025 11:03:08 +0800</pubDate><guid>https://zg-dd.github.io/stu/golang-stu-04/</guid><description>&lt;h1 id="1-运算符"&gt;1. 运算符
 &lt;/h1&gt;&lt;h2 id="11-算术运算符"&gt;1.1 算术运算符
 &lt;/h2&gt;&lt;table&gt;
 &lt;thead&gt;
@@ -1708,7 +2709,7 @@ copy(dst, src []Type)，dst是destination，表示目的变量，src是source，
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;执行语句3
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;执行语句1
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;执行语句4
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description></item><item><title>Golang学习历程【第三篇 基本数据类型&amp;类型转换】</title><link>https://zg-dd.github.io/stu/golang_stu_03/</link><pubDate>Sat, 21 Dec 2024 19:37:51 +0800</pubDate><guid>https://zg-dd.github.io/stu/golang_stu_03/</guid><description>&lt;h1 id="1-总览"&gt;1. 总览
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description></item><item><title>Golang学习历程【第三篇 基本数据类型&amp;类型转换】</title><link>https://zg-dd.github.io/stu/golang-stu-03/</link><pubDate>Sat, 21 Dec 2024 19:37:51 +0800</pubDate><guid>https://zg-dd.github.io/stu/golang-stu-03/</guid><description>&lt;h1 id="1-总览"&gt;1. 总览
 &lt;/h1&gt;&lt;p&gt;Go语言中数据类型分为：基本数据类型和复合数据类型&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;&lt;strong&gt;基本数据类型&lt;/strong&gt;：整型，浮点型，布尔型，字符串
@@ -2205,7 +3206,7 @@ copy(dst, src []Type)，dst是destination，表示目的变量，src是source，
 &lt;p&gt;其他还包含strconv.Append(字符换追加)、strconv.IsPrint（是否可打印） 和 strconv.IsGraphic（是否图形字符）、strconv.Quote（字符串转义） 和 strconv.Unquote（取出转义）、strconv.CanBackquote（判断是否可以表示为单行反引号字符串）等。
 这里学习到这，不做详细示例分析，有印象即可，需要时再学习；可参考&lt;a class="link" href="https://www.jb51.net/jiaoben/290715618.htm" target="_blank" rel="noopener"
 &gt;链接&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;</description></item><item><title>Golang学习历程【第二篇 fmt包&amp;变量、常量的定义】</title><link>https://zg-dd.github.io/stu/golang_stu_02/</link><pubDate>Sat, 21 Dec 2024 19:36:53 +0800</pubDate><guid>https://zg-dd.github.io/stu/golang_stu_02/</guid><description>&lt;blockquote&gt;
+&lt;/blockquote&gt;</description></item><item><title>Golang学习历程【第二篇 fmt包&amp;变量、常量的定义】</title><link>https://zg-dd.github.io/stu/golang-stu-02/</link><pubDate>Sat, 21 Dec 2024 19:36:53 +0800</pubDate><guid>https://zg-dd.github.io/stu/golang-stu-02/</guid><description>&lt;blockquote&gt;
 &lt;p&gt;前言：包是指由官方或者自定义的一系列功能集合体。使用前需要先引入，例如今日所讲的fmt包。引入方式如下： &lt;code&gt;import &amp;quot;fmt&amp;quot;&lt;/code&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h1 id="1-fmt-包"&gt;1. fmt 包
@@ -2602,7 +3603,7 @@ copy(dst, src []Type)，dst是destination，表示目的变量，src是source，
 &lt;li&gt;变量的名字是严格区分大小写的，name、Name、NAme以及NAME是不同的四个变量。Go语法支持，但不推荐这样写。&lt;/li&gt;
 &lt;li&gt;变量定义尽可能见名思意&lt;/li&gt;
 &lt;li&gt;变量名一般采用驼峰命名法。驼峰命名：首字母小写，后续每个单子首字母大写，例如：maxAge。如果是专属名词，例如DNS,IP等，可直接采用大写。&lt;/li&gt;
-&lt;/ol&gt;</description></item><item><title>Golang学习历程【第一篇 入门】</title><link>https://zg-dd.github.io/stu/golang_stu_01/</link><pubDate>Sat, 21 Dec 2024 10:51:49 +0800</pubDate><guid>https://zg-dd.github.io/stu/golang_stu_01/</guid><description>&lt;blockquote&gt;
+&lt;/ol&gt;</description></item><item><title>Golang学习历程【第一篇 入门】</title><link>https://zg-dd.github.io/stu/golang-stu-01/</link><pubDate>Sat, 21 Dec 2024 10:51:49 +0800</pubDate><guid>https://zg-dd.github.io/stu/golang-stu-01/</guid><description>&lt;blockquote&gt;
 &lt;p&gt;引言：Go（又称为Golang）是一种开源的编程语言，由Google开发，于2009年首次公开发布。它旨在提供简洁、高效、可靠的软件开发解决方案。Golang是一种静态强类型、编译型语言，Golang具有很强的表达能力，得益于其并发机制，用它编写的程序能够非常有效地利用多核与联网的计算机，其新颖的类型系统则使程序结构变得灵活而模块化。 Go 代码编译成机器码不仅非常迅速，还具有方便的垃圾收集机制和强大的运行时反射机制。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;blockquote&gt;

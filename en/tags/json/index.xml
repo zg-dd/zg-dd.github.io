@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>JSON on 小巷 Blog</title><link>https://zg-dd.github.io/en/tags/json/</link><description>Recent content in JSON on 小巷 Blog</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Wed, 19 Feb 2025 21:48:01 +0800</lastBuildDate><atom:link href="https://zg-dd.github.io/en/tags/json/index.xml" rel="self" type="application/rss+xml"/><item><title>Java POJO Log JSON Converter</title><link>https://zg-dd.github.io/en/blog/java-pojo-log-json/</link><pubDate>Wed, 19 Feb 2025 21:48:01 +0800</pubDate><guid>https://zg-dd.github.io/en/blog/java-pojo-log-json/</guid><description>&lt;blockquote&gt;
+&lt;p&gt;In Java projects, POJOs (Plain Old Java Objects) are everywhere and often need to be logged. The traditional approach is to print them via &lt;code&gt;toString&lt;/code&gt;, but the output is usually unstructured and makes troubleshooting harder. This tool converts about 90% of daily POJO logs into structured JSON automatically, greatly improving readability and maintainability and helping ops engineers locate issues faster.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id="1-problems-solved"&gt;1. Problems solved
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Example 1: Simple object&lt;/p&gt;
+&lt;p&gt;Input: &lt;code&gt;User(id=1, name=&amp;quot;Alice&amp;quot;, age=25)&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;Output: &lt;code&gt;{&amp;quot;User&amp;quot;: {&amp;quot;id&amp;quot;: 1, &amp;quot;name&amp;quot;: &amp;quot;Alice&amp;quot;, &amp;quot;age&amp;quot;: 25}}&lt;/code&gt;
+&lt;figure&gt;&lt;img src="https://zg-dd.github.io/img/jplj/jplj1.png"&gt;
+&lt;/figure&gt;
+&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Example 2: Nested object&lt;/p&gt;
+&lt;p&gt;Input: &lt;code&gt;Order(id=1001, items=[Item(id=2001, name=&amp;quot;Book&amp;quot;)])&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;Output: &lt;code&gt;{&amp;quot;Order&amp;quot;: {&amp;quot;id&amp;quot;: 1001, &amp;quot;items&amp;quot;: [{&amp;quot;Item&amp;quot;: {&amp;quot;id&amp;quot;: 2001, &amp;quot;name&amp;quot;: &amp;quot;Book&amp;quot;}}]}}&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;figure&gt;&lt;img src="https://zg-dd.github.io/img/jplj/jplj2.png"&gt;
+&lt;/figure&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Example 3: Complex map&lt;/p&gt;
+&lt;p&gt;Input: &lt;code&gt;Config(settings={key1=&amp;quot;value1&amp;quot;, key2=[1, 2, 3]})&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;Output: &lt;code&gt;{&amp;quot;Config&amp;quot;: {&amp;quot;settings&amp;quot;: {&amp;quot;key1&amp;quot;: &amp;quot;value1&amp;quot;, &amp;quot;key2&amp;quot;: [1, 2, 3]}}}&lt;/code&gt;
+&lt;figure&gt;&lt;img src="https://zg-dd.github.io/img/jplj/jplj3.png"&gt;
+&lt;/figure&gt;
+&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Example 4: Custom complex object&lt;/p&gt;
+&lt;p&gt;Input: &lt;code&gt;User(username=张三, password=123456, students=[Student(name=李四, age=18, score=0.0, courses=null), Student(name=王五, age=20, score=0.0, courses=[数学, 英语, 物理])], map={aa=123, bb=456, cc=你好})&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;Output:&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;{
+&amp;#34;User&amp;#34;: {
+&amp;#34;username&amp;#34;: &amp;#34;张三&amp;#34;,
+&amp;#34;password&amp;#34;: 123456,
+&amp;#34;students&amp;#34;: [
+{
+&amp;#34;Student&amp;#34;: {
+&amp;#34;name&amp;#34;: &amp;#34;李四&amp;#34;,
+&amp;#34;age&amp;#34;: 18,
+&amp;#34;score&amp;#34;: 0.0,
+&amp;#34;courses&amp;#34;: null
+}
+},
+{
+&amp;#34;Student&amp;#34;: {
+&amp;#34;name&amp;#34;: &amp;#34;王五&amp;#34;,
+&amp;#34;age&amp;#34;: 20,
+&amp;#34;score&amp;#34;: 0.0,
+&amp;#34;courses&amp;#34;: [
+&amp;#34;数学&amp;#34;,
+&amp;#34;英语&amp;#34;,
+&amp;#34;物理&amp;#34;
+]
+}
+}
+],
+&amp;#34;map&amp;#34;: {
+&amp;#34;aa&amp;#34;: 123,
+&amp;#34;bb&amp;#34;: 456,
+&amp;#34;cc&amp;#34;: &amp;#34;你好&amp;#34;
+}
+}
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;figure&gt;&lt;img src="https://zg-dd.github.io/img/jplj/jplj4.png"&gt;
+&lt;/figure&gt;
+&lt;h2 id="2-download"&gt;2. Download
+&lt;/h2&gt;&lt;p&gt;&lt;a class="link" href="https://zg-dd.github.io/files/obj_cv_json.exe" &gt;Download script&lt;/a&gt;&lt;/p&gt;</description></item></channel></rss>
