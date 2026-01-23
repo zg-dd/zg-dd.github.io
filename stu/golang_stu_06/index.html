@@ -1,0 +1,313 @@
+<!doctype html><html lang=zh-cn dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="1. Map数据类型\rMap结构是键值对的集合，其中每个键都是唯一的，并且每个键都映射到一个值。 Map是无序的，即元素的顺序是不确定的。 Map的初始值是nil，不能直接使用，需要使用make函数来创建一个Map。 Map结构为引用数据类型\n"><title>Golang学习历程【第六篇 复合数据类型map&函数初识】</title><link rel=canonical href=https://zg-dd.github.io/stu/golang_stu_06/><link rel=stylesheet href=/scss/style.min.b9e9128fec450ebccecc4ec9900157f32b85d0609bcd5ee3293968bcaa1235f2.css><meta property='og:title' content="Golang学习历程【第六篇 复合数据类型map&函数初识】"><meta property='og:description' content="1. Map数据类型\rMap结构是键值对的集合，其中每个键都是唯一的，并且每个键都映射到一个值。 Map是无序的，即元素的顺序是不确定的。 Map的初始值是nil，不能直接使用，需要使用make函数来创建一个Map。 Map结构为引用数据类型\n"><meta property='og:url' content='https://zg-dd.github.io/stu/golang_stu_06/'><meta property='og:site_name' content='小巷的随笔'><meta property='og:type' content='article'><meta property='article:section' content='Stu'><meta property='article:tag' content='Golang语法'><meta property='article:published_time' content='2025-02-11T20:05:09+08:00'><meta property='article:modified_time' content='2025-02-11T20:05:09+08:00'><meta name=twitter:title content="Golang学习历程【第六篇 复合数据类型map&函数初识】"><meta name=twitter:description content="1. Map数据类型\rMap结构是键值对的集合，其中每个键都是唯一的，并且每个键都映射到一个值。 Map是无序的，即元素的顺序是不确定的。 Map的初始值是nil，不能直接使用，需要使用make函数来创建一个Map。 Map结构为引用数据类型\n"></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/avatar_hu_a0cc1cf57968b27d.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a><span class=emoji>🌱</span></figure><div class=site-meta><h1 class=site-name><a href=/>小巷的随笔</a></h1><h2 class=site-description>记录，不是为了证明自己；而是把“解决问题 → 思考 → 沉淀”形成习惯。</h2></div></header><ol class=menu id=main-menu><li class=current><a href=/stu/><span>学习笔记</span></a></li><li><a href=/blog/><span>随笔思考</span></a></li><li><a href=/life/><span>生活记录</span></a></li><li><a href=/categories/><span>分类</span></a></li><li><a href=/tags/><span>标签</span></a></li><li class=menu-bottom-section><ol class=menu><li id=i18n-switch><svg class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5h7"/><path d="M9 3v2c0 4.418-2.239 8-5 8"/><path d="M5 9c-.003 2.144 2.952 3.908 6.7 4"/><path d="M12 20l4-9 4 9"/><path d="M19.1 18h-6.2"/></svg>
+<select name=language title=language onchange="window.location.href=this.selectedOptions[0].value"><option value=https://zg-dd.github.io/ selected>简体中文</option><option value=https://zg-dd.github.io/en/>English</option></select></li><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav id=TableOfContents><ul><li><a href=#11-map声明和初始化>1.1. Map声明和初始化</a></li><li><a href=#12-map-遍历>1.2. Map 遍历</a></li><li><a href=#13-map增删改查>1.3 Map增删改查</a></li></ul><ul><li><a href=#21-函数各种定义方式>2.1 函数各种定义方式</a></li></ul></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/golang/>Golang</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/stu/golang_stu_06/>Golang学习历程【第六篇 复合数据类型map&函数初识】</a></h2></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published datetime=2025-02-11T20:05:09+08:00>Feb 11, 2025</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>阅读时长: 6 分钟</time></div></footer><footer class=article-translations><svg class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5h7"/><path d="M9 3v2c0 4.418-2.239 8-5 8"/><path d="M5 9c-.003 2.144 2.952 3.908 6.7 4"/><path d="M12 20l4-9 4 9"/><path d="M19.1 18h-6.2"/></svg><div><a href=https://zg-dd.github.io/en/stu/golang_stu_06/ class=link>English</a></div></footer></div></header><section class=article-content><h1 id=1-map数据类型>1. Map数据类型</h1><blockquote><p>Map结构是键值对的集合，其中每个键都是唯一的，并且每个键都映射到一个值。
+Map是无序的，即元素的顺序是不确定的。
+Map的初始值是nil，不能直接使用，需要使用make函数来创建一个Map。
+Map结构为<strong>引用数据类型</strong></p></blockquote><h2 id=11-map声明和初始化>1.1. Map声明和初始化</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#75715e>// Map的声明,其中keyType是键的类型，valueType是值的类型</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 1. 先声明 var 变量名 map[keyType]valueType</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>var</span> <span style=color:#a6e22e>map1</span> <span style=color:#66d9ef>map</span>[<span style=color:#66d9ef>string</span>]<span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 2. 使用make函数来创建一个Map</span>
+</span></span><span style=display:flex><span><span style=color:#a6e22e>map1</span> = make(<span style=color:#66d9ef>map</span>[<span style=color:#66d9ef>string</span>]<span style=color:#66d9ef>int</span>)
+</span></span><span style=display:flex><span><span style=color:#a6e22e>map1</span>[<span style=color:#e6db74>&#34;a&#34;</span>] = <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span><span style=color:#a6e22e>map1</span>[<span style=color:#e6db74>&#34;b&#34;</span>] = <span style=color:#ae81ff>2</span>
+</span></span><span style=display:flex><span><span style=color:#a6e22e>map1</span>[<span style=color:#e6db74>&#34;c&#34;</span>] = <span style=color:#ae81ff>3</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 2. 声明即创建 ,并赋值 var 变量名 = make(map[keyType]valueType)</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>var</span> <span style=color:#a6e22e>map2</span> = make(<span style=color:#66d9ef>map</span>[<span style=color:#66d9ef>string</span>]<span style=color:#66d9ef>int</span>)
+</span></span><span style=display:flex><span><span style=color:#a6e22e>map2</span>[<span style=color:#e6db74>&#34;a&#34;</span>] = <span style=color:#ae81ff>4</span>
+</span></span><span style=display:flex><span><span style=color:#a6e22e>map2</span>[<span style=color:#e6db74>&#34;b&#34;</span>] = <span style=color:#ae81ff>5</span>
+</span></span><span style=display:flex><span><span style=color:#a6e22e>map2</span>[<span style=color:#e6db74>&#34;c&#34;</span>] = <span style=color:#ae81ff>6</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 3. 简短声明 变量名 := map[keyType]valueType</span>
+</span></span><span style=display:flex><span><span style=color:#a6e22e>map3</span> <span style=color:#f92672>:=</span> <span style=color:#66d9ef>map</span>[<span style=color:#66d9ef>string</span>]<span style=color:#66d9ef>int</span>{}
+</span></span><span style=display:flex><span><span style=color:#a6e22e>map3</span>[<span style=color:#e6db74>&#34;a&#34;</span>] = <span style=color:#ae81ff>7</span>
+</span></span><span style=display:flex><span><span style=color:#a6e22e>map3</span>[<span style=color:#e6db74>&#34;b&#34;</span>] = <span style=color:#ae81ff>8</span>
+</span></span><span style=display:flex><span><span style=color:#a6e22e>map3</span>[<span style=color:#e6db74>&#34;c&#34;</span>] = <span style=color:#ae81ff>9</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 4. 声明即创建,并赋值</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>var</span> <span style=color:#a6e22e>map4</span> = <span style=color:#66d9ef>map</span>[<span style=color:#66d9ef>string</span>]<span style=color:#66d9ef>int</span>{<span style=color:#e6db74>&#34;a&#34;</span>: <span style=color:#ae81ff>10</span>, <span style=color:#e6db74>&#34;b&#34;</span>: <span style=color:#ae81ff>11</span>, <span style=color:#e6db74>&#34;c&#34;</span>: <span style=color:#ae81ff>12</span>}
+</span></span><span style=display:flex><span><span style=color:#75715e>// 5. 简短声明,并赋值</span>
+</span></span><span style=display:flex><span><span style=color:#a6e22e>map5</span> <span style=color:#f92672>:=</span> <span style=color:#66d9ef>map</span>[<span style=color:#66d9ef>string</span>]<span style=color:#66d9ef>int</span>{<span style=color:#e6db74>&#34;a&#34;</span>: <span style=color:#ae81ff>13</span>, <span style=color:#e6db74>&#34;b&#34;</span>: <span style=color:#ae81ff>14</span>, <span style=color:#e6db74>&#34;c&#34;</span>: <span style=color:#ae81ff>15</span>}
+</span></span><span style=display:flex><span><span style=color:#75715e>// 6. 声明一个map和定义一个map,其值的区别</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>var</span> <span style=color:#a6e22e>map6</span> <span style=color:#66d9ef>map</span>[<span style=color:#66d9ef>string</span>]<span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>var</span> <span style=color:#a6e22e>map7</span> = <span style=color:#66d9ef>map</span>[<span style=color:#66d9ef>string</span>]<span style=color:#66d9ef>int</span>{}
+</span></span><span style=display:flex><span><span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;map1 类型：%T 值：%v map1 是否为 nil %v \n&#34;</span>, <span style=color:#a6e22e>map1</span>, <span style=color:#a6e22e>map1</span>, <span style=color:#a6e22e>map1</span> <span style=color:#f92672>==</span> <span style=color:#66d9ef>nil</span>)
+</span></span><span style=display:flex><span><span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;map2 类型：%T 值：%v map2 是否为 nil %v \n&#34;</span>, <span style=color:#a6e22e>map2</span>, <span style=color:#a6e22e>map2</span>, <span style=color:#a6e22e>map2</span> <span style=color:#f92672>==</span> <span style=color:#66d9ef>nil</span>)
+</span></span><span style=display:flex><span><span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;map3 类型：%T 值：%v map3 是否为 nil %v \n&#34;</span>, <span style=color:#a6e22e>map3</span>, <span style=color:#a6e22e>map3</span>, <span style=color:#a6e22e>map3</span> <span style=color:#f92672>==</span> <span style=color:#66d9ef>nil</span>)
+</span></span><span style=display:flex><span><span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;map4 类型：%T 值：%v map4 是否为 nil %v \n&#34;</span>, <span style=color:#a6e22e>map4</span>, <span style=color:#a6e22e>map4</span>, <span style=color:#a6e22e>map4</span> <span style=color:#f92672>==</span> <span style=color:#66d9ef>nil</span>)
+</span></span><span style=display:flex><span><span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;map5 类型：%T 值：%v map5 是否为 nil %v \n&#34;</span>, <span style=color:#a6e22e>map5</span>, <span style=color:#a6e22e>map5</span>, <span style=color:#a6e22e>map5</span> <span style=color:#f92672>==</span> <span style=color:#66d9ef>nil</span>)
+</span></span><span style=display:flex><span><span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;map6 类型：%T 值：%v map6 是否为 nil %v \n&#34;</span>, <span style=color:#a6e22e>map6</span>, <span style=color:#a6e22e>map6</span>, <span style=color:#a6e22e>map6</span> <span style=color:#f92672>==</span> <span style=color:#66d9ef>nil</span>) <span style=color:#75715e>// map6 是 nil，不能使用，因为仅做了声明，没有初始化</span>
+</span></span><span style=display:flex><span><span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;map7 类型：%T 值：%v map7 是否为 nil %v \n&#34;</span>, <span style=color:#a6e22e>map7</span>, <span style=color:#a6e22e>map7</span>, <span style=color:#a6e22e>map7</span> <span style=color:#f92672>==</span> <span style=color:#66d9ef>nil</span>) <span style=color:#75715e>// map7 是一个空的map，可以正常使用</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>/**
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * Map获取长度函数 len()，结果为键值对个数
+</span></span></span><span style=display:flex><span><span style=color:#75715e> */</span>
+</span></span><span style=display:flex><span><span style=color:#a6e22e>map8</span> <span style=color:#f92672>:=</span> <span style=color:#66d9ef>map</span>[<span style=color:#66d9ef>string</span>]<span style=color:#66d9ef>string</span>{
+</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;one&#34;</span>:   <span style=color:#e6db74>&#34;java&#34;</span>,
+</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;two&#34;</span>:   <span style=color:#e6db74>&#34;python&#34;</span>,
+</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;three&#34;</span>: <span style=color:#e6db74>&#34;go&#34;</span>,
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(len(<span style=color:#a6e22e>map1</span>))
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>/**
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * 以上运行结果
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * map1 类型：map[string]int 值：map[a:1 b:2 c:3] map1 是否为 nil false
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * map2 类型：map[string]int 值：map[a:4 b:5 c:6] map2 是否为 nil false
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * map3 类型：map[string]int 值：map[a:7 b:8 c:9] map3 是否为 nil false
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * map4 类型：map[string]int 值：map[a:10 b:11 c:12] map4 是否为 nil false
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * map5 类型：map[string]int 值：map[a:13 b:14 c:15] map5 是否为 nil false
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * map6 类型：map[string]int 值：&lt;nil&gt; map6 是否为 nil true
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * map7 类型：map[string]int 值：map[] map7 是否为 nil false
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * 3
+</span></span></span><span style=display:flex><span><span style=color:#75715e> */</span>
+</span></span></code></pre></div><h2 id=12-map-遍历>1.2. Map 遍历</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#75715e>/**
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * Map的遍历
+</span></span></span><span style=display:flex><span><span style=color:#75715e> */</span>
+</span></span><span style=display:flex><span><span style=color:#a6e22e>map1</span> <span style=color:#f92672>:=</span> <span style=color:#66d9ef>map</span>[<span style=color:#66d9ef>string</span>]<span style=color:#66d9ef>string</span>{
+</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;one&#34;</span>:   <span style=color:#e6db74>&#34;java&#34;</span>,
+</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;two&#34;</span>:   <span style=color:#e6db74>&#34;python&#34;</span>,
+</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;three&#34;</span>: <span style=color:#e6db74>&#34;go&#34;</span>,
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#75715e>// 1. fori遍历方式</span>
+</span></span><span style=display:flex><span><span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;1. fori遍历方式&#34;</span>)
+</span></span><span style=display:flex><span><span style=color:#a6e22e>keys</span> <span style=color:#f92672>:=</span> make([]<span style=color:#66d9ef>string</span>, <span style=color:#ae81ff>0</span>, len(<span style=color:#a6e22e>map1</span>))
+</span></span><span style=display:flex><span><span style=color:#66d9ef>for</span> <span style=color:#a6e22e>k</span> <span style=color:#f92672>:=</span> <span style=color:#66d9ef>range</span> <span style=color:#a6e22e>map1</span> {
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>keys</span> = append(<span style=color:#a6e22e>keys</span>, <span style=color:#a6e22e>k</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#66d9ef>for</span> <span style=color:#a6e22e>i</span> <span style=color:#f92672>:=</span> <span style=color:#ae81ff>0</span>; <span style=color:#a6e22e>i</span> &lt; len(<span style=color:#a6e22e>keys</span>); <span style=color:#a6e22e>i</span><span style=color:#f92672>++</span> {
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;key=%v value=%v\n&#34;</span>, <span style=color:#a6e22e>keys</span>[<span style=color:#a6e22e>i</span>], <span style=color:#a6e22e>map1</span>[<span style=color:#a6e22e>keys</span>[<span style=color:#a6e22e>i</span>]])
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#75715e>// 2. forrange遍历方式</span>
+</span></span><span style=display:flex><span><span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;2. forrange遍历方式&#34;</span>)
+</span></span><span style=display:flex><span><span style=color:#66d9ef>for</span> <span style=color:#a6e22e>k</span>, <span style=color:#a6e22e>v</span> <span style=color:#f92672>:=</span> <span style=color:#66d9ef>range</span> <span style=color:#a6e22e>map1</span> {
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;key=%v value=%v\n&#34;</span>, <span style=color:#a6e22e>k</span>, <span style=color:#a6e22e>v</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#75715e>/**
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * 结果：
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * 1. fori遍历方式
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * key=one value=java
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * key=two value=python
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * key=three value=go
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * 2. forrange遍历方式
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * key=one value=java
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * key=two value=python
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * key=three value=go
+</span></span></span><span style=display:flex><span><span style=color:#75715e> */</span>
+</span></span></code></pre></div><h2 id=13-map增删改查>1.3 Map增删改查</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#a6e22e>map1</span> <span style=color:#f92672>:=</span> <span style=color:#66d9ef>map</span>[<span style=color:#66d9ef>string</span>]<span style=color:#66d9ef>string</span>{
+</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;one&#34;</span>:   <span style=color:#e6db74>&#34;java&#34;</span>,
+</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;two&#34;</span>:   <span style=color:#e6db74>&#34;python&#34;</span>,
+</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;three&#34;</span>: <span style=color:#e6db74>&#34;go&#34;</span>,
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// map的增删改查</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 增</span>
+</span></span><span style=display:flex><span><span style=color:#a6e22e>map1</span>[<span style=color:#e6db74>&#34;four&#34;</span>] = <span style=color:#e6db74>&#34;php&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;map1: %v\n&#34;</span>, <span style=color:#a6e22e>map1</span>)
+</span></span><span style=display:flex><span><span style=color:#75715e>// 删</span>
+</span></span><span style=display:flex><span>delete(<span style=color:#a6e22e>map1</span>, <span style=color:#e6db74>&#34;one&#34;</span>)
+</span></span><span style=display:flex><span><span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;map1: %v\n&#34;</span>, <span style=color:#a6e22e>map1</span>)
+</span></span><span style=display:flex><span><span style=color:#75715e>// 改</span>
+</span></span><span style=display:flex><span><span style=color:#a6e22e>map1</span>[<span style=color:#e6db74>&#34;two&#34;</span>] = <span style=color:#e6db74>&#34;c++&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 查</span>
+</span></span><span style=display:flex><span><span style=color:#a6e22e>value</span>, <span style=color:#a6e22e>ok</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>map1</span>[<span style=color:#e6db74>&#34;two&#34;</span>] <span style=color:#75715e>// ok为true表示存在,为false表示不存在</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>if</span> <span style=color:#a6e22e>ok</span> {
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#a6e22e>value</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#a6e22e>value1</span>, <span style=color:#a6e22e>ok1</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>map1</span>[<span style=color:#e6db74>&#34;five&#34;</span>] <span style=color:#75715e>// ok为true表示存在,为false表示不存在</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>if</span> <span style=color:#a6e22e>ok1</span> {
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#a6e22e>value1</span>)
+</span></span><span style=display:flex><span>} <span style=color:#66d9ef>else</span> {
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;five不存在&#34;</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#75715e>/*
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * 结果
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * map1: map[four:php three:go two:python]
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * map1: map[three:go two:python]
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * c++
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * five不存在
+</span></span></span><span style=display:flex><span><span style=color:#75715e> */</span>
+</span></span></code></pre></div><h1 id=2-function-函数>2. function (函数)</h1><blockquote><p>函数是一段可重复使用的代码块，用来完成特定的功能</p></blockquote><p>函数的特点有下：</p><ol><li><strong>函数的作用</strong>：提高代码的复用性，提高代码的可读性，提高代码的维护性</li><li>.】<strong>函数的返回值</strong>：函数的返回值是通过return语句来实现的，return语句可以返回一个值，也可以返回多个值</li><li><strong>函数的参数</strong>：函数的参数是通过函数的参数列表来实现的，参数列表中的参数可以是任意类型，参数列表中的参数可以是任意个数</li><li><strong>函数变量作用域</strong>：函数变量作用域是指在函数内部定义的变量，该变量只能在函数内部使用，函数外部无法访问该变量</li><li><strong>函数的返回值和参数列表</strong>：函数的返回值和参数列表是函数的组成部分，函数的返回值和参数列表是函数的输出和输入，函数的返回值和参数列表是函数的接口，函数的返回值和参数列表是函数的契约</li></ol><h2 id=21-函数各种定义方式>2.1 函数各种定义方式</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>/*
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * 函数初识
+</span></span></span><span style=display:flex><span><span style=color:#75715e>     什么是函数：函数是一段可重复使用的代码块，用来完成特定的功能
+</span></span></span><span style=display:flex><span><span style=color:#75715e>     函数的作用：提高代码的复用性，提高代码的可读性，提高代码的维护性
+</span></span></span><span style=display:flex><span><span style=color:#75715e>     函数的定义：func 函数名(参数列表) 返回值列表 {函数体}
+</span></span></span><span style=display:flex><span><span style=color:#75715e>     函数的调用：函数名(参数列表)
+</span></span></span><span style=display:flex><span><span style=color:#75715e>     函数的返回值：函数的返回值是通过return语句来实现的，return语句可以返回一个值，也可以返回多个值
+</span></span></span><span style=display:flex><span><span style=color:#75715e>     函数的参数：函数的参数是通过函数的参数列表来实现的，参数列表中的参数可以是任意类型，参数列表中的参数可以是任意个数
+</span></span></span><span style=display:flex><span><span style=color:#75715e>     函数的返回值和参数列表：函数的返回值和参数列表是函数的组成部分，函数的返回值和参数列表是函数的输出和输入，函数的返回值和参数列表是函数的接口，函数的返回值和参数列表是函数的契约
+</span></span></span><span style=display:flex><span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e> *
+</span></span></span><span style=display:flex><span><span style=color:#75715e>*/</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 函数定义</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// func 函数名(参数列表) 返回值列表 {</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 	函数体</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// }</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>/*
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * 1. 无参数无返回值
+</span></span></span><span style=display:flex><span><span style=color:#75715e> */</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>sayHello</span>() {
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;hello world&#34;</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>/*
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * 2. 有参数无返回值
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * @param name string
+</span></span></span><span style=display:flex><span><span style=color:#75715e> */</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>sayHello2</span>(<span style=color:#a6e22e>name</span> <span style=color:#66d9ef>string</span>) {
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;hello&#34;</span>, <span style=color:#a6e22e>name</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>/**
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * 2. 有参数有返回值
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * @param a int
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * @param b int
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * @return int
+</span></span></span><span style=display:flex><span><span style=color:#75715e> */</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>add</span>(<span style=color:#a6e22e>a</span> <span style=color:#66d9ef>int</span>, <span style=color:#a6e22e>b</span> <span style=color:#66d9ef>int</span>) <span style=color:#66d9ef>int</span> {
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>a</span> <span style=color:#f92672>+</span> <span style=color:#a6e22e>b</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>/*
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * 3. 省略参数类型，此时a的类型与b的类型保持一致
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * @param a int
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * @param b int
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * @return int
+</span></span></span><span style=display:flex><span><span style=color:#75715e> */</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>add2</span>(<span style=color:#a6e22e>a</span>, <span style=color:#a6e22e>b</span> <span style=color:#66d9ef>int</span>) <span style=color:#66d9ef>int</span> {
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>a</span> <span style=color:#f92672>+</span> <span style=color:#a6e22e>b</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>/**
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * 4. 省略返回值，此时函数的返回值类型为int
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * @param a int
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * @param b int
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * @return int
+</span></span></span><span style=display:flex><span><span style=color:#75715e> */</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>add3</span>(<span style=color:#a6e22e>a</span>, <span style=color:#a6e22e>b</span> <span style=color:#66d9ef>int</span>) (<span style=color:#a6e22e>c</span> <span style=color:#66d9ef>int</span>) { <span style=color:#75715e>// c := a + b</span>
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>c</span> = <span style=color:#a6e22e>a</span> <span style=color:#f92672>+</span> <span style=color:#a6e22e>b</span>
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> <span style=color:#75715e>// return c</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>/**
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * 5. 多个返回值
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * @param a int
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * @param b int
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * @return int 之和
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * @return int 之差
+</span></span></span><span style=display:flex><span><span style=color:#75715e> */</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>add4</span>(<span style=color:#a6e22e>a</span>, <span style=color:#a6e22e>b</span> <span style=color:#66d9ef>int</span>) (<span style=color:#66d9ef>int</span>, <span style=color:#66d9ef>int</span>) {
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>a</span> <span style=color:#f92672>+</span> <span style=color:#a6e22e>b</span>, <span style=color:#a6e22e>a</span> <span style=color:#f92672>-</span> <span style=color:#a6e22e>b</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>/**
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * 6. 命名返回值
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * @param a int
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * @param b int
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * @return int 之和
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * @return int 之差
+</span></span></span><span style=display:flex><span><span style=color:#75715e> */</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>add5</span>(<span style=color:#a6e22e>a</span>, <span style=color:#a6e22e>b</span> <span style=color:#66d9ef>int</span>) (<span style=color:#a6e22e>sum</span>, <span style=color:#a6e22e>diff</span> <span style=color:#66d9ef>int</span>) {
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>sum</span> = <span style=color:#a6e22e>a</span> <span style=color:#f92672>+</span> <span style=color:#a6e22e>b</span>
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>diff</span> = <span style=color:#a6e22e>a</span> <span style=color:#f92672>-</span> <span style=color:#a6e22e>b</span>
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>/**
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * 7. 可变参数
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * @param a ...int
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * @return int
+</span></span></span><span style=display:flex><span><span style=color:#75715e> */</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>add6</span>(<span style=color:#a6e22e>a</span> <span style=color:#f92672>...</span><span style=color:#66d9ef>int</span>) <span style=color:#66d9ef>int</span> {
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>sum</span> <span style=color:#f92672>:=</span> <span style=color:#ae81ff>0</span>
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>for</span> <span style=color:#a6e22e>_</span>, <span style=color:#a6e22e>v</span> <span style=color:#f92672>:=</span> <span style=color:#66d9ef>range</span> <span style=color:#a6e22e>a</span> {
+</span></span><span style=display:flex><span>		<span style=color:#a6e22e>sum</span> <span style=color:#f92672>+=</span> <span style=color:#a6e22e>v</span>
+</span></span><span style=display:flex><span>	}
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>sum</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>/**
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * 8. 函数做形参
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * @param a int
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * @param b int
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * @param op func(int, int) int 表示参数为一个函数，该函数接收两个int类型的参数，返回一个int类型的值
+</span></span></span><span style=display:flex><span><span style=color:#75715e> */</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>opreate</span>(<span style=color:#a6e22e>a</span>, <span style=color:#a6e22e>b</span> <span style=color:#66d9ef>int</span>, <span style=color:#a6e22e>op</span> <span style=color:#66d9ef>func</span>(<span style=color:#66d9ef>int</span>, <span style=color:#66d9ef>int</span>) <span style=color:#66d9ef>int</span>) <span style=color:#66d9ef>int</span> {
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>op</span>(<span style=color:#a6e22e>a</span>, <span style=color:#a6e22e>b</span>) <span style=color:#75715e>// 调用函数</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>/**
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * 9. 函数做返回值
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * @param a int
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * @param b int
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * @return func() string
+</span></span></span><span style=display:flex><span><span style=color:#75715e> */</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>add7</span>(<span style=color:#a6e22e>a</span>, <span style=color:#a6e22e>b</span> <span style=color:#66d9ef>int</span>) <span style=color:#66d9ef>func</span>() <span style=color:#66d9ef>string</span> {
+</span></span><span style=display:flex><span>	<span style=color:#75715e>// 内部定义一个函数</span>
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>f</span> <span style=color:#f92672>:=</span> <span style=color:#66d9ef>func</span>() <span style=color:#66d9ef>string</span> {
+</span></span><span style=display:flex><span>		<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Sprintf</span>(<span style=color:#e6db74>&#34;%d + %d = %d&#34;</span>, <span style=color:#a6e22e>a</span>, <span style=color:#a6e22e>b</span>, <span style=color:#a6e22e>a</span><span style=color:#f92672>+</span><span style=color:#a6e22e>b</span>) <span style=color:#75715e>// 返回一个字符串</span>
+</span></span><span style=display:flex><span>	} <span style=color:#75715e>// 这里只是定义函数，没有调用函数，调用函数需要使用f()</span>
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>f</span> <span style=color:#75715e>// 返回函数</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>/**
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * 10. 匿名函数
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * 解释：匿名函数是没有名字的函数，匿名函数可以赋值给变量，也可以直接调用
+</span></span></span><span style=display:flex><span><span style=color:#75715e> *
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * @param a int 数值1
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * @param b int 数值2
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * @return func() string 返回类型为一个函数，该函数返回类型为string
+</span></span></span><span style=display:flex><span><span style=color:#75715e> */</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>add8</span>(<span style=color:#a6e22e>a</span>, <span style=color:#a6e22e>b</span> <span style=color:#66d9ef>int</span>) <span style=color:#66d9ef>func</span>() <span style=color:#66d9ef>string</span> {
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> <span style=color:#66d9ef>func</span>() <span style=color:#66d9ef>string</span> { <span style=color:#75715e>// 匿名函数的定义，没有函数名</span>
+</span></span><span style=display:flex><span>		<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Sprintf</span>(<span style=color:#e6db74>&#34;%d + %d = %d&#34;</span>, <span style=color:#a6e22e>a</span>, <span style=color:#a6e22e>b</span>, <span style=color:#a6e22e>a</span><span style=color:#f92672>+</span><span style=color:#a6e22e>b</span>) <span style=color:#75715e>// 返回一个字符串</span>
+</span></span><span style=display:flex><span>	} <span style=color:#75715e>// 匿名函数的调用</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// main函数 入口函数</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>sayHello</span>()
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>sayHello2</span>(<span style=color:#e6db74>&#34;张三&#34;</span>)
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;add %d\n&#34;</span>, <span style=color:#a6e22e>add</span>(<span style=color:#ae81ff>1</span>, <span style=color:#ae81ff>2</span>))
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;add2 %d\n&#34;</span>, <span style=color:#a6e22e>add2</span>(<span style=color:#ae81ff>3</span>, <span style=color:#ae81ff>4</span>))
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;add3 %d\n&#34;</span>, <span style=color:#a6e22e>add3</span>(<span style=color:#ae81ff>5</span>, <span style=color:#ae81ff>6</span>))
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>sum1</span>, <span style=color:#a6e22e>diff1</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>add4</span>(<span style=color:#ae81ff>7</span>, <span style=color:#ae81ff>8</span>)
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;add4 %d %d\n&#34;</span>, <span style=color:#a6e22e>sum1</span>, <span style=color:#a6e22e>diff1</span>)
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>sum2</span>, <span style=color:#a6e22e>diff2</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>add5</span>(<span style=color:#ae81ff>9</span>, <span style=color:#ae81ff>10</span>)
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;add5 %d %d\n&#34;</span>, <span style=color:#a6e22e>sum2</span>, <span style=color:#a6e22e>diff2</span>)
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;add6 %d\n&#34;</span>, <span style=color:#a6e22e>add6</span>(<span style=color:#ae81ff>1</span>, <span style=color:#ae81ff>2</span>, <span style=color:#ae81ff>3</span>, <span style=color:#ae81ff>4</span>, <span style=color:#ae81ff>5</span>, <span style=color:#ae81ff>6</span>, <span style=color:#ae81ff>7</span>, <span style=color:#ae81ff>8</span>, <span style=color:#ae81ff>9</span>, <span style=color:#ae81ff>10</span>))
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;opreate %d\n&#34;</span>, <span style=color:#a6e22e>opreate</span>(<span style=color:#ae81ff>1</span>, <span style=color:#ae81ff>2</span>, <span style=color:#a6e22e>add</span>))
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;opreate %d\n&#34;</span>, <span style=color:#a6e22e>opreate</span>(<span style=color:#ae81ff>2</span>, <span style=color:#ae81ff>4</span>, <span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>i1</span>, <span style=color:#a6e22e>i2</span> <span style=color:#66d9ef>int</span>) <span style=color:#66d9ef>int</span> { <span style=color:#75715e>// 自定义匿名函数做参数</span>
+</span></span><span style=display:flex><span>		<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>i1</span> <span style=color:#f92672>*</span> <span style=color:#a6e22e>i2</span> <span style=color:#75715e>// 返回两个数的乘积</span>
+</span></span><span style=display:flex><span>	}))
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;add7 %s\n&#34;</span>, <span style=color:#a6e22e>add7</span>(<span style=color:#ae81ff>1</span>, <span style=color:#ae81ff>2</span>)())
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;add8 %s\n&#34;</span>, <span style=color:#a6e22e>add8</span>(<span style=color:#ae81ff>3</span>, <span style=color:#ae81ff>4</span>)())
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>	<span style=color:#75715e>/**
+</span></span></span><span style=display:flex><span><span style=color:#75715e>	 * 以上运行结果：
+</span></span></span><span style=display:flex><span><span style=color:#75715e>	 * hello world
+</span></span></span><span style=display:flex><span><span style=color:#75715e>	 * hello 张三
+</span></span></span><span style=display:flex><span><span style=color:#75715e>	 * add 3
+</span></span></span><span style=display:flex><span><span style=color:#75715e>	 * add2 7
+</span></span></span><span style=display:flex><span><span style=color:#75715e>	 * add3 11
+</span></span></span><span style=display:flex><span><span style=color:#75715e>	 * add4 15 -3
+</span></span></span><span style=display:flex><span><span style=color:#75715e>	 * add5 19 -1
+</span></span></span><span style=display:flex><span><span style=color:#75715e>	 * add6 55
+</span></span></span><span style=display:flex><span><span style=color:#75715e>	 * opreate 3
+</span></span></span><span style=display:flex><span><span style=color:#75715e>	 * opreate 8
+</span></span></span><span style=display:flex><span><span style=color:#75715e>	 * add7 1 + 2 = 3
+</span></span></span><span style=display:flex><span><span style=color:#75715e>	 * add8 3 + 4 = 7
+</span></span></span><span style=display:flex><span><span style=color:#75715e>	 */</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div></section><footer class=article-footer><section class=article-tags><a href=/tags/golang%E8%AF%AD%E6%B3%95/>Golang语法</a></section></footer></article><aside class=related-content--wrapper><h2 class=section-title>相关文章</h2><div class=related-content><div class="flex article-list--tile"><article><a href=/stu/golang_stu_04/><div class=article-details><h2 class=article-title>Golang学习历程【第四篇 运算符&流程控制】</h2></div></a></article><article><a href=/stu/golang_stu_03/><div class=article-details><h2 class=article-title>Golang学习历程【第三篇 基本数据类型&类型转换】</h2></div></a></article><article><a href=/stu/golang_stu_02/><div class=article-details><h2 class=article-title>Golang学习历程【第二篇 fmt包&变量、常量的定义】</h2></div></a></article><article><a href=/stu/golang_stu_01/><div class=article-details><h2 class=article-title>Golang学习历程【第一篇 入门】</h2></div></a></article></div></div></aside><script src=https://giscus.app/client.js data-repo=zg-dd/zg-dd.github.io data-repo-id=R_kgDOQwB7tw data-category=Announcements data-category-id=DIC_kwDOQwB7t84C0WGD data-mapping=pathname data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=preferred_color_scheme data-lang=zh-CN data-loading crossorigin=anonymous async></script><script>function setGiscusTheme(e){let t=document.querySelector("iframe.giscus-frame");t&&t.contentWindow.postMessage({giscus:{setConfig:{theme:e}}},"https://giscus.app")}(function(){addEventListener("message",t=>{if(event.origin!=="https://giscus.app")return;e()}),window.addEventListener("onColorSchemeChange",e);function e(){setGiscusTheme(document.documentElement.dataset.scheme==="light"?"preferred_color_scheme":"preferred_color_scheme")}})()</script><footer class=site-footer><section class=copyright>&copy;
+2026 小巷的随笔</section><section class=powerby>使用 <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> 构建<br>主题 <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.33.0>Stack</a></b> 由 <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> 设计</section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.c922af694cc257bf1ecc41c0dd7b0430f9114ec280ccf67cd2c6ad55f5316c4e.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>

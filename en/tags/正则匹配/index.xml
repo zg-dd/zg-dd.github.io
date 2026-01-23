@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>正则匹配 on 小巷 Blog</title>
+        <link>http://localhost:1313/en/tags/%E6%AD%A3%E5%88%99%E5%8C%B9%E9%85%8D/</link>
+        <description>Recent content in 正则匹配 on 小巷 Blog</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en</language>
+        <lastBuildDate>Mon, 27 Apr 2020 18:00:00 +0800</lastBuildDate><atom:link href="http://localhost:1313/en/tags/%E6%AD%A3%E5%88%99%E5%8C%B9%E9%85%8D/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>Regex Basics: Common Symbols Explained ([] \\ | (?&lt;=))</title>
+        <link>http://localhost:1313/en/stu/regular/</link>
+        <pubDate>Mon, 27 Apr 2020 18:00:00 +0800</pubDate>
+        
+        <guid>http://localhost:1313/en/stu/regular/</guid>
+        <description>&lt;h2 id=&#34;regex-concepts&#34;&gt;Regex Concepts
+&lt;/h2&gt;&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;[]
+Use [] to match a single character inside the brackets. For example, [abc] matches any one of a, b, or c. In the string &amp;ldquo;abcdabcdbd&amp;rdquo; it matches a, b, c, a, b, c, b. It matches one character at a time and does not merge them.
+[abc]+ means one or more occurrences of any character in a, b, c. In the same string it matches abc, abc, b. In other words, it matches any of a, b, c one or more times, and consecutive matches are grouped as one string.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;\
+\ is the escape character. Common escapes include \n (newline), \t (tab), \r (carriage return), \b (backspace), \f (form feed), \v (vertical tab), &#39; (single quote), &amp;quot; (double quote), and \ (backslash). Regex has many other symbols; the image below lists them.
+&lt;strong&gt;Important:&lt;/strong&gt; In regex, some escapes like \b, \f, \n, \t, \r, &#39; can be written directly, e.g. &lt;strong&gt;regex=&amp;quot;\n&amp;quot;&lt;/strong&gt;; that matches a newline. &lt;strong&gt;regex=&amp;quot;\\n&amp;quot;&lt;/strong&gt; also matches a newline. But for symbols like \w, \W, \B, \S, \s, you must write &lt;strong&gt;regex=&amp;quot;\\w&amp;quot;&lt;/strong&gt; to be valid; otherwise it fails. When you copy these escapes, \ is often automatically doubled. &lt;strong&gt;So I recommend using \\ when you need a literal backslash in regex.&lt;/strong&gt;
+&lt;strong&gt;Note:&lt;/strong&gt; Not every escape needs to be doubled. For example, to match a double quote, you should not write regex=&amp;quot;\&amp;quot;&amp;quot;. That would be interpreted incorrectly. Use &lt;strong&gt;regex=&amp;quot;\\&amp;quot;&amp;quot;&lt;/strong&gt;. Using &lt;strong&gt;regex=&amp;quot;&amp;quot;&amp;quot;&lt;/strong&gt; also works.
+If you want to match a backslash itself, in Java you would write &lt;strong&gt;regex=&amp;quot; \\\\ &amp;ldquo;&lt;/strong&gt; (four backslashes). The first two represent the escape for , and the last two represent another literal \ (this is my understanding; the expression is correct). By the same logic, to match \, you would write &lt;strong&gt;regex=&amp;rdquo; \\\\\\\ &amp;ldquo;&lt;/strong&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;|
+This symbol means OR. For x|y, it matches x or y. The | operator has higher precedence than x,y. For &lt;strong&gt;regex = &amp;ldquo;[a][b]|[c][d]&amp;rdquo;&lt;/strong&gt;, it matches &amp;ldquo;ab&amp;rdquo; or &amp;ldquo;cd&amp;rdquo;, not &amp;ldquo;a(b|c)d&amp;rdquo;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;?&amp;lt;= and ?=
+These are lookaround tokens. They match a symbol without including it in the result. Example: to extract the text inside double quotes, for
+String str = &amp;ldquo;he says,\&amp;ldquo;Hello,Java!\&amp;rdquo; &amp;ldquo;;
+You can use: regex = &amp;ldquo;(?&amp;lt;=\&amp;quot;)[^\&amp;quot;]+(?=\&amp;quot;)&amp;rdquo;.
+Here, (?&amp;lt;=\&amp;rdquo;) matches a quote but does not include it, [^\&amp;rdquo;]+ matches one or more non-quote characters, and (?=\&amp;rdquo;) matches the closing quote without including it. &lt;strong&gt;These two are usually used together: one before and one after.&lt;/strong&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; The single and double quotes above are English quotes. Some symbols may appear as Chinese punctuation due to escaping; keep that in mind when reading.
+That is all for now; I will add more later if I find new points.&lt;/p&gt;
+&lt;h2 id=&#34;regex-symbol-table&#34;&gt;Regex Symbol Table
+&lt;/h2&gt;&lt;p&gt;&lt;img src=&#34;http://localhost:1313/img/regular_01.png#pic_center&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;Regex symbols&#34;
+	
+	
+&gt;&lt;/p&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

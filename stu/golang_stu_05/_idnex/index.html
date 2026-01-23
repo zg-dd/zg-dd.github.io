@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="@[TOC](Golang学习历程【第五篇 复合数据类型：数组&amp;切片】)\n1. 数组（Array）\r数组: 一系列固定长度、同一类型数据的集合。数组为值类型\n">
+<title>Golang学习历程【第五篇 复合数据类型：数组&amp;切片】</title>
+
+<link rel='canonical' href='http://localhost:1313/stu/golang_stu_05/_idnex/'>
+
+<link rel="stylesheet" href="/scss/style.min.b9e9128fec450ebccecc4ec9900157f32b85d0609bcd5ee3293968bcaa1235f2.css"><meta property='og:title' content="Golang学习历程【第五篇 复合数据类型：数组&切片】">
+<meta property='og:description' content="@[TOC](Golang学习历程【第五篇 复合数据类型：数组&amp;切片】)\n1. 数组（Array）\r数组: 一系列固定长度、同一类型数据的集合。数组为值类型\n">
+<meta property='og:url' content='http://localhost:1313/stu/golang_stu_05/_idnex/'>
+<meta property='og:site_name' content='小巷的随笔'>
+<meta property='og:type' content='article'><meta property='article:section' content='Stu' /><meta property='article:tag' content='Golang语法' /><meta property='article:published_time' content='2025-01-08T22:05:33&#43;08:00'/><meta property='article:modified_time' content='2025-01-08T22:05:33&#43;08:00'/>
+<meta name="twitter:title" content="Golang学习历程【第五篇 复合数据类型：数组&切片】">
+<meta name="twitter:description" content="@[TOC](Golang学习历程【第五篇 复合数据类型：数组&amp;切片】)\n1. 数组（Array）\r数组: 一系列固定长度、同一类型数据的集合。数组为值类型\n">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_a0cc1cf57968b27d.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🌱</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">小巷的随笔</a></h1>
+            <h2 class="site-description">记录，不是为了证明自己；而是把“解决问题 → 思考 → 沉淀”形成习惯。</h2>
+        </div>
+    </header><ol class="menu" id="main-menu">
+        
+        
+        
+        <li  class='current' >
+            <a href='/stu/' >
+                
+                
+                
+                <span>学习笔记</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/blog/' >
+                
+                
+                
+                <span>随笔思考</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/life/' >
+                
+                
+                
+                <span>生活记录</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/categories/' >
+                
+                
+                
+                <span>分类</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/tags/' >
+                
+                
+                
+                <span>标签</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+                    
+                        <li id="i18n-switch">  
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                            <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
+                                
+                                    <option value="http://localhost:1313/" selected>简体中文</option>
+                                
+                                    <option value="http://localhost:1313/en/" >English</option>
+                                
+                            </select>
+                        </li>
+                    
+                
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ul>
+    <li><a href="#11-数组的定义">1.1 数组的定义</a></li>
+    <li><a href="#12-初始化数组">1.2 初始化数组</a></li>
+    <li><a href="#13-数据的循环遍历">1.3 数据的循环遍历</a></li>
+    <li><a href="#14-多维数组">1.4 多维数组</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#21-切片声明初始化">2.1 切片声明、初始化</a></li>
+    <li><a href="#22-基于数组创建切片">2.2 基于数组创建切片</a></li>
+    <li><a href="#22-切片的长度len和容量cap">2.2 切片的长度(len)和容量(cap)*</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#51-创建切片make">5.1 创建切片：make</a></li>
+    <li><a href="#52-扩容切片append">5.2 扩容切片：append</a></li>
+    <li><a href="#53-复制切片深克隆copy">5.3 复制切片【深克隆】：copy</a></li>
+    <li><a href="#54-切片的删除">5.4 切片的删除</a></li>
+    <li><a href="#55-sort排序">5.5 sort排序</a>
+      <ul>
+        <li><a href="#551-升序排序">5.5.1 升序排序</a></li>
+        <li><a href="#552-降序排序">5.5.2 降序排序</a></li>
+      </ul>
+    </li>
+  </ul>
+
+  <ul>
+    <li><a href="#61-语法提示">6.1 语法提示</a></li>
+    <li><a href="#62-方法参数含义使用探究">6.2 方法参数、含义使用探究</a></li>
+  </ul>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/golang/" >
+                Golang
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/stu/golang_stu_05/_idnex/">Golang学习历程【第五篇 复合数据类型：数组&amp;切片】</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published" datetime='2025-01-08T22:05:33&#43;08:00'>Jan 08, 2025</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 12 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <p>@[TOC](Golang学习历程【第五篇 复合数据类型：数组&amp;切片】)</p>
+<h1 id="1-数组array">1. 数组（Array）
+</h1><blockquote>
+<p>数组: 一系列<strong>固定长度</strong>、<strong>同一类型</strong>数据的集合。<strong>数组为值类型</strong></p>
+</blockquote>
+<h2 id="11-数组的定义">1.1 数组的定义
+</h2><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">变量名</span> = [<span style="color:#a6e22e">元素个数</span>]&lt;<span style="color:#a6e22e">数据类型</span>&gt;
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 声明 + 初始化，此时可将[元素个数]替换为[...]，表示初始化任意多个数据</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">变量名</span> = [<span style="color:#a6e22e">元素个数</span>]&lt;<span style="color:#a6e22e">数据类型</span>&gt;{}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">变量名</span><span style="color:#f92672">:=</span> [<span style="color:#a6e22e">元素个数</span>]&lt;<span style="color:#a6e22e">数据类型</span>&gt;{}
+</span></span></code></pre></div><p>示例：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// 数组的定义</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">arr1</span> [<span style="color:#ae81ff">4</span>]<span style="color:#66d9ef">int</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// len获取数据长度</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;类型：%T; \t数组长度：%v; \t数据：%v\n&#34;</span>, <span style="color:#a6e22e">arr1</span>, len(<span style="color:#a6e22e">arr1</span>), <span style="color:#a6e22e">arr1</span>)
+</span></span></code></pre></div><p>结果：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>类型：<span style="color:#f92672">[</span>4<span style="color:#f92672">]</span>int;   数组长度：4;    数据：<span style="color:#f92672">[</span><span style="color:#ae81ff">0</span> <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">0</span> 0<span style="color:#f92672">]</span>
+</span></span></code></pre></div><h2 id="12-初始化数组">1.2 初始化数组
+</h2><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// 数组的定义</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">arr1</span> [<span style="color:#ae81ff">4</span>]<span style="color:#66d9ef">int</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// len获取数据长度</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;类型：%T; \t数组长度：%v; \t数据：%v\n&#34;</span>, <span style="color:#a6e22e">arr1</span>, len(<span style="color:#a6e22e">arr1</span>), <span style="color:#a6e22e">arr1</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/* 数组初始化 */</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 1.方式一</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">arr1</span>[<span style="color:#ae81ff">0</span>] = <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">arr1</span>[<span style="color:#ae81ff">3</span>] = <span style="color:#ae81ff">4</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;方式一: 类型：%T; \t数组长度：%v; \t数据：%v\n&#34;</span>, <span style="color:#a6e22e">arr1</span>, len(<span style="color:#a6e22e">arr1</span>), <span style="color:#a6e22e">arr1</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 2. 方式二 var 变量名 = [元素个数]&lt;数据类型&gt;{}</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">arr2</span> = [<span style="color:#ae81ff">3</span>]<span style="color:#66d9ef">float64</span>{<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">4.6</span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;方式二: 类型：%T; \t数组长度：%v; \t数据：%v\n&#34;</span>, <span style="color:#a6e22e">arr2</span>, len(<span style="color:#a6e22e">arr2</span>), <span style="color:#a6e22e">arr2</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 3. 方式三 变量名:= [元素个数]&lt;数据类型&gt;{}</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">arr3</span> <span style="color:#f92672">:=</span> [<span style="color:#ae81ff">3</span>]<span style="color:#66d9ef">string</span>{<span style="color:#e6db74">&#34;java&#34;</span>, <span style="color:#e6db74">&#34;Golang&#34;</span>, <span style="color:#e6db74">&#34;Python&#34;</span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;方式三: 类型：%T; \t数组长度：%v; \t数据：%v\n&#34;</span>, <span style="color:#a6e22e">arr3</span>, len(<span style="color:#a6e22e">arr3</span>), <span style="color:#a6e22e">arr3</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 4. 方式四 var 变量名 = [...]&lt;数据类型&gt;{} 或 变量名:= [...]&lt;数据类型&gt;{}</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">arr4</span> <span style="color:#f92672">:=</span> [<span style="color:#f92672">...</span>]<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">6</span>, <span style="color:#ae81ff">7</span>, <span style="color:#ae81ff">8</span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;方式四: 类型：%T; \t数组长度：%v; \t数据：%v\n&#34;</span>, <span style="color:#a6e22e">arr4</span>, len(<span style="color:#a6e22e">arr4</span>), <span style="color:#a6e22e">arr4</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 5. 方式五 指定下标索引初始化索引</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">arr5</span> <span style="color:#f92672">:=</span> [<span style="color:#f92672">...</span>]<span style="color:#66d9ef">float64</span>{<span style="color:#ae81ff">0</span>: <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">2</span>: <span style="color:#ae81ff">3.5</span>, <span style="color:#ae81ff">5</span>: <span style="color:#ae81ff">4.6</span>, <span style="color:#ae81ff">7</span>: <span style="color:#ae81ff">9</span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;方式五: 类型：%T; \t数组长度：%v; \t数据：%v\n&#34;</span>, <span style="color:#a6e22e">arr5</span>, len(<span style="color:#a6e22e">arr5</span>), <span style="color:#a6e22e">arr5</span>)
+</span></span></code></pre></div><p>结果：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>类型：<span style="color:#f92672">[</span>4<span style="color:#f92672">]</span>int;   数组长度：4;    数据：<span style="color:#f92672">[</span><span style="color:#ae81ff">0</span> <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">0</span> 0<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>方式一: 类型：<span style="color:#f92672">[</span>4<span style="color:#f92672">]</span>int;   数组长度：4;    数据：<span style="color:#f92672">[</span><span style="color:#ae81ff">1</span> <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">0</span> 4<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>方式二: 类型：<span style="color:#f92672">[</span>3<span style="color:#f92672">]</span>float64;       数组长度：3;    数据：<span style="color:#f92672">[</span><span style="color:#ae81ff">1</span> <span style="color:#ae81ff">2</span> 4.6<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>方式三: 类型：<span style="color:#f92672">[</span>3<span style="color:#f92672">]</span>string;        数组长度：3;    数据：<span style="color:#f92672">[</span>java Golang Python<span style="color:#f92672">]</span> 
+</span></span><span style="display:flex;"><span>方式四: 类型：<span style="color:#f92672">[</span>5<span style="color:#f92672">]</span>int;   数组长度：5;    数据：<span style="color:#f92672">[</span><span style="color:#ae81ff">2</span> <span style="color:#ae81ff">4</span> <span style="color:#ae81ff">6</span> <span style="color:#ae81ff">7</span> 8<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>方式五: 类型：<span style="color:#f92672">[</span>8<span style="color:#f92672">]</span>float64;       数组长度：8;    数据：<span style="color:#f92672">[</span><span style="color:#ae81ff">2</span> <span style="color:#ae81ff">0</span> 3.5 <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">0</span> 4.6 <span style="color:#ae81ff">0</span> 9<span style="color:#f92672">]</span>
+</span></span></code></pre></div><h2 id="13-数据的循环遍历">1.3 数据的循环遍历
+</h2><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">/* 数组的循环遍历 */</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">arr6</span> <span style="color:#f92672">:=</span> [<span style="color:#ae81ff">3</span>]<span style="color:#66d9ef">string</span>{<span style="color:#e6db74">&#34;java&#34;</span>, <span style="color:#e6db74">&#34;Golang&#34;</span>, <span style="color:#e6db74">&#34;Python&#34;</span>}
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 1. 使用fori循环</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;fori循环 &#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; len(<span style="color:#a6e22e">arr6</span>); <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;下标%v: 值：%v; \t&#34;</span>, <span style="color:#a6e22e">i</span>, <span style="color:#a6e22e">arr6</span>[<span style="color:#a6e22e">i</span>])
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>()
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 2. 使用for range</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;for range循环 &#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> <span style="color:#a6e22e">index</span>, <span style="color:#a6e22e">value</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">arr6</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;下标%v: 值：%v; \t&#34;</span>, <span style="color:#a6e22e">index</span>, <span style="color:#a6e22e">value</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>结果：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>fori循环 下标0: 值：java;       下标1: 值：Golang;      下标2: 值：Python;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> range循环 下标0: 值：java;  下标1: 值：Golang;      下标2: 值：Python;
+</span></span></code></pre></div><h2 id="14-多维数组">1.4 多维数组
+</h2><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// 2维数组为例 var 变量名 = [行个数][列个数]数据类型{{}}</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">arr7</span> = [<span style="color:#ae81ff">3</span>][<span style="color:#ae81ff">3</span>]<span style="color:#66d9ef">int</span>{
+</span></span><span style="display:flex;"><span>	{<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>}, <span style="color:#75715e">// 每一行数据</span>
+</span></span><span style="display:flex;"><span>	{<span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">6</span>},
+</span></span><span style="display:flex;"><span>	{<span style="color:#ae81ff">7</span>, <span style="color:#ae81ff">8</span>, <span style="color:#ae81ff">9</span>},
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;类型：%T; \t数组长度：%v; \t数据：%v\n&#34;</span>, <span style="color:#a6e22e">arr7</span>, len(<span style="color:#a6e22e">arr7</span>), <span style="color:#a6e22e">arr7</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 可以忽略行的数据个数，列的数据个数不允许忽略</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">arr8</span> = [<span style="color:#f92672">...</span>][<span style="color:#ae81ff">2</span>]<span style="color:#66d9ef">string</span>{
+</span></span><span style="display:flex;"><span>	{<span style="color:#e6db74">&#34;a&#34;</span>, <span style="color:#e6db74">&#34;b&#34;</span>},
+</span></span><span style="display:flex;"><span>	{<span style="color:#e6db74">&#34;c&#34;</span>, <span style="color:#e6db74">&#34;d&#34;</span>},
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;类型：%T; \t数组长度：%v; \t数据：%v\n&#34;</span>, <span style="color:#a6e22e">arr8</span>, len(<span style="color:#a6e22e">arr8</span>), <span style="color:#a6e22e">arr8</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 二维数组循环</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; len(<span style="color:#a6e22e">arr7</span>); <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">j</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">j</span> &lt; len(<span style="color:#a6e22e">arr7</span>[<span style="color:#a6e22e">i</span>]); <span style="color:#a6e22e">j</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%v行%v列: 值：%v; \t&#34;</span>, <span style="color:#a6e22e">i</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">j</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">arr7</span>[<span style="color:#a6e22e">i</span>][<span style="color:#a6e22e">j</span>])
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>()
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> <span style="color:#a6e22e">row</span>, <span style="color:#a6e22e">rowValue</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">arr8</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">col</span>, <span style="color:#a6e22e">value</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">rowValue</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%v行%v列: 值：%v; \t&#34;</span>, <span style="color:#a6e22e">row</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">col</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">value</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>()
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>结果：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">类型</span><span style="color:#960050;background-color:#1e0010">：</span>[<span style="color:#ae81ff">3</span>][<span style="color:#ae81ff">3</span>]<span style="color:#66d9ef">int</span>;        <span style="color:#a6e22e">数组长度</span><span style="color:#960050;background-color:#1e0010">：</span><span style="color:#ae81ff">3</span>;    <span style="color:#a6e22e">数据</span><span style="color:#960050;background-color:#1e0010">：</span>[[<span style="color:#ae81ff">1</span> <span style="color:#ae81ff">2</span> <span style="color:#ae81ff">3</span>] [<span style="color:#ae81ff">4</span> <span style="color:#ae81ff">5</span> <span style="color:#ae81ff">6</span>] [<span style="color:#ae81ff">7</span> <span style="color:#ae81ff">8</span> <span style="color:#ae81ff">9</span>]]
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">类型</span><span style="color:#960050;background-color:#1e0010">：</span>[<span style="color:#ae81ff">2</span>][<span style="color:#ae81ff">2</span>]<span style="color:#66d9ef">string</span>;     <span style="color:#a6e22e">数组长度</span><span style="color:#960050;background-color:#1e0010">：</span><span style="color:#ae81ff">2</span>;    <span style="color:#a6e22e">数据</span><span style="color:#960050;background-color:#1e0010">：</span>[[<span style="color:#a6e22e">a</span> <span style="color:#a6e22e">b</span>] [<span style="color:#a6e22e">c</span> <span style="color:#a6e22e">d</span>]]
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">1</span><span style="color:#a6e22e">行1列</span>: <span style="color:#a6e22e">值</span><span style="color:#960050;background-color:#1e0010">：</span><span style="color:#ae81ff">1</span>;  <span style="color:#ae81ff">1</span><span style="color:#a6e22e">行2列</span>: <span style="color:#a6e22e">值</span><span style="color:#960050;background-color:#1e0010">：</span><span style="color:#ae81ff">2</span>;  <span style="color:#ae81ff">1</span><span style="color:#a6e22e">行3列</span>: <span style="color:#a6e22e">值</span><span style="color:#960050;background-color:#1e0010">：</span><span style="color:#ae81ff">3</span>;
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">2</span><span style="color:#a6e22e">行1列</span>: <span style="color:#a6e22e">值</span><span style="color:#960050;background-color:#1e0010">：</span><span style="color:#ae81ff">4</span>;  <span style="color:#ae81ff">2</span><span style="color:#a6e22e">行2列</span>: <span style="color:#a6e22e">值</span><span style="color:#960050;background-color:#1e0010">：</span><span style="color:#ae81ff">5</span>;  <span style="color:#ae81ff">2</span><span style="color:#a6e22e">行3列</span>: <span style="color:#a6e22e">值</span><span style="color:#960050;background-color:#1e0010">：</span><span style="color:#ae81ff">6</span>;
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">3</span><span style="color:#a6e22e">行1列</span>: <span style="color:#a6e22e">值</span><span style="color:#960050;background-color:#1e0010">：</span><span style="color:#ae81ff">7</span>;  <span style="color:#ae81ff">3</span><span style="color:#a6e22e">行2列</span>: <span style="color:#a6e22e">值</span><span style="color:#960050;background-color:#1e0010">：</span><span style="color:#ae81ff">8</span>;  <span style="color:#ae81ff">3</span><span style="color:#a6e22e">行3列</span>: <span style="color:#a6e22e">值</span><span style="color:#960050;background-color:#1e0010">：</span><span style="color:#ae81ff">9</span>;
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">1</span><span style="color:#a6e22e">行1列</span>: <span style="color:#a6e22e">值</span><span style="color:#960050;background-color:#1e0010">：</span><span style="color:#a6e22e">a</span>;  <span style="color:#ae81ff">1</span><span style="color:#a6e22e">行2列</span>: <span style="color:#a6e22e">值</span><span style="color:#960050;background-color:#1e0010">：</span><span style="color:#a6e22e">b</span>;
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">2</span><span style="color:#a6e22e">行1列</span>: <span style="color:#a6e22e">值</span><span style="color:#960050;background-color:#1e0010">：</span><span style="color:#a6e22e">c</span>;  <span style="color:#ae81ff">2</span><span style="color:#a6e22e">行2列</span>: <span style="color:#a6e22e">值</span><span style="color:#960050;background-color:#1e0010">：</span><span style="color:#a6e22e">d</span>;
+</span></span></code></pre></div><h1 id="2-切片slice">2. 切片（Slice）
+</h1><blockquote>
+<p>切片：基于数组实现的一层封装，<strong>可变长度的序列，可自动扩容</strong>。<strong>切片为引用类型</strong></p>
+</blockquote>
+<h2 id="21-切片声明初始化">2.1 切片声明、初始化
+</h2><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">变量名</span> = []&lt;<span style="color:#a6e22e">数据类型</span>&gt;
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 声明 + 初始化</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">变量名</span> = []&lt;<span style="color:#a6e22e">数据类型</span>&gt;{}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">变量名</span><span style="color:#f92672">:=</span> []&lt;<span style="color:#a6e22e">数据类型</span>&gt;{}
+</span></span></code></pre></div><p>示例：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// 切片的定义</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">arr1</span> []<span style="color:#66d9ef">int</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// len获取数据长度</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;类型：%T; \t切片长度：%v; \t数据：%v\n&#34;</span>, <span style="color:#a6e22e">arr1</span>, len(<span style="color:#a6e22e">arr1</span>), <span style="color:#a6e22e">arr1</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/* 切片初始化 */</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 1. 方式一 var 变量名 = []&lt;数据类型&gt;{}</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">arr2</span> = []<span style="color:#66d9ef">float64</span>{<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">4.6</span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;方式一: 类型：%T; \t切片长度：%v; \t数据：%v\n&#34;</span>, <span style="color:#a6e22e">arr2</span>, len(<span style="color:#a6e22e">arr2</span>), <span style="color:#a6e22e">arr2</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 2. 方式二 变量名:= []&lt;数据类型&gt;{}</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">arr3</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">string</span>{<span style="color:#e6db74">&#34;java&#34;</span>, <span style="color:#e6db74">&#34;Golang&#34;</span>, <span style="color:#e6db74">&#34;Python&#34;</span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;方式二: 类型：%T; \t切片长度：%v; \t数据：%v\n&#34;</span>, <span style="color:#a6e22e">arr3</span>, len(<span style="color:#a6e22e">arr3</span>), <span style="color:#a6e22e">arr3</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 3. 方式三 var 变量名 = []&lt;数据类型&gt;{} 或 变量名:= []&lt;数据类型&gt;{}</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">arr4</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">6</span>, <span style="color:#ae81ff">7</span>, <span style="color:#ae81ff">8</span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;方式三: 类型：%T; \t切片长度：%v; \t数据：%v\n&#34;</span>, <span style="color:#a6e22e">arr4</span>, len(<span style="color:#a6e22e">arr4</span>), <span style="color:#a6e22e">arr4</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 4. 方式四 指定下标索引初始化索引</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">arr5</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">float64</span>{<span style="color:#ae81ff">0</span>: <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">2</span>: <span style="color:#ae81ff">3.5</span>, <span style="color:#ae81ff">5</span>: <span style="color:#ae81ff">4.6</span>, <span style="color:#ae81ff">7</span>: <span style="color:#ae81ff">9</span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;方式四: 类型：%T; \t切片长度：%v; \t数据：%v\n&#34;</span>, <span style="color:#a6e22e">arr5</span>, len(<span style="color:#a6e22e">arr5</span>), <span style="color:#a6e22e">arr5</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 5. 切片的循环和数组一致，这里不例举</span>
+</span></span></code></pre></div><p>结果：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>类型：<span style="color:#f92672">[]</span>int;    切片长度：0;    数据：<span style="color:#f92672">[]</span>
+</span></span><span style="display:flex;"><span>方式一: 类型：<span style="color:#f92672">[]</span>float64;        切片长度：3;    数据：<span style="color:#f92672">[</span><span style="color:#ae81ff">1</span> <span style="color:#ae81ff">2</span> 4.6<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>方式二: 类型：<span style="color:#f92672">[]</span>string;         切片长度：3;    数据：<span style="color:#f92672">[</span>java Golang Python<span style="color:#f92672">]</span> 
+</span></span><span style="display:flex;"><span>方式三: 类型：<span style="color:#f92672">[]</span>int;    切片长度：5;    数据：<span style="color:#f92672">[</span><span style="color:#ae81ff">2</span> <span style="color:#ae81ff">4</span> <span style="color:#ae81ff">6</span> <span style="color:#ae81ff">7</span> 8<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>方式四: 类型：<span style="color:#f92672">[]</span>float64;        切片长度：8;    数据：<span style="color:#f92672">[</span><span style="color:#ae81ff">2</span> <span style="color:#ae81ff">0</span> 3.5 <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">0</span> 4.6 <span style="color:#ae81ff">0</span> 9<span style="color:#f92672">]</span>
+</span></span></code></pre></div><h2 id="22-基于数组创建切片">2.2 基于数组创建切片
+</h2><p>示例：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// 基于数组定义切片</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">arr1</span> = [<span style="color:#ae81ff">5</span>]<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">29</span>, <span style="color:#ae81ff">49</span>, <span style="color:#ae81ff">58</span>, <span style="color:#ae81ff">32</span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;类型：%T; \t长度：%v; \t数据：%v\n&#34;</span>, <span style="color:#a6e22e">arr1</span>, len(<span style="color:#a6e22e">arr1</span>), <span style="color:#a6e22e">arr1</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 1. 切片获取，arr1[:]获取arr1中所有的数据</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">s1</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">arr1</span>[:]
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 切片数据类型为[]int,数组数据类型为[5]int</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;获取所有数据--类型：%T; \t长度：%v; \t数据：%v\n&#34;</span>, <span style="color:#a6e22e">s1</span>, len(<span style="color:#a6e22e">s1</span>), <span style="color:#a6e22e">s1</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 2. 切片获取，arr1[2:]获取arr1中从下标为2开始之后所有的数据【包含下标2】</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">s2</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">arr1</span>[<span style="color:#ae81ff">2</span>:]
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;获取下标为2开始之后所有的数据--类型：%T; \t长度：%v; \t数据：%v\n&#34;</span>, <span style="color:#a6e22e">s1</span>, len(<span style="color:#a6e22e">s2</span>), <span style="color:#a6e22e">s2</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 3. 切片获取，arr1[:2]获取arr1中从下标为2之前所有的数据【不包含下标2】</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">s3</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">arr1</span>[:<span style="color:#ae81ff">2</span>]
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;获取下标为2之前所有的数据--类型：%T; \t长度：%v; \t数据：%v\n&#34;</span>, <span style="color:#a6e22e">s3</span>, len(<span style="color:#a6e22e">s3</span>), <span style="color:#a6e22e">s3</span>)
+</span></span></code></pre></div><p>结果：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>类型：<span style="color:#f92672">[</span>5<span style="color:#f92672">]</span>int;   长度：5;        数据：<span style="color:#f92672">[</span><span style="color:#ae81ff">10</span> <span style="color:#ae81ff">29</span> <span style="color:#ae81ff">49</span> <span style="color:#ae81ff">58</span> 32<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>获取所有数据--类型：<span style="color:#f92672">[]</span>int;      长度：5;        数据：<span style="color:#f92672">[</span><span style="color:#ae81ff">10</span> <span style="color:#ae81ff">29</span> <span style="color:#ae81ff">49</span> <span style="color:#ae81ff">58</span> 32<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>获取下标为2开始之后所有的数据--类型：<span style="color:#f92672">[]</span>int;     长度：3;        数据：<span style="color:#f92672">[</span><span style="color:#ae81ff">49</span> <span style="color:#ae81ff">58</span> 32<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>获取下标为2之前所有的数据--类型：<span style="color:#f92672">[]</span>int;         长度：2;        数据：<span style="color:#f92672">[</span><span style="color:#ae81ff">10</span> 29<span style="color:#f92672">]</span> 
+</span></span></code></pre></div><blockquote>
+<p>总结：数据的拆分：arr[start:end] 中，含义为：<strong>获取arr对应下标区间[start,end)的值，start,end可省略，表示其前或后的所有值。</strong></p>
+</blockquote>
+<h2 id="22-切片的长度len和容量cap">2.2 切片的长度(len)和容量(cap)<!-- raw HTML omitted -->*<!-- raw HTML omitted -->
+</h2><blockquote>
+<p>切片拥有自己的长度和容量：
+长度：切片的长度是切片所包含的元素个数。用**len()<strong>函数获取
+容量：切片的容量从他第一个元素开始，到底层数组元素末尾的个数。用</strong>cap()**函数获取</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">a</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">6</span>, <span style="color:#ae81ff">7</span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;类型：%T, 长度：%v, 容量：%v, 数据：%v\n&#34;</span>, <span style="color:#a6e22e">a</span>, len(<span style="color:#a6e22e">a</span>), cap(<span style="color:#a6e22e">a</span>), <span style="color:#a6e22e">a</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">b</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">a</span>[<span style="color:#ae81ff">3</span>:]
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;类型：%T, 长度：%v, 容量：%v, 数据：%v\n&#34;</span>, <span style="color:#a6e22e">b</span>, len(<span style="color:#a6e22e">b</span>), cap(<span style="color:#a6e22e">b</span>), <span style="color:#a6e22e">b</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">c</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">a</span>[:<span style="color:#ae81ff">3</span>]
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;类型：%T, 长度：%v, 容量：%v, 数据：%v\n&#34;</span>, <span style="color:#a6e22e">c</span>, len(<span style="color:#a6e22e">c</span>), cap(<span style="color:#a6e22e">c</span>), <span style="color:#a6e22e">c</span>)
+</span></span></code></pre></div><p>结果：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>类型：<span style="color:#f92672">[]</span>int, 长度：6, 容量：6, 数据：<span style="color:#f92672">[</span><span style="color:#ae81ff">2</span> <span style="color:#ae81ff">3</span> <span style="color:#ae81ff">4</span> <span style="color:#ae81ff">5</span> <span style="color:#ae81ff">6</span> 7<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>类型：<span style="color:#f92672">[]</span>int, 长度：3, 容量：3, 数据：<span style="color:#f92672">[</span><span style="color:#ae81ff">5</span> <span style="color:#ae81ff">6</span> 7<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>类型：<span style="color:#f92672">[]</span>int, 长度：3, 容量：6, 数据：<span style="color:#f92672">[</span><span style="color:#ae81ff">2</span> <span style="color:#ae81ff">3</span> 4<span style="color:#f92672">]</span>
+</span></span></code></pre></div><figure><img src="/img/golang_stu/go_stu_051.png">
+</figure>
+
+<h1 id="3-nil值">3. nil值
+</h1><blockquote>
+<p>nil是一个预先声明的标识符，表示指针、通道、函数、接口、集合或切片类型的零值。</p>
+</blockquote>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>数据类型</th>
+          <th>声明默认值</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>bool</td>
+          <td></td>
+      </tr>
+      <tr>
+          <td>int,float</td>
+          <td>0</td>
+      </tr>
+      <tr>
+          <td>string</td>
+          <td><code>&quot;&quot;</code></td>
+      </tr>
+      <tr>
+          <td>指针（pointers）</td>
+          <td>nil</td>
+      </tr>
+      <tr>
+          <td>数组（array）</td>
+          <td>基本类型默认值的数组</td>
+      </tr>
+      <tr>
+          <td>切片（slices）</td>
+          <td>nil</td>
+      </tr>
+      <tr>
+          <td>集合（maps）</td>
+          <td>nil</td>
+      </tr>
+      <tr>
+          <td>通道（channels）</td>
+          <td>nil</td>
+      </tr>
+      <tr>
+          <td>函数（function）</td>
+          <td>nil</td>
+      </tr>
+  </tbody>
+</table></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// 数组默认值</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">arr</span> [<span style="color:#ae81ff">3</span>]<span style="color:#66d9ef">int</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">arr</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 切片默认值</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">slices1</span> []<span style="color:#66d9ef">int</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">slices2</span> = []<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">1</span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">slices1</span>, <span style="color:#a6e22e">slices1</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">slices2</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span>)
+</span></span></code></pre></div><p>结果：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#f92672">[</span><span style="color:#ae81ff">0</span> <span style="color:#ae81ff">0</span> 0<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[]</span> true false
+</span></span></code></pre></div><h1 id="4-值类型和引用数据类型">4. 值类型和引用数据类型
+</h1><blockquote>
+<p>值类型: 值类型赋值的两个变量为独立个体，A变化不会引起B的同步更新
+引用数据类型：引用数据类型赋值的两个变量为引用同一个变量，A变化会引起B的变化。实际上是因为指向同一片内存空间。<strong>典型的示例即：切片</strong>
+示例：</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">a1</span> <span style="color:#f92672">:=</span> [<span style="color:#f92672">...</span>]<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>}           <span style="color:#75715e">// 数组 值复制</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">a2</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>}              <span style="color:#75715e">// 切片 引用赋值</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">b1</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">a1</span>                             <span style="color:#75715e">// 赋值给b1</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">b2</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">a2</span>                             <span style="color:#75715e">// 赋值给b2</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">b1</span>[<span style="color:#ae81ff">0</span>] = <span style="color:#ae81ff">6</span>                            <span style="color:#75715e">// 同样修改第一个元素值为6</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">b2</span>[<span style="color:#ae81ff">0</span>] = <span style="color:#ae81ff">6</span>                            <span style="color:#75715e">// 同样修改第一个元素值为6</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;a1=%v,b1=%v \n&#34;</span>, <span style="color:#a6e22e">a1</span>, <span style="color:#a6e22e">b1</span>) <span style="color:#75715e">// 值类型赋值：b1的修改不会影响a1</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;a2=%v,b2=%v \n&#34;</span>, <span style="color:#a6e22e">a2</span>, <span style="color:#a6e22e">b2</span>) <span style="color:#75715e">// 引用类型赋值：b2的修改影响了a2</span>
+</span></span></code></pre></div><p>结果：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>a1<span style="color:#f92672">=[</span><span style="color:#ae81ff">2</span> <span style="color:#ae81ff">3</span> <span style="color:#ae81ff">4</span> 5<span style="color:#f92672">]</span>,b1<span style="color:#f92672">=[</span><span style="color:#ae81ff">6</span> <span style="color:#ae81ff">3</span> <span style="color:#ae81ff">4</span> 5<span style="color:#f92672">]</span> 
+</span></span><span style="display:flex;"><span>a2<span style="color:#f92672">=[</span><span style="color:#ae81ff">6</span> <span style="color:#ae81ff">3</span> <span style="color:#ae81ff">4</span> 5<span style="color:#f92672">]</span>,b2<span style="color:#f92672">=[</span><span style="color:#ae81ff">6</span> <span style="color:#ae81ff">3</span> <span style="color:#ae81ff">4</span> 5<span style="color:#f92672">]</span> 
+</span></span></code></pre></div><h1 id="5-切片常用函数">5. 切片常用函数
+</h1><h2 id="51-创建切片make">5.1 创建切片：make
+</h2><blockquote>
+<p>make创建切片，<code>make([]int, 10, 11)</code> 分配一个底层数组大小为10，返回长度为11、容量为10的切片int类型切片</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">slice1</span> = make([]<span style="color:#66d9ef">int</span>, <span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">11</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">slice1</span>[<span style="color:#ae81ff">2</span>] = <span style="color:#ae81ff">6</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">slice1</span>[<span style="color:#ae81ff">9</span>] = <span style="color:#ae81ff">20</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;类型：%T, 长度：%v, 容量：%v, 数据：%v\n&#34;</span>, <span style="color:#a6e22e">slice1</span>, len(<span style="color:#a6e22e">slice1</span>), cap(<span style="color:#a6e22e">slice1</span>), <span style="color:#a6e22e">slice1</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/* 	结果：
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">类型：[]int, 长度：10, 容量：11, 数据：[0 0 6 0 0 0 0 0 0 20]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">*/</span>
+</span></span></code></pre></div><h2 id="52-扩容切片append">5.2 扩容切片：append
+</h2><blockquote>
+<p>切片扩容： <code>append(slice, elem1, elem2)或者append(slice, anotherSlice...)</code>，slice表示需要扩容的切片，elem*表示添加的元素，anotherSlice表示其他切片</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// 切片的扩容不能通过slice[2]下标越界方式，会报错下标越界：index out of range [2] with length 0</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">slice2</span> = make([]<span style="color:#66d9ef">int</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 切片中追加一个元素，并返回最终元素</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">slice2</span> = append(<span style="color:#a6e22e">slice2</span>, <span style="color:#ae81ff">12</span>, <span style="color:#ae81ff">14</span>, <span style="color:#ae81ff">24</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;类型：%T, 长度：%v, 容量：%v, 数据：%v\n&#34;</span>, <span style="color:#a6e22e">slice2</span>, len(<span style="color:#a6e22e">slice2</span>), cap(<span style="color:#a6e22e">slice2</span>), <span style="color:#a6e22e">slice2</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">slice3</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>}
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 切片的合并，slice3...代表slice3中所有的元素列举</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">slice4</span> = append(<span style="color:#a6e22e">slice2</span>, <span style="color:#a6e22e">slice3</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;类型：%T, 长度：%v, 容量：%v, 数据：%v\n&#34;</span>, <span style="color:#a6e22e">slice2</span>, len(<span style="color:#a6e22e">slice4</span>), cap(<span style="color:#a6e22e">slice4</span>), <span style="color:#a6e22e">slice4</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/* 结果：
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">类型：[]int, 长度：3, 容量：3, 数据：[12 14 24]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">类型：[]int, 长度：6, 容量：6, 数据：[12 14 24 3 4 5]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> */</span>
+</span></span></code></pre></div><h2 id="53-复制切片深克隆copy">5.3 复制切片【深克隆】：copy
+</h2><blockquote>
+<p>深克隆：指的是克隆前后的对象为两个独立的个体，后续修改变更互不影响
+浅克隆：指的是克隆前后的对象为同一个引用类型，后续修改A同样影响B的值
+copy(dst, src []Type)，dst是destination，表示目的变量，src是source，表示对象源，即将src复制给dst</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// 切片的扩容不能通过slice[2]下标越界方式，会报错下标越界：index out of range [2] with length 0</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">slice2</span> = make([]<span style="color:#66d9ef">int</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 切片中追加一个元素，并返回最终元素</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">slice2</span> = append(<span style="color:#a6e22e">slice2</span>, <span style="color:#ae81ff">12</span>, <span style="color:#ae81ff">14</span>, <span style="color:#ae81ff">24</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;类型：%T, 长度：%v, 容量：%v, 数据：%v\n&#34;</span>, <span style="color:#a6e22e">slice2</span>, len(<span style="color:#a6e22e">slice2</span>), cap(<span style="color:#a6e22e">slice2</span>), <span style="color:#a6e22e">slice2</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">slice3</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>}
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 切片的合并，slice3...代表slice3中所有的元素列举</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">slice4</span> = append(<span style="color:#a6e22e">slice2</span>, <span style="color:#a6e22e">slice3</span><span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;类型：%T, 长度：%v, 容量：%v, 数据：%v\n&#34;</span>, <span style="color:#a6e22e">slice2</span>, len(<span style="color:#a6e22e">slice4</span>), cap(<span style="color:#a6e22e">slice4</span>), <span style="color:#a6e22e">slice4</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 切片的复制深克隆</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">slice4Copy</span> <span style="color:#f92672">:=</span> make([]<span style="color:#66d9ef">int</span>, len(<span style="color:#a6e22e">slice4</span>))
+</span></span><span style="display:flex;"><span>copy(<span style="color:#a6e22e">slice4Copy</span>, <span style="color:#a6e22e">slice4</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">slice4Copy</span>[<span style="color:#ae81ff">0</span>] = <span style="color:#ae81ff">6666</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">slice4</span>, <span style="color:#a6e22e">slice4Copy</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/* 结果：
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">类型：[]int, 长度：3, 容量：3, 数据：[12 14 24]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">类型：[]int, 长度：6, 容量：6, 数据：[12 14 24 3 4 5]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">[12 14 24 3 4 5] [6666 14 24 3 4 5]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> */</span>
+</span></span></code></pre></div><h2 id="54-切片的删除">5.4 切片的删除
+</h2><blockquote>
+<p>Go语言中没有内置删除切片方法，可以使用append方法，与切片再切片结合实现</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// 切片的删除</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">s1</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">6</span>}
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 删除元素的索引下标</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">delIndx</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 通过切片append方法，与切片再切片结合实现，即截取[0,3)和[4,5]的切片数据再合并达到删除效果</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">s1</span> = append(<span style="color:#a6e22e">s1</span>[:<span style="color:#a6e22e">delIndx</span>], <span style="color:#a6e22e">s1</span>[<span style="color:#a6e22e">delIndx</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>:]<span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">s1</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/* 结果：
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">[1 2 3 5 6]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> */</span>
+</span></span></code></pre></div><h2 id="55-sort排序">5.5 sort排序
+</h2><h3 id="551-升序排序">5.5.1 升序排序
+</h3><blockquote>
+<p>使用sort.Ints、sort.Float64s、sort.Strings进行排序</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">intList</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">32</span>, <span style="color:#ae81ff">32</span>, <span style="color:#ae81ff">423</span>, <span style="color:#ae81ff">12</span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">float64List</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">float64</span>{<span style="color:#ae81ff">3.13</span>, <span style="color:#ae81ff">4.2</span>, <span style="color:#ae81ff">5.3</span>, <span style="color:#ae81ff">1.1</span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">stringList</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">string</span>{<span style="color:#e6db74">&#34;D&#34;</span>, <span style="color:#e6db74">&#34;S&#34;</span>, <span style="color:#e6db74">&#34;A&#34;</span>, <span style="color:#e6db74">&#34;C&#34;</span>}
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 升序排序</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">sort</span>.<span style="color:#a6e22e">Ints</span>(<span style="color:#a6e22e">intList</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">sort</span>.<span style="color:#a6e22e">Float64s</span>(<span style="color:#a6e22e">float64List</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">sort</span>.<span style="color:#a6e22e">Strings</span>(<span style="color:#a6e22e">stringList</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">intList</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">float64List</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">stringList</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/* 结果：
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">[3 4 12 32 32 423]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">[1.1 3.13 4.2 5.3]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">[A C D S]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> */</span>
+</span></span></code></pre></div><h3 id="552-降序排序">5.5.2 降序排序
+</h3><blockquote>
+<p>结合sort.XXXSlice、sort.Reverse和sort.Sort实现</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">intList</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">32</span>, <span style="color:#ae81ff">32</span>, <span style="color:#ae81ff">423</span>, <span style="color:#ae81ff">12</span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">float64List</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">float64</span>{<span style="color:#ae81ff">3.13</span>, <span style="color:#ae81ff">4.2</span>, <span style="color:#ae81ff">5.3</span>, <span style="color:#ae81ff">1.1</span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">stringList</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">string</span>{<span style="color:#e6db74">&#34;D&#34;</span>, <span style="color:#e6db74">&#34;S&#34;</span>, <span style="color:#e6db74">&#34;A&#34;</span>, <span style="color:#e6db74">&#34;C&#34;</span>}
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/*
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	降序排序
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">		1. sort.IntSlice(intList)表示对intList转成interface，简单理解为将切片转为排序器接口,返回结果类型：data sort.Interface
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">		2. sort.Reverse(data sort.Interface)表示翻转切片，返回结果类型：data sort.Interface
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">		3. sort.Sort(data sort.Interface) 表示将结果排序返回数据
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	默认当做固定写法：sort.Sort(sort.Reverse(sort.XXXSlice(intList)))
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	另外也可以自定义排序算法实现降序排序
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">*/</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">sort</span>.<span style="color:#a6e22e">Sort</span>(<span style="color:#a6e22e">sort</span>.<span style="color:#a6e22e">Reverse</span>(<span style="color:#a6e22e">sort</span>.<span style="color:#a6e22e">IntSlice</span>(<span style="color:#a6e22e">intList</span>)))
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">sort</span>.<span style="color:#a6e22e">Sort</span>(<span style="color:#a6e22e">sort</span>.<span style="color:#a6e22e">Reverse</span>(<span style="color:#a6e22e">sort</span>.<span style="color:#a6e22e">Float64Slice</span>(<span style="color:#a6e22e">float64List</span>)))
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">sort</span>.<span style="color:#a6e22e">Sort</span>(<span style="color:#a6e22e">sort</span>.<span style="color:#a6e22e">Reverse</span>(<span style="color:#a6e22e">sort</span>.<span style="color:#a6e22e">StringSlice</span>(<span style="color:#a6e22e">stringList</span>)))
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">intList</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">float64List</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">stringList</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/* 结果: 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">[423 32 32 12 4 3]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">[5.3 4.2 3.13 1.1]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">[S D C A]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"> */</span>
+</span></span></code></pre></div><h1 id="6-扩展技巧">6. 扩展技巧
+</h1><h2 id="61-语法提示">6.1 语法提示
+</h2><blockquote>
+<p>对一个变量输入“.”符号时，编译器自动提示语法命令，后缀携带!的表示为功能快捷提示，并生成对应的半成品代码</p>
+</blockquote>
+<p><figure><img src="/img/golang_stu/go_stu_052.png">
+</figure>
+
+截图中提示语功能</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>功能提示语句</th>
+          <th>含义</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>append!</td>
+          <td>切片追加数据</td>
+      </tr>
+      <tr>
+          <td>copy!</td>
+          <td>copy克隆切片</td>
+      </tr>
+      <tr>
+          <td>for!</td>
+          <td>fori循环</td>
+      </tr>
+      <tr>
+          <td>forr!</td>
+          <td>for range循环</td>
+      </tr>
+      <tr>
+          <td>ifnotnil!</td>
+          <td>if not nil 条件判断</td>
+      </tr>
+      <tr>
+          <td>last!</td>
+          <td>等价于a[len(a -1)]获取最后一个元素</td>
+      </tr>
+      <tr>
+          <td>len!</td>
+          <td>等价于len(a)获取长度</td>
+      </tr>
+      <tr>
+          <td>print!</td>
+          <td>打印变量</td>
+      </tr>
+      <tr>
+          <td>range!</td>
+          <td>等价于forr!</td>
+      </tr>
+      <tr>
+          <td>reverse!</td>
+          <td>翻转切片</td>
+      </tr>
+      <tr>
+          <td>sort!</td>
+          <td>自定定排序</td>
+      </tr>
+      <tr>
+          <td>var!</td>
+          <td>将a赋值于新的变量</td>
+      </tr>
+  </tbody>
+</table></div>
+<h2 id="62-方法参数含义使用探究">6.2 方法参数、含义使用探究
+</h2><blockquote>
+<ol>
+<li>鼠标移动至方法名1s以上，显示方法名参数、返回值，含义，描述详情等信息</li>
+</ol>
+</blockquote>
+<figure><img src="/img/golang_stu/go_stu_053.png">
+</figure>
+
+<blockquote>
+<ol start="2">
+<li>用ctrl按键+鼠标左键，点击方法名，即可进入方法名参数、返回值，含义，描述详情等信息，如果不懂英文，可以通过翻译工具认识逐步了解学习
+<figure><img src="/img/golang_stu/go_stu_054.png">
+</figure>
+</li>
+</ol>
+</blockquote>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/golang%E8%AF%AD%E6%B3%95/">Golang语法</a>
+        
+    </section>
+
+
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    <script
+    src="https://giscus.app/client.js"
+    data-repo="zg-dd/zg-dd.github.io"
+    data-repo-id="R_kgDOQwB7tw"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOQwB7t84C0WGD"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="bottom"
+    data-theme="preferred_color_scheme"
+    data-lang="zh-CN"
+    data-loading=""
+    crossorigin="anonymous"
+    async
+></script>
+<script>
+    function setGiscusTheme(theme) {
+        let giscus = document.querySelector("iframe.giscus-frame");
+        if (giscus) {
+            giscus.contentWindow.postMessage(
+                {
+                    giscus: {
+                        setConfig: {
+                            theme: theme,
+                        },
+                    },
+                },
+                "https://giscus.app"
+            );
+        }
+    }
+
+    (function () {
+        addEventListener("message", (e) => {
+            if (event.origin !== "https://giscus.app") return;
+            handler();
+        });
+        window.addEventListener("onColorSchemeChange", handler);
+
+        function handler() {
+            if (document.documentElement.dataset.scheme === "light") {
+                setGiscusTheme('preferred_color_scheme');
+            } else {
+                setGiscusTheme('preferred_color_scheme');
+            }
+        }
+    })();
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2026 小巷的随笔
+    </section>
+    
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.33.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+    
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.45aad63e0378c1185109134874d406d25af802b2faa021ec5fd0dfa8bbfa4d2a.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

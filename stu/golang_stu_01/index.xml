@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Golang学习历程【第一篇 入门】 on 小巷的随笔</title>
+        <link>http://localhost:1313/stu/golang_stu_01/</link>
+        <description>Recent content in Golang学习历程【第一篇 入门】 on 小巷的随笔</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>zh-cn</language>
+        <lastBuildDate></lastBuildDate><atom:link href="http://localhost:1313/stu/golang_stu_01/index.xml" rel="self" type="application/rss+xml" />
+    </channel>
+</rss>

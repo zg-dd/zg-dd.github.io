@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="1. 运算符\r1.1 算术运算符\r符号 描述 + 加法 - 减法 * 乘法 / 除法 % 取余 示例：\n/* 1. 算术运算符 */ num1 := 5 num2 := 3 fmt.Printf(&#34;%v + %v = %v\\n&#34;, num1, num2, num1+num2) // 加法运算 fmt.Printf(&#34;%v - %v = %v\\n&#34;, num1, num2, num1-num2) // 减法运算 fmt.Printf(&#34;%v * %v = %v\\n&#34;, num1, num2, num1*num2) // 乘法运算 fmt.Printf(&#34;%v / %v = %v\\n&#34;, num1, num2, num1/num2) // 除法运算：除法运算，取整数部分，float类型运算取全部值 // %% 转义，输出% fmt.Printf(&#34;%v %% %v = %v\\n&#34;, num1, num2, num1%num2) // 取余运算：取余数 /* Go中自增，自减运算为语句，不属于运算符，不能赋值，这一点不同于其他语言 ++ 自增 -- 自减 */ num2++ fmt.Printf(&#34;num2自增后：%v \\n&#34;, num2) num2-- fmt.Printf(&#34;num2自减后：%v \\n&#34;, num2) 结果：\n">
+<title>Golang学习历程【第四篇 运算符&amp;流程控制】</title>
+
+<link rel='canonical' href='http://localhost:1313/stu/golang_stu_07/_idnex/'>
+
+<link rel="stylesheet" href="/scss/style.min.b9e9128fec450ebccecc4ec9900157f32b85d0609bcd5ee3293968bcaa1235f2.css"><meta property='og:title' content="Golang学习历程【第四篇 运算符&流程控制】">
+<meta property='og:description' content="1. 运算符\r1.1 算术运算符\r符号 描述 + 加法 - 减法 * 乘法 / 除法 % 取余 示例：\n/* 1. 算术运算符 */ num1 := 5 num2 := 3 fmt.Printf(&#34;%v + %v = %v\\n&#34;, num1, num2, num1+num2) // 加法运算 fmt.Printf(&#34;%v - %v = %v\\n&#34;, num1, num2, num1-num2) // 减法运算 fmt.Printf(&#34;%v * %v = %v\\n&#34;, num1, num2, num1*num2) // 乘法运算 fmt.Printf(&#34;%v / %v = %v\\n&#34;, num1, num2, num1/num2) // 除法运算：除法运算，取整数部分，float类型运算取全部值 // %% 转义，输出% fmt.Printf(&#34;%v %% %v = %v\\n&#34;, num1, num2, num1%num2) // 取余运算：取余数 /* Go中自增，自减运算为语句，不属于运算符，不能赋值，这一点不同于其他语言 ++ 自增 -- 自减 */ num2++ fmt.Printf(&#34;num2自增后：%v \\n&#34;, num2) num2-- fmt.Printf(&#34;num2自减后：%v \\n&#34;, num2) 结果：\n">
+<meta property='og:url' content='http://localhost:1313/stu/golang_stu_07/_idnex/'>
+<meta property='og:site_name' content='小巷的随笔'>
+<meta property='og:type' content='article'><meta property='article:section' content='Stu' /><meta property='article:tag' content='Golang语法' /><meta property='article:published_time' content='2025-01-01T11:03:08&#43;08:00'/><meta property='article:modified_time' content='2025-01-01T11:03:08&#43;08:00'/>
+<meta name="twitter:title" content="Golang学习历程【第四篇 运算符&流程控制】">
+<meta name="twitter:description" content="1. 运算符\r1.1 算术运算符\r符号 描述 + 加法 - 减法 * 乘法 / 除法 % 取余 示例：\n/* 1. 算术运算符 */ num1 := 5 num2 := 3 fmt.Printf(&#34;%v + %v = %v\\n&#34;, num1, num2, num1+num2) // 加法运算 fmt.Printf(&#34;%v - %v = %v\\n&#34;, num1, num2, num1-num2) // 减法运算 fmt.Printf(&#34;%v * %v = %v\\n&#34;, num1, num2, num1*num2) // 乘法运算 fmt.Printf(&#34;%v / %v = %v\\n&#34;, num1, num2, num1/num2) // 除法运算：除法运算，取整数部分，float类型运算取全部值 // %% 转义，输出% fmt.Printf(&#34;%v %% %v = %v\\n&#34;, num1, num2, num1%num2) // 取余运算：取余数 /* Go中自增，自减运算为语句，不属于运算符，不能赋值，这一点不同于其他语言 ++ 自增 -- 自减 */ num2++ fmt.Printf(&#34;num2自增后：%v \\n&#34;, num2) num2-- fmt.Printf(&#34;num2自减后：%v \\n&#34;, num2) 结果：\n">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_a0cc1cf57968b27d.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🌱</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">小巷的随笔</a></h1>
+            <h2 class="site-description">记录，不是为了证明自己；而是把“解决问题 → 思考 → 沉淀”形成习惯。</h2>
+        </div>
+    </header><ol class="menu" id="main-menu">
+        
+        
+        
+        <li  class='current' >
+            <a href='/stu/' >
+                
+                
+                
+                <span>学习笔记</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/blog/' >
+                
+                
+                
+                <span>随笔思考</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/life/' >
+                
+                
+                
+                <span>生活记录</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/categories/' >
+                
+                
+                
+                <span>分类</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/tags/' >
+                
+                
+                
+                <span>标签</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+                    
+                        <li id="i18n-switch">  
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                            <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
+                                
+                                    <option value="http://localhost:1313/" selected>简体中文</option>
+                                
+                                    <option value="http://localhost:1313/en/" >English</option>
+                                
+                            </select>
+                        </li>
+                    
+                
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ul>
+    <li><a href="#11-算术运算符">1.1 算术运算符</a></li>
+    <li><a href="#12-关系运算符">1.2 关系运算符</a></li>
+    <li><a href="#13-逻辑运算符">1.3 逻辑运算符</a></li>
+    <li><a href="#14-赋值运算符">1.4 赋值运算符</a></li>
+    <li><a href="#15-其他运算符">1.5 其他运算符</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#31-条件表达式if">3.1 条件表达式if</a></li>
+    <li><a href="#32-for循环">3.2 for循环</a></li>
+    <li><a href="#33-for-range键值循环">3.3 for range(键值循环)</a></li>
+    <li><a href="#34-switchcase">3.4 switch&hellip;case</a></li>
+    <li><a href="#35-breakcontinuegoto">3.5 break,continue,goto</a></li>
+  </ul>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/golang/" >
+                Golang
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/stu/golang_stu_07/_idnex/">Golang学习历程【第四篇 运算符&amp;流程控制】</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published" datetime='2025-01-01T11:03:08&#43;08:00'>Jan 01, 2025</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 11 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h1 id="1-运算符">1. 运算符
+</h1><h2 id="11-算术运算符">1.1 算术运算符
+</h2><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>符号</th>
+          <th>描述</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>+</td>
+          <td>加法</td>
+      </tr>
+      <tr>
+          <td>-</td>
+          <td>减法</td>
+      </tr>
+      <tr>
+          <td>*</td>
+          <td>乘法</td>
+      </tr>
+      <tr>
+          <td>/</td>
+          <td>除法</td>
+      </tr>
+      <tr>
+          <td>%</td>
+          <td>取余</td>
+      </tr>
+  </tbody>
+</table></div>
+<p>示例：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">/*
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	1. 算术运算符
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">*/</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">num1</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">5</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">num2</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%v + %v = %v\n&#34;</span>, <span style="color:#a6e22e">num1</span>, <span style="color:#a6e22e">num2</span>, <span style="color:#a6e22e">num1</span><span style="color:#f92672">+</span><span style="color:#a6e22e">num2</span>) <span style="color:#75715e">// 加法运算</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%v - %v = %v\n&#34;</span>, <span style="color:#a6e22e">num1</span>, <span style="color:#a6e22e">num2</span>, <span style="color:#a6e22e">num1</span><span style="color:#f92672">-</span><span style="color:#a6e22e">num2</span>) <span style="color:#75715e">// 减法运算</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%v * %v = %v\n&#34;</span>, <span style="color:#a6e22e">num1</span>, <span style="color:#a6e22e">num2</span>, <span style="color:#a6e22e">num1</span><span style="color:#f92672">*</span><span style="color:#a6e22e">num2</span>) <span style="color:#75715e">// 乘法运算</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%v / %v = %v\n&#34;</span>, <span style="color:#a6e22e">num1</span>, <span style="color:#a6e22e">num2</span>, <span style="color:#a6e22e">num1</span><span style="color:#f92672">/</span><span style="color:#a6e22e">num2</span>) <span style="color:#75715e">// 除法运算：除法运算，取整数部分，float类型运算取全部值</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// %% 转义，输出%</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%v %% %v = %v\n&#34;</span>, <span style="color:#a6e22e">num1</span>, <span style="color:#a6e22e">num2</span>, <span style="color:#a6e22e">num1</span><span style="color:#f92672">%</span><span style="color:#a6e22e">num2</span>) <span style="color:#75715e">// 取余运算：取余数</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/*
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	Go中自增，自减运算为语句，不属于运算符，不能赋值，这一点不同于其他语言
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	++ 自增
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	-- 自减
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">*/</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">num2</span><span style="color:#f92672">++</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;num2自增后：%v \n&#34;</span>, <span style="color:#a6e22e">num2</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">num2</span><span style="color:#f92672">--</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;num2自减后：%v \n&#34;</span>, <span style="color:#a6e22e">num2</span>)
+</span></span></code></pre></div><p>结果：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ae81ff">5</span> + 3 <span style="color:#f92672">=</span> <span style="color:#ae81ff">8</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">5</span> - 3 <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">5</span> * 3 <span style="color:#f92672">=</span> <span style="color:#ae81ff">15</span>        
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">5</span> / 3 <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">5</span> % 3 <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>num2自增后：4     
+</span></span><span style="display:flex;"><span>num2自减后：3 
+</span></span></code></pre></div><h2 id="12-关系运算符">1.2 关系运算符
+</h2><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>符号</th>
+          <th>描述</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>==</td>
+          <td>等于</td>
+      </tr>
+      <tr>
+          <td>!=</td>
+          <td>不等于</td>
+      </tr>
+      <tr>
+          <td>&gt;</td>
+          <td>大于</td>
+      </tr>
+      <tr>
+          <td>&gt;=</td>
+          <td>大于等于</td>
+      </tr>
+      <tr>
+          <td>&lt;</td>
+          <td>小于</td>
+      </tr>
+      <tr>
+          <td>&lt;=</td>
+          <td>小于等于</td>
+      </tr>
+  </tbody>
+</table></div>
+<p>示例：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">/*
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	2. 关系运算符
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">*/</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">num3</span>, <span style="color:#a6e22e">num4</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">8</span>, <span style="color:#ae81ff">6</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%v == %v = %v\n&#34;</span>, <span style="color:#a6e22e">num3</span>, <span style="color:#a6e22e">num4</span>, <span style="color:#a6e22e">num3</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">num4</span>) <span style="color:#75715e">// false</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%v != %v = %v\n&#34;</span>, <span style="color:#a6e22e">num3</span>, <span style="color:#a6e22e">num4</span>, <span style="color:#a6e22e">num3</span> <span style="color:#f92672">!=</span> <span style="color:#a6e22e">num4</span>) <span style="color:#75715e">// true</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%v &gt; %v = %v\n&#34;</span>, <span style="color:#a6e22e">num3</span>, <span style="color:#a6e22e">num4</span>, <span style="color:#a6e22e">num3</span> &gt; <span style="color:#a6e22e">num4</span>)   <span style="color:#75715e">// true</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%v &gt;= %v = %v\n&#34;</span>, <span style="color:#a6e22e">num3</span>, <span style="color:#a6e22e">num4</span>, <span style="color:#a6e22e">num3</span> <span style="color:#f92672">&gt;=</span> <span style="color:#a6e22e">num4</span>) <span style="color:#75715e">// true</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%v &lt; %v = %v\n&#34;</span>, <span style="color:#a6e22e">num3</span>, <span style="color:#a6e22e">num4</span>, <span style="color:#a6e22e">num3</span> &lt; <span style="color:#a6e22e">num4</span>)   <span style="color:#75715e">// false</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%v &lt;= %v = %v\n&#34;</span>, <span style="color:#a6e22e">num3</span>, <span style="color:#a6e22e">num4</span>, <span style="color:#a6e22e">num3</span> <span style="color:#f92672">&lt;=</span> <span style="color:#a6e22e">num4</span>) <span style="color:#75715e">// false</span>
+</span></span></code></pre></div><p>结果：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>8 <span style="color:#f92672">==</span> 6 <span style="color:#f92672">=</span> false
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">8</span> !<span style="color:#f92672">=</span> 6 <span style="color:#f92672">=</span> true     
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">8</span> &gt; 6 <span style="color:#f92672">=</span> true      
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">8</span> &gt;<span style="color:#f92672">=</span> 6 <span style="color:#f92672">=</span> true     
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">8</span> &lt; 6 <span style="color:#f92672">=</span> false     
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">8</span> &lt;<span style="color:#f92672">=</span> 6 <span style="color:#f92672">=</span> false 
+</span></span></code></pre></div><h2 id="13-逻辑运算符">1.3 逻辑运算符
+</h2><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>符号</th>
+          <th>描述</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>&amp;&amp;</td>
+          <td>逻辑与</td>
+      </tr>
+      <tr>
+          <td>||</td>
+          <td>逻辑或</td>
+      </tr>
+      <tr>
+          <td>!</td>
+          <td>取非</td>
+      </tr>
+  </tbody>
+</table></div>
+<p>示例：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">/*
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	3. 逻辑运算符
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">		&amp;&amp;:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">			真 &amp;&amp; 假 = false
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">			假 &amp;&amp; 真 = false
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">			假 &amp;&amp; 假 = false
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">			真 &amp;&amp; 真 = true
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">		||:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">			真 || 假 = true
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">			假 || 真 = true
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">			真 || 真 = true
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">			假 || 假 = false
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">		!:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">			!真 = false
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">			!假 = true
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">*/</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">num5</span>, <span style="color:#a6e22e">num6</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">16</span>, <span style="color:#ae81ff">20</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;值 = %v\n&#34;</span>, <span style="color:#a6e22e">num5</span> &gt; <span style="color:#ae81ff">15</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">num6</span> &lt; <span style="color:#ae81ff">20</span>)  <span style="color:#75715e">// false</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;值 = %v\n&#34;</span>, <span style="color:#a6e22e">num5</span> &lt; <span style="color:#ae81ff">15</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">num6</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">20</span>) <span style="color:#75715e">// false</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;值 = %v\n&#34;</span>, <span style="color:#a6e22e">num5</span> &gt; <span style="color:#ae81ff">15</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">num6</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">20</span>) <span style="color:#75715e">// true</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;值 = %v\n&#34;</span>, <span style="color:#a6e22e">num5</span> &gt; <span style="color:#ae81ff">15</span> <span style="color:#f92672">||</span> <span style="color:#a6e22e">num6</span> &lt; <span style="color:#ae81ff">20</span>)  <span style="color:#75715e">// true</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;值 = %v\n&#34;</span>, <span style="color:#a6e22e">num5</span> &lt; <span style="color:#ae81ff">15</span> <span style="color:#f92672">||</span> <span style="color:#a6e22e">num6</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">20</span>) <span style="color:#75715e">// true</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;值 = %v\n&#34;</span>, <span style="color:#a6e22e">num5</span> &gt; <span style="color:#ae81ff">15</span> <span style="color:#f92672">||</span> <span style="color:#a6e22e">num6</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">20</span>) <span style="color:#75715e">// true</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;值 = %v\n&#34;</span>, <span style="color:#a6e22e">num5</span> &lt; <span style="color:#ae81ff">15</span> <span style="color:#f92672">||</span> <span style="color:#a6e22e">num6</span> &gt; <span style="color:#ae81ff">20</span>)  <span style="color:#75715e">// false</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;值 = %v\n&#34;</span>, !(<span style="color:#a6e22e">num5</span> &lt; <span style="color:#ae81ff">15</span>))            <span style="color:#75715e">// true</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;值 = %v\n&#34;</span>, !(<span style="color:#a6e22e">num6</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">20</span>))           <span style="color:#75715e">// false</span>
+</span></span></code></pre></div><p>结果：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>值 <span style="color:#f92672">=</span> false
+</span></span><span style="display:flex;"><span>值 <span style="color:#f92672">=</span> false        
+</span></span><span style="display:flex;"><span>值 <span style="color:#f92672">=</span> true
+</span></span><span style="display:flex;"><span>值 <span style="color:#f92672">=</span> true
+</span></span><span style="display:flex;"><span>值 <span style="color:#f92672">=</span> true
+</span></span><span style="display:flex;"><span>值 <span style="color:#f92672">=</span> true
+</span></span><span style="display:flex;"><span>值 <span style="color:#f92672">=</span> false        
+</span></span><span style="display:flex;"><span>值 <span style="color:#f92672">=</span> true
+</span></span><span style="display:flex;"><span>值 <span style="color:#f92672">=</span> false
+</span></span></code></pre></div><h2 id="14-赋值运算符">1.4 赋值运算符
+</h2><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>符号</th>
+          <th>描述</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>=</td>
+          <td>赋值，表达式右变赋值给左边</td>
+      </tr>
+      <tr>
+          <td>+=</td>
+          <td>先加后赋值</td>
+      </tr>
+      <tr>
+          <td>-=</td>
+          <td>先减后赋值</td>
+      </tr>
+      <tr>
+          <td>*=</td>
+          <td>先乘后赋值</td>
+      </tr>
+      <tr>
+          <td>/=</td>
+          <td>先除后赋值</td>
+      </tr>
+      <tr>
+          <td>%=</td>
+          <td>先取余后赋值</td>
+      </tr>
+      <tr>
+          <td>&laquo;=</td>
+          <td>先左移后赋值(高级用法)</td>
+      </tr>
+      <tr>
+          <td>&raquo;=</td>
+          <td>先右移后赋值(高级用法)</td>
+      </tr>
+      <tr>
+          <td>&amp;=</td>
+          <td>先按位与后赋值(高级用法)</td>
+      </tr>
+      <tr>
+          <td>|=</td>
+          <td>先按位或后赋值(高级用法)</td>
+      </tr>
+      <tr>
+          <td>^=</td>
+          <td>先按位异或后赋值(高级用法)</td>
+      </tr>
+  </tbody>
+</table></div>
+<p>示例：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">/*
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	1.4 赋值运算符
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">*/</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">num6</span>, <span style="color:#a6e22e">num7</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">6</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">num7</span> <span style="color:#f92672">+=</span> <span style="color:#a6e22e">num6</span> <span style="color:#75715e">// 等价于 num7 := num7 + num6</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;num7 += num6 结果为： %v\n&#34;</span>, <span style="color:#a6e22e">num7</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">num7</span> = <span style="color:#ae81ff">6</span>     <span style="color:#75715e">// 赋值初始值</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">num7</span> <span style="color:#f92672">-=</span> <span style="color:#a6e22e">num6</span> <span style="color:#75715e">// 等价于 num7 := num7 - num6</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;num7 -= num6 结果为： %v\n&#34;</span>, <span style="color:#a6e22e">num7</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">num7</span> = <span style="color:#ae81ff">6</span>     <span style="color:#75715e">// 赋值初始值</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">num7</span> <span style="color:#f92672">*=</span> <span style="color:#a6e22e">num6</span> <span style="color:#75715e">// 等价于 num7 := num7 * num6</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;num7 *= num6 结果为： %v\n&#34;</span>, <span style="color:#a6e22e">num7</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">num7</span> = <span style="color:#ae81ff">6</span>     <span style="color:#75715e">// 赋值初始值</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">num7</span> <span style="color:#f92672">/=</span> <span style="color:#a6e22e">num6</span> <span style="color:#75715e">// 等价于 num7 := num7 / num6</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;num7 /= num6 结果为： %v\n&#34;</span>, <span style="color:#a6e22e">num7</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">num7</span> = <span style="color:#ae81ff">6</span>     <span style="color:#75715e">// 赋值初始值</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">num7</span> <span style="color:#f92672">%=</span> <span style="color:#a6e22e">num6</span> <span style="color:#75715e">// 等价于 num7 := num7 % num6</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;num7 %%= num6 结果为： %v\n&#34;</span>, <span style="color:#a6e22e">num7</span>)
+</span></span></code></pre></div><p>结果：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>num7 <span style="color:#f92672">+=</span> num6 结果为： <span style="color:#ae81ff">9</span>
+</span></span><span style="display:flex;"><span>num7 -<span style="color:#f92672">=</span> num6 结果为： <span style="color:#ae81ff">3</span> 
+</span></span><span style="display:flex;"><span>num7 *<span style="color:#f92672">=</span> num6 结果为： <span style="color:#ae81ff">18</span>
+</span></span><span style="display:flex;"><span>num7 /<span style="color:#f92672">=</span> num6 结果为： <span style="color:#ae81ff">2</span> 
+</span></span><span style="display:flex;"><span>num7 %<span style="color:#f92672">=</span> num6 结果为： <span style="color:#ae81ff">0</span> 
+</span></span></code></pre></div><blockquote>
+<p>高级用法在二进制运算中举例，<a class="link" href="#gj_eg" >点击此处跳转</a></p>
+</blockquote>
+<h2 id="15-其他运算符">1.5 其他运算符
+</h2><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>符号</th>
+          <th>描述</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>&amp;</td>
+          <td>返回变量存储地址</td>
+      </tr>
+      <tr>
+          <td>*</td>
+          <td>指针变量</td>
+      </tr>
+  </tbody>
+</table></div>
+<blockquote>
+<p>计算机上是通过地址空间存储变量。
+地址是指存储变量的内存位置，即变量的地址，一般由16进制数值表示；
+指针是指向变量地址的变量；
+变量的值：在当前内存空间位置上存储了变量表示的值。</p>
+</blockquote>
+<p>示例</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">/*
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	1.5 其他运算符
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	&amp;：用于获取变量的地址值
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	*: 用户获取地址上存储的值
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">*/</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">//
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">var p *int</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">num8</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">100</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">p</span> = <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">num8</span> <span style="color:#75715e">// 将num8的地址赋值于p ,获取指针的值用*p</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;p地址值=%v,p的值=%v&#34;</span>, <span style="color:#a6e22e">p</span>, <span style="color:#f92672">*</span><span style="color:#a6e22e">p</span>)
+</span></span></code></pre></div><p>结果：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>p地址值<span style="color:#f92672">=</span>0xc00000a0d8,p的值<span style="color:#f92672">=</span><span style="color:#ae81ff">100</span>
+</span></span></code></pre></div><h1 id="2-二进制运算">2. 二进制运算
+</h1><blockquote>
+<p>以下所有的操作运算都是以二进制数值操作</p>
+</blockquote>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>符号</th>
+          <th>描述</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>&amp;</td>
+          <td>按位与</td>
+      </tr>
+      <tr>
+          <td>|</td>
+          <td>按位或</td>
+      </tr>
+      <tr>
+          <td>^</td>
+          <td>异或</td>
+      </tr>
+      <tr>
+          <td>&laquo;</td>
+          <td>左移</td>
+      </tr>
+      <tr>
+          <td>&raquo;</td>
+          <td>右移</td>
+      </tr>
+  </tbody>
+</table></div>
+<p>运算逻辑：</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>p</th>
+          <th>q</th>
+          <th>p&amp;q</th>
+          <th>p|q</th>
+          <th>p^q</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>0</td>
+      </tr>
+      <tr>
+          <td>1</td>
+          <td>0</td>
+          <td>0</td>
+          <td>1</td>
+          <td>1</td>
+      </tr>
+      <tr>
+          <td>0</td>
+          <td>1</td>
+          <td>0</td>
+          <td>1</td>
+          <td>1</td>
+      </tr>
+      <tr>
+          <td>1</td>
+          <td>1</td>
+          <td>1</td>
+          <td>1</td>
+          <td>0</td>
+      </tr>
+  </tbody>
+</table></div>
+<blockquote>
+<p>&amp;运算：运算两边全为1时值为1，其余位0
+|运算：运算两边全为0时值为0，其余为1
+^运算：运算两边数值不同为1，相同为0
+&laquo;运算：例如 p&laquo;q ，p的二进制值左移q位。右边空位补0
+&gt;&gt;运算：例如 p&raquo;q ，p的二进制值右移q位。删除左边空位0
+<!-- raw HTML omitted -->二进制运算在操作地址运算，IP运算等偏向于硬件有着效率高，运算快的特点<!-- raw HTML omitted --></p>
+</blockquote>
+<p><!-- raw HTML omitted -->示例<!-- raw HTML omitted -->：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">/*
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	1.6 二进制运算
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	&amp;运算：运算两边全为1时值为1，其余位0
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	|运算：运算两边全为0时值为0，其余为1
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	^运算：运算两边数值不同为1，相同为0
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	&lt;&lt;运算：例如 p&lt;&lt;q ，p的二进制值左移q位。右边空位补0
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	&gt;&gt;运算：例如 p&gt;&gt;q ，p的二进制值右移q位。删除左边空位0
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">*/</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">num1</span> = <span style="color:#ae81ff">0b101011</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">num2</span> = <span style="color:#ae81ff">0b110001</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%b &amp; %b = %b \n&#34;</span>, <span style="color:#a6e22e">num1</span>, <span style="color:#a6e22e">num2</span>, <span style="color:#a6e22e">num1</span><span style="color:#f92672">&amp;</span><span style="color:#a6e22e">num2</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%b | %b = %b \n&#34;</span>, <span style="color:#a6e22e">num1</span>, <span style="color:#a6e22e">num2</span>, <span style="color:#a6e22e">num1</span>|<span style="color:#a6e22e">num2</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%b ^ %b = %b \n&#34;</span>, <span style="color:#a6e22e">num1</span>, <span style="color:#a6e22e">num2</span>, <span style="color:#a6e22e">num1</span>^<span style="color:#a6e22e">num2</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%b &lt;&lt; %d = %b \n&#34;</span>, <span style="color:#a6e22e">num1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#a6e22e">num1</span><span style="color:#f92672">&lt;&lt;</span><span style="color:#ae81ff">2</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%b &gt;&gt; %d = %b \n&#34;</span>, <span style="color:#a6e22e">num2</span>, <span style="color:#ae81ff">2</span>, <span style="color:#a6e22e">num2</span><span style="color:#f92672">&gt;&gt;</span><span style="color:#ae81ff">2</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 使用高级赋值运算符计算</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">num2</span> = <span style="color:#ae81ff">0b110001</span> <span style="color:#75715e">// 初始化</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">num2</span> <span style="color:#f92672">&amp;=</span> <span style="color:#a6e22e">num1</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;用&amp;= 计算：%b &amp; 110001 = %b \n&#34;</span>, <span style="color:#a6e22e">num1</span>, <span style="color:#a6e22e">num2</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">num2</span> = <span style="color:#ae81ff">0b110001</span> <span style="color:#75715e">// 初始化</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">num2</span> <span style="color:#f92672">|=</span> <span style="color:#a6e22e">num1</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;用|= 计算：%b | 110001 = %b \n&#34;</span>, <span style="color:#a6e22e">num1</span>, <span style="color:#a6e22e">num2</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">num2</span> = <span style="color:#ae81ff">0b110001</span> <span style="color:#75715e">// 初始化</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">num2</span> ^= <span style="color:#a6e22e">num1</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;用^= 计算：%b ^ 110001 = %b \n&#34;</span>, <span style="color:#a6e22e">num1</span>, <span style="color:#a6e22e">num2</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">num1</span> = <span style="color:#ae81ff">0b110001</span> <span style="color:#75715e">// 初始化</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">num1</span> <span style="color:#f92672">&lt;&lt;=</span> <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;用&lt;&lt;= 计算：110001 &lt;&lt; %d = %b \n&#34;</span>, <span style="color:#ae81ff">2</span>, <span style="color:#a6e22e">num1</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">num2</span> = <span style="color:#ae81ff">0b110001</span> <span style="color:#75715e">// 初始化</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">num2</span> <span style="color:#f92672">&gt;&gt;=</span> <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;用&gt;&gt;= 计算：110001 &gt;&gt; %d = %b \n&#34;</span>, <span style="color:#ae81ff">2</span>, <span style="color:#a6e22e">num2</span>)
+</span></span></code></pre></div><p>结果：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ae81ff">101011</span> &amp; 110001 <span style="color:#f92672">=</span> <span style="color:#ae81ff">100001</span> 
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">101011</span> | 110001 <span style="color:#f92672">=</span> <span style="color:#ae81ff">111011</span> 
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">101011</span> ^ 110001 <span style="color:#f92672">=</span> <span style="color:#ae81ff">11010</span>  
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">101011</span> <span style="color:#e6db74">&lt;&lt; 2 = 10101100   
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">110001 &gt;&gt; 2</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">1100</span>       
+</span></span><span style="display:flex;"><span>用&amp;<span style="color:#f92672">=</span> 计算：101011 &amp; 110001 <span style="color:#f92672">=</span> <span style="color:#ae81ff">100001</span>
+</span></span><span style="display:flex;"><span>用|<span style="color:#f92672">=</span> 计算：101011 | 110001 <span style="color:#f92672">=</span> <span style="color:#ae81ff">111011</span>
+</span></span><span style="display:flex;"><span>用^<span style="color:#f92672">=</span> 计算：101011 ^ 110001 <span style="color:#f92672">=</span> <span style="color:#ae81ff">11010</span>
+</span></span><span style="display:flex;"><span>用&lt;&lt;<span style="color:#f92672">=</span> 计算：110001 <span style="color:#e6db74">&lt;&lt; 2 = 11000100
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">用&gt;&gt;= 计算：110001 &gt;&gt; 2</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">1100</span>
+</span></span></code></pre></div><hr>
+<blockquote>
+<p>&amp;和|妙用</p>
+</blockquote>
+<p><strong>例</strong>：假设，用5位二进制表示座位的空闲和占用，那么全部空闲为：00000，全部占用为：11111。那么有两种场景：1. 指定第1,3,5为空闲状态；2.指定第2,4座位为占用状态的实现方式如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">// 默认座位代表：占用，空闲，空闲，占用，占用</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">seat</span> = <span style="color:#ae81ff">0b10011</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 将1,3,5的位置置为空闲0，即目标结果：空闲，空闲，空闲，占用，空闲</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">initValue1</span> = <span style="color:#ae81ff">0b01010</span>                          <span style="color:#75715e">// 解释：不管原值是0或者1，只要initValue1第1,3,5位置为0,&amp;的最终结果都为0，而initValue1第2,4位置为1,保证&amp;结果保留原来的值不变</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;将1,3,5的位置置为0:%b \n&#34;</span>, <span style="color:#a6e22e">seat</span><span style="color:#f92672">&amp;</span><span style="color:#a6e22e">initValue1</span>) <span style="color:#75715e">// 结果10，即00010，前缀0省略</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 将2,4的位置置为占用1，即目标结果：占用，占用，空闲，占用，占用</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">initValue2</span> = <span style="color:#ae81ff">0b01010</span>                        <span style="color:#75715e">// 解释：不管原值是0或者1，只要initValue2第2,4位置为1,|的最终结果都为1，而initValue1第1,3,5位置为0,保证|结果保留原来的值不变</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;将2,4的位置置为1:%b \n&#34;</span>, <span style="color:#a6e22e">seat</span>|<span style="color:#a6e22e">initValue2</span>) <span style="color:#75715e">// 结果11011</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>将1,3,5的位置置为0:10 
+</span></span><span style="display:flex;"><span>将2,4的位置置为1:11011 
+</span></span></code></pre></div><blockquote>
+<p>由上述示例可见，使用同一个二进制01010值，就能操作两种不同的场景运算，<strong>这在信号灯控制、开关控制等两种取反操作场景中非常适用</strong></p>
+</blockquote>
+<h1 id="3-流程控制">3. 流程控制
+</h1><h2 id="31-条件表达式if">3.1 条件表达式if
+</h2><blockquote>
+<p>条件判断：按照程序顺序执行，仅可执行满足一个条件的语句内容。</p>
+</blockquote>
+<p>示例：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">/*
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	下列格式严格按照书写规范，否则报错
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	1. 条件判断：
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	if 条件判断1 {
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	} else if 条件判断2 {
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	} else if ... {
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	} else {
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	}
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">*/</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 写法1 , 此时score作用于在当前范围作用域</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">score</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">60</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#a6e22e">score</span> <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">90</span> { <span style="color:#75715e">// &gt;= 90</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;成绩卓越&#34;</span>)
+</span></span><span style="display:flex;"><span>} <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">score</span> <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">80</span> { <span style="color:#75715e">// &gt;= 80 &amp;&amp; &lt; 90</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;成绩优秀&#34;</span>)
+</span></span><span style="display:flex;"><span>} <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">score</span> <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">70</span> { <span style="color:#75715e">// &gt;= 70 &amp;&amp; &lt; 80</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;成绩良好&#34;</span>)
+</span></span><span style="display:flex;"><span>} <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">score</span> <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">60</span> { <span style="color:#75715e">// &gt;= 60 &amp;&amp; &lt; 70</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;成绩合格&#34;</span>)
+</span></span><span style="display:flex;"><span>} <span style="color:#66d9ef">else</span> { <span style="color:#75715e">// &lt; 60</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;成绩不合格&#34;</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 写法2： 此时score1作用于在当前if内部作用域</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#a6e22e">score1</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">80</span>; <span style="color:#a6e22e">score1</span> <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">90</span> { <span style="color:#75715e">// &gt;= 90</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;成绩卓越&#34;</span>)
+</span></span><span style="display:flex;"><span>} <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">score1</span> <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">80</span> { <span style="color:#75715e">// &gt;= 80 &amp;&amp; &lt; 90</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;成绩优秀&#34;</span>)
+</span></span><span style="display:flex;"><span>} <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">score1</span> <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">70</span> { <span style="color:#75715e">// &gt;= 70 &amp;&amp; &lt; 80</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;成绩良好&#34;</span>)
+</span></span><span style="display:flex;"><span>} <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">score1</span> <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">60</span> { <span style="color:#75715e">// &gt;= 60 &amp;&amp; &lt; 70</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;成绩合格&#34;</span>)
+</span></span><span style="display:flex;"><span>} <span style="color:#66d9ef">else</span> { <span style="color:#75715e">// &lt; 60</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;成绩不合格&#34;</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 此时使用score1会报错</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">strconv</span>.<span style="color:#a6e22e">Itoa</span>(<span style="color:#a6e22e">score</span>))
+</span></span></code></pre></div><p>结果：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>成绩合格
+</span></span><span style="display:flex;"><span>成绩优秀
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">80</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>在这里插入代码片
+</span></span></code></pre></div><h2 id="32-for循环">3.2 for循环
+</h2><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">/*
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	()内容可以省略
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	for (初始语句;)(条件表达式;)(结束语句) {
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">		循环体
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	}
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	执行顺序：
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">		1. 执行初始语句
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">		2. 条件表达式
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">		3. 循环体
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">		4. 结束语句
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">		5. 条件表达式,判断是否满足条件
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">		6. 如果满足条件为true：第3,4,5步循环执行，直到条件表达式为false结束
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">*/</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">str</span> = <span style="color:#e6db74">&#34;hello world&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 写法1</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; len(<span style="color:#a6e22e">str</span>); <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%c &#34;</span>, <span style="color:#a6e22e">str</span>[<span style="color:#a6e22e">i</span>])
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>()
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 写法2</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> &lt; len(<span style="color:#a6e22e">str</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%c &#34;</span>, <span style="color:#a6e22e">str</span>[<span style="color:#a6e22e">i</span>])
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">i</span><span style="color:#f92672">++</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>()
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 写法3 Go中没有while控制语句，该写法可替代</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">i</span> = <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">&gt;=</span> len(<span style="color:#a6e22e">str</span>) {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">break</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%c &#34;</span>, <span style="color:#a6e22e">str</span>[<span style="color:#a6e22e">i</span>])
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">i</span><span style="color:#f92672">++</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>结果：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>h e l l o   w o r l d 
+</span></span><span style="display:flex;"><span>h e l l o   w o r l d 
+</span></span><span style="display:flex;"><span>h e l l o   w o r l d 
+</span></span></code></pre></div><h2 id="33-for-range键值循环">3.3 for range(键值循环)
+</h2><p>示例：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">/*
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	for ...range 格式
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	for 键,值 := range 变量{
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">		循环体
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	}
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">*/</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">text</span> <span style="color:#f92672">:=</span> <span style="color:#e6db74">&#34;你好,program&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> <span style="color:#a6e22e">k</span>, <span style="color:#a6e22e">v</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">text</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;k=%v,v=%c\n&#34;</span>, <span style="color:#a6e22e">k</span>, <span style="color:#a6e22e">v</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>结果：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>k<span style="color:#f92672">=</span>0,v<span style="color:#f92672">=</span>你
+</span></span><span style="display:flex;"><span>k<span style="color:#f92672">=</span>3,v<span style="color:#f92672">=</span>好
+</span></span><span style="display:flex;"><span>k<span style="color:#f92672">=</span>6,v<span style="color:#f92672">=</span>, 
+</span></span><span style="display:flex;"><span>k<span style="color:#f92672">=</span>7,v<span style="color:#f92672">=</span>p 
+</span></span><span style="display:flex;"><span>k<span style="color:#f92672">=</span>8,v<span style="color:#f92672">=</span>r 
+</span></span><span style="display:flex;"><span>k<span style="color:#f92672">=</span>9,v<span style="color:#f92672">=</span>o 
+</span></span><span style="display:flex;"><span>k<span style="color:#f92672">=</span>10,v<span style="color:#f92672">=</span>g
+</span></span><span style="display:flex;"><span>k<span style="color:#f92672">=</span>11,v<span style="color:#f92672">=</span>r
+</span></span><span style="display:flex;"><span>k<span style="color:#f92672">=</span>12,v<span style="color:#f92672">=</span>a
+</span></span><span style="display:flex;"><span>k<span style="color:#f92672">=</span>13,v<span style="color:#f92672">=</span>m
+</span></span></code></pre></div><h2 id="34-switchcase">3.4 switch&hellip;case
+</h2><blockquote>
+<p>与if条件判断类型，switch&hellip;case更多用于判断枚举类型</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#75715e">/*
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	switch 枚举值{
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	case 固定值1:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">		(break)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	case 固定值2:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">		(break)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	case 固定值3:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">		(break)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	...
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	default:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	}
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	执行顺序：1. 枚举值
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">			 2. case 命中，哪一个case命中，执行哪个case下的语句
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">*/</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 写法1</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">week</span> = <span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">week</span> {
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">case</span> <span style="color:#ae81ff">1</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;周一&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">case</span> <span style="color:#ae81ff">2</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;周二&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">case</span> <span style="color:#ae81ff">3</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;周三&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">case</span> <span style="color:#ae81ff">4</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;周四&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">case</span> <span style="color:#ae81ff">5</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;周五&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">case</span> <span style="color:#ae81ff">6</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;周六&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">case</span> <span style="color:#ae81ff">7</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;周日&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">default</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;不存在&#34;</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 写法2，同样week1仅作用域在switch内部</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">week1</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">week1</span> {
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">case</span> <span style="color:#ae81ff">1</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;周一&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">case</span> <span style="color:#ae81ff">2</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;周二&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">case</span> <span style="color:#ae81ff">3</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;周三&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">case</span> <span style="color:#ae81ff">4</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;周四&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">case</span> <span style="color:#ae81ff">5</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;周五&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">case</span> <span style="color:#ae81ff">6</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;周六&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">case</span> <span style="color:#ae81ff">7</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;周日&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">default</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;不存在&#34;</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 写法3, case 可以写多个枚举值</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">num</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">10</span>; <span style="color:#a6e22e">num</span> {
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">case</span> <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">6</span>, <span style="color:#ae81ff">8</span>, <span style="color:#ae81ff">10</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;偶数&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">case</span> <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">7</span>, <span style="color:#ae81ff">9</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;奇数&#34;</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 写法4，case 中可以写条件表达式</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">score</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">80</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">switch</span> {
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">case</span> <span style="color:#a6e22e">score</span> <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">90</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;卓越&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">case</span> <span style="color:#a6e22e">score</span> <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">80</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;优秀&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">case</span> <span style="color:#a6e22e">score</span> <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">70</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;良好&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">case</span> <span style="color:#a6e22e">score</span> <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">60</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;及格&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">default</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;不及格&#34;</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>结果：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>周三
+</span></span><span style="display:flex;"><span>不存在
+</span></span><span style="display:flex;"><span>偶数
+</span></span><span style="display:flex;"><span>优秀
+</span></span></code></pre></div><blockquote>
+<p>Go语言的switch..case中，break默认存在的，即仅能执行case，不能语句穿透。如果需要语句穿透，可使用fallthrough语句，一次使用仅能穿透一层
+例：</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">week1</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">5</span>; <span style="color:#a6e22e">week1</span> {
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">case</span> <span style="color:#ae81ff">1</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;周一&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">case</span> <span style="color:#ae81ff">2</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;周二&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">case</span> <span style="color:#ae81ff">3</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;周三&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">case</span> <span style="color:#ae81ff">4</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;周四&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">case</span> <span style="color:#ae81ff">5</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;周五&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">fallthrough</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">case</span> <span style="color:#ae81ff">6</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;周六&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">case</span> <span style="color:#ae81ff">7</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;周日&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">default</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;不存在&#34;</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>结果：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>周五
+</span></span><span style="display:flex;"><span>周六
+</span></span></code></pre></div><h2 id="35-breakcontinuegoto">3.5 break,continue,goto
+</h2><ul>
+<li>break表示跳出当前循环</li>
+<li>continue表示跳过档次循环执行</li>
+<li>goto 表示跳至指定语句执行</li>
+</ul>
+<p>示例：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>lable1: // 固定写法 &lt;随意标签名&gt;:
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> i :<span style="color:#f92672">=</span> 0; i &lt;<span style="color:#f92672">=</span> 3; i++ <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> i <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">continue</span> // 跳过当次循环 0跳过
+</span></span><span style="display:flex;"><span>		<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> i <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">continue</span> lable1 // 跳至lable1位置 ,1跳过, 继续执行
+</span></span><span style="display:flex;"><span>		<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>		fmt.Printf<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;i=%d \n&#34;</span>, i<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>lable2:
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> j :<span style="color:#f92672">=</span> 0; j &lt;<span style="color:#f92672">=</span> 3; j++ <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> j <span style="color:#f92672">==</span> <span style="color:#ae81ff">3</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>			fmt.Printf<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;跳出 \n&#34;</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>			break // 3跳出循环
+</span></span><span style="display:flex;"><span>		<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> j <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>			break lable2 // 跳至lable2位置, 1跳过，不执行当前循环体
+</span></span><span style="display:flex;"><span>		<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>		fmt.Printf<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;j=%d \n&#34;</span>, j<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>	/*
+</span></span><span style="display:flex;"><span>		goto可以任意指定标签位置，跳至指定位置执行
+</span></span><span style="display:flex;"><span>		解释：
+</span></span><span style="display:flex;"><span>			1. 执行语句1,
+</span></span><span style="display:flex;"><span>			2. i 自增为1
+</span></span><span style="display:flex;"><span>			2. goto跳至lable4，执行语句3
+</span></span><span style="display:flex;"><span>			3. goto跳至lable3，执行语句1
+</span></span><span style="display:flex;"><span>			4. i 自增为2
+</span></span><span style="display:flex;"><span>			5. goto跳至lable5，执行语句4
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		最终跳过了执行语句2
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	*/
+</span></span><span style="display:flex;"><span>	i :<span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>lable3:
+</span></span><span style="display:flex;"><span>	fmt.Println<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;执行语句1&#34;</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>	i++
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> i <span style="color:#f92672">==</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">{</span> // 执行2次之后
+</span></span><span style="display:flex;"><span>		goto lable5
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>	goto lable4
+</span></span><span style="display:flex;"><span>	fmt.Println<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;执行语句2&#34;</span><span style="color:#f92672">)</span> // 被跳过
+</span></span><span style="display:flex;"><span>lable4:
+</span></span><span style="display:flex;"><span>	fmt.Println<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;执行语句3&#34;</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>	goto lable3
+</span></span><span style="display:flex;"><span>lable5:
+</span></span><span style="display:flex;"><span>	fmt.Println<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;执行语句4&#34;</span><span style="color:#f92672">)</span>
+</span></span></code></pre></div><p>结果：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>i<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>i<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span>j<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>执行语句1
+</span></span><span style="display:flex;"><span>执行语句3
+</span></span><span style="display:flex;"><span>执行语句1
+</span></span><span style="display:flex;"><span>执行语句4
+</span></span></code></pre></div>
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/golang%E8%AF%AD%E6%B3%95/">Golang语法</a>
+        
+    </section>
+
+
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="">
+    <a href="/stu/golang_stu_06/_idnex/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Golang学习历程【第四篇 运算符&amp;流程控制】</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/stu/golang_stu_04/_idnex/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Golang学习历程【第四篇 运算符&amp;流程控制】</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/stu/golang_stu_03/_idnex/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Golang学习历程【第三篇 基本数据类型&amp;类型转换】</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/stu/golang_stu_02/_idnex/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Golang学习历程【第二篇 fmt包&amp;变量、常量的定义】</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/stu/golang_stu_01/_idnex/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Golang学习历程【第一篇 入门】</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    <script
+    src="https://giscus.app/client.js"
+    data-repo="zg-dd/zg-dd.github.io"
+    data-repo-id="R_kgDOQwB7tw"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOQwB7t84C0WGD"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="bottom"
+    data-theme="preferred_color_scheme"
+    data-lang="zh-CN"
+    data-loading=""
+    crossorigin="anonymous"
+    async
+></script>
+<script>
+    function setGiscusTheme(theme) {
+        let giscus = document.querySelector("iframe.giscus-frame");
+        if (giscus) {
+            giscus.contentWindow.postMessage(
+                {
+                    giscus: {
+                        setConfig: {
+                            theme: theme,
+                        },
+                    },
+                },
+                "https://giscus.app"
+            );
+        }
+    }
+
+    (function () {
+        addEventListener("message", (e) => {
+            if (event.origin !== "https://giscus.app") return;
+            handler();
+        });
+        window.addEventListener("onColorSchemeChange", handler);
+
+        function handler() {
+            if (document.documentElement.dataset.scheme === "light") {
+                setGiscusTheme('preferred_color_scheme');
+            } else {
+                setGiscusTheme('preferred_color_scheme');
+            }
+        }
+    })();
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2026 小巷的随笔
+    </section>
+    
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.33.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+    
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.45aad63e0378c1185109134874d406d25af802b2faa021ec5fd0dfa8bbfa4d2a.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>
