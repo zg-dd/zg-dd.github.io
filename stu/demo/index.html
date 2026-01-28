@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="reflectasm java 高性能反射工具\r大佬文章\n官网示例\nmaven 引入 &lt;dependency&gt; &lt;groupId&gt;com.esotericsoftware&lt;/groupId&gt; &lt;artifactId&gt;reflectasm&lt;/artifactId&gt; &lt;version&gt;1.11.9&lt;/version&gt; &lt;/dependency&gt; 实体类 public class User { public Integer id; public String userName; public String password; public String address; public Integer getId() {return id;} public void setId(Integer id) {this.id = id;} public String getUserName() {return userName;} public void setUserName(String userName) {this.userName = userName;} public String getPassword() {return password;} public void setPassword(String password) {this.password = password;} public String getAddress() {return address;} public void setAddress(String addresss) {this.address = addresss;} public String toString() { return &#34;User{&#34; + &#34;id=&#34; + id + &#34;, userName=&#39;&#34; + userName + &#39;\\&#39;&#39; + &#34;, password=&#39;&#34; + password + &#39;\\&#39;&#39; + &#34;, addresss=&#39;&#34; + address + &#39;\\&#39;&#39; + &#39;}&#39;; } } 测试示例 public class ReflectasmDemo { public static void main(String[] args) { // 仅获取无参构造 ConstructorAccess&lt;User&gt; constructorAccess = ConstructorAccess.get(User.class); // 可获取public、protected、默认的、final修饰的属性, 不包含private static语句字段 FieldAccess fieldAccess = FieldAccess.get(User.class); // 可获取除private修饰以外的方法 MethodAccess methodAccess = MethodAccess.get(User.class); long start, end; { start = System.currentTimeMillis(); for (int i = 0; i &lt; 10000; i++) { User user = new User(); user.setId(i); user.setUserName(&#34;user&#34; + 1); user.setPassword(&#34;password&#34; + 1); user.setAddress(&#34;address&#34; + 1); } end = System.currentTimeMillis(); System.out.println(&#34;对象构造耗时：&#34; + (end - start)); } { start = System.currentTimeMillis(); try { Class&lt;User&gt; aClass = User.class; Method setUserName = aClass.getMethod(&#34;setUserName&#34;, String.class); Method setPassword = aClass.getMethod(&#34;setPassword&#34;, String.class); Method setAddresss = aClass.getMethod(&#34;setAddress&#34;, String.class); for (int i = 0; i &lt; 10000; i++) { User user = aClass.newInstance(); Method setId = aClass.getMethod(&#34;setId&#34;, Integer.class); setId.invoke(user, i); setUserName.invoke(user, &#34;user&#34; + 1); setPassword.invoke(user, &#34;password&#34; + 1); setAddresss.invoke(user, &#34;address&#34; + 1); } } catch (Exception e) { e.printStackTrace(); } end = System.currentTimeMillis(); System.out.println(&#34;反射构造：&#34; + (end - start)); } { start = System.currentTimeMillis(); for (int i = 0; i &lt; 10000; i++) { User user = constructorAccess.newInstance(); fieldAccess.set(user, &#34;id&#34;, i); fieldAccess.set(user, &#34;userName&#34;, &#34;user&#34; + 1); fieldAccess.set(user, &#34;password&#34;, &#34;password&#34; + 1); fieldAccess.set(user, &#34;address&#34;, &#34;address&#34; + 1); } end = System.currentTimeMillis(); System.out.println(&#34;reflectasm 使用Field 名称 构造：&#34; + (end - start)); } { start = System.currentTimeMillis(); int setIdIndex = fieldAccess.getIndex(&#34;id&#34;); int setUserNameIndex = fieldAccess.getIndex(&#34;userName&#34;); int setPasswordIndex = fieldAccess.getIndex(&#34;password&#34;); int setAddressIndex = fieldAccess.getIndex(&#34;address&#34;); for (int i = 0; i &lt; 10000; i++) { User user = constructorAccess.newInstance(); fieldAccess.set(user, setIdIndex, i); fieldAccess.set(user, setUserNameIndex, &#34;user&#34; + 1); fieldAccess.set(user, setPasswordIndex, &#34;password&#34; + 1); fieldAccess.set(user, setAddressIndex, &#34;address&#34; + 1); } end = System.currentTimeMillis(); System.out.println(&#34;reflectasm 使用Field Index 构造：&#34; + (end - start)); } { start = System.currentTimeMillis(); for (int i = 0; i &lt; 10000; i++) { User user = constructorAccess.newInstance(); methodAccess.invoke(user, &#34;setId&#34;, i); methodAccess.invoke(user, &#34;setUserName&#34;, &#34;user&#34; + 1); methodAccess.invoke(user, &#34;setPassword&#34;, &#34;password&#34; + 1); methodAccess.invoke(user, &#34;setAddress&#34;, &#34;address&#34; + 1); } end = System.currentTimeMillis(); System.out.println(&#34;reflectasm 使用method 名称 构造：&#34; + (end - start)); } { start = System.currentTimeMillis(); int setIdIndex = methodAccess.getIndex(&#34;setId&#34;, Integer.class); int setUserNameIndex = methodAccess.getIndex(&#34;setUserName&#34;, String.class); int setPasswordIndex = methodAccess.getIndex(&#34;setPassword&#34;, String.class); int setAddressIndex = methodAccess.getIndex(&#34;setAddress&#34;, String.class); for (int i = 0; i &lt; 10000; i++) { User user = constructorAccess.newInstance(); methodAccess.invoke(user, setIdIndex, i); methodAccess.invoke(user, setUserNameIndex, &#34;user&#34; + 1); methodAccess.invoke(user, setPasswordIndex, &#34;password&#34; + 1); methodAccess.invoke(user, setAddressIndex, &#34;address&#34; + 1); } end = System.currentTimeMillis(); System.out.println(&#34;reflectasm 使用method Index 构造：&#34; + (end - start)); } } } 测试结果 对象构造耗时：6\r反射构造：15\rreflectasm 使用Field 名称 构造：2\rreflectasm 使用Field Index 构造：2\rreflectasm 使用method 名称 构造：3\rreflectasm 使用method Index 构造：1 结论 几种构建方式性能由高到低排序： reflectasm 使用Field Index &gt;= reflectasm 使用Field 名称 &gt; reflectasm 使用method Index &gt;= reflectasm 使用method 名称 &gt; new对象 &gt; jdk反射 ">
+<title>ReflectASM - Java高性能反射工具详解</title>
+
+<link rel='canonical' href='http://localhost:1313/stu/demo/'>
+
+<link rel="stylesheet" href="/scss/style.min.ff560f1cad7a040e336f2dd6880b9ee1ad344d6e3d8f5411e5a1aaa8b23bbdd0.css"><meta property='og:title' content="ReflectASM - Java高性能反射工具详解">
+<meta property='og:description' content="reflectasm java 高性能反射工具\r大佬文章\n官网示例\nmaven 引入 &lt;dependency&gt; &lt;groupId&gt;com.esotericsoftware&lt;/groupId&gt; &lt;artifactId&gt;reflectasm&lt;/artifactId&gt; &lt;version&gt;1.11.9&lt;/version&gt; &lt;/dependency&gt; 实体类 public class User { public Integer id; public String userName; public String password; public String address; public Integer getId() {return id;} public void setId(Integer id) {this.id = id;} public String getUserName() {return userName;} public void setUserName(String userName) {this.userName = userName;} public String getPassword() {return password;} public void setPassword(String password) {this.password = password;} public String getAddress() {return address;} public void setAddress(String addresss) {this.address = addresss;} public String toString() { return &#34;User{&#34; + &#34;id=&#34; + id + &#34;, userName=&#39;&#34; + userName + &#39;\\&#39;&#39; + &#34;, password=&#39;&#34; + password + &#39;\\&#39;&#39; + &#34;, addresss=&#39;&#34; + address + &#39;\\&#39;&#39; + &#39;}&#39;; } } 测试示例 public class ReflectasmDemo { public static void main(String[] args) { // 仅获取无参构造 ConstructorAccess&lt;User&gt; constructorAccess = ConstructorAccess.get(User.class); // 可获取public、protected、默认的、final修饰的属性, 不包含private static语句字段 FieldAccess fieldAccess = FieldAccess.get(User.class); // 可获取除private修饰以外的方法 MethodAccess methodAccess = MethodAccess.get(User.class); long start, end; { start = System.currentTimeMillis(); for (int i = 0; i &lt; 10000; i++) { User user = new User(); user.setId(i); user.setUserName(&#34;user&#34; + 1); user.setPassword(&#34;password&#34; + 1); user.setAddress(&#34;address&#34; + 1); } end = System.currentTimeMillis(); System.out.println(&#34;对象构造耗时：&#34; + (end - start)); } { start = System.currentTimeMillis(); try { Class&lt;User&gt; aClass = User.class; Method setUserName = aClass.getMethod(&#34;setUserName&#34;, String.class); Method setPassword = aClass.getMethod(&#34;setPassword&#34;, String.class); Method setAddresss = aClass.getMethod(&#34;setAddress&#34;, String.class); for (int i = 0; i &lt; 10000; i++) { User user = aClass.newInstance(); Method setId = aClass.getMethod(&#34;setId&#34;, Integer.class); setId.invoke(user, i); setUserName.invoke(user, &#34;user&#34; + 1); setPassword.invoke(user, &#34;password&#34; + 1); setAddresss.invoke(user, &#34;address&#34; + 1); } } catch (Exception e) { e.printStackTrace(); } end = System.currentTimeMillis(); System.out.println(&#34;反射构造：&#34; + (end - start)); } { start = System.currentTimeMillis(); for (int i = 0; i &lt; 10000; i++) { User user = constructorAccess.newInstance(); fieldAccess.set(user, &#34;id&#34;, i); fieldAccess.set(user, &#34;userName&#34;, &#34;user&#34; + 1); fieldAccess.set(user, &#34;password&#34;, &#34;password&#34; + 1); fieldAccess.set(user, &#34;address&#34;, &#34;address&#34; + 1); } end = System.currentTimeMillis(); System.out.println(&#34;reflectasm 使用Field 名称 构造：&#34; + (end - start)); } { start = System.currentTimeMillis(); int setIdIndex = fieldAccess.getIndex(&#34;id&#34;); int setUserNameIndex = fieldAccess.getIndex(&#34;userName&#34;); int setPasswordIndex = fieldAccess.getIndex(&#34;password&#34;); int setAddressIndex = fieldAccess.getIndex(&#34;address&#34;); for (int i = 0; i &lt; 10000; i++) { User user = constructorAccess.newInstance(); fieldAccess.set(user, setIdIndex, i); fieldAccess.set(user, setUserNameIndex, &#34;user&#34; + 1); fieldAccess.set(user, setPasswordIndex, &#34;password&#34; + 1); fieldAccess.set(user, setAddressIndex, &#34;address&#34; + 1); } end = System.currentTimeMillis(); System.out.println(&#34;reflectasm 使用Field Index 构造：&#34; + (end - start)); } { start = System.currentTimeMillis(); for (int i = 0; i &lt; 10000; i++) { User user = constructorAccess.newInstance(); methodAccess.invoke(user, &#34;setId&#34;, i); methodAccess.invoke(user, &#34;setUserName&#34;, &#34;user&#34; + 1); methodAccess.invoke(user, &#34;setPassword&#34;, &#34;password&#34; + 1); methodAccess.invoke(user, &#34;setAddress&#34;, &#34;address&#34; + 1); } end = System.currentTimeMillis(); System.out.println(&#34;reflectasm 使用method 名称 构造：&#34; + (end - start)); } { start = System.currentTimeMillis(); int setIdIndex = methodAccess.getIndex(&#34;setId&#34;, Integer.class); int setUserNameIndex = methodAccess.getIndex(&#34;setUserName&#34;, String.class); int setPasswordIndex = methodAccess.getIndex(&#34;setPassword&#34;, String.class); int setAddressIndex = methodAccess.getIndex(&#34;setAddress&#34;, String.class); for (int i = 0; i &lt; 10000; i++) { User user = constructorAccess.newInstance(); methodAccess.invoke(user, setIdIndex, i); methodAccess.invoke(user, setUserNameIndex, &#34;user&#34; + 1); methodAccess.invoke(user, setPasswordIndex, &#34;password&#34; + 1); methodAccess.invoke(user, setAddressIndex, &#34;address&#34; + 1); } end = System.currentTimeMillis(); System.out.println(&#34;reflectasm 使用method Index 构造：&#34; + (end - start)); } } } 测试结果 对象构造耗时：6\r反射构造：15\rreflectasm 使用Field 名称 构造：2\rreflectasm 使用Field Index 构造：2\rreflectasm 使用method 名称 构造：3\rreflectasm 使用method Index 构造：1 结论 几种构建方式性能由高到低排序： reflectasm 使用Field Index &gt;= reflectasm 使用Field 名称 &gt; reflectasm 使用method Index &gt;= reflectasm 使用method 名称 &gt; new对象 &gt; jdk反射 ">
+<meta property='og:url' content='http://localhost:1313/stu/demo/'>
+<meta property='og:site_name' content='小巷的随笔'>
+<meta property='og:type' content='article'><meta property='article:section' content='Stu' /><meta property='article:tag' content='reflectasm' /><meta property='article:tag' content='字节码操作' /><meta property='article:published_time' content='2024-04-13T21:17:40&#43;08:00'/><meta property='article:modified_time' content='2024-04-13T21:17:40&#43;08:00'/>
+<meta name="twitter:title" content="ReflectASM - Java高性能反射工具详解">
+<meta name="twitter:description" content="reflectasm java 高性能反射工具\r大佬文章\n官网示例\nmaven 引入 &lt;dependency&gt; &lt;groupId&gt;com.esotericsoftware&lt;/groupId&gt; &lt;artifactId&gt;reflectasm&lt;/artifactId&gt; &lt;version&gt;1.11.9&lt;/version&gt; &lt;/dependency&gt; 实体类 public class User { public Integer id; public String userName; public String password; public String address; public Integer getId() {return id;} public void setId(Integer id) {this.id = id;} public String getUserName() {return userName;} public void setUserName(String userName) {this.userName = userName;} public String getPassword() {return password;} public void setPassword(String password) {this.password = password;} public String getAddress() {return address;} public void setAddress(String addresss) {this.address = addresss;} public String toString() { return &#34;User{&#34; + &#34;id=&#34; + id + &#34;, userName=&#39;&#34; + userName + &#39;\\&#39;&#39; + &#34;, password=&#39;&#34; + password + &#39;\\&#39;&#39; + &#34;, addresss=&#39;&#34; + address + &#39;\\&#39;&#39; + &#39;}&#39;; } } 测试示例 public class ReflectasmDemo { public static void main(String[] args) { // 仅获取无参构造 ConstructorAccess&lt;User&gt; constructorAccess = ConstructorAccess.get(User.class); // 可获取public、protected、默认的、final修饰的属性, 不包含private static语句字段 FieldAccess fieldAccess = FieldAccess.get(User.class); // 可获取除private修饰以外的方法 MethodAccess methodAccess = MethodAccess.get(User.class); long start, end; { start = System.currentTimeMillis(); for (int i = 0; i &lt; 10000; i++) { User user = new User(); user.setId(i); user.setUserName(&#34;user&#34; + 1); user.setPassword(&#34;password&#34; + 1); user.setAddress(&#34;address&#34; + 1); } end = System.currentTimeMillis(); System.out.println(&#34;对象构造耗时：&#34; + (end - start)); } { start = System.currentTimeMillis(); try { Class&lt;User&gt; aClass = User.class; Method setUserName = aClass.getMethod(&#34;setUserName&#34;, String.class); Method setPassword = aClass.getMethod(&#34;setPassword&#34;, String.class); Method setAddresss = aClass.getMethod(&#34;setAddress&#34;, String.class); for (int i = 0; i &lt; 10000; i++) { User user = aClass.newInstance(); Method setId = aClass.getMethod(&#34;setId&#34;, Integer.class); setId.invoke(user, i); setUserName.invoke(user, &#34;user&#34; + 1); setPassword.invoke(user, &#34;password&#34; + 1); setAddresss.invoke(user, &#34;address&#34; + 1); } } catch (Exception e) { e.printStackTrace(); } end = System.currentTimeMillis(); System.out.println(&#34;反射构造：&#34; + (end - start)); } { start = System.currentTimeMillis(); for (int i = 0; i &lt; 10000; i++) { User user = constructorAccess.newInstance(); fieldAccess.set(user, &#34;id&#34;, i); fieldAccess.set(user, &#34;userName&#34;, &#34;user&#34; + 1); fieldAccess.set(user, &#34;password&#34;, &#34;password&#34; + 1); fieldAccess.set(user, &#34;address&#34;, &#34;address&#34; + 1); } end = System.currentTimeMillis(); System.out.println(&#34;reflectasm 使用Field 名称 构造：&#34; + (end - start)); } { start = System.currentTimeMillis(); int setIdIndex = fieldAccess.getIndex(&#34;id&#34;); int setUserNameIndex = fieldAccess.getIndex(&#34;userName&#34;); int setPasswordIndex = fieldAccess.getIndex(&#34;password&#34;); int setAddressIndex = fieldAccess.getIndex(&#34;address&#34;); for (int i = 0; i &lt; 10000; i++) { User user = constructorAccess.newInstance(); fieldAccess.set(user, setIdIndex, i); fieldAccess.set(user, setUserNameIndex, &#34;user&#34; + 1); fieldAccess.set(user, setPasswordIndex, &#34;password&#34; + 1); fieldAccess.set(user, setAddressIndex, &#34;address&#34; + 1); } end = System.currentTimeMillis(); System.out.println(&#34;reflectasm 使用Field Index 构造：&#34; + (end - start)); } { start = System.currentTimeMillis(); for (int i = 0; i &lt; 10000; i++) { User user = constructorAccess.newInstance(); methodAccess.invoke(user, &#34;setId&#34;, i); methodAccess.invoke(user, &#34;setUserName&#34;, &#34;user&#34; + 1); methodAccess.invoke(user, &#34;setPassword&#34;, &#34;password&#34; + 1); methodAccess.invoke(user, &#34;setAddress&#34;, &#34;address&#34; + 1); } end = System.currentTimeMillis(); System.out.println(&#34;reflectasm 使用method 名称 构造：&#34; + (end - start)); } { start = System.currentTimeMillis(); int setIdIndex = methodAccess.getIndex(&#34;setId&#34;, Integer.class); int setUserNameIndex = methodAccess.getIndex(&#34;setUserName&#34;, String.class); int setPasswordIndex = methodAccess.getIndex(&#34;setPassword&#34;, String.class); int setAddressIndex = methodAccess.getIndex(&#34;setAddress&#34;, String.class); for (int i = 0; i &lt; 10000; i++) { User user = constructorAccess.newInstance(); methodAccess.invoke(user, setIdIndex, i); methodAccess.invoke(user, setUserNameIndex, &#34;user&#34; + 1); methodAccess.invoke(user, setPasswordIndex, &#34;password&#34; + 1); methodAccess.invoke(user, setAddressIndex, &#34;address&#34; + 1); } end = System.currentTimeMillis(); System.out.println(&#34;reflectasm 使用method Index 构造：&#34; + (end - start)); } } } 测试结果 对象构造耗时：6\r反射构造：15\rreflectasm 使用Field 名称 构造：2\rreflectasm 使用Field Index 构造：2\rreflectasm 使用method 名称 构造：3\rreflectasm 使用method Index 构造：1 结论 几种构建方式性能由高到低排序： reflectasm 使用Field Index &gt;= reflectasm 使用Field 名称 &gt; reflectasm 使用method Index &gt;= reflectasm 使用method 名称 &gt; new对象 &gt; jdk反射 ">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_a0cc1cf57968b27d.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🌱</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">小巷的随笔</a></h1>
+            <h2 class="site-description">记录，不是为了证明自己；而是把“解决问题 → 思考 → 沉淀”形成习惯。</h2>
+        </div>
+    </header><ol class="menu" id="main-menu">
+        
+        
+        
+        <li  class='current' >
+            <a href='/stu/' >
+                
+                
+                
+                <span>学习笔记</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/blog/' >
+                
+                
+                
+                <span>随笔思考</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/life/' >
+                
+                
+                
+                <span>生活记录</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/categories/' >
+                
+                
+                
+                <span>分类</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/tags/' >
+                
+                
+                
+                <span>标签</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+                    
+                        <li id="i18n-switch">  
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                            <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
+                                
+                                    <option value="http://localhost:1313/" selected>简体中文</option>
+                                
+                                    <option value="http://localhost:1313/en/" >English</option>
+                                
+                            </select>
+                        </li>
+                    
+                
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ul>
+    <li><a href="#reflectasm-java-高性能反射工具">reflectasm java 高性能反射工具</a></li>
+  </ul>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/java/" >
+                Java
+            </a>
+        
+            <a href="/categories/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" >
+                性能优化
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/stu/demo/">ReflectASM - Java高性能反射工具详解</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published" datetime='2024-04-13T21:17:40&#43;08:00'>Apr 13, 2024</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 2 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="reflectasm-java-高性能反射工具">reflectasm java 高性能反射工具
+</h2><blockquote>
+<p><a class="link" href="https://blog.csdn.net/liujinghu/article/details/112160861"  target="_blank" rel="noopener"
+    >大佬文章</a></p>
+</blockquote>
+<blockquote>
+<p><a class="link" href="https://gitcode.com/EsotericSoftware/reflectasm/overview"  target="_blank" rel="noopener"
+    >官网示例</a></p>
+</blockquote>
+<ul>
+<li>maven  引入</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#f92672">&lt;dependency&gt;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">&lt;groupId&gt;</span>com.esotericsoftware<span style="color:#f92672">&lt;/groupId&gt;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">&lt;artifactId&gt;</span>reflectasm<span style="color:#f92672">&lt;/artifactId&gt;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">&lt;version&gt;</span>1.11.9<span style="color:#f92672">&lt;/version&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;/dependency&gt;</span>
+</span></span></code></pre></div><ul>
+<li>实体类</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">User</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Integer id;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> String userName;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> String password;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> String address;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Integer <span style="color:#a6e22e">getId</span>() {<span style="color:#66d9ef">return</span> id;}
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">setId</span>(Integer id) {<span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">id</span> <span style="color:#f92672">=</span> id;}
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> String <span style="color:#a6e22e">getUserName</span>() {<span style="color:#66d9ef">return</span> userName;}
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">setUserName</span>(String userName) {<span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">userName</span> <span style="color:#f92672">=</span> userName;}
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> String <span style="color:#a6e22e">getPassword</span>() {<span style="color:#66d9ef">return</span> password;}
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">setPassword</span>(String password) {<span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">password</span> <span style="color:#f92672">=</span> password;}
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> String <span style="color:#a6e22e">getAddress</span>() {<span style="color:#66d9ef">return</span> address;}
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">setAddress</span>(String addresss) {<span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">address</span> <span style="color:#f92672">=</span> addresss;}
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> String <span style="color:#a6e22e">toString</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;User{&#34;</span> <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;id=&#34;</span> <span style="color:#f92672">+</span> id <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;, userName=&#39;&#34;</span> <span style="color:#f92672">+</span> userName <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;\&#39;&#39;</span> <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;, password=&#39;&#34;</span> <span style="color:#f92672">+</span> password <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;\&#39;&#39;</span> <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;, addresss=&#39;&#34;</span> <span style="color:#f92672">+</span> address <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;\&#39;&#39;</span> <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#39;}&#39;</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
+<li>测试示例</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ReflectasmDemo</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> args) {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 仅获取无参构造</span>
+</span></span><span style="display:flex;"><span>        ConstructorAccess<span style="color:#f92672">&lt;</span>User<span style="color:#f92672">&gt;</span> constructorAccess <span style="color:#f92672">=</span> ConstructorAccess.<span style="color:#a6e22e">get</span>(User.<span style="color:#a6e22e">class</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 可获取public、protected、默认的、final修饰的属性, 不包含private static语句字段</span>
+</span></span><span style="display:flex;"><span>        FieldAccess fieldAccess <span style="color:#f92672">=</span> FieldAccess.<span style="color:#a6e22e">get</span>(User.<span style="color:#a6e22e">class</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 可获取除private修饰以外的方法</span>
+</span></span><span style="display:flex;"><span>        MethodAccess methodAccess <span style="color:#f92672">=</span> MethodAccess.<span style="color:#a6e22e">get</span>(User.<span style="color:#a6e22e">class</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">long</span> start, end;
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            start <span style="color:#f92672">=</span> System.<span style="color:#a6e22e">currentTimeMillis</span>();
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> 0; i <span style="color:#f92672">&lt;</span> 10000; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>                User user <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> User();
+</span></span><span style="display:flex;"><span>                user.<span style="color:#a6e22e">setId</span>(i);
+</span></span><span style="display:flex;"><span>                user.<span style="color:#a6e22e">setUserName</span>(<span style="color:#e6db74">&#34;user&#34;</span> <span style="color:#f92672">+</span> 1);
+</span></span><span style="display:flex;"><span>                user.<span style="color:#a6e22e">setPassword</span>(<span style="color:#e6db74">&#34;password&#34;</span> <span style="color:#f92672">+</span> 1);
+</span></span><span style="display:flex;"><span>                user.<span style="color:#a6e22e">setAddress</span>(<span style="color:#e6db74">&#34;address&#34;</span> <span style="color:#f92672">+</span> 1);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            end <span style="color:#f92672">=</span> System.<span style="color:#a6e22e">currentTimeMillis</span>();
+</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;对象构造耗时：&#34;</span> <span style="color:#f92672">+</span> (end <span style="color:#f92672">-</span> start));
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            start <span style="color:#f92672">=</span> System.<span style="color:#a6e22e">currentTimeMillis</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span>                Class<span style="color:#f92672">&lt;</span>User<span style="color:#f92672">&gt;</span> aClass <span style="color:#f92672">=</span> User.<span style="color:#a6e22e">class</span>;
+</span></span><span style="display:flex;"><span>                Method setUserName <span style="color:#f92672">=</span> aClass.<span style="color:#a6e22e">getMethod</span>(<span style="color:#e6db74">&#34;setUserName&#34;</span>, String.<span style="color:#a6e22e">class</span>);
+</span></span><span style="display:flex;"><span>                Method setPassword <span style="color:#f92672">=</span> aClass.<span style="color:#a6e22e">getMethod</span>(<span style="color:#e6db74">&#34;setPassword&#34;</span>, String.<span style="color:#a6e22e">class</span>);
+</span></span><span style="display:flex;"><span>                Method setAddresss <span style="color:#f92672">=</span> aClass.<span style="color:#a6e22e">getMethod</span>(<span style="color:#e6db74">&#34;setAddress&#34;</span>, String.<span style="color:#a6e22e">class</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> 0; i <span style="color:#f92672">&lt;</span> 10000; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>                    User user <span style="color:#f92672">=</span> aClass.<span style="color:#a6e22e">newInstance</span>();
+</span></span><span style="display:flex;"><span>                    Method setId <span style="color:#f92672">=</span> aClass.<span style="color:#a6e22e">getMethod</span>(<span style="color:#e6db74">&#34;setId&#34;</span>, Integer.<span style="color:#a6e22e">class</span>);
+</span></span><span style="display:flex;"><span>                    setId.<span style="color:#a6e22e">invoke</span>(user, i);
+</span></span><span style="display:flex;"><span>                    setUserName.<span style="color:#a6e22e">invoke</span>(user, <span style="color:#e6db74">&#34;user&#34;</span> <span style="color:#f92672">+</span> 1);
+</span></span><span style="display:flex;"><span>                    setPassword.<span style="color:#a6e22e">invoke</span>(user, <span style="color:#e6db74">&#34;password&#34;</span> <span style="color:#f92672">+</span> 1);
+</span></span><span style="display:flex;"><span>                    setAddresss.<span style="color:#a6e22e">invoke</span>(user, <span style="color:#e6db74">&#34;address&#34;</span> <span style="color:#f92672">+</span> 1);
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            } <span style="color:#66d9ef">catch</span> (Exception e) {
+</span></span><span style="display:flex;"><span>                e.<span style="color:#a6e22e">printStackTrace</span>();
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            end <span style="color:#f92672">=</span> System.<span style="color:#a6e22e">currentTimeMillis</span>();
+</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;反射构造：&#34;</span> <span style="color:#f92672">+</span> (end <span style="color:#f92672">-</span> start));
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            start <span style="color:#f92672">=</span> System.<span style="color:#a6e22e">currentTimeMillis</span>();
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> 0; i <span style="color:#f92672">&lt;</span> 10000; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>                User user <span style="color:#f92672">=</span> constructorAccess.<span style="color:#a6e22e">newInstance</span>();
+</span></span><span style="display:flex;"><span>                fieldAccess.<span style="color:#a6e22e">set</span>(user, <span style="color:#e6db74">&#34;id&#34;</span>, i);
+</span></span><span style="display:flex;"><span>                fieldAccess.<span style="color:#a6e22e">set</span>(user, <span style="color:#e6db74">&#34;userName&#34;</span>, <span style="color:#e6db74">&#34;user&#34;</span> <span style="color:#f92672">+</span> 1);
+</span></span><span style="display:flex;"><span>                fieldAccess.<span style="color:#a6e22e">set</span>(user, <span style="color:#e6db74">&#34;password&#34;</span>, <span style="color:#e6db74">&#34;password&#34;</span> <span style="color:#f92672">+</span> 1);
+</span></span><span style="display:flex;"><span>                fieldAccess.<span style="color:#a6e22e">set</span>(user, <span style="color:#e6db74">&#34;address&#34;</span>, <span style="color:#e6db74">&#34;address&#34;</span> <span style="color:#f92672">+</span> 1);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            end <span style="color:#f92672">=</span> System.<span style="color:#a6e22e">currentTimeMillis</span>();
+</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;reflectasm 使用Field 名称 构造：&#34;</span> <span style="color:#f92672">+</span> (end <span style="color:#f92672">-</span> start));
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            start <span style="color:#f92672">=</span> System.<span style="color:#a6e22e">currentTimeMillis</span>();
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">int</span> setIdIndex <span style="color:#f92672">=</span> fieldAccess.<span style="color:#a6e22e">getIndex</span>(<span style="color:#e6db74">&#34;id&#34;</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">int</span> setUserNameIndex <span style="color:#f92672">=</span> fieldAccess.<span style="color:#a6e22e">getIndex</span>(<span style="color:#e6db74">&#34;userName&#34;</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">int</span> setPasswordIndex <span style="color:#f92672">=</span> fieldAccess.<span style="color:#a6e22e">getIndex</span>(<span style="color:#e6db74">&#34;password&#34;</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">int</span> setAddressIndex <span style="color:#f92672">=</span> fieldAccess.<span style="color:#a6e22e">getIndex</span>(<span style="color:#e6db74">&#34;address&#34;</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> 0; i <span style="color:#f92672">&lt;</span> 10000; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>                User user <span style="color:#f92672">=</span> constructorAccess.<span style="color:#a6e22e">newInstance</span>();
+</span></span><span style="display:flex;"><span>                fieldAccess.<span style="color:#a6e22e">set</span>(user, setIdIndex, i);
+</span></span><span style="display:flex;"><span>                fieldAccess.<span style="color:#a6e22e">set</span>(user, setUserNameIndex, <span style="color:#e6db74">&#34;user&#34;</span> <span style="color:#f92672">+</span> 1);
+</span></span><span style="display:flex;"><span>                fieldAccess.<span style="color:#a6e22e">set</span>(user, setPasswordIndex, <span style="color:#e6db74">&#34;password&#34;</span> <span style="color:#f92672">+</span> 1);
+</span></span><span style="display:flex;"><span>                fieldAccess.<span style="color:#a6e22e">set</span>(user, setAddressIndex, <span style="color:#e6db74">&#34;address&#34;</span> <span style="color:#f92672">+</span> 1);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            end <span style="color:#f92672">=</span> System.<span style="color:#a6e22e">currentTimeMillis</span>();
+</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;reflectasm 使用Field Index 构造：&#34;</span> <span style="color:#f92672">+</span> (end <span style="color:#f92672">-</span> start));
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            start <span style="color:#f92672">=</span> System.<span style="color:#a6e22e">currentTimeMillis</span>();
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> 0; i <span style="color:#f92672">&lt;</span> 10000; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>                User user <span style="color:#f92672">=</span> constructorAccess.<span style="color:#a6e22e">newInstance</span>();
+</span></span><span style="display:flex;"><span>                methodAccess.<span style="color:#a6e22e">invoke</span>(user, <span style="color:#e6db74">&#34;setId&#34;</span>, i);
+</span></span><span style="display:flex;"><span>                methodAccess.<span style="color:#a6e22e">invoke</span>(user, <span style="color:#e6db74">&#34;setUserName&#34;</span>, <span style="color:#e6db74">&#34;user&#34;</span> <span style="color:#f92672">+</span> 1);
+</span></span><span style="display:flex;"><span>                methodAccess.<span style="color:#a6e22e">invoke</span>(user, <span style="color:#e6db74">&#34;setPassword&#34;</span>, <span style="color:#e6db74">&#34;password&#34;</span> <span style="color:#f92672">+</span> 1);
+</span></span><span style="display:flex;"><span>                methodAccess.<span style="color:#a6e22e">invoke</span>(user, <span style="color:#e6db74">&#34;setAddress&#34;</span>, <span style="color:#e6db74">&#34;address&#34;</span> <span style="color:#f92672">+</span> 1);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            end <span style="color:#f92672">=</span> System.<span style="color:#a6e22e">currentTimeMillis</span>();
+</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;reflectasm 使用method 名称 构造：&#34;</span> <span style="color:#f92672">+</span> (end <span style="color:#f92672">-</span> start));
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            start <span style="color:#f92672">=</span> System.<span style="color:#a6e22e">currentTimeMillis</span>();
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">int</span> setIdIndex <span style="color:#f92672">=</span> methodAccess.<span style="color:#a6e22e">getIndex</span>(<span style="color:#e6db74">&#34;setId&#34;</span>, Integer.<span style="color:#a6e22e">class</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">int</span> setUserNameIndex <span style="color:#f92672">=</span> methodAccess.<span style="color:#a6e22e">getIndex</span>(<span style="color:#e6db74">&#34;setUserName&#34;</span>, String.<span style="color:#a6e22e">class</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">int</span> setPasswordIndex <span style="color:#f92672">=</span> methodAccess.<span style="color:#a6e22e">getIndex</span>(<span style="color:#e6db74">&#34;setPassword&#34;</span>, String.<span style="color:#a6e22e">class</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">int</span> setAddressIndex <span style="color:#f92672">=</span> methodAccess.<span style="color:#a6e22e">getIndex</span>(<span style="color:#e6db74">&#34;setAddress&#34;</span>, String.<span style="color:#a6e22e">class</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> 0; i <span style="color:#f92672">&lt;</span> 10000; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>                User user <span style="color:#f92672">=</span> constructorAccess.<span style="color:#a6e22e">newInstance</span>();
+</span></span><span style="display:flex;"><span>                methodAccess.<span style="color:#a6e22e">invoke</span>(user, setIdIndex, i);
+</span></span><span style="display:flex;"><span>                methodAccess.<span style="color:#a6e22e">invoke</span>(user, setUserNameIndex, <span style="color:#e6db74">&#34;user&#34;</span> <span style="color:#f92672">+</span> 1);
+</span></span><span style="display:flex;"><span>                methodAccess.<span style="color:#a6e22e">invoke</span>(user, setPasswordIndex, <span style="color:#e6db74">&#34;password&#34;</span> <span style="color:#f92672">+</span> 1);
+</span></span><span style="display:flex;"><span>                methodAccess.<span style="color:#a6e22e">invoke</span>(user, setAddressIndex, <span style="color:#e6db74">&#34;address&#34;</span> <span style="color:#f92672">+</span> 1);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            end <span style="color:#f92672">=</span> System.<span style="color:#a6e22e">currentTimeMillis</span>();
+</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;reflectasm 使用method Index 构造：&#34;</span> <span style="color:#f92672">+</span> (end <span style="color:#f92672">-</span> start));
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ul>
+<li>测试结果</li>
+</ul>
+<pre tabindex="0"><code>对象构造耗时：6
+反射构造：15
+reflectasm 使用Field 名称 构造：2
+reflectasm 使用Field Index 构造：2
+reflectasm 使用method 名称 构造：3
+reflectasm 使用method Index 构造：1
+</code></pre><ul>
+<li><strong>结论</strong>
+几种构建方式性能由高到低排序：
+<!-- raw HTML omitted -->reflectasm 使用Field Index &gt;= reflectasm 使用Field 名称 &gt; reflectasm 使用method Index &gt;= reflectasm 使用method 名称 &gt; new对象 &gt; jdk反射 <!-- raw HTML omitted --></li>
+</ul>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/reflectasm/">Reflectasm</a>
+        
+            <a href="/tags/%E5%AD%97%E8%8A%82%E7%A0%81%E6%93%8D%E4%BD%9C/">字节码操作</a>
+        
+    </section>
+
+
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    <script
+    src="https://giscus.app/client.js"
+    data-repo="zg-dd/zg-dd.github.io"
+    data-repo-id="R_kgDOQwB7tw"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOQwB7t84C0WGD"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="bottom"
+    data-theme="preferred_color_scheme"
+    data-lang="zh-CN"
+    data-loading=""
+    crossorigin="anonymous"
+    async
+></script>
+<script>
+    function setGiscusTheme(theme) {
+        let giscus = document.querySelector("iframe.giscus-frame");
+        if (giscus) {
+            giscus.contentWindow.postMessage(
+                {
+                    giscus: {
+                        setConfig: {
+                            theme: theme,
+                        },
+                    },
+                },
+                "https://giscus.app"
+            );
+        }
+    }
+
+    (function () {
+        addEventListener("message", (e) => {
+            if (event.origin !== "https://giscus.app") return;
+            handler();
+        });
+        window.addEventListener("onColorSchemeChange", handler);
+
+        function handler() {
+            if (document.documentElement.dataset.scheme === "light") {
+                setGiscusTheme('preferred_color_scheme');
+            } else {
+                setGiscusTheme('preferred_color_scheme');
+            }
+        }
+    })();
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2026 小巷的随笔
+    </section>
+    
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.33.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+    
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.45aad63e0378c1185109134874d406d25af802b2faa021ec5fd0dfa8bbfa4d2a.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>
