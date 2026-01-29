@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>LambdaQueryWrapper on 小巷的随笔</title><link>https://zg-dd.github.io/tags/lambdaquerywrapper/</link><description>Recent content in LambdaQueryWrapper on 小巷的随笔</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Mon, 19 Sep 2022 15:24:42 +0800</lastBuildDate><atom:link href="https://zg-dd.github.io/tags/lambdaquerywrapper/index.xml" rel="self" type="application/rss+xml"/><item><title>MyBatis-Plus LambdaQueryWrapper - 函数式编程实践</title><link>https://zg-dd.github.io/blog/mybatis-lambda/</link><pubDate>Mon, 19 Sep 2022 15:24:42 +0800</pubDate><guid>https://zg-dd.github.io/blog/mybatis-lambda/</guid><description>&lt;h1 id="一lambdaquerywrapper"&gt;一、LambdaQueryWrapper？
+&lt;/h1&gt;&lt;blockquote&gt;
+&lt;p&gt;LambdaQueryWrapper是Mybatis-Plus插件的对象，实现了使用lambda形式构造查询接口。
+最初接触这个的时候，第一感觉就是，太方便了，因避免是用大量的字符串，对日后的维护有着很重要的作用。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1 id="二类名get方法"&gt;二、类名::GET方法
+&lt;/h1&gt;&lt;blockquote&gt;
+&lt;p&gt;在LambdaQueryWrapper构造语句的方法中使用了大量的这种方式作为查询数据库的字段名。这种方式还可指定具体的类。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;类名::GET方法，这是lambda的调用Get方法，简化操作的，例：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-java" data-lang="java"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;List&lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;String&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt; list &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;new&lt;/span&gt; ArrayLiast();
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;list.&lt;span style="color:#a6e22e"&gt;add&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;Hello&amp;#34;&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;//化简前&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;list.&lt;span style="color:#a6e22e"&gt;forEach&lt;/span&gt;(item &lt;span style="color:#f92672"&gt;-&amp;gt;&lt;/span&gt; System.&lt;span style="color:#a6e22e"&gt;out&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;println&lt;/span&gt;(item));
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;//化简后&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;list.&lt;span style="color:#a6e22e"&gt;forEach&lt;/span&gt;(System.&lt;span style="color:#a6e22e"&gt;out&lt;/span&gt;::println);
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;具体使用可自行百度，:: 实现是其实使用的是Function&amp;lt;T, R&amp;gt;接口，该接口声明@FunctionalInterface，即这是函数式接口。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h1 id="二如何结合使用"&gt;二、如何结合使用？
+&lt;/h1&gt;&lt;p&gt;LambdaQueryWrapper 查询需要的是字段名，而::得到的是执行get方法。那么mybatis-plus到底是怎么将get方法转换为字段的呢。并不是执行呢？
+IDEA调试方法可知如下：
+&lt;figure&gt;&lt;img src="https://zg-dd.github.io/img/ml/ml_1.png"&gt;
+&lt;/figure&gt;
+类名::GET方法实际类型是Function&amp;lt;T,R&amp;gt;，而mybatis-plus使用新的接口SFunction&amp;lt;T,R&amp;gt;将Function序列化后，该Function接口会在运行时添加writeReplace方法，可以查看当前执行方法的类名、方法名等信息。然后通过方法名解析出字段名。&lt;/p&gt;
+&lt;h1 id="三示例代码"&gt;三、示例代码
+&lt;/h1&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-java" data-lang="java"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;@FunctionalInterface&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;public&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;interface&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;SFunction&lt;/span&gt;&lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;T,R&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;extends&lt;/span&gt; Function&lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;T,R&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt;, Serializable {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-java" data-lang="java"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;public&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;class&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;User&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;private&lt;/span&gt; String username;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;private&lt;/span&gt; String password;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#75715e"&gt;// get、set略&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-java" data-lang="java"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;public&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;class&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;Builder&lt;/span&gt;&lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;T&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;private&lt;/span&gt; T target;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;public&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;Builder&lt;/span&gt;(Class&lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;T&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt; tClass) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;try&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; target &lt;span style="color:#f92672"&gt;=&lt;/span&gt; tClass.&lt;span style="color:#a6e22e"&gt;newInstance&lt;/span&gt;();
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; } &lt;span style="color:#66d9ef"&gt;catch&lt;/span&gt; (InstantiationException e) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; e.&lt;span style="color:#a6e22e"&gt;printStackTrace&lt;/span&gt;();
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; } &lt;span style="color:#66d9ef"&gt;catch&lt;/span&gt; (IllegalAccessException e) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; e.&lt;span style="color:#a6e22e"&gt;printStackTrace&lt;/span&gt;();
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;public&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;static&lt;/span&gt; &lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;T&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt; Builder&lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;T&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;builder&lt;/span&gt;(Class&lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;T&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt; tClass) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;return&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;new&lt;/span&gt; Builder(tClass);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;public&lt;/span&gt; &lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;T,R&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt; String &lt;span style="color:#a6e22e"&gt;getFunName&lt;/span&gt;(SFunction&lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;T, R&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt; sFunction) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;try&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#75715e"&gt;// 直接调用writeReplace&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; Method methods &lt;span style="color:#f92672"&gt;=&lt;/span&gt; sFunction.&lt;span style="color:#a6e22e"&gt;getClass&lt;/span&gt;().&lt;span style="color:#a6e22e"&gt;getDeclaredMethod&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;writeReplace&amp;#34;&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; methods.&lt;span style="color:#a6e22e"&gt;setAccessible&lt;/span&gt;(&lt;span style="color:#66d9ef"&gt;true&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#75715e"&gt;//反射调用&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; Object sl &lt;span style="color:#f92672"&gt;=&lt;/span&gt; methods.&lt;span style="color:#a6e22e"&gt;invoke&lt;/span&gt;(sFunction);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; SerializedLambda serializedLambda &lt;span style="color:#f92672"&gt;=&lt;/span&gt; (SerializedLambda) sl;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#75715e"&gt;// 获取类&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; String implClass &lt;span style="color:#f92672"&gt;=&lt;/span&gt; serializedLambda.&lt;span style="color:#a6e22e"&gt;getImplClass&lt;/span&gt;();
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; Class&lt;span style="color:#f92672"&gt;&amp;lt;?&amp;gt;&lt;/span&gt; aClass &lt;span style="color:#f92672"&gt;=&lt;/span&gt; Class.&lt;span style="color:#a6e22e"&gt;forName&lt;/span&gt;(implClass.&lt;span style="color:#a6e22e"&gt;replace&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;/&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;.&amp;#34;&lt;/span&gt;));
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#75715e"&gt;// 获取方法名&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; String methodName &lt;span style="color:#f92672"&gt;=&lt;/span&gt; serializedLambda.&lt;span style="color:#a6e22e"&gt;getImplMethodName&lt;/span&gt;();
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;return&lt;/span&gt; methodName;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; } &lt;span style="color:#66d9ef"&gt;catch&lt;/span&gt; (NoSuchMethodException e) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; e.&lt;span style="color:#a6e22e"&gt;printStackTrace&lt;/span&gt;();
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; } &lt;span style="color:#66d9ef"&gt;catch&lt;/span&gt; (IllegalAccessException e) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; e.&lt;span style="color:#a6e22e"&gt;printStackTrace&lt;/span&gt;();
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; } &lt;span style="color:#66d9ef"&gt;catch&lt;/span&gt; (InvocationTargetException e) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; e.&lt;span style="color:#a6e22e"&gt;printStackTrace&lt;/span&gt;();
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; } &lt;span style="color:#66d9ef"&gt;catch&lt;/span&gt; (ClassNotFoundException e) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; e.&lt;span style="color:#a6e22e"&gt;printStackTrace&lt;/span&gt;();
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#75715e"&gt;// 获取值&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;return&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;null&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-java" data-lang="java"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;public&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;class&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;Main&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;public&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;static&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;void&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;main&lt;/span&gt;(String&lt;span style="color:#f92672"&gt;[]&lt;/span&gt; args) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; Builder&lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;User&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt; builder &lt;span style="color:#f92672"&gt;=&lt;/span&gt; Builder.&lt;span style="color:#a6e22e"&gt;builder&lt;/span&gt;(User.&lt;span style="color:#a6e22e"&gt;class&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; String name &lt;span style="color:#f92672"&gt;=&lt;/span&gt; builder.&lt;span style="color:#a6e22e"&gt;getFunName&lt;/span&gt;(User::getUsername);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; System.&lt;span style="color:#a6e22e"&gt;out&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;println&lt;/span&gt;(name);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;运行结果：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-java" data-lang="java"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;getUsername
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id="总结"&gt;总结
+&lt;/h1&gt;&lt;p&gt;通过上面的示例，轻而易举可获取到方法的名或字段名或者其他信息。上面的代码在业务需求方面没有什么用处。但是在构造条件情况下，结合设计模式，有很醒目的作用，能够给编程带来便利.&lt;/p&gt;</description></item></channel></rss>

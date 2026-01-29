@@ -647,4 +647,210 @@ reflectasm 使用method Index 构造：1
 &lt;li&gt;&lt;strong&gt;结论&lt;/strong&gt;
 几种构建方式性能由高到低排序：
 &lt;!-- raw HTML omitted --&gt;reflectasm 使用Field Index &amp;gt;= reflectasm 使用Field 名称 &amp;gt; reflectasm 使用method Index &amp;gt;= reflectasm 使用method 名称 &amp;gt; new对象 &amp;gt; jdk反射 &lt;!-- raw HTML omitted --&gt;&lt;/li&gt;
-&lt;/ul&gt;</description></item></channel></rss>
+&lt;/ul&gt;</description></item><item><title>MyBatis PageHelper 多表关联分页解决方案 - 自定义count查询</title><link>https://zg-dd.github.io/blog/mybatis-pagehelper-pagination/</link><pubDate>Wed, 12 Oct 2022 10:43:38 +0800</pubDate><guid>https://zg-dd.github.io/blog/mybatis-pagehelper-pagination/</guid><description>&lt;h1 id="项目场景"&gt;项目场景：
+&lt;/h1&gt;&lt;p&gt;业务：查询功能，需要关联多张表，为一对多或多对多。
+需求：要求分页，分页统计总数。
+使用技术：Mybatis，PageHelper&lt;/p&gt;
+&lt;hr&gt;
+&lt;h1 id="问题描述"&gt;问题描述
+&lt;/h1&gt;&lt;p&gt;正常查询一张表的情况下，&lt;a class="link" href="https://github.com/pagehelper/Mybatis-PageHelper/blob/master/wikis/zh/HowToUse.md" target="_blank" rel="noopener"
+&gt;官方推荐&lt;/a&gt;：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-java" data-lang="java"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;//获取第1页，10条内容，默认查询总数count&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;PageHelper.&lt;span style="color:#a6e22e"&gt;startPage&lt;/span&gt;(1, 10);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;List&lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;User&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt; list &lt;span style="color:#f92672"&gt;=&lt;/span&gt; userMapper.&lt;span style="color:#a6e22e"&gt;selectAll&lt;/span&gt;();
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;//用PageInfo对结果进行包装&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;PageInfo page &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;new&lt;/span&gt; PageInfo(list);
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;但是这种方式实际上PageHelper会自动生成：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-java" data-lang="java"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;select &lt;span style="color:#a6e22e"&gt;count&lt;/span&gt;(0) from (selectAll() sql语句) table_count
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;!-- raw HTML omitted --&gt;普通查询返回正常统计数量。一对多、多对多关联返回的count不一定正确&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h1 id="原因分析"&gt;原因分析：
+&lt;/h1&gt;&lt;blockquote&gt;
+&lt;p&gt;关联查询的结果是以最小单位为一条数据进行统计的。这里的最小单位举例：学生表和成绩表关联，一个学生有多个课程成绩，那么查询学生的成绩时，一位学生+一门课程的成绩就为最小单位。但有时候我们需要根据成绩搜索学生，但是需要了解有多少个学生。
+这个时候PageHelper就无法自动实现了，需要自定义count解决。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h1 id="解决方案"&gt;解决方案：
+&lt;/h1&gt;&lt;blockquote&gt;
+&lt;p&gt;以下说明我的错误经历&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;错误方式1：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-java" data-lang="java"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;/**
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; * 这里的getUserList_COUNT SQL模板是：
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; * SELECT count(*) FROM (getUserList SQL语句) table_count
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; * 返回值类型：Long
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; */&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// false 表示不使用统计总数，自定义统计数量&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;PageHelper.&lt;span style="color:#a6e22e"&gt;startPage&lt;/span&gt;(1, 10, &lt;span style="color:#66d9ef"&gt;false&lt;/span&gt;).&lt;span style="color:#a6e22e"&gt;doCount&lt;/span&gt;(() &lt;span style="color:#f92672"&gt;-&amp;gt;&lt;/span&gt; stopShipMapper.&lt;span style="color:#a6e22e"&gt;getUserList_COUNT&lt;/span&gt;(params));
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// params这里指的是自定义的参数对象，可有可无，业务需求而已&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;List&lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;User&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt; userList &lt;span style="color:#f92672"&gt;=&lt;/span&gt; stopShipMapper.&lt;span style="color:#a6e22e"&gt;getUserList&lt;/span&gt;(params);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;PageInfo&lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;User&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt; info &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;new&lt;/span&gt; PageInfo&lt;span style="color:#f92672"&gt;&amp;lt;&amp;gt;&lt;/span&gt;(userList);
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;!-- raw HTML omitted --&gt;报错：在系统中发现了多个分页插件,请检查系统配置!&lt;!-- raw HTML omitted --&gt;
+网上多数介绍，通过@SpringBootApplication(exclude = PageHelperAutoConfiguration.class)，但是分页会失效，然后还有说多了两次自定义配置。但是只进行了一次配置。不存在这个问题。
+查看源码得知如下：
+&lt;figure&gt;&lt;img src="https://zg-dd.github.io/img/mpp/mpp_1.png"&gt;
+&lt;/figure&gt;
+&lt;/p&gt;
+&lt;p&gt;原因：也就是说查询方法名不能后缀_COUNT，否则报异常。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;错误方式2：
+于是乎改了调用方法名：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-java" data-lang="java"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;/**
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; * 这里的getUserList_COUNT SQL模板是：
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; * SELECT count(*) FROM (getUserList SQL语句) table_count
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; * 返回值类型：Long
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; */&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// false 表示不使用统计总数，自定义统计数量&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;PageHelper.&lt;span style="color:#a6e22e"&gt;startPage&lt;/span&gt;(1, 10, &lt;span style="color:#66d9ef"&gt;false&lt;/span&gt;).&lt;span style="color:#a6e22e"&gt;doCount&lt;/span&gt;(() &lt;span style="color:#f92672"&gt;-&amp;gt;&lt;/span&gt; stopShipMapper.&lt;span style="color:#a6e22e"&gt;getUserListTotal&lt;/span&gt;(params));
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// params这里指的是自定义的参数对象，可有可无，业务需求而已&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;List&lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;User&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt; userList &lt;span style="color:#f92672"&gt;=&lt;/span&gt; stopShipMapper.&lt;span style="color:#a6e22e"&gt;getUserList&lt;/span&gt;(params);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;PageInfo&lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;User&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt; info &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;new&lt;/span&gt; PageInfo&lt;span style="color:#f92672"&gt;&amp;lt;&amp;gt;&lt;/span&gt;(userList);
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;!-- raw HTML omitted --&gt;错误：谢天谢地，count统计正常，但是查询语句后面没有后缀limit，分页失效。
+&lt;!-- raw HTML omitted --&gt;
+原因：PageHelper分页有效的SQL为PageHelper.startPage后紧跟着的一条SQL。上述代码紧跟着的SQL是count，干扰了分页查询。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;错误方式3：
+然后进一步修改，得到如下代码&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-java" data-lang="java"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;/**
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; * 这里的getUserList_COUNT SQL模板是：
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; * SELECT count(*) FROM (getUserList SQL语句) table_count
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; * 返回值类型：Long
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; */&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// false 表示不使用统计总数，自定义统计数量&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;PageHelper.&lt;span style="color:#a6e22e"&gt;startPage&lt;/span&gt;(1, 10, &lt;span style="color:#66d9ef"&gt;false&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// params这里指的是自定义的参数对象，可有可无，业务需求而已&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;List&lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;User&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt; userList &lt;span style="color:#f92672"&gt;=&lt;/span&gt; stopShipMapper.&lt;span style="color:#a6e22e"&gt;getUserList&lt;/span&gt;(params);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;PageHelper.&lt;span style="color:#a6e22e"&gt;count&lt;/span&gt;(() &lt;span style="color:#f92672"&gt;-&amp;gt;&lt;/span&gt; stopShipMapper.&lt;span style="color:#a6e22e"&gt;getUserListTotal&lt;/span&gt;(params))
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;PageInfo&lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;User&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt; info &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;new&lt;/span&gt; PageInfo&lt;span style="color:#f92672"&gt;&amp;lt;&amp;gt;&lt;/span&gt;(userList);
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;!-- raw HTML omitted --&gt;错误：然后又错啦，报错说什么要求return long 实际 return null。
+&lt;!-- raw HTML omitted --&gt;
+猜测原因：可能使用的是两个不同的分页对象，所以第二次只统计了总数，没有检测到没有分页查询&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;错误方式4：
+接下来再改，得到如下代码&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-java" data-lang="java"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;/**
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; * 这里的getUserListTotal SQL模板是：
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; * SELECT count(*) FROM (getUserList SQL语句) table_count
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; * 返回值类型：Long
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; */&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// false 表示不使用统计总数，自定义统计数量&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// false 表示不使用统计总数&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Page page &lt;span style="color:#f92672"&gt;=&lt;/span&gt; PageHelper.&lt;span style="color:#a6e22e"&gt;startPage&lt;/span&gt;(1, 10, &lt;span style="color:#66d9ef"&gt;false&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// params这里指的是自定义的参数对象，可有可无，业务需求而已&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;List&lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;User&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt; userList &lt;span style="color:#f92672"&gt;=&lt;/span&gt; stopShipMapper.&lt;span style="color:#a6e22e"&gt;getUserList&lt;/span&gt;(params);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 自定义统计数量&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;page.&lt;span style="color:#a6e22e"&gt;doCount&lt;/span&gt;(()&lt;span style="color:#f92672"&gt;-&amp;gt;&lt;/span&gt; stopShipMapper.&lt;span style="color:#a6e22e"&gt;getUserListTotal&lt;/span&gt;(params));
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;PageInfo&lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;User&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt; info &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;new&lt;/span&gt; PageInfo&lt;span style="color:#f92672"&gt;&amp;lt;&amp;gt;&lt;/span&gt;(userList);
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;!-- raw HTML omitted --&gt;错误：分页数据正常啦，但是统计count又成了-1。
+&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
+&lt;p&gt;原因：doCount是一个回调自定义处理函数，并没有对page做处理，因此需要手动处理。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;错误方式5：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-java" data-lang="java"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;/**
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; * 这里的getUserListTotal SQL模板是：
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; * SELECT count(*) FROM (getUserList SQL语句) table_count
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; * 返回值类型：Long
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; */&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// false 表示不使用统计总数，自定义统计数量&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// false 表示不使用统计总数&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Page page &lt;span style="color:#f92672"&gt;=&lt;/span&gt; PageHelper.&lt;span style="color:#a6e22e"&gt;startPage&lt;/span&gt;(1, 10, &lt;span style="color:#66d9ef"&gt;false&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// params这里指的是自定义的参数对象，可有可无，业务需求而已&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;List&lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;User&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt; userList &lt;span style="color:#f92672"&gt;=&lt;/span&gt; stopShipMapper.&lt;span style="color:#a6e22e"&gt;getUserList&lt;/span&gt;(params);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 自定义统计数量&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;page.&lt;span style="color:#a6e22e"&gt;doCount&lt;/span&gt;(() &lt;span style="color:#f92672"&gt;-&amp;gt;&lt;/span&gt; page.&lt;span style="color:#a6e22e"&gt;setTotal&lt;/span&gt;(stopShipMapper.&lt;span style="color:#a6e22e"&gt;getUserListTotal&lt;/span&gt;(params)));
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;PageInfo&lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;User&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt; info &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;new&lt;/span&gt; PageInfo&lt;span style="color:#f92672"&gt;&amp;lt;&amp;gt;&lt;/span&gt;(userList);
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;&lt;!-- raw HTML omitted --&gt; &lt;strong&gt;经过验证，最后一种方式也是有问题的，此时既可以分页，也可以统计数量，但是分页的结果还是最小单元。建议使用方式2，SQL使用子查询来先分页后关联数据&lt;/strong&gt; &lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
+&lt;/blockquote&gt;</description></item><item><title>MyBatis-Plus LambdaQueryWrapper - 函数式编程实践</title><link>https://zg-dd.github.io/blog/mybatis-lambda/</link><pubDate>Mon, 19 Sep 2022 15:24:42 +0800</pubDate><guid>https://zg-dd.github.io/blog/mybatis-lambda/</guid><description>&lt;h1 id="一lambdaquerywrapper"&gt;一、LambdaQueryWrapper？
+&lt;/h1&gt;&lt;blockquote&gt;
+&lt;p&gt;LambdaQueryWrapper是Mybatis-Plus插件的对象，实现了使用lambda形式构造查询接口。
+最初接触这个的时候，第一感觉就是，太方便了，因避免是用大量的字符串，对日后的维护有着很重要的作用。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1 id="二类名get方法"&gt;二、类名::GET方法
+&lt;/h1&gt;&lt;blockquote&gt;
+&lt;p&gt;在LambdaQueryWrapper构造语句的方法中使用了大量的这种方式作为查询数据库的字段名。这种方式还可指定具体的类。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;类名::GET方法，这是lambda的调用Get方法，简化操作的，例：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-java" data-lang="java"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;List&lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;String&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt; list &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;new&lt;/span&gt; ArrayLiast();
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;list.&lt;span style="color:#a6e22e"&gt;add&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;Hello&amp;#34;&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;//化简前&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;list.&lt;span style="color:#a6e22e"&gt;forEach&lt;/span&gt;(item &lt;span style="color:#f92672"&gt;-&amp;gt;&lt;/span&gt; System.&lt;span style="color:#a6e22e"&gt;out&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;println&lt;/span&gt;(item));
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;//化简后&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;list.&lt;span style="color:#a6e22e"&gt;forEach&lt;/span&gt;(System.&lt;span style="color:#a6e22e"&gt;out&lt;/span&gt;::println);
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;具体使用可自行百度，:: 实现是其实使用的是Function&amp;lt;T, R&amp;gt;接口，该接口声明@FunctionalInterface，即这是函数式接口。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h1 id="二如何结合使用"&gt;二、如何结合使用？
+&lt;/h1&gt;&lt;p&gt;LambdaQueryWrapper 查询需要的是字段名，而::得到的是执行get方法。那么mybatis-plus到底是怎么将get方法转换为字段的呢。并不是执行呢？
+IDEA调试方法可知如下：
+&lt;figure&gt;&lt;img src="https://zg-dd.github.io/img/ml/ml_1.png"&gt;
+&lt;/figure&gt;
+类名::GET方法实际类型是Function&amp;lt;T,R&amp;gt;，而mybatis-plus使用新的接口SFunction&amp;lt;T,R&amp;gt;将Function序列化后，该Function接口会在运行时添加writeReplace方法，可以查看当前执行方法的类名、方法名等信息。然后通过方法名解析出字段名。&lt;/p&gt;
+&lt;h1 id="三示例代码"&gt;三、示例代码
+&lt;/h1&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-java" data-lang="java"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;@FunctionalInterface&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;public&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;interface&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;SFunction&lt;/span&gt;&lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;T,R&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;extends&lt;/span&gt; Function&lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;T,R&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt;, Serializable {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-java" data-lang="java"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;public&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;class&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;User&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;private&lt;/span&gt; String username;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;private&lt;/span&gt; String password;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#75715e"&gt;// get、set略&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-java" data-lang="java"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;public&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;class&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;Builder&lt;/span&gt;&lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;T&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;private&lt;/span&gt; T target;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;public&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;Builder&lt;/span&gt;(Class&lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;T&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt; tClass) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;try&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; target &lt;span style="color:#f92672"&gt;=&lt;/span&gt; tClass.&lt;span style="color:#a6e22e"&gt;newInstance&lt;/span&gt;();
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; } &lt;span style="color:#66d9ef"&gt;catch&lt;/span&gt; (InstantiationException e) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; e.&lt;span style="color:#a6e22e"&gt;printStackTrace&lt;/span&gt;();
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; } &lt;span style="color:#66d9ef"&gt;catch&lt;/span&gt; (IllegalAccessException e) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; e.&lt;span style="color:#a6e22e"&gt;printStackTrace&lt;/span&gt;();
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;public&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;static&lt;/span&gt; &lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;T&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt; Builder&lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;T&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;builder&lt;/span&gt;(Class&lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;T&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt; tClass) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;return&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;new&lt;/span&gt; Builder(tClass);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;public&lt;/span&gt; &lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;T,R&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt; String &lt;span style="color:#a6e22e"&gt;getFunName&lt;/span&gt;(SFunction&lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;T, R&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt; sFunction) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;try&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#75715e"&gt;// 直接调用writeReplace&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; Method methods &lt;span style="color:#f92672"&gt;=&lt;/span&gt; sFunction.&lt;span style="color:#a6e22e"&gt;getClass&lt;/span&gt;().&lt;span style="color:#a6e22e"&gt;getDeclaredMethod&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;writeReplace&amp;#34;&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; methods.&lt;span style="color:#a6e22e"&gt;setAccessible&lt;/span&gt;(&lt;span style="color:#66d9ef"&gt;true&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#75715e"&gt;//反射调用&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; Object sl &lt;span style="color:#f92672"&gt;=&lt;/span&gt; methods.&lt;span style="color:#a6e22e"&gt;invoke&lt;/span&gt;(sFunction);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; SerializedLambda serializedLambda &lt;span style="color:#f92672"&gt;=&lt;/span&gt; (SerializedLambda) sl;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#75715e"&gt;// 获取类&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; String implClass &lt;span style="color:#f92672"&gt;=&lt;/span&gt; serializedLambda.&lt;span style="color:#a6e22e"&gt;getImplClass&lt;/span&gt;();
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; Class&lt;span style="color:#f92672"&gt;&amp;lt;?&amp;gt;&lt;/span&gt; aClass &lt;span style="color:#f92672"&gt;=&lt;/span&gt; Class.&lt;span style="color:#a6e22e"&gt;forName&lt;/span&gt;(implClass.&lt;span style="color:#a6e22e"&gt;replace&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;/&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;.&amp;#34;&lt;/span&gt;));
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#75715e"&gt;// 获取方法名&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; String methodName &lt;span style="color:#f92672"&gt;=&lt;/span&gt; serializedLambda.&lt;span style="color:#a6e22e"&gt;getImplMethodName&lt;/span&gt;();
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;return&lt;/span&gt; methodName;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; } &lt;span style="color:#66d9ef"&gt;catch&lt;/span&gt; (NoSuchMethodException e) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; e.&lt;span style="color:#a6e22e"&gt;printStackTrace&lt;/span&gt;();
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; } &lt;span style="color:#66d9ef"&gt;catch&lt;/span&gt; (IllegalAccessException e) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; e.&lt;span style="color:#a6e22e"&gt;printStackTrace&lt;/span&gt;();
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; } &lt;span style="color:#66d9ef"&gt;catch&lt;/span&gt; (InvocationTargetException e) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; e.&lt;span style="color:#a6e22e"&gt;printStackTrace&lt;/span&gt;();
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; } &lt;span style="color:#66d9ef"&gt;catch&lt;/span&gt; (ClassNotFoundException e) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; e.&lt;span style="color:#a6e22e"&gt;printStackTrace&lt;/span&gt;();
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#75715e"&gt;// 获取值&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;return&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;null&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-java" data-lang="java"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;public&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;class&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;Main&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;public&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;static&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;void&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;main&lt;/span&gt;(String&lt;span style="color:#f92672"&gt;[]&lt;/span&gt; args) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; Builder&lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt;User&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt; builder &lt;span style="color:#f92672"&gt;=&lt;/span&gt; Builder.&lt;span style="color:#a6e22e"&gt;builder&lt;/span&gt;(User.&lt;span style="color:#a6e22e"&gt;class&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; String name &lt;span style="color:#f92672"&gt;=&lt;/span&gt; builder.&lt;span style="color:#a6e22e"&gt;getFunName&lt;/span&gt;(User::getUsername);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; System.&lt;span style="color:#a6e22e"&gt;out&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;println&lt;/span&gt;(name);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;运行结果：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-java" data-lang="java"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;getUsername
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id="总结"&gt;总结
+&lt;/h1&gt;&lt;p&gt;通过上面的示例，轻而易举可获取到方法的名或字段名或者其他信息。上面的代码在业务需求方面没有什么用处。但是在构造条件情况下，结合设计模式，有很醒目的作用，能够给编程带来便利.&lt;/p&gt;</description></item></channel></rss>

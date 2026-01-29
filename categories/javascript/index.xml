@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>JavaScript on 小巷的随笔</title><link>https://zg-dd.github.io/categories/javascript/</link><description>Recent content in JavaScript on 小巷的随笔</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Fri, 15 Jul 2022 17:07:31 +0800</lastBuildDate><atom:link href="https://zg-dd.github.io/categories/javascript/index.xml" rel="self" type="application/rss+xml"/><item><title>axios同步问题 - 三种解决方案详解</title><link>https://zg-dd.github.io/blog/axios-sync-solutions/</link><pubDate>Fri, 15 Jul 2022 17:07:31 +0800</pubDate><guid>https://zg-dd.github.io/blog/axios-sync-solutions/</guid><description>&lt;h2 id="axios解决同步问题的方式"&gt;axios解决同步问题的方式
+&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;至今我能想到的解决同步/异步问题的三种方式如下：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;通过函数回调解决同步异步。这种方式&lt;strong&gt;代码书写层层嵌套不直观&lt;/strong&gt;。&lt;/li&gt;
+&lt;li&gt;async/await关键字，这两个关键字搭配使用完美解决同步/异步问题，但是这种方式&lt;strong&gt;并不能说是解决了同步问题，而是说将异步功能延续到了调用者，即父方法&lt;/strong&gt;。当然这种方式在调用方本身就是异步函数的情况下有效。&lt;/li&gt;
+&lt;li&gt;利用&lt;strong&gt;引用变量&lt;/strong&gt;的方式解决同步异步问题。这种方式完美解决了第2种方式存在的问题，调用方可以是同步方法。&lt;strong&gt;但是该种方式不能解决基本类型，因为基本类型不是使用引用变量的。可通过将基本类型包装在对象中，解决这个问题。&lt;/strong&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;以上三种方式各有利弊，具体情况使用具体方式。下面通过示例模拟一下上述三种方式。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;回调解决&lt;/p&gt;
+&lt;p&gt;正常情况下：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-javascript" data-lang="javascript"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 模拟异步发数据
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;function&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;req&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;str&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;return&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;new&lt;/span&gt; Promise((&lt;span style="color:#a6e22e"&gt;resolve&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;reject&lt;/span&gt;) =&amp;gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;resolve&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;str&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; })
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 请求方法
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;function&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;update&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;data&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;req&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;data&lt;/span&gt;).&lt;span style="color:#a6e22e"&gt;then&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;result&lt;/span&gt; =&amp;gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;str&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;result&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#75715e"&gt;// 代码更新后区域
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;console&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;log&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;结果3:&amp;#34;&lt;/span&gt; &lt;span style="color:#f92672"&gt;+&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;str&lt;/span&gt;); &lt;span style="color:#75715e"&gt;// 代码1
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; });
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;console&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;log&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;结果1:&amp;#34;&lt;/span&gt; &lt;span style="color:#f92672"&gt;+&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;str&lt;/span&gt;); &lt;span style="color:#75715e"&gt;// 代码2
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;let&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;str&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;你好&amp;#34;&lt;/span&gt;; &lt;span style="color:#75715e"&gt;// 代码3
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;update&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;hello&amp;#34;&lt;/span&gt;); &lt;span style="color:#75715e"&gt;// 代码4
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;console&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;log&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;结果2:&amp;#34;&lt;/span&gt; &lt;span style="color:#f92672"&gt;+&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;str&lt;/span&gt;); &lt;span style="color:#75715e"&gt;// 代码5
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;结果：
+&lt;figure&gt;&lt;img src="https://zg-dd.github.io/img/ass/ass_1.png"&gt;
+&lt;/figure&gt;
+&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;分析&lt;/strong&gt;：代码3,之后，执行代码4，其中并不会立刻执行代码1，而是执行方法内部的代码2和之后跳出代码5。因为req(data).then()是异步的，等异步请求结束后之行代码1，因此写在代码1区域能够解决实际问题，&lt;strong&gt;少量回调，这个方式很方便，多次回调时，降低了代码的可读性。&lt;/strong&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;async/await关键字&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-javascript" data-lang="javascript"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 模拟异步发数据
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;function&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;req&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;str&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;return&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;new&lt;/span&gt; Promise((&lt;span style="color:#a6e22e"&gt;resolve&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;reject&lt;/span&gt;) =&amp;gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;resolve&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;str&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; })
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 请求方法,通过声明async/await,可等待异步完成之后再执行
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;async&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;function&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;update&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;data&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;await&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;req&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;data&lt;/span&gt;).&lt;span style="color:#a6e22e"&gt;then&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;result&lt;/span&gt; =&amp;gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;str&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;result&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;console&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;log&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;结果2:&amp;#34;&lt;/span&gt; &lt;span style="color:#f92672"&gt;+&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;str&lt;/span&gt;); &lt;span style="color:#75715e"&gt;// 代码1
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; });
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#75715e"&gt;// 代码更新后区域
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;console&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;log&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;结果3:&amp;#34;&lt;/span&gt; &lt;span style="color:#f92672"&gt;+&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;str&lt;/span&gt;); &lt;span style="color:#75715e"&gt;// 代码2
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;let&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;str&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;你好&amp;#34;&lt;/span&gt;; &lt;span style="color:#75715e"&gt;// 代码3
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;update&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;hello&amp;#34;&lt;/span&gt;); &lt;span style="color:#75715e"&gt;// 代码4
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;console&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;log&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;结果1:&amp;#34;&lt;/span&gt; &lt;span style="color:#f92672"&gt;+&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;str&lt;/span&gt;); &lt;span style="color:#75715e"&gt;// 代码5
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;结果：
+&lt;figure&gt;&lt;img src="https://zg-dd.github.io/img/ass/ass_2.png"&gt;
+&lt;/figure&gt;
+&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;步骤&lt;/strong&gt;：第一步将父级方法也就是update，声明为异步方法（async），然后再需要等待同步的地方标注为await，这样即可等待req(data).then()请求执行成功之后，再执行下面代码。&lt;!-- raw HTML omitted --&gt;注意：async必不可少，否则报错。&lt;!-- raw HTML omitted --&gt;
+&lt;strong&gt;分析&lt;/strong&gt;：代码执行完3时，因为代码4声明为异步了，故先执行了代码5，执行请求时，发现请求为等待，故等then执行结束后，即执行了代码1，最后执行了代码2。所以代码2区域能够解决实际问题。&lt;strong&gt;虽然这样是解决了update方法内部的同步代码问题，但是变相的将异步问题向上拋了。update方法为异步了。&lt;/strong&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;利用&lt;strong&gt;引用变量&lt;/strong&gt;的方式解决同步异步问题
+下面使用新的示例，因为字符串不是使用引用的方式，需要将字符串包裹在对象中才起作用。先看正常的示例：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-javascript" data-lang="javascript"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 模拟异步发数据
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;function&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;req&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;obj&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;return&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;new&lt;/span&gt; Promise((&lt;span style="color:#a6e22e"&gt;resolve&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;reject&lt;/span&gt;) =&amp;gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;resolve&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;obj&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; })
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 请求方法,通过声明async/await,可等待异步完成之后再执行
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;function&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;update&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;data&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;req&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;data&lt;/span&gt;).&lt;span style="color:#a6e22e"&gt;then&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;result&lt;/span&gt; =&amp;gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;obj&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;result&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;console&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;log&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;结果3:&amp;#34;&lt;/span&gt;,&lt;span style="color:#a6e22e"&gt;obj&lt;/span&gt;); &lt;span style="color:#75715e"&gt;// 代码1
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; });
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;console&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;log&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;结果1:&amp;#34;&lt;/span&gt;,&lt;span style="color:#a6e22e"&gt;obj&lt;/span&gt;); &lt;span style="color:#75715e"&gt;// 代码2
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;let&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;obj&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;msg&lt;/span&gt;&lt;span style="color:#f92672"&gt;:&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;你好&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}; &lt;span style="color:#75715e"&gt;// 代码3
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;update&lt;/span&gt;({
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;msg&lt;/span&gt;&lt;span style="color:#f92672"&gt;:&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;hello&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}); &lt;span style="color:#75715e"&gt;// 代码4
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;console&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;log&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;结果2:&amp;#34;&lt;/span&gt;,&lt;span style="color:#a6e22e"&gt;obj&lt;/span&gt;); &lt;span style="color:#75715e"&gt;// 代码5
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;结果：
+&lt;figure&gt;&lt;img src="https://zg-dd.github.io/img/ass/ass_3.png"&gt;
+&lt;/figure&gt;
+&lt;strong&gt;分析&lt;/strong&gt;：不用多说，代码执行顺序为：代码3、4、2、5、1。执行代码2和5时，obj其实是一个引用，因此这两个结果是一样的，但是，赋值使用obj = result，结果2之前将obj引用到了新的对象，因此执行结果2最后和之前不一样。
+&lt;strong&gt;问题&lt;/strong&gt;：怎么样才能将结果1和结果2的值和结果3是一样的呢？
+&lt;strong&gt;方案&lt;/strong&gt;：这是赋值的问题，因此obj = result的意思是将obj指向了新的引用对象，之前的丢弃。所以在赋值的时候，不要丢弃之前的对象，只是做修改对象内部属性的值，那么不管再哪里引用都是一样的值了。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-javascript" data-lang="javascript"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 模拟异步发数据
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;function&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;req&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;obj&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;return&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;new&lt;/span&gt; Promise((&lt;span style="color:#a6e22e"&gt;resolve&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;reject&lt;/span&gt;) =&amp;gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;resolve&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;obj&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; })
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 请求方法,通过声明async/await,可等待异步完成之后再执行
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;function&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;update&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;data&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;req&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;data&lt;/span&gt;).&lt;span style="color:#a6e22e"&gt;then&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;result&lt;/span&gt; =&amp;gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#75715e"&gt;// 只赋值属性的值，不改变引用地址
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;obj&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;msg&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;result&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;msg&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;console&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;log&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;结果3:&amp;#34;&lt;/span&gt;,&lt;span style="color:#a6e22e"&gt;obj&lt;/span&gt;); &lt;span style="color:#75715e"&gt;// 代码1
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; });
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;console&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;log&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;结果1:&amp;#34;&lt;/span&gt;,&lt;span style="color:#a6e22e"&gt;obj&lt;/span&gt;); &lt;span style="color:#75715e"&gt;// 代码2
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;let&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;obj&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;msg&lt;/span&gt;&lt;span style="color:#f92672"&gt;:&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;你好&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}; &lt;span style="color:#75715e"&gt;// 代码3
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;update&lt;/span&gt;({
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;msg&lt;/span&gt;&lt;span style="color:#f92672"&gt;:&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;hello&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}); &lt;span style="color:#75715e"&gt;// 代码4
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;console&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;log&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;结果2:&amp;#34;&lt;/span&gt;,&lt;span style="color:#a6e22e"&gt;obj&lt;/span&gt;); &lt;span style="color:#75715e"&gt;// 代码5
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;结果：
+&lt;figure&gt;&lt;img src="https://zg-dd.github.io/img/ass/ass_4.png"&gt;
+&lt;/figure&gt;
+&lt;strong&gt;分析&lt;/strong&gt;：如结果所示，&lt;strong&gt;最后的数据为实时的数据，但是上面的打印数据是代码执行时的值&lt;/strong&gt;，而我们平时调用获取值时，都是使用引用来获取变量的实时数据。这种方式没有改变代码执行的顺序，也没有改变异步和同步的方式，只是改变了赋值方式。这种方式在父方法不能为异步方法时，很有效。&lt;strong&gt;再次强调，如果为基本类型，包装在一个对象或数组的应用下才有效&lt;/strong&gt;。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;</description></item></channel></rss>
