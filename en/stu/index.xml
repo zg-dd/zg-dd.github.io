@@ -1,4 +1,157 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Study Notes on 小巷 Blog</title><link>https://zg-dd.github.io/en/stu/</link><description>Recent content in Study Notes on 小巷 Blog</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Wed, 19 Nov 2025 11:00:42 +0800</lastBuildDate><atom:link href="https://zg-dd.github.io/en/stu/index.xml" rel="self" type="application/rss+xml"/><item><title>Go Debugger Delve (dlv) Notes</title><link>https://zg-dd.github.io/en/stu/go-delve/</link><pubDate>Wed, 19 Nov 2025 11:00:42 +0800</pubDate><guid>https://zg-dd.github.io/en/stu/go-delve/</guid><description>&lt;h2 id="overview"&gt;Overview
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Study Notes on 小巷 Blog</title><link>https://zg-dd.github.io/en/stu/</link><description>Recent content in Study Notes on 小巷 Blog</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Wed, 04 Feb 2026 08:35:21 +0800</lastBuildDate><atom:link href="https://zg-dd.github.io/en/stu/index.xml" rel="self" type="application/rss+xml"/><item><title>Multi-Tenancy Architecture Beginner's Guide: How Beginners Can Quickly Understand SaaS System Sharing Mechanisms</title><link>https://zg-dd.github.io/en/stu/multi-tenancy-guide/</link><pubDate>Wed, 04 Feb 2026 08:35:21 +0800</pubDate><guid>https://zg-dd.github.io/en/stu/multi-tenancy-guide/</guid><description>&lt;h1 id="multi-tenancy-architecture-beginners-guide-how-beginners-can-quickly-understand-saas-system-sharing-mechanisms"&gt;Multi-Tenancy Architecture Beginner&amp;rsquo;s Guide: How Beginners Can Quickly Understand SaaS System Sharing Mechanisms
+&lt;/h1&gt;&lt;p&gt;Multi-tenancy is one of the most common and important architectural patterns in modern SaaS systems. Many beginners feel that the concepts are abstract and implementation methods are difficult to grasp during the learning process. This article starts from a zero-foundation perspective, using clear structure, accessible language, and concise explanations to help readers quickly establish an overall understanding of multi-tenancy.&lt;/p&gt;
+&lt;h2 id="1-what-is-multi-tenancy-is-it-an-architecture-or-a-way-of-thinking"&gt;1. What is Multi-Tenancy? Is it an Architecture or a Way of Thinking?
+&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;Official Definition&lt;/strong&gt;&lt;br&gt;
+Multi-tenancy is a software architectural pattern where a single software instance (or infrastructure) can simultaneously serve multiple independent tenants (typically different customers, enterprises, or organizations), while using technical means to ensure data isolation, security, privacy compliance, and efficient resource utilization.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Common Understanding&lt;/strong&gt;&lt;br&gt;
+Think of multi-tenancy as a large shared apartment building:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The building&amp;rsquo;s infrastructure (elevators, water and electricity, lobby, fire protection systems) is shared by all residents&lt;/li&gt;
+&lt;li&gt;But each resident has an independent room with locked doors, and their personal items are completely isolated from others&lt;/li&gt;
+&lt;li&gt;This approach allows multiple households to live together without building a separate villa for each family, saving costs while facilitating management&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Multi-tenancy is based on the same idea: one software system serves multiple companies simultaneously, but each company&amp;rsquo;s data and operations are logically isolated and do not interfere with each other.&lt;/p&gt;
+&lt;p&gt;It&amp;rsquo;s not an abstract way of thinking, but a concrete, implementable system design solution.&lt;/p&gt;
+&lt;pre class="mermaid"&gt;
+graph TD
+A[Shared Infrastructure&amp;lt;br&amp;gt;Servers / Code / Basic Services] --&amp;gt; B[Tenant A&amp;lt;br&amp;gt;Independent Data &amp;amp; Context]
+A --&amp;gt; C[Tenant B&amp;lt;br&amp;gt;Independent Data &amp;amp; Context]
+A --&amp;gt; D[Tenant C&amp;lt;br&amp;gt;Independent Data &amp;amp; Context]
+classDef shared fill:#e6f3ff,stroke:#0066cc,stroke-width:2px
+classDef tenant fill:#fff3e6,stroke:#cc6600,stroke-width:2px
+class A shared
+class B,C,D tenant
+&lt;/pre&gt;
+&lt;h2 id="2-how-is-multi-tenancy-actually-implemented-in-real-projects"&gt;2. How is Multi-Tenancy Actually Implemented in Real Projects?
+&lt;/h2&gt;&lt;p&gt;The core of multi-tenancy implementation lies in &lt;strong&gt;isolation&lt;/strong&gt;, with database isolation being the most critical part, followed by application layer context management and infrastructure isolation.&lt;/p&gt;
+&lt;h3 id="three-main-database-isolation-approaches"&gt;Three Main Database Isolation Approaches
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;Comparison Table&lt;/strong&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Approach&lt;/th&gt;
+&lt;th&gt;Isolation Strength&lt;/th&gt;
+&lt;th&gt;Resource Cost&lt;/th&gt;
+&lt;th&gt;Management Complexity&lt;/th&gt;
+&lt;th&gt;Typical Use Cases&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Dedicated Database (One Database Per Tenant)&lt;/td&gt;
+&lt;td&gt;★★★★★&lt;/td&gt;
+&lt;td&gt;High&lt;/td&gt;
+&lt;td&gt;High&lt;/td&gt;
+&lt;td&gt;High compliance requirements, finance, healthcare, enterprise clients&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Shared Database + Dedicated Schema&lt;/td&gt;
+&lt;td&gt;★★★★☆&lt;/td&gt;
+&lt;td&gt;Medium&lt;/td&gt;
+&lt;td&gt;Medium&lt;/td&gt;
+&lt;td&gt;Mid to large SaaS, hundreds to thousands of tenants&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Shared Database + Shared Schema + Row-level Isolation&lt;/td&gt;
+&lt;td&gt;★★★☆☆&lt;/td&gt;
+&lt;td&gt;Low&lt;/td&gt;
+&lt;td&gt;Low&lt;/td&gt;
+&lt;td&gt;Mass consumer SaaS, tens of thousands+ tenants&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;Simple Analogy&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Dedicated Database → Each company rents an entire floor&lt;/li&gt;
+&lt;li&gt;Dedicated Schema → Each company rents an independent suite on the same floor&lt;/li&gt;
+&lt;li&gt;Row-level Isolation → Everyone shares one large space, but each bed has clear identification and strict control&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre class="mermaid"&gt;
+graph LR
+A[Database Isolation Methods] --&amp;gt; B[Dedicated Database&amp;lt;br&amp;gt;One Physical Database Per Tenant]
+A --&amp;gt; C[Shared Database + Dedicated Schema&amp;lt;br&amp;gt;Logical Namespace Isolation]
+A --&amp;gt; D[Shared Database + Shared Schema&amp;lt;br&amp;gt;Row-level Isolation tenant_id]
+B --&amp;gt;|Strongest Isolation| E[Highest Compliance Requirements&amp;lt;br&amp;gt;Finance/Healthcare/Enterprise Clients]
+C --&amp;gt;|Balanced Solution| F[Mid-large SaaS&amp;lt;br&amp;gt;Hundreds~Thousands of Tenants]
+D --&amp;gt;|Lowest Cost| G[Mass Consumer SaaS&amp;lt;br&amp;gt;Tens of Thousands+ Tenants]
+classDef high fill:#ffcccc,stroke:#990000
+classDef medium fill:#ffffcc,stroke:#996600
+classDef low fill:#ccffcc,stroke:#006600
+class B high
+class C medium
+class D low
+&lt;/pre&gt;
+&lt;h2 id="3-whats-the-difference-between-multi-tenancy-and-role-based-access-control-rbac"&gt;3. What&amp;rsquo;s the Difference Between Multi-Tenancy and Role-Based Access Control (RBAC)?
+&lt;/h2&gt;&lt;p&gt;Multi-tenancy and role-based access control (RBAC) are concepts at different levels that are often confused.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Core Differences Comparison&lt;/strong&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Dimension&lt;/th&gt;
+&lt;th&gt;Multi-Tenancy&lt;/th&gt;
+&lt;th&gt;Role-Based Access Control (RBAC)&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Problem Solved&lt;/td&gt;
+&lt;td&gt;Multiple companies sharing one system with data isolation required&lt;/td&gt;
+&lt;td&gt;Different people having different permissions within the same company&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Objects Isolated&lt;/td&gt;
+&lt;td&gt;Company vs Company&lt;/td&gt;
+&lt;td&gt;Person vs Person (within same company)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Layer Level&lt;/td&gt;
+&lt;td&gt;Architectural layer, system boundary&lt;/td&gt;
+&lt;td&gt;Permission module, functional layer&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Configuration Owner&lt;/td&gt;
+&lt;td&gt;Usually handled by platform provider (SaaS vendor)&lt;/td&gt;
+&lt;td&gt;Usually configured by customer (tenant administrator)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;One-sentence Summary&lt;/strong&gt;&lt;br&gt;
+Multi-tenancy determines &amp;ldquo;how many companies share one building,&amp;rdquo; while RBAC determines &amp;ldquo;who holds which keys within one company.&amp;rdquo;&lt;/p&gt;
+&lt;pre class="mermaid"&gt;
+graph TD
+A[Entire System] --&amp;gt; B[Multi-Tenancy Layer&amp;lt;br&amp;gt;Company/Organization Boundary Isolation]
+B --&amp;gt; C[Within Tenant&amp;lt;br&amp;gt;RBAC Permission Control]
+subgraph Tenant Boundary
+C --&amp;gt; D[Role: Administrator]
+C --&amp;gt; E[Role: Regular Employee]
+C --&amp;gt; F[Role: Finance Staff]
+end
+classDef boundary fill:#f0f8ff,stroke:#4682b4,stroke-width:2px
+classDef rbac fill:#fffacd,stroke:#dAA520,stroke-width:2px
+class B boundary
+class C,D,E,F rbac
+&lt;/pre&gt;
+&lt;h2 id="4-will-customer-personalization-requirements-make-multi-tenancy-very-complex"&gt;4. Will Customer Personalization Requirements Make Multi-Tenancy Very Complex?
+&lt;/h2&gt;&lt;p&gt;Personalization requirements are indeed one of the most common challenges in multi-tenancy implementation.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Customization Complexity Levels&lt;/strong&gt; (Low to High)&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Appearance and Branding (Logo, theme colors, copywriting, login page)&lt;/li&gt;
+&lt;li&gt;Fields and Forms (adding/removing fields, visibility rules, validation rules)&lt;/li&gt;
+&lt;li&gt;Processes and Rules (approval flows, state machines, calculation formulas)&lt;/li&gt;
+&lt;li&gt;Business Logic Forks (strategy patterns, Hooks, plugins)&lt;/li&gt;
+&lt;li&gt;Completely New Modules or Different Business Models (microservices, independent deployment)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Handling Principles&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Prioritize configuration solutions&lt;/li&gt;
+&lt;li&gt;Use rule engines or editable rules as secondary option&lt;/li&gt;
+&lt;li&gt;Avoid hard-coding, prefer strategy patterns or plugin mechanisms&lt;/li&gt;
+&lt;li&gt;For extremely rare customization scenarios, consider hybrid or independent deployment&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="5-conclusion-and-learning-suggestions"&gt;5. Conclusion and Learning Suggestions
+&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;The core value of multi-tenancy can be summarized in one sentence: &lt;strong&gt;Serve as many independent customers as possible safely and efficiently with minimal resource investment.&lt;/strong&gt;&lt;/p&gt;
+&lt;/blockquote&gt;</description></item><item><title>Go Debugger Delve (dlv) Notes</title><link>https://zg-dd.github.io/en/stu/go-delve/</link><pubDate>Wed, 19 Nov 2025 11:00:42 +0800</pubDate><guid>https://zg-dd.github.io/en/stu/go-delve/</guid><description>&lt;h2 id="overview"&gt;Overview
 &lt;/h2&gt;&lt;p&gt;Delve (dlv) is the official Go debugger, designed for Go’s concurrency model and runtime. It is the most widely used and powerful debugger in the Go ecosystem.&lt;/p&gt;
 &lt;h2 id="installation"&gt;Installation
 &lt;/h2&gt;&lt;h3 id="recommended-install"&gt;Recommended install

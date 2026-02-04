@@ -1,4 +1,157 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>小巷的随笔</title><link>https://zg-dd.github.io/</link><description>Recent content on 小巷的随笔</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Wed, 19 Nov 2025 11:00:42 +0800</lastBuildDate><atom:link href="https://zg-dd.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>Go 语言调试器 Delve (dlv) 学习笔记</title><link>https://zg-dd.github.io/stu/go-delve/</link><pubDate>Wed, 19 Nov 2025 11:00:42 +0800</pubDate><guid>https://zg-dd.github.io/stu/go-delve/</guid><description>&lt;h2 id="概述"&gt;概述
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>小巷的随笔</title><link>https://zg-dd.github.io/</link><description>Recent content on 小巷的随笔</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Wed, 04 Feb 2026 08:35:21 +0800</lastBuildDate><atom:link href="https://zg-dd.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>多租户架构入门指南：小白如何快速搞懂 SaaS 系统的共享机制</title><link>https://zg-dd.github.io/stu/multi-tenancy-guide/</link><pubDate>Wed, 04 Feb 2026 08:35:21 +0800</pubDate><guid>https://zg-dd.github.io/stu/multi-tenancy-guide/</guid><description>&lt;h1 id="多租户架构入门指南小白如何快速搞懂-saas-系统的共享机制"&gt;多租户架构入门指南：小白如何快速搞懂 SaaS 系统的共享机制
+&lt;/h1&gt;&lt;p&gt;多租户（Multi-Tenancy）是现代 SaaS 系统中最常见且最重要的架构模式之一。许多初学者在学习过程中会感到概念抽象、实现方式难以把握。本文从零基础视角出发，以清晰的结构、通俗的语言和简明说明，帮助读者快速建立对多租户的整体认知。&lt;/p&gt;
+&lt;h2 id="1-什么是多租户它到底是架构还是思维方式"&gt;1. 什么是多租户？它到底是架构还是思维方式？
+&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;官方定义&lt;/strong&gt;&lt;br&gt;
+多租户是一种软件架构模式，指单一的软件实例（或基础设施）能够同时为多个独立的租户（Tenant，通常指不同的客户、企业、组织）提供服务，同时通过技术手段保证数据隔离、安全性、隐私合规以及资源的高效利用。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;通俗理解&lt;/strong&gt;&lt;br&gt;
+可以将多租户想象为一栋大型共享公寓大楼：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;大楼的基础设施（电梯、水电、大堂、消防系统）由所有住户共同使用&lt;/li&gt;
+&lt;li&gt;但每位住户拥有独立的房间，房门上锁，内部物品与他人完全隔离&lt;/li&gt;
+&lt;li&gt;这种方式无需为每户单独建造一栋别墅，就能让多家住户共同居住，既节约成本又便于管理&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;多租户正是基于同样的思路：一套软件系统同时服务多家公司，但每家公司的数据与操作在逻辑上完全隔离，互不干扰。&lt;/p&gt;
+&lt;p&gt;它不是一种抽象的思维方式，而是一种具体的、可落地的系统设计方案。&lt;/p&gt;
+&lt;pre class="mermaid"&gt;
+graph TD
+A[共享基础设施&amp;lt;br&amp;gt;服务器 / 代码 / 基础服务] --&amp;gt; B[租户 A&amp;lt;br&amp;gt;独立数据与上下文]
+A --&amp;gt; C[租户 B&amp;lt;br&amp;gt;独立数据与上下文]
+A --&amp;gt; D[租户 C&amp;lt;br&amp;gt;独立数据与上下文]
+classDef shared fill:#e6f3ff,stroke:#0066cc,stroke-width:2px
+classDef tenant fill:#fff3e6,stroke:#cc6600,stroke-width:2px
+class A shared
+class B,C,D tenant
+&lt;/pre&gt;
+&lt;h2 id="2-多租户在实际项目中是如何实现的"&gt;2. 多租户在实际项目中是如何实现的？
+&lt;/h2&gt;&lt;p&gt;多租户实现的核心在于&lt;strong&gt;隔离&lt;/strong&gt;，其中最关键的部分通常是数据库隔离，其次是应用层上下文管理与基础设施隔离。&lt;/p&gt;
+&lt;h3 id="数据库隔离的三种主流模式"&gt;数据库隔离的三种主流模式
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;特点对比表&lt;/strong&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;方式&lt;/th&gt;
+&lt;th&gt;隔离强度&lt;/th&gt;
+&lt;th&gt;资源成本&lt;/th&gt;
+&lt;th&gt;管理复杂度&lt;/th&gt;
+&lt;th&gt;典型适用场景&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;独立数据库（每租户一个库）&lt;/td&gt;
+&lt;td&gt;★★★★★&lt;/td&gt;
+&lt;td&gt;高&lt;/td&gt;
+&lt;td&gt;高&lt;/td&gt;
+&lt;td&gt;高合规要求、金融、医疗、大客户&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;共享数据库 + 独立 Schema&lt;/td&gt;
+&lt;td&gt;★★★★☆&lt;/td&gt;
+&lt;td&gt;中&lt;/td&gt;
+&lt;td&gt;中&lt;/td&gt;
+&lt;td&gt;中大型 SaaS，几百至数千租户&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;共享数据库 + 共享 Schema + 行级隔离&lt;/td&gt;
+&lt;td&gt;★★★☆☆&lt;/td&gt;
+&lt;td&gt;低&lt;/td&gt;
+&lt;td&gt;低&lt;/td&gt;
+&lt;td&gt;大规模消费级 SaaS，万级以上租户&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;通俗比喻&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;独立数据库 → 每家公司租一整层楼&lt;/li&gt;
+&lt;li&gt;独立 Schema → 每家公司租同一层楼中的独立套房&lt;/li&gt;
+&lt;li&gt;行级隔离 → 大家共用一个大空间，但每张床位贴有明确标识并有严格管控&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre class="mermaid"&gt;
+graph LR
+A[数据库隔离方式] --&amp;gt; B[独立数据库&amp;lt;br&amp;gt;每租户一个物理库]
+A --&amp;gt; C[共享数据库 + 独立 Schema&amp;lt;br&amp;gt;逻辑命名空间隔离]
+A --&amp;gt; D[共享数据库 + 共享 Schema&amp;lt;br&amp;gt;行级隔离 tenant_id]
+B --&amp;gt;|隔离最强| E[最高合规需求&amp;lt;br&amp;gt;金融/医疗/大客户]
+C --&amp;gt;|平衡方案| F[中大型 SaaS&amp;lt;br&amp;gt;数百~数千租户]
+D --&amp;gt;|成本最低| G[大规模消费级 SaaS&amp;lt;br&amp;gt;万级以上租户]
+classDef high fill:#ffcccc,stroke:#990000
+classDef medium fill:#ffffcc,stroke:#996600
+classDef low fill:#ccffcc,stroke:#006600
+class B high
+class C medium
+class D low
+&lt;/pre&gt;
+&lt;h2 id="3-多租户与角色权限rbac有何区别"&gt;3. 多租户与角色权限（RBAC）有何区别？
+&lt;/h2&gt;&lt;p&gt;多租户和角色权限（RBAC）是两个不同层面的概念，经常被混淆。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;核心区别对比&lt;/strong&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;维度&lt;/th&gt;
+&lt;th&gt;多租户&lt;/th&gt;
+&lt;th&gt;角色权限（RBAC）&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;解决的问题&lt;/td&gt;
+&lt;td&gt;多家公司共用一套系统，数据需隔离&lt;/td&gt;
+&lt;td&gt;同一家公司内部，不同人权限不同&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;隔离的对象&lt;/td&gt;
+&lt;td&gt;公司 vs 公司&lt;/td&gt;
+&lt;td&gt;人 vs 人（同一公司内）&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;所属层级&lt;/td&gt;
+&lt;td&gt;架构层、系统边界&lt;/td&gt;
+&lt;td&gt;权限模块、功能层&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;配置主体&lt;/td&gt;
+&lt;td&gt;通常由平台方（SaaS 厂商）负责&lt;/td&gt;
+&lt;td&gt;通常由客户（租户管理员）自行配置&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;一句话总结&lt;/strong&gt;&lt;br&gt;
+多租户决定“几家公司合租一栋大楼”，角色权限决定“一家公司内部谁持有哪把钥匙”。&lt;/p&gt;
+&lt;pre class="mermaid"&gt;
+graph TD
+A[整个系统] --&amp;gt; B[多租户层&amp;lt;br&amp;gt;公司 / 组织边界隔离]
+B --&amp;gt; C[租户内部&amp;lt;br&amp;gt;RBAC 权限控制]
+subgraph 租户边界
+C --&amp;gt; D[角色：管理员]
+C --&amp;gt; E[角色：普通员工]
+C --&amp;gt; F[角色：财务人员]
+end
+classDef boundary fill:#f0f8ff,stroke:#4682b4,stroke-width:2px
+classDef rbac fill:#fffacd,stroke:#dAA520,stroke-width:2px
+class B boundary
+class C,D,E,F rbac
+&lt;/pre&gt;
+&lt;h2 id="4-客户个性化需求会让多租户变得非常复杂吗"&gt;4. 客户个性化需求会让多租户变得非常复杂吗？
+&lt;/h2&gt;&lt;p&gt;个性化需求确实是多租户落地中最常见的挑战之一。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;定制化复杂度层级&lt;/strong&gt;（由低到高）&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;外观与品牌（Logo、主题色、文案、登录页）&lt;/li&gt;
+&lt;li&gt;字段与表单（增删字段、显隐规则、校验规则）&lt;/li&gt;
+&lt;li&gt;流程与规则（审批流、状态机、计算公式）&lt;/li&gt;
+&lt;li&gt;业务逻辑分叉（策略模式、Hook、插件）&lt;/li&gt;
+&lt;li&gt;全新模块或完全不同的业务模型（微服务、独立部署）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;处理原则&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;优先使用配置解决&lt;/li&gt;
+&lt;li&gt;次之使用规则引擎或可编辑规则&lt;/li&gt;
+&lt;li&gt;尽量避免硬编码，改为策略模式或插件机制&lt;/li&gt;
+&lt;li&gt;极少数极端定制场景可采用混合部署或独立部署&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="5-结语与学习建议"&gt;5. 结语与学习建议
+&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;多租户的核心价值可以用一句话概括：&lt;strong&gt;以最少的资源投入，安全、高效地服务尽可能多的独立客户。&lt;/strong&gt;&lt;/p&gt;
+&lt;/blockquote&gt;</description></item><item><title>Go 语言调试器 Delve (dlv) 学习笔记</title><link>https://zg-dd.github.io/stu/go-delve/</link><pubDate>Wed, 19 Nov 2025 11:00:42 +0800</pubDate><guid>https://zg-dd.github.io/stu/go-delve/</guid><description>&lt;h2 id="概述"&gt;概述
 &lt;/h2&gt;&lt;p&gt;Delve（简称 dlv）是 Go 语言的官方调试器，专门为 Go 的并发模型和运行时特性设计。它是目前 Go 生态中最主流、功能最强大的调试工具。&lt;/p&gt;
 &lt;h2 id="安装"&gt;安装
 &lt;/h2&gt;&lt;h3 id="推荐安装方式"&gt;推荐安装方式
