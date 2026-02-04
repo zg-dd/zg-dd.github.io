@@ -1,0 +1,714 @@
+<!doctype html><html lang=zh-cn dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content='1. 什么是方法\r方法是Go语言中与特定类型关联的函数。如果说函数是独立的功能单元，那么方法就是"属于"某个类型的特殊函数。方法让数据类型具备了行为能力，这是面向对象编程的重要特征。\n'><title>Golang学习历程【第十篇 方法(method)与接收者】</title><link rel=canonical href=https://zg-dd.github.io/stu/golang-stu-10/><link rel=stylesheet href=/scss/style.min.ff560f1cad7a040e336f2dd6880b9ee1ad344d6e3d8f5411e5a1aaa8b23bbdd0.css><meta property='og:title' content="Golang学习历程【第十篇 方法(method)与接收者】"><meta property='og:description' content='1. 什么是方法\r方法是Go语言中与特定类型关联的函数。如果说函数是独立的功能单元，那么方法就是"属于"某个类型的特殊函数。方法让数据类型具备了行为能力，这是面向对象编程的重要特征。\n'><meta property='og:url' content='https://zg-dd.github.io/stu/golang-stu-10/'><meta property='og:site_name' content='小巷的随笔'><meta property='og:type' content='article'><meta property='article:section' content='Stu'><meta property='article:tag' content='Golang语法'><meta property='article:published_time' content='2026-02-04T18:15:16+08:00'><meta property='article:modified_time' content='2026-02-04T18:15:16+08:00'><meta name=twitter:title content="Golang学习历程【第十篇 方法(method)与接收者】"><meta name=twitter:description content='1. 什么是方法\r方法是Go语言中与特定类型关联的函数。如果说函数是独立的功能单元，那么方法就是"属于"某个类型的特殊函数。方法让数据类型具备了行为能力，这是面向对象编程的重要特征。\n'></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/avatar_hu_a0cc1cf57968b27d.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a><span class=emoji>🌱</span></figure><div class=site-meta><h1 class=site-name><a href=/>小巷的随笔</a></h1><h2 class=site-description>记录，不是为了证明自己；而是把“解决问题 → 思考 → 沉淀”形成习惯。</h2></div></header><ol class=menu id=main-menu><li class=current><a href=/stu/><span>学习笔记</span></a></li><li><a href=/blog/><span>随笔思考</span></a></li><li><a href=/life/><span>生活记录</span></a></li><li><a href=/categories/><span>分类</span></a></li><li><a href=/tags/><span>标签</span></a></li><li class=menu-bottom-section><ol class=menu><li id=i18n-switch><svg class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5h7"/><path d="M9 3v2c0 4.418-2.239 8-5 8"/><path d="M5 9c-.003 2.144 2.952 3.908 6.7 4"/><path d="M12 20l4-9 4 9"/><path d="M19.1 18h-6.2"/></svg>
+<select name=language title=language onchange="window.location.href=this.selectedOptions[0].value"><option value=https://zg-dd.github.io/ selected>简体中文</option><option value=https://zg-dd.github.io/en/>English</option></select></li><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav id=TableOfContents><ul><li><a href=#11-方法与函数的区别>1.1 方法与函数的区别</a></li><li><a href=#12-为什么需要方法>1.2 为什么需要方法</a></li></ul><ul><li><a href=#21-方法定义语法>2.1 方法定义语法</a></li><li><a href=#22-接收者的两种形式>2.2 接收者的两种形式</a><ul><li><a href=#值接收者>值接收者</a></li><li><a href=#指针接收者>指针接收者</a></li></ul></li><li><a href=#23-简单示例>2.3 简单示例</a></li></ul><ul><li><a href=#31-值接收者-vs-指针接收者>3.1 值接收者 vs 指针接收者</a></li><li><a href=#32-接收者的选择原则>3.2 接收者的选择原则</a></li></ul><ul><li><a href=#41-基本类型的方法>4.1 基本类型的方法</a></li><li><a href=#42-结构体方法>4.2 结构体方法</a></li><li><a href=#43-切片和映射的方法>4.3 切片和映射的方法</a></li></ul><ul><li><a href=#51-方法集的概念>5.1 方法集的概念</a></li></ul><ul><li><a href=#61-方法链式调用>6.1 方法链式调用</a></li><li><a href=#62-嵌入类型的方法提升>6.2 嵌入类型的方法提升</a></li></ul><ul><li><a href=#71-方法名冲突>7.1 方法名冲突</a></li><li><a href=#72-空指针调用方法>7.2 空指针调用方法</a></li></ul></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/golang/>Golang</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/stu/golang-stu-10/>Golang学习历程【第十篇 方法(method)与接收者】</a></h2></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published datetime=2026-02-04T18:15:16+08:00>Feb 04, 2026</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>阅读时长: 12 分钟</time></div></footer><footer class=article-translations><svg class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5h7"/><path d="M9 3v2c0 4.418-2.239 8-5 8"/><path d="M5 9c-.003 2.144 2.952 3.908 6.7 4"/><path d="M12 20l4-9 4 9"/><path d="M19.1 18h-6.2"/></svg><div><a href=https://zg-dd.github.io/en/stu/golang-stu-10/ class=link>English</a></div></footer></div></header><section class=article-content><h1 id=1-什么是方法>1. 什么是方法</h1><blockquote><p>方法是Go语言中与特定类型关联的函数。如果说函数是独立的功能单元，那么方法就是"属于"某个类型的特殊函数。方法让数据类型具备了行为能力，这是面向对象编程的重要特征。</p></blockquote><h2 id=11-方法与函数的区别>1.1 方法与函数的区别</h2><p>让我们通过一个简单的例子来理解：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#75715e>// 普通函数</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>add</span>(<span style=color:#a6e22e>a</span>, <span style=color:#a6e22e>b</span> <span style=color:#66d9ef>int</span>) <span style=color:#66d9ef>int</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>a</span> <span style=color:#f92672>+</span> <span style=color:#a6e22e>b</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 方法（后面会详细讲解语法）</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// func (接收者) 方法名(参数) 返回值 { 函数体 }</span>
+</span></span></code></pre></div><p><strong>主要区别</strong>：</p><ul><li><strong>函数</strong>：独立存在，通过函数名调用</li><li><strong>方法</strong>：与特定类型绑定，通过"类型.方法名"调用</li></ul><h2 id=12-为什么需要方法>1.2 为什么需要方法</h2><p>方法的主要价值：</p><ol><li><strong>封装性</strong>：将数据和操作数据的方法组织在一起</li><li><strong>可读性</strong>：<code>student.GetName()</code> 比 <code>getName(student)</code> 更直观</li><li><strong>面向对象</strong>：为后续的接口实现打基础</li><li><strong>代码组织</strong>：更好地组织相关功能</li></ol><h1 id=2-方法的基本语法>2. 方法的基本语法</h1><h2 id=21-方法定义语法>2.1 方法定义语法</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>接收者</span>) <span style=color:#a6e22e>方法名</span>(<span style=color:#a6e22e>参数列表</span>) (<span style=color:#a6e22e>返回值列表</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 方法体</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=22-接收者的两种形式>2.2 接收者的两种形式</h2><h3 id=值接收者>值接收者</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>t</span> <span style=color:#a6e22e>MyType</span>) <span style=color:#a6e22e>MethodName</span>(<span style=color:#a6e22e>parameters</span>) <span style=color:#a6e22e>returnType</span> {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// t是MyType类型的副本</span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 修改t不会影响原始数据</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=指针接收者>指针接收者</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>t</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>MyType</span>) <span style=color:#a6e22e>MethodName</span>(<span style=color:#a6e22e>parameters</span>) <span style=color:#a6e22e>returnType</span> {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// t是指向MyType类型的指针</span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 修改t会影响原始数据</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=23-简单示例>2.3 简单示例</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 定义一个矩形结构体</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Rectangle</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Width</span>  <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Height</span> <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 值接收者方法：计算面积</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>r</span> <span style=color:#a6e22e>Rectangle</span>) <span style=color:#a6e22e>Area</span>() <span style=color:#66d9ef>float64</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>Width</span> <span style=color:#f92672>*</span> <span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>Height</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 值接收者方法：计算周长</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>r</span> <span style=color:#a6e22e>Rectangle</span>) <span style=color:#a6e22e>Perimeter</span>() <span style=color:#66d9ef>float64</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>2</span> <span style=color:#f92672>*</span> (<span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>Width</span> <span style=color:#f92672>+</span> <span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>Height</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 指针接收者方法：缩放矩形</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>r</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Rectangle</span>) <span style=color:#a6e22e>Scale</span>(<span style=color:#a6e22e>factor</span> <span style=color:#66d9ef>float64</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>Width</span> <span style=color:#f92672>*=</span> <span style=color:#a6e22e>factor</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>Height</span> <span style=color:#f92672>*=</span> <span style=color:#a6e22e>factor</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 指针接收者方法：设置尺寸</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>r</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Rectangle</span>) <span style=color:#a6e22e>SetDimensions</span>(<span style=color:#a6e22e>width</span>, <span style=color:#a6e22e>height</span> <span style=color:#66d9ef>float64</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>Width</span> = <span style=color:#a6e22e>width</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>Height</span> = <span style=color:#a6e22e>height</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 创建矩形实例</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>rect</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Rectangle</span>{<span style=color:#a6e22e>Width</span>: <span style=color:#ae81ff>10</span>, <span style=color:#a6e22e>Height</span>: <span style=color:#ae81ff>5</span>}
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;原始矩形：宽度=%.2f, 高度=%.2f\n&#34;</span>, <span style=color:#a6e22e>rect</span>.<span style=color:#a6e22e>Width</span>, <span style=color:#a6e22e>rect</span>.<span style=color:#a6e22e>Height</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;面积：%.2f\n&#34;</span>, <span style=color:#a6e22e>rect</span>.<span style=color:#a6e22e>Area</span>())
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;周长：%.2f\n&#34;</span>, <span style=color:#a6e22e>rect</span>.<span style=color:#a6e22e>Perimeter</span>())
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 使用指针方法修改数据</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>rect</span>.<span style=color:#a6e22e>Scale</span>(<span style=color:#ae81ff>2.0</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;\n缩放后矩形：宽度=%.2f, 高度=%.2f\n&#34;</span>, <span style=color:#a6e22e>rect</span>.<span style=color:#a6e22e>Width</span>, <span style=color:#a6e22e>rect</span>.<span style=color:#a6e22e>Height</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;新面积：%.2f\n&#34;</span>, <span style=color:#a6e22e>rect</span>.<span style=color:#a6e22e>Area</span>())
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>rect</span>.<span style=color:#a6e22e>SetDimensions</span>(<span style=color:#ae81ff>15</span>, <span style=color:#ae81ff>8</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;\n重新设置后：宽度=%.2f, 高度=%.2f\n&#34;</span>, <span style=color:#a6e22e>rect</span>.<span style=color:#a6e22e>Width</span>, <span style=color:#a6e22e>rect</span>.<span style=color:#a6e22e>Height</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;最终面积：%.2f\n&#34;</span>, <span style=color:#a6e22e>rect</span>.<span style=color:#a6e22e>Area</span>())
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>运行结果：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>原始矩形：宽度<span style=color:#f92672>=</span>10.00, 高度<span style=color:#f92672>=</span>5.00
+</span></span><span style=display:flex><span>面积：50.00
+</span></span><span style=display:flex><span>周长：30.00
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>缩放后矩形：宽度<span style=color:#f92672>=</span>20.00, 高度<span style=color:#f92672>=</span>10.00
+</span></span><span style=display:flex><span>新面积：200.00
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>重新设置后：宽度<span style=color:#f92672>=</span>15.00, 高度<span style=color:#f92672>=</span>8.00
+</span></span><span style=display:flex><span>最终面积：120.00
+</span></span></code></pre></div><h1 id=3-接收者的深入理解>3. 接收者的深入理解</h1><h2 id=31-值接收者-vs-指针接收者>3.1 值接收者 vs 指针接收者</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Counter</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Count</span> <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 值接收者方法</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#a6e22e>Counter</span>) <span style=color:#a6e22e>GetValue</span>() <span style=color:#66d9ef>int</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Count</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 值接收者方法（不会修改原始值）</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#a6e22e>Counter</span>) <span style=color:#a6e22e>IncrementByValue</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Count</span><span style=color:#f92672>++</span>  <span style=color:#75715e>// 这里修改的是副本</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;值接收者内部Count: %d\n&#34;</span>, <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Count</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 指针接收者方法</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Counter</span>) <span style=color:#a6e22e>GetPointerValue</span>() <span style=color:#66d9ef>int</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Count</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 指针接收者方法（会修改原始值）</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Counter</span>) <span style=color:#a6e22e>IncrementByPointer</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Count</span><span style=color:#f92672>++</span>  <span style=color:#75715e>// 这里修改的是原始值</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;指针接收者内部Count: %d\n&#34;</span>, <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Count</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>counter</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Counter</span>{<span style=color:#a6e22e>Count</span>: <span style=color:#ae81ff>10</span>}
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;初始值：%d\n&#34;</span>, <span style=color:#a6e22e>counter</span>.<span style=color:#a6e22e>Count</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 值接收者调用</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>counter</span>.<span style=color:#a6e22e>IncrementByValue</span>()
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;值接收者调用后：%d\n&#34;</span>, <span style=color:#a6e22e>counter</span>.<span style=color:#a6e22e>Count</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 指针接收者调用</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>counter</span>.<span style=color:#a6e22e>IncrementByPointer</span>()
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;指针接收者调用后：%d\n&#34;</span>, <span style=color:#a6e22e>counter</span>.<span style=color:#a6e22e>Count</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 验证返回值</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;GetValue(): %d\n&#34;</span>, <span style=color:#a6e22e>counter</span>.<span style=color:#a6e22e>GetValue</span>())
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;GetPointerValue(): %d\n&#34;</span>, <span style=color:#a6e22e>counter</span>.<span style=color:#a6e22e>GetPointerValue</span>())
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>运行结果：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>初始值：10
+</span></span><span style=display:flex><span>值接收者内部Count: <span style=color:#ae81ff>11</span>
+</span></span><span style=display:flex><span>值接收者调用后：10
+</span></span><span style=display:flex><span>指针接收者内部Count: <span style=color:#ae81ff>11</span>
+</span></span><span style=display:flex><span>指针接收者调用后：11
+</span></span><span style=display:flex><span>GetValue<span style=color:#f92672>()</span>: <span style=color:#ae81ff>11</span>
+</span></span><span style=display:flex><span>GetPointerValue<span style=color:#f92672>()</span>: <span style=color:#ae81ff>11</span>
+</span></span></code></pre></div><h2 id=32-接收者的选择原则>3.2 接收者的选择原则</h2><p>什么时候使用值接收者：
+✅ 数据类型很小（如基本类型、小结构体）
+✅ 方法不需要修改接收者数据
+✅ 方法需要并发安全（值传递是安全的）</p><p>什么时候使用指针接收者：
+✅ 方法需要修改接收者数据
+✅ 数据类型较大（避免拷贝开销）
+✅ 一致性考虑（类型的所有方法都用指针接收者）</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>SmallData</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Value</span> <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>LargeData</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Values</span> [<span style=color:#ae81ff>1000</span>]<span style=color:#66d9ef>int</span>  <span style=color:#75715e>// 大数组</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Name</span>   <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Active</span> <span style=color:#66d9ef>bool</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// SmallData使用值接收者（合理）</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>s</span> <span style=color:#a6e22e>SmallData</span>) <span style=color:#a6e22e>Double</span>() <span style=color:#a6e22e>SmallData</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>s</span>.<span style=color:#a6e22e>Value</span> <span style=color:#f92672>*=</span> <span style=color:#ae81ff>2</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>s</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// LargeData使用指针接收者（合理）</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>l</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>LargeData</span>) <span style=color:#a6e22e>Activate</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>l</span>.<span style=color:#a6e22e>Active</span> = <span style=color:#66d9ef>true</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 小数据类型</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>small</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>SmallData</span>{<span style=color:#a6e22e>Value</span>: <span style=color:#ae81ff>5</span>}
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>doubled</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>small</span>.<span style=color:#a6e22e>Double</span>()
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;SmallData - 原始: %d, 翻倍后: %d\n&#34;</span>, <span style=color:#a6e22e>small</span>.<span style=color:#a6e22e>Value</span>, <span style=color:#a6e22e>doubled</span>.<span style=color:#a6e22e>Value</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 大数据类型</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>large</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>LargeData</span>{<span style=color:#a6e22e>Name</span>: <span style=color:#e6db74>&#34;Test&#34;</span>}
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;LargeData - 修改前Active: %t\n&#34;</span>, <span style=color:#a6e22e>large</span>.<span style=color:#a6e22e>Active</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>large</span>.<span style=color:#a6e22e>Activate</span>()
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;LargeData - 修改后Active: %t\n&#34;</span>, <span style=color:#a6e22e>large</span>.<span style=color:#a6e22e>Active</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>运行结果：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>SmallData - 原始: 5, 翻倍后: <span style=color:#ae81ff>10</span>
+</span></span><span style=display:flex><span>LargeData - 修改前Active: false
+</span></span><span style=display:flex><span>LargeData - 修改后Active: true
+</span></span></code></pre></div><h1 id=4-不同类型的接收者>4. 不同类型的接收者</h1><h2 id=41-基本类型的方法>4.1 基本类型的方法</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 为int类型创建别名</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>MyInt</span> <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 为自定义类型添加方法</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>mi</span> <span style=color:#a6e22e>MyInt</span>) <span style=color:#a6e22e>Double</span>() <span style=color:#a6e22e>MyInt</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>mi</span> <span style=color:#f92672>*</span> <span style=color:#ae81ff>2</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>mi</span> <span style=color:#a6e22e>MyInt</span>) <span style=color:#a6e22e>IsEven</span>() <span style=color:#66d9ef>bool</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>mi</span><span style=color:#f92672>%</span><span style=color:#ae81ff>2</span> <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>mi</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>MyInt</span>) <span style=color:#a6e22e>Increment</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#f92672>*</span><span style=color:#a6e22e>mi</span><span style=color:#f92672>++</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 为内置类型创建方法（需要类型别名）</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Celsius</span> <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Fahrenheit</span> <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#a6e22e>Celsius</span>) <span style=color:#a6e22e>ToFahrenheit</span>() <span style=color:#a6e22e>Fahrenheit</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>Fahrenheit</span>(<span style=color:#a6e22e>c</span><span style=color:#f92672>*</span><span style=color:#ae81ff>9</span><span style=color:#f92672>/</span><span style=color:#ae81ff>5</span> <span style=color:#f92672>+</span> <span style=color:#ae81ff>32</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>f</span> <span style=color:#a6e22e>Fahrenheit</span>) <span style=color:#a6e22e>ToCelsius</span>() <span style=color:#a6e22e>Celsius</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>Celsius</span>((<span style=color:#a6e22e>f</span> <span style=color:#f92672>-</span> <span style=color:#ae81ff>32</span>) <span style=color:#f92672>*</span> <span style=color:#ae81ff>5</span> <span style=color:#f92672>/</span> <span style=color:#ae81ff>9</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 自定义int类型</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>num</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>MyInt</span>(<span style=color:#ae81ff>10</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;原始值：%d\n&#34;</span>, <span style=color:#a6e22e>num</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;翻倍：%d\n&#34;</span>, <span style=color:#a6e22e>num</span>.<span style=color:#a6e22e>Double</span>())
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;是否偶数：%t\n&#34;</span>, <span style=color:#a6e22e>num</span>.<span style=color:#a6e22e>IsEven</span>())
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>num</span>.<span style=color:#a6e22e>Increment</span>()
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;递增后：%d\n&#34;</span>, <span style=color:#a6e22e>num</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 温度转换</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>tempC</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Celsius</span>(<span style=color:#ae81ff>25</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>tempF</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>tempC</span>.<span style=color:#a6e22e>ToFahrenheit</span>()
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;\n%d°C = %.1f°F\n&#34;</span>, int(<span style=color:#a6e22e>tempC</span>), float64(<span style=color:#a6e22e>tempF</span>))
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>backToC</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>tempF</span>.<span style=color:#a6e22e>ToCelsius</span>()
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;%.1f°F = %d°C\n&#34;</span>, float64(<span style=color:#a6e22e>tempF</span>), int(<span style=color:#a6e22e>backToC</span>))
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>运行结果：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>原始值：10
+</span></span><span style=display:flex><span>翻倍：20
+</span></span><span style=display:flex><span>是否偶数：true
+</span></span><span style=display:flex><span>递增后：11
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>25°C <span style=color:#f92672>=</span> 77.0°F
+</span></span><span style=display:flex><span>77.0°F <span style=color:#f92672>=</span> 25°C
+</span></span></code></pre></div><h2 id=42-结构体方法>4.2 结构体方法</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> (
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;math&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Point</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>X</span>, <span style=color:#a6e22e>Y</span> <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Circle</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Center</span> <span style=color:#a6e22e>Point</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Radius</span> <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Point的方法</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>p</span> <span style=color:#a6e22e>Point</span>) <span style=color:#a6e22e>Distance</span>(<span style=color:#a6e22e>other</span> <span style=color:#a6e22e>Point</span>) <span style=color:#66d9ef>float64</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>dx</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>p</span>.<span style=color:#a6e22e>X</span> <span style=color:#f92672>-</span> <span style=color:#a6e22e>other</span>.<span style=color:#a6e22e>X</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>dy</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>p</span>.<span style=color:#a6e22e>Y</span> <span style=color:#f92672>-</span> <span style=color:#a6e22e>other</span>.<span style=color:#a6e22e>Y</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>math</span>.<span style=color:#a6e22e>Sqrt</span>(<span style=color:#a6e22e>dx</span><span style=color:#f92672>*</span><span style=color:#a6e22e>dx</span> <span style=color:#f92672>+</span> <span style=color:#a6e22e>dy</span><span style=color:#f92672>*</span><span style=color:#a6e22e>dy</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>p</span> <span style=color:#a6e22e>Point</span>) <span style=color:#a6e22e>Move</span>(<span style=color:#a6e22e>dx</span>, <span style=color:#a6e22e>dy</span> <span style=color:#66d9ef>float64</span>) <span style=color:#a6e22e>Point</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>Point</span>{<span style=color:#a6e22e>X</span>: <span style=color:#a6e22e>p</span>.<span style=color:#a6e22e>X</span> <span style=color:#f92672>+</span> <span style=color:#a6e22e>dx</span>, <span style=color:#a6e22e>Y</span>: <span style=color:#a6e22e>p</span>.<span style=color:#a6e22e>Y</span> <span style=color:#f92672>+</span> <span style=color:#a6e22e>dy</span>}
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Circle的方法</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#a6e22e>Circle</span>) <span style=color:#a6e22e>Area</span>() <span style=color:#66d9ef>float64</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>math</span>.<span style=color:#a6e22e>Pi</span> <span style=color:#f92672>*</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Radius</span> <span style=color:#f92672>*</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Radius</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#a6e22e>Circle</span>) <span style=color:#a6e22e>Circumference</span>() <span style=color:#66d9ef>float64</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>2</span> <span style=color:#f92672>*</span> <span style=color:#a6e22e>math</span>.<span style=color:#a6e22e>Pi</span> <span style=color:#f92672>*</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Radius</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Circle</span>) <span style=color:#a6e22e>Scale</span>(<span style=color:#a6e22e>factor</span> <span style=color:#66d9ef>float64</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Radius</span> <span style=color:#f92672>*=</span> <span style=color:#a6e22e>factor</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 点的操作</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>p1</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Point</span>{<span style=color:#a6e22e>X</span>: <span style=color:#ae81ff>0</span>, <span style=color:#a6e22e>Y</span>: <span style=color:#ae81ff>0</span>}
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>p2</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Point</span>{<span style=color:#a6e22e>X</span>: <span style=color:#ae81ff>3</span>, <span style=color:#a6e22e>Y</span>: <span style=color:#ae81ff>4</span>}
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>distance</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>p1</span>.<span style=color:#a6e22e>Distance</span>(<span style=color:#a6e22e>p2</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;两点距离：%.2f\n&#34;</span>, <span style=color:#a6e22e>distance</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>p3</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>p1</span>.<span style=color:#a6e22e>Move</span>(<span style=color:#ae81ff>1</span>, <span style=color:#ae81ff>1</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;移动后点：(%f, %f)\n&#34;</span>, <span style=color:#a6e22e>p3</span>.<span style=color:#a6e22e>X</span>, <span style=color:#a6e22e>p3</span>.<span style=color:#a6e22e>Y</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 圆的操作</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>circle</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Circle</span>{
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Center</span>: <span style=color:#a6e22e>Point</span>{<span style=color:#a6e22e>X</span>: <span style=color:#ae81ff>0</span>, <span style=color:#a6e22e>Y</span>: <span style=color:#ae81ff>0</span>},
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Radius</span>: <span style=color:#ae81ff>5</span>,
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;\n圆的半径：%.2f\n&#34;</span>, <span style=color:#a6e22e>circle</span>.<span style=color:#a6e22e>Radius</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;圆的面积：%.2f\n&#34;</span>, <span style=color:#a6e22e>circle</span>.<span style=color:#a6e22e>Area</span>())
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;圆的周长：%.2f\n&#34;</span>, <span style=color:#a6e22e>circle</span>.<span style=color:#a6e22e>Circumference</span>())
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>circle</span>.<span style=color:#a6e22e>Scale</span>(<span style=color:#ae81ff>2</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;\n缩放后半径：%.2f\n&#34;</span>, <span style=color:#a6e22e>circle</span>.<span style=color:#a6e22e>Radius</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;缩放后面积：%.2f\n&#34;</span>, <span style=color:#a6e22e>circle</span>.<span style=color:#a6e22e>Area</span>())
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>运行结果：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>两点距离：5.00
+</span></span><span style=display:flex><span>移动后点：<span style=color:#f92672>(</span>1.000000, 1.000000<span style=color:#f92672>)</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>圆的半径：5.00
+</span></span><span style=display:flex><span>圆的面积：78.54
+</span></span><span style=display:flex><span>圆的周长：31.42
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>缩放后半径：10.00
+</span></span><span style=display:flex><span>缩放后面积：314.16
+</span></span></code></pre></div><h2 id=43-切片和映射的方法>4.3 切片和映射的方法</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 为切片类型创建别名</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>IntSlice</span> []<span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 为映射类型创建别名</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>StringMap</span> <span style=color:#66d9ef>map</span>[<span style=color:#66d9ef>string</span>]<span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// IntSlice的方法</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>is</span> <span style=color:#a6e22e>IntSlice</span>) <span style=color:#a6e22e>Sum</span>() <span style=color:#66d9ef>int</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>sum</span> <span style=color:#f92672>:=</span> <span style=color:#ae81ff>0</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span> <span style=color:#a6e22e>_</span>, <span style=color:#a6e22e>v</span> <span style=color:#f92672>:=</span> <span style=color:#66d9ef>range</span> <span style=color:#a6e22e>is</span> {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>sum</span> <span style=color:#f92672>+=</span> <span style=color:#a6e22e>v</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>sum</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>is</span> <span style=color:#a6e22e>IntSlice</span>) <span style=color:#a6e22e>Average</span>() <span style=color:#66d9ef>float64</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> len(<span style=color:#a6e22e>is</span>) <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span> {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> float64(<span style=color:#a6e22e>is</span>.<span style=color:#a6e22e>Sum</span>()) <span style=color:#f92672>/</span> float64(len(<span style=color:#a6e22e>is</span>))
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>is</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>IntSlice</span>) <span style=color:#a6e22e>Append</span>(<span style=color:#a6e22e>value</span> <span style=color:#66d9ef>int</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#f92672>*</span><span style=color:#a6e22e>is</span> = append(<span style=color:#f92672>*</span><span style=color:#a6e22e>is</span>, <span style=color:#a6e22e>value</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// StringMap的方法</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>sm</span> <span style=color:#a6e22e>StringMap</span>) <span style=color:#a6e22e>Get</span>(<span style=color:#a6e22e>key</span> <span style=color:#66d9ef>string</span>) (<span style=color:#66d9ef>string</span>, <span style=color:#66d9ef>bool</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>value</span>, <span style=color:#a6e22e>exists</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>sm</span>[<span style=color:#a6e22e>key</span>]
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>value</span>, <span style=color:#a6e22e>exists</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>sm</span> <span style=color:#a6e22e>StringMap</span>) <span style=color:#a6e22e>Set</span>(<span style=color:#a6e22e>key</span>, <span style=color:#a6e22e>value</span> <span style=color:#66d9ef>string</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>sm</span>[<span style=color:#a6e22e>key</span>] = <span style=color:#a6e22e>value</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>sm</span> <span style=color:#a6e22e>StringMap</span>) <span style=color:#a6e22e>Keys</span>() []<span style=color:#66d9ef>string</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>keys</span> <span style=color:#f92672>:=</span> make([]<span style=color:#66d9ef>string</span>, <span style=color:#ae81ff>0</span>, len(<span style=color:#a6e22e>sm</span>))
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span> <span style=color:#a6e22e>k</span> <span style=color:#f92672>:=</span> <span style=color:#66d9ef>range</span> <span style=color:#a6e22e>sm</span> {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>keys</span> = append(<span style=color:#a6e22e>keys</span>, <span style=color:#a6e22e>k</span>)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>keys</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 切片方法</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>numbers</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>IntSlice</span>{<span style=color:#ae81ff>1</span>, <span style=color:#ae81ff>2</span>, <span style=color:#ae81ff>3</span>, <span style=color:#ae81ff>4</span>, <span style=color:#ae81ff>5</span>}
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;数字切片：%v\n&#34;</span>, <span style=color:#a6e22e>numbers</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;总和：%d\n&#34;</span>, <span style=color:#a6e22e>numbers</span>.<span style=color:#a6e22e>Sum</span>())
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;平均值：%.2f\n&#34;</span>, <span style=color:#a6e22e>numbers</span>.<span style=color:#a6e22e>Average</span>())
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>numbers</span>.<span style=color:#a6e22e>Append</span>(<span style=color:#ae81ff>6</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>numbers</span>.<span style=color:#a6e22e>Append</span>(<span style=color:#ae81ff>7</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;添加元素后：%v\n&#34;</span>, <span style=color:#a6e22e>numbers</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;新总和：%d\n&#34;</span>, <span style=color:#a6e22e>numbers</span>.<span style=color:#a6e22e>Sum</span>())
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 映射方法</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>studentGrades</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>StringMap</span>{
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;张三&#34;</span>: <span style=color:#e6db74>&#34;85&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;李四&#34;</span>: <span style=color:#e6db74>&#34;92&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;王五&#34;</span>: <span style=color:#e6db74>&#34;78&#34;</span>,
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;\n学生 grades：%v\n&#34;</span>, <span style=color:#a6e22e>studentGrades</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 获取值</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>grade</span>, <span style=color:#a6e22e>exists</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>studentGrades</span>.<span style=color:#a6e22e>Get</span>(<span style=color:#e6db74>&#34;李四&#34;</span>); <span style=color:#a6e22e>exists</span> {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;李四的成绩：%s\n&#34;</span>, <span style=color:#a6e22e>grade</span>)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 设置新值</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>studentGrades</span>.<span style=color:#a6e22e>Set</span>(<span style=color:#e6db74>&#34;赵六&#34;</span>, <span style=color:#e6db74>&#34;88&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;添加赵六后：%v\n&#34;</span>, <span style=color:#a6e22e>studentGrades</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 获取所有键</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>keys</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>studentGrades</span>.<span style=color:#a6e22e>Keys</span>()
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;所有学生：%v\n&#34;</span>, <span style=color:#a6e22e>keys</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>运行结果：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>数字切片：<span style=color:#f92672>[</span><span style=color:#ae81ff>1</span> <span style=color:#ae81ff>2</span> <span style=color:#ae81ff>3</span> <span style=color:#ae81ff>4</span> 5<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span>总和：15
+</span></span><span style=display:flex><span>平均值：3.00
+</span></span><span style=display:flex><span>添加元素后：<span style=color:#f92672>[</span><span style=color:#ae81ff>1</span> <span style=color:#ae81ff>2</span> <span style=color:#ae81ff>3</span> <span style=color:#ae81ff>4</span> <span style=color:#ae81ff>5</span> <span style=color:#ae81ff>6</span> 7<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span>新总和：28
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>学生 grades：map<span style=color:#f92672>[</span>张三:85 李四:92 王五:78<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span>李四的成绩：92
+</span></span><span style=display:flex><span>添加赵六后：map<span style=color:#f92672>[</span>张三:85 李四:92 王五:78 赵六:88<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span>所有学生：<span style=color:#f92672>[</span>张三 李四 王五 赵六<span style=color:#f92672>]</span>
+</span></span></code></pre></div><h1 id=5-方法与接口的关系>5. 方法与接口的关系</h1><h2 id=51-方法集的概念>5.1 方法集的概念</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Shape</span> <span style=color:#66d9ef>interface</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Area</span>() <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Perimeter</span>() <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Rectangle</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Width</span>  <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Height</span> <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Circle</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Radius</span> <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Rectangle实现Shape接口</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>r</span> <span style=color:#a6e22e>Rectangle</span>) <span style=color:#a6e22e>Area</span>() <span style=color:#66d9ef>float64</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>Width</span> <span style=color:#f92672>*</span> <span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>Height</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>r</span> <span style=color:#a6e22e>Rectangle</span>) <span style=color:#a6e22e>Perimeter</span>() <span style=color:#66d9ef>float64</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>2</span> <span style=color:#f92672>*</span> (<span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>Width</span> <span style=color:#f92672>+</span> <span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>Height</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Circle实现Shape接口</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#a6e22e>Circle</span>) <span style=color:#a6e22e>Area</span>() <span style=color:#66d9ef>float64</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>3.14159</span> <span style=color:#f92672>*</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Radius</span> <span style=color:#f92672>*</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Radius</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#a6e22e>Circle</span>) <span style=color:#a6e22e>Perimeter</span>() <span style=color:#66d9ef>float64</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>2</span> <span style=color:#f92672>*</span> <span style=color:#ae81ff>3.14159</span> <span style=color:#f92672>*</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Radius</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 使用接口的函数</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>PrintShapeInfo</span>(<span style=color:#a6e22e>s</span> <span style=color:#a6e22e>Shape</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;面积：%.2f\n&#34;</span>, <span style=color:#a6e22e>s</span>.<span style=color:#a6e22e>Area</span>())
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;周长：%.2f\n&#34;</span>, <span style=color:#a6e22e>s</span>.<span style=color:#a6e22e>Perimeter</span>())
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>rect</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Rectangle</span>{<span style=color:#a6e22e>Width</span>: <span style=color:#ae81ff>10</span>, <span style=color:#a6e22e>Height</span>: <span style=color:#ae81ff>5</span>}
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>circle</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Circle</span>{<span style=color:#a6e22e>Radius</span>: <span style=color:#ae81ff>3</span>}
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;=== 矩形 ===&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>PrintShapeInfo</span>(<span style=color:#a6e22e>rect</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;\n=== 圆形 ===&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>PrintShapeInfo</span>(<span style=color:#a6e22e>circle</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 接口切片</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>shapes</span> <span style=color:#f92672>:=</span> []<span style=color:#a6e22e>Shape</span>{<span style=color:#a6e22e>rect</span>, <span style=color:#a6e22e>circle</span>}
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;\n=== 批量处理 ===&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span> <span style=color:#a6e22e>i</span>, <span style=color:#a6e22e>shape</span> <span style=color:#f92672>:=</span> <span style=color:#66d9ef>range</span> <span style=color:#a6e22e>shapes</span> {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;形状%d:\n&#34;</span>, <span style=color:#a6e22e>i</span><span style=color:#f92672>+</span><span style=color:#ae81ff>1</span>)
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>PrintShapeInfo</span>(<span style=color:#a6e22e>shape</span>)
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>()
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>运行结果：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#f92672>===</span> 矩形 <span style=color:#f92672>===</span>
+</span></span><span style=display:flex><span>面积：50.00
+</span></span><span style=display:flex><span>周长：30.00
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>===</span> 圆形 <span style=color:#f92672>===</span>
+</span></span><span style=display:flex><span>面积：28.27
+</span></span><span style=display:flex><span>周长：18.85
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>===</span> 批量处理 <span style=color:#f92672>===</span>
+</span></span><span style=display:flex><span>形状1:
+</span></span><span style=display:flex><span>面积：50.00
+</span></span><span style=display:flex><span>周长：30.00
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>形状2:
+</span></span><span style=display:flex><span>面积：28.27
+</span></span><span style=display:flex><span>周长：18.85
+</span></span></code></pre></div><h1 id=6-方法的高级用法>6. 方法的高级用法</h1><h2 id=61-方法链式调用>6.1 方法链式调用</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Calculator</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Result</span> <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#a6e22e>Calculator</span>) <span style=color:#a6e22e>Add</span>(<span style=color:#a6e22e>x</span> <span style=color:#66d9ef>float64</span>) <span style=color:#a6e22e>Calculator</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Result</span> <span style=color:#f92672>+=</span> <span style=color:#a6e22e>x</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>c</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#a6e22e>Calculator</span>) <span style=color:#a6e22e>Subtract</span>(<span style=color:#a6e22e>x</span> <span style=color:#66d9ef>float64</span>) <span style=color:#a6e22e>Calculator</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Result</span> <span style=color:#f92672>-=</span> <span style=color:#a6e22e>x</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>c</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#a6e22e>Calculator</span>) <span style=color:#a6e22e>Multiply</span>(<span style=color:#a6e22e>x</span> <span style=color:#66d9ef>float64</span>) <span style=color:#a6e22e>Calculator</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Result</span> <span style=color:#f92672>*=</span> <span style=color:#a6e22e>x</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>c</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#a6e22e>Calculator</span>) <span style=color:#a6e22e>Divide</span>(<span style=color:#a6e22e>x</span> <span style=color:#66d9ef>float64</span>) <span style=color:#a6e22e>Calculator</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>x</span> <span style=color:#f92672>!=</span> <span style=color:#ae81ff>0</span> {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Result</span> <span style=color:#f92672>/=</span> <span style=color:#a6e22e>x</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>c</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#a6e22e>Calculator</span>) <span style=color:#a6e22e>GetValue</span>() <span style=color:#66d9ef>float64</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Result</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>calc</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Calculator</span>{<span style=color:#a6e22e>Result</span>: <span style=color:#ae81ff>10</span>}
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>result</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>calc</span>.
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Add</span>(<span style=color:#ae81ff>5</span>).
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Multiply</span>(<span style=color:#ae81ff>2</span>).
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Subtract</span>(<span style=color:#ae81ff>3</span>).
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Divide</span>(<span style=color:#ae81ff>2</span>).
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>GetValue</span>()
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;计算结果：%.2f\n&#34;</span>, <span style=color:#a6e22e>result</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 分步演示</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>calc2</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Calculator</span>{<span style=color:#a6e22e>Result</span>: <span style=color:#ae81ff>10</span>}
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;初始值：%.2f\n&#34;</span>, <span style=color:#a6e22e>calc2</span>.<span style=color:#a6e22e>GetValue</span>())
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>calc2</span> = <span style=color:#a6e22e>calc2</span>.<span style=color:#a6e22e>Add</span>(<span style=color:#ae81ff>5</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;加5后：%.2f\n&#34;</span>, <span style=color:#a6e22e>calc2</span>.<span style=color:#a6e22e>GetValue</span>())
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>calc2</span> = <span style=color:#a6e22e>calc2</span>.<span style=color:#a6e22e>Multiply</span>(<span style=color:#ae81ff>2</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;乘2后：%.2f\n&#34;</span>, <span style=color:#a6e22e>calc2</span>.<span style=color:#a6e22e>GetValue</span>())
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>calc2</span> = <span style=color:#a6e22e>calc2</span>.<span style=color:#a6e22e>Subtract</span>(<span style=color:#ae81ff>3</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;减3后：%.2f\n&#34;</span>, <span style=color:#a6e22e>calc2</span>.<span style=color:#a6e22e>GetValue</span>())
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>calc2</span> = <span style=color:#a6e22e>calc2</span>.<span style=color:#a6e22e>Divide</span>(<span style=color:#ae81ff>2</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;除2后：%.2f\n&#34;</span>, <span style=color:#a6e22e>calc2</span>.<span style=color:#a6e22e>GetValue</span>())
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>运行结果：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>计算结果：13.50
+</span></span><span style=display:flex><span>初始值：10.00
+</span></span><span style=display:flex><span>加5后：15.00
+</span></span><span style=display:flex><span>乘2后：30.00
+</span></span><span style=display:flex><span>减3后：27.00
+</span></span><span style=display:flex><span>除2后：13.50
+</span></span></code></pre></div><h2 id=62-嵌入类型的方法提升>6.2 嵌入类型的方法提升</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Person</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Name</span> <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Age</span>  <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>p</span> <span style=color:#a6e22e>Person</span>) <span style=color:#a6e22e>GetName</span>() <span style=color:#66d9ef>string</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>p</span>.<span style=color:#a6e22e>Name</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>p</span> <span style=color:#a6e22e>Person</span>) <span style=color:#a6e22e>GetAge</span>() <span style=color:#66d9ef>int</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>p</span>.<span style=color:#a6e22e>Age</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Student</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Person</span>      <span style=color:#75715e>// 嵌入Person</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>School</span> <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Grade</span>  <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>s</span> <span style=color:#a6e22e>Student</span>) <span style=color:#a6e22e>GetSchool</span>() <span style=color:#66d9ef>string</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>s</span>.<span style=color:#a6e22e>School</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Teacher</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Person</span>      <span style=color:#75715e>// 嵌入Person</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Subject</span> <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Salary</span>  <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>t</span> <span style=color:#a6e22e>Teacher</span>) <span style=color:#a6e22e>GetSubject</span>() <span style=color:#66d9ef>string</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>t</span>.<span style=color:#a6e22e>Subject</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>student</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Student</span>{
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Person</span>: <span style=color:#a6e22e>Person</span>{<span style=color:#a6e22e>Name</span>: <span style=color:#e6db74>&#34;小明&#34;</span>, <span style=color:#a6e22e>Age</span>: <span style=color:#ae81ff>18</span>},
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>School</span>: <span style=color:#e6db74>&#34;第一中学&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Grade</span>:  <span style=color:#ae81ff>12</span>,
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>teacher</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Teacher</span>{
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Person</span>:  <span style=color:#a6e22e>Person</span>{<span style=color:#a6e22e>Name</span>: <span style=color:#e6db74>&#34;王老师&#34;</span>, <span style=color:#a6e22e>Age</span>: <span style=color:#ae81ff>35</span>},
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Subject</span>: <span style=color:#e6db74>&#34;数学&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Salary</span>:  <span style=color:#ae81ff>8000</span>,
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 可以直接调用嵌入类型的方法</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;学生姓名：%s\n&#34;</span>, <span style=color:#a6e22e>student</span>.<span style=color:#a6e22e>GetName</span>())    <span style=color:#75715e>// 提升方法</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;学生年龄：%d\n&#34;</span>, <span style=color:#a6e22e>student</span>.<span style=color:#a6e22e>GetAge</span>())     <span style=color:#75715e>// 提升方法</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;学校：%s\n&#34;</span>, <span style=color:#a6e22e>student</span>.<span style=color:#a6e22e>GetSchool</span>())
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;年级：%d\n&#34;</span>, <span style=color:#a6e22e>student</span>.<span style=color:#a6e22e>Grade</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;\n老师姓名：%s\n&#34;</span>, <span style=color:#a6e22e>teacher</span>.<span style=color:#a6e22e>GetName</span>())  <span style=color:#75715e>// 提升方法</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;老师年龄：%d\n&#34;</span>, <span style=color:#a6e22e>teacher</span>.<span style=color:#a6e22e>GetAge</span>())     <span style=color:#75715e>// 提升方法</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;科目：%s\n&#34;</span>, <span style=color:#a6e22e>teacher</span>.<span style=color:#a6e22e>GetSubject</span>())
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;薪资：%.2f\n&#34;</span>, <span style=color:#a6e22e>teacher</span>.<span style=color:#a6e22e>Salary</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 验证类型关系</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;\n学生也是Person类型：%t\n&#34;</span>, <span style=color:#a6e22e>isPerson</span>(<span style=color:#a6e22e>student</span>))
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;老师也是Person类型：%t\n&#34;</span>, <span style=color:#a6e22e>isPerson</span>(<span style=color:#a6e22e>teacher</span>))
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>isPerson</span>(<span style=color:#a6e22e>p</span> <span style=color:#a6e22e>Person</span>) <span style=color:#66d9ef>bool</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>true</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>运行结果：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>学生姓名：小明
+</span></span><span style=display:flex><span>学生年龄：18
+</span></span><span style=display:flex><span>学校：第一中学
+</span></span><span style=display:flex><span>年级：12
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>老师姓名：王老师
+</span></span><span style=display:flex><span>老师年龄：35
+</span></span><span style=display:flex><span>科目：数学
+</span></span><span style=display:flex><span>薪资：8000.00
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>学生也是Person类型：true
+</span></span><span style=display:flex><span>老师也是Person类型：true
+</span></span></code></pre></div><h1 id=7-方法的注意事项>7. 方法的注意事项</h1><h2 id=71-方法名冲突>7.1 方法名冲突</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Base</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Name</span> <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>b</span> <span style=color:#a6e22e>Base</span>) <span style=color:#a6e22e>GetName</span>() <span style=color:#66d9ef>string</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>b</span>.<span style=color:#a6e22e>Name</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Derived</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Base</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Name</span> <span style=color:#66d9ef>string</span>  <span style=color:#75715e>// 与Base中的Name同名</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>d</span> <span style=color:#a6e22e>Derived</span>) <span style=color:#a6e22e>GetName</span>() <span style=color:#66d9ef>string</span> {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 明确指定调用哪个GetName</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#e6db74>&#34;Derived: &#34;</span> <span style=color:#f92672>+</span> <span style=color:#a6e22e>d</span>.<span style=color:#a6e22e>Name</span> <span style=color:#f92672>+</span> <span style=color:#e6db74>&#34;, Base: &#34;</span> <span style=color:#f92672>+</span> <span style=color:#a6e22e>d</span>.<span style=color:#a6e22e>Base</span>.<span style=color:#a6e22e>GetName</span>()
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>derived</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Derived</span>{
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Base</span>: <span style=color:#a6e22e>Base</span>{<span style=color:#a6e22e>Name</span>: <span style=color:#e6db74>&#34;BaseName&#34;</span>},
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Name</span>: <span style=color:#e6db74>&#34;DerivedName&#34;</span>,
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;调用派生类GetName: %s\n&#34;</span>, <span style=color:#a6e22e>derived</span>.<span style=color:#a6e22e>GetName</span>())
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;直接访问Name: %s\n&#34;</span>, <span style=color:#a6e22e>derived</span>.<span style=color:#a6e22e>Name</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;访问Base.Name: %s\n&#34;</span>, <span style=color:#a6e22e>derived</span>.<span style=color:#a6e22e>Base</span>.<span style=color:#a6e22e>Name</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>运行结果：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>调用派生类GetName: Derived: DerivedName, Base: BaseName
+</span></span><span style=display:flex><span>直接访问Name: DerivedName
+</span></span><span style=display:flex><span>访问Base.Name: BaseName
+</span></span></code></pre></div><h2 id=72-空指针调用方法>7.2 空指针调用方法</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Data</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Value</span> <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>d</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Data</span>) <span style=color:#a6e22e>GetValue</span>() <span style=color:#66d9ef>int</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>d</span> <span style=color:#f92672>==</span> <span style=color:#66d9ef>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>  <span style=color:#75715e>// 安全检查</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>d</span>.<span style=color:#a6e22e>Value</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>d</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Data</span>) <span style=color:#a6e22e>SetValue</span>(<span style=color:#a6e22e>v</span> <span style=color:#66d9ef>int</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>d</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {  <span style=color:#75715e>// 安全检查</span>
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>d</span>.<span style=color:#a6e22e>Value</span> = <span style=color:#a6e22e>v</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>var</span> <span style=color:#a6e22e>ptr</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Data</span> = <span style=color:#66d9ef>nil</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 空指针调用方法（安全）</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;空指针GetValue: %d\n&#34;</span>, <span style=color:#a6e22e>ptr</span>.<span style=color:#a6e22e>GetValue</span>())
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 空指针调用修改方法（安全）</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>ptr</span>.<span style=color:#a6e22e>SetValue</span>(<span style=color:#ae81ff>100</span>)  <span style=color:#75715e>// 不会有问题，因为有安全检查</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 创建实际对象</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>actual</span> <span style=color:#f92672>:=</span> <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>Data</span>{<span style=color:#a6e22e>Value</span>: <span style=color:#ae81ff>42</span>}
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;实际对象GetValue: %d\n&#34;</span>, <span style=color:#a6e22e>actual</span>.<span style=color:#a6e22e>GetValue</span>())
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>actual</span>.<span style=color:#a6e22e>SetValue</span>(<span style=color:#ae81ff>99</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;修改后GetValue: %d\n&#34;</span>, <span style=color:#a6e22e>actual</span>.<span style=color:#a6e22e>GetValue</span>())
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>运行结果：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>空指针GetValue: <span style=color:#ae81ff>0</span>
+</span></span><span style=display:flex><span>实际对象GetValue: <span style=color:#ae81ff>42</span>
+</span></span><span style=display:flex><span>修改后GetValue: <span style=color:#ae81ff>99</span>
+</span></span></code></pre></div><h1 id=8-总结>8. 总结</h1><p>方法是Go语言实现面向对象编程的核心机制：</p><p><strong>核心概念</strong>：</p><ul><li>方法是与特定类型绑定的函数</li><li>通过接收者将方法与类型关联</li><li>值接收者和指针接收者有不同的行为特点</li></ul><p><strong>使用原则</strong>：</p><ul><li>值接收者：适用于不修改数据、小型数据类型</li><li>指针接收者：适用于需要修改数据、大型数据类型</li><li>保持类型所有方法接收者类型的一致性</li></ul><p><strong>重要特性</strong>：</p><ul><li>方法提升：嵌入类型的方法可以被直接调用</li><li>接口实现：方法是实现接口的基础</li><li>链式调用：返回接收者类型支持方法链</li></ul><p>掌握方法的使用是理解Go语言面向对象特性的关键，也为后续学习接口打下了坚实基础。</p></section><footer class=article-footer><section class=article-tags><a href=/tags/golang%E8%AF%AD%E6%B3%95/>Golang语法</a></section></footer></article><aside class=related-content--wrapper><h2 class=section-title>相关文章</h2><div class=related-content><div class="flex article-list--tile"><article><a href=/stu/golang-stu-09/><div class=article-details><h2 class=article-title>Golang学习历程【第九篇 结构体(struct)】</h2></div></a></article><article><a href=/stu/golang-stu-08/><div class=article-details><h2 class=article-title>Golang学习历程【第八篇 指针(pointer)】</h2></div></a></article><article><a href=/stu/golang-stu-07/><div class=article-details><h2 class=article-title>Golang学习历程【第七篇 闭包&amp;type defer panic recover了解&amp;time包】</h2></div></a></article><article><a href=/stu/golang-stu-06/><div class=article-details><h2 class=article-title>Golang学习历程【第六篇 复合数据类型map&函数初识】</h2></div></a></article><article><a href=/stu/golang-stu-05/><div class=article-details><h2 class=article-title>Golang学习历程【第五篇 复合数据类型：数组&切片】</h2></div></a></article></div></div></aside><script src=https://giscus.app/client.js data-repo=zg-dd/zg-dd.github.io data-repo-id=R_kgDOQwB7tw data-category=Announcements data-category-id=DIC_kwDOQwB7t84C0WGD data-mapping=pathname data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=preferred_color_scheme data-lang=zh-CN data-loading crossorigin=anonymous async></script><script>function setGiscusTheme(e){let t=document.querySelector("iframe.giscus-frame");t&&t.contentWindow.postMessage({giscus:{setConfig:{theme:e}}},"https://giscus.app")}(function(){addEventListener("message",t=>{if(event.origin!=="https://giscus.app")return;e()}),window.addEventListener("onColorSchemeChange",e);function e(){setGiscusTheme(document.documentElement.dataset.scheme==="light"?"preferred_color_scheme":"preferred_color_scheme")}})()</script><footer class=site-footer><section class=copyright>&copy;
+2026 小巷的随笔</section><section class=powerby>使用 <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> 构建<br>主题 <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.33.0>Stack</a></b> 由 <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> 设计</section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.c922af694cc257bf1ecc41c0dd7b0430f9114ec280ccf67cd2c6ad55f5316c4e.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>

@@ -1,0 +1,714 @@
+<!doctype html><html lang=en dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="1. What are Methods\rMethods are functions associated with specific types in Go language. If functions are independent functional units, then methods are special functions that &ldquo;belong&rdquo; to a particular type. Methods give data types behavioral capabilities, which is an important feature of object-oriented programming.\n1.1 Difference Between Methods and Functions\rLet&rsquo;s understand this through a simple example:\n// Regular function func add(a, b int) int { return a + b } // Method (syntax will be explained in detail later) // func (receiver) methodName(parameters) returnType { function body } Main differences:\n"><title>Golang Learning Journey [Part 10: Methods and Receivers]</title><link rel=canonical href=https://zg-dd.github.io/en/stu/golang-stu-10/><link rel=stylesheet href=/scss/style.min.ff560f1cad7a040e336f2dd6880b9ee1ad344d6e3d8f5411e5a1aaa8b23bbdd0.css><meta property='og:title' content="Golang Learning Journey [Part 10: Methods and Receivers]"><meta property='og:description' content="1. What are Methods\rMethods are functions associated with specific types in Go language. If functions are independent functional units, then methods are special functions that &ldquo;belong&rdquo; to a particular type. Methods give data types behavioral capabilities, which is an important feature of object-oriented programming.\n1.1 Difference Between Methods and Functions\rLet&rsquo;s understand this through a simple example:\n// Regular function func add(a, b int) int { return a + b } // Method (syntax will be explained in detail later) // func (receiver) methodName(parameters) returnType { function body } Main differences:\n"><meta property='og:url' content='https://zg-dd.github.io/en/stu/golang-stu-10/'><meta property='og:site_name' content='小巷 Blog'><meta property='og:type' content='article'><meta property='article:section' content='Stu'><meta property='article:tag' content='Golang Syntax'><meta property='article:published_time' content='2026-02-04T18:15:16+08:00'><meta property='article:modified_time' content='2026-02-04T18:15:16+08:00'><meta name=twitter:title content="Golang Learning Journey [Part 10: Methods and Receivers]"><meta name=twitter:description content="1. What are Methods\rMethods are functions associated with specific types in Go language. If functions are independent functional units, then methods are special functions that &ldquo;belong&rdquo; to a particular type. Methods give data types behavioral capabilities, which is an important feature of object-oriented programming.\n1.1 Difference Between Methods and Functions\rLet&rsquo;s understand this through a simple example:\n// Regular function func add(a, b int) int { return a + b } // Method (syntax will be explained in detail later) // func (receiver) methodName(parameters) returnType { function body } Main differences:\n"></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label="Toggle Menu">
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/en/><img src=/img/avatar_hu_a0cc1cf57968b27d.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a><span class=emoji>🌱</span></figure><div class=site-meta><h1 class=site-name><a href=/en>小巷 Blog</a></h1><h2 class=site-description>Recording is not to prove myself; rather, to make a habit of 'solving problems → thinking → sedimentation'.</h2></div></header><ol class=menu id=main-menu><li class=current><a href=/en/stu/><span>Study Notes</span></a></li><li><a href=/en/blog/><span>Essays</span></a></li><li><a href=/en/life/><span>Life</span></a></li><li><a href=/categories/><span>Categories</span></a></li><li><a href=/tags/><span>Tags</span></a></li><li class=menu-bottom-section><ol class=menu><li id=i18n-switch><svg class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5h7"/><path d="M9 3v2c0 4.418-2.239 8-5 8"/><path d="M5 9c-.003 2.144 2.952 3.908 6.7 4"/><path d="M12 20l4-9 4 9"/><path d="M19.1 18h-6.2"/></svg>
+<select name=language title=language onchange="window.location.href=this.selectedOptions[0].value"><option value=https://zg-dd.github.io/>简体中文</option><option value=https://zg-dd.github.io/en/ selected>English</option></select></li><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>Dark Mode</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">Table of contents</h2><div class=widget--toc><nav id=TableOfContents><ul><li><a href=#11-difference-between-methods-and-functions>1.1 Difference Between Methods and Functions</a></li><li><a href=#12-why-do-we-need-methods>1.2 Why Do We Need Methods</a></li></ul><ul><li><a href=#21-method-definition-syntax>2.1 Method Definition Syntax</a></li><li><a href=#22-two-forms-of-receivers>2.2 Two Forms of Receivers</a><ul><li><a href=#value-receiver>Value Receiver</a></li><li><a href=#pointer-receiver>Pointer Receiver</a></li></ul></li><li><a href=#23-simple-example>2.3 Simple Example</a></li></ul><ul><li><a href=#31-value-receiver-vs-pointer-receiver>3.1 Value Receiver vs Pointer Receiver</a></li><li><a href=#32-receiver-selection-principles>3.2 Receiver Selection Principles</a></li></ul><ul><li><a href=#41-methods-for-basic-types>4.1 Methods for Basic Types</a></li><li><a href=#42-struct-methods>4.2 Struct Methods</a></li><li><a href=#43-slice-and-map-methods>4.3 Slice and Map Methods</a></li></ul><ul><li><a href=#51-concept-of-method-sets>5.1 Concept of Method Sets</a></li></ul><ul><li><a href=#61-method-chaining>6.1 Method Chaining</a></li><li><a href=#62-method-promotion-in-embedded-types>6.2 Method Promotion in Embedded Types</a></li></ul><ul><li><a href=#71-method-name-conflicts>7.1 Method Name Conflicts</a></li><li><a href=#72-calling-methods-on-nil-pointers>7.2 Calling Methods on Nil Pointers</a></li></ul></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/en/categories/golang/>Golang</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/en/stu/golang-stu-10/>Golang Learning Journey [Part 10: Methods and Receivers]</a></h2></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published datetime=2026-02-04T18:15:16+08:00>Feb 04, 2026</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>12 minute read</time></div></footer><footer class=article-translations><svg class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5h7"/><path d="M9 3v2c0 4.418-2.239 8-5 8"/><path d="M5 9c-.003 2.144 2.952 3.908 6.7 4"/><path d="M12 20l4-9 4 9"/><path d="M19.1 18h-6.2"/></svg><div><a href=https://zg-dd.github.io/stu/golang-stu-10/ class=link>简体中文</a></div></footer></div></header><section class=article-content><h1 id=1-what-are-methods>1. What are Methods</h1><blockquote><p>Methods are functions associated with specific types in Go language. If functions are independent functional units, then methods are special functions that &ldquo;belong&rdquo; to a particular type. Methods give data types behavioral capabilities, which is an important feature of object-oriented programming.</p></blockquote><h2 id=11-difference-between-methods-and-functions>1.1 Difference Between Methods and Functions</h2><p>Let&rsquo;s understand this through a simple example:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#75715e>// Regular function</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>add</span>(<span style=color:#a6e22e>a</span>, <span style=color:#a6e22e>b</span> <span style=color:#66d9ef>int</span>) <span style=color:#66d9ef>int</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>a</span> <span style=color:#f92672>+</span> <span style=color:#a6e22e>b</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Method (syntax will be explained in detail later)</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// func (receiver) methodName(parameters) returnType { function body }</span>
+</span></span></code></pre></div><p><strong>Main differences</strong>:</p><ul><li><strong>Function</strong>: Exists independently, called by function name</li><li><strong>Method</strong>: Binds to a specific type, called by &ldquo;type.methodName&rdquo;</li></ul><h2 id=12-why-do-we-need-methods>1.2 Why Do We Need Methods</h2><p>Main values of methods:</p><ol><li><strong>Encapsulation</strong>: Organize data and methods that operate on data together</li><li><strong>Readability</strong>: <code>student.GetName()</code> is more intuitive than <code>getName(student)</code></li><li><strong>Object-oriented</strong>: Lay foundation for subsequent interface implementation</li><li><strong>Code organization</strong>: Better organization of related functionalities</li></ol><h1 id=2-basic-method-syntax>2. Basic Method Syntax</h1><h2 id=21-method-definition-syntax>2.1 Method Definition Syntax</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>receiver</span>) <span style=color:#a6e22e>methodName</span>(<span style=color:#a6e22e>parameterList</span>) (<span style=color:#a6e22e>returnValueList</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// method body</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=22-two-forms-of-receivers>2.2 Two Forms of Receivers</h2><h3 id=value-receiver>Value Receiver</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>t</span> <span style=color:#a6e22e>MyType</span>) <span style=color:#a6e22e>MethodName</span>(<span style=color:#a6e22e>parameters</span>) <span style=color:#a6e22e>returnType</span> {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// t is a copy of MyType type</span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Modifying t won&#39;t affect original data</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=pointer-receiver>Pointer Receiver</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>t</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>MyType</span>) <span style=color:#a6e22e>MethodName</span>(<span style=color:#a6e22e>parameters</span>) <span style=color:#a6e22e>returnType</span> {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// t is a pointer to MyType type</span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Modifying t will affect original data</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=23-simple-example>2.3 Simple Example</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Define a rectangle struct</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Rectangle</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Width</span>  <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Height</span> <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Value receiver method: calculate area</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>r</span> <span style=color:#a6e22e>Rectangle</span>) <span style=color:#a6e22e>Area</span>() <span style=color:#66d9ef>float64</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>Width</span> <span style=color:#f92672>*</span> <span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>Height</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Value receiver method: calculate perimeter</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>r</span> <span style=color:#a6e22e>Rectangle</span>) <span style=color:#a6e22e>Perimeter</span>() <span style=color:#66d9ef>float64</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>2</span> <span style=color:#f92672>*</span> (<span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>Width</span> <span style=color:#f92672>+</span> <span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>Height</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Pointer receiver method: scale rectangle</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>r</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Rectangle</span>) <span style=color:#a6e22e>Scale</span>(<span style=color:#a6e22e>factor</span> <span style=color:#66d9ef>float64</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>Width</span> <span style=color:#f92672>*=</span> <span style=color:#a6e22e>factor</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>Height</span> <span style=color:#f92672>*=</span> <span style=color:#a6e22e>factor</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Pointer receiver method: set dimensions</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>r</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Rectangle</span>) <span style=color:#a6e22e>SetDimensions</span>(<span style=color:#a6e22e>width</span>, <span style=color:#a6e22e>height</span> <span style=color:#66d9ef>float64</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>Width</span> = <span style=color:#a6e22e>width</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>Height</span> = <span style=color:#a6e22e>height</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Create rectangle instance</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>rect</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Rectangle</span>{<span style=color:#a6e22e>Width</span>: <span style=color:#ae81ff>10</span>, <span style=color:#a6e22e>Height</span>: <span style=color:#ae81ff>5</span>}
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Original rectangle: width=%.2f, height=%.2f\n&#34;</span>, <span style=color:#a6e22e>rect</span>.<span style=color:#a6e22e>Width</span>, <span style=color:#a6e22e>rect</span>.<span style=color:#a6e22e>Height</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Area: %.2f\n&#34;</span>, <span style=color:#a6e22e>rect</span>.<span style=color:#a6e22e>Area</span>())
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Perimeter: %.2f\n&#34;</span>, <span style=color:#a6e22e>rect</span>.<span style=color:#a6e22e>Perimeter</span>())
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Use pointer method to modify data</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>rect</span>.<span style=color:#a6e22e>Scale</span>(<span style=color:#ae81ff>2.0</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;\nRectangle after scaling: width=%.2f, height=%.2f\n&#34;</span>, <span style=color:#a6e22e>rect</span>.<span style=color:#a6e22e>Width</span>, <span style=color:#a6e22e>rect</span>.<span style=color:#a6e22e>Height</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;New area: %.2f\n&#34;</span>, <span style=color:#a6e22e>rect</span>.<span style=color:#a6e22e>Area</span>())
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>rect</span>.<span style=color:#a6e22e>SetDimensions</span>(<span style=color:#ae81ff>15</span>, <span style=color:#ae81ff>8</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;\nAfter resetting: width=%.2f, height=%.2f\n&#34;</span>, <span style=color:#a6e22e>rect</span>.<span style=color:#a6e22e>Width</span>, <span style=color:#a6e22e>rect</span>.<span style=color:#a6e22e>Height</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Final area: %.2f\n&#34;</span>, <span style=color:#a6e22e>rect</span>.<span style=color:#a6e22e>Area</span>())
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Execution result:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>Original rectangle: width<span style=color:#f92672>=</span>10.00, height<span style=color:#f92672>=</span>5.00
+</span></span><span style=display:flex><span>Area: 50.00
+</span></span><span style=display:flex><span>Perimeter: 30.00
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Rectangle after scaling: width<span style=color:#f92672>=</span>20.00, height<span style=color:#f92672>=</span>10.00
+</span></span><span style=display:flex><span>New area: 200.00
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>After resetting: width<span style=color:#f92672>=</span>15.00, height<span style=color:#f92672>=</span>8.00
+</span></span><span style=display:flex><span>Final area: 120.00
+</span></span></code></pre></div><h1 id=3-in-depth-understanding-of-receivers>3. In-depth Understanding of Receivers</h1><h2 id=31-value-receiver-vs-pointer-receiver>3.1 Value Receiver vs Pointer Receiver</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Counter</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Count</span> <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Value receiver method</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#a6e22e>Counter</span>) <span style=color:#a6e22e>GetValue</span>() <span style=color:#66d9ef>int</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Count</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Value receiver method (won&#39;t modify original value)</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#a6e22e>Counter</span>) <span style=color:#a6e22e>IncrementByValue</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Count</span><span style=color:#f92672>++</span>  <span style=color:#75715e>// This modifies the copy</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Value receiver internal Count: %d\n&#34;</span>, <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Count</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Pointer receiver method</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Counter</span>) <span style=color:#a6e22e>GetPointerValue</span>() <span style=color:#66d9ef>int</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Count</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Pointer receiver method (will modify original value)</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Counter</span>) <span style=color:#a6e22e>IncrementByPointer</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Count</span><span style=color:#f92672>++</span>  <span style=color:#75715e>// This modifies the original value</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Pointer receiver internal Count: %d\n&#34;</span>, <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Count</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>counter</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Counter</span>{<span style=color:#a6e22e>Count</span>: <span style=color:#ae81ff>10</span>}
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Initial value: %d\n&#34;</span>, <span style=color:#a6e22e>counter</span>.<span style=color:#a6e22e>Count</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Value receiver call</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>counter</span>.<span style=color:#a6e22e>IncrementByValue</span>()
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;After value receiver call: %d\n&#34;</span>, <span style=color:#a6e22e>counter</span>.<span style=color:#a6e22e>Count</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Pointer receiver call</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>counter</span>.<span style=color:#a6e22e>IncrementByPointer</span>()
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;After pointer receiver call: %d\n&#34;</span>, <span style=color:#a6e22e>counter</span>.<span style=color:#a6e22e>Count</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Verify return values</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;GetValue(): %d\n&#34;</span>, <span style=color:#a6e22e>counter</span>.<span style=color:#a6e22e>GetValue</span>())
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;GetPointerValue(): %d\n&#34;</span>, <span style=color:#a6e22e>counter</span>.<span style=color:#a6e22e>GetPointerValue</span>())
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Execution result:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>Initial value: <span style=color:#ae81ff>10</span>
+</span></span><span style=display:flex><span>Value receiver internal Count: <span style=color:#ae81ff>11</span>
+</span></span><span style=display:flex><span>Value receiver call after: <span style=color:#ae81ff>10</span>
+</span></span><span style=display:flex><span>Pointer receiver internal Count: <span style=color:#ae81ff>11</span>
+</span></span><span style=display:flex><span>Pointer receiver call after: <span style=color:#ae81ff>11</span>
+</span></span><span style=display:flex><span>GetValue<span style=color:#f92672>()</span>: <span style=color:#ae81ff>11</span>
+</span></span><span style=display:flex><span>GetPointerValue<span style=color:#f92672>()</span>: <span style=color:#ae81ff>11</span>
+</span></span></code></pre></div><h2 id=32-receiver-selection-principles>3.2 Receiver Selection Principles</h2><p>When to use value receivers:
+✅ Small data types (basic types, small structs)
+✅ Methods don&rsquo;t need to modify receiver data
+✅ Concurrency safety required (value passing is safe)</p><p>When to use pointer receivers:
+✅ Methods need to modify receiver data
+✅ Large data types (avoid copy overhead)
+✅ Consistency consideration (all methods of type use pointer receivers)</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>SmallData</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Value</span> <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>LargeData</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Values</span> [<span style=color:#ae81ff>1000</span>]<span style=color:#66d9ef>int</span>  <span style=color:#75715e>// Large array</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Name</span>   <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Active</span> <span style=color:#66d9ef>bool</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// SmallData uses value receiver (reasonable)</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>s</span> <span style=color:#a6e22e>SmallData</span>) <span style=color:#a6e22e>Double</span>() <span style=color:#a6e22e>SmallData</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>s</span>.<span style=color:#a6e22e>Value</span> <span style=color:#f92672>*=</span> <span style=color:#ae81ff>2</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>s</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// LargeData uses pointer receiver (reasonable)</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>l</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>LargeData</span>) <span style=color:#a6e22e>Activate</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>l</span>.<span style=color:#a6e22e>Active</span> = <span style=color:#66d9ef>true</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Small data type</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>small</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>SmallData</span>{<span style=color:#a6e22e>Value</span>: <span style=color:#ae81ff>5</span>}
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>doubled</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>small</span>.<span style=color:#a6e22e>Double</span>()
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;SmallData - Original: %d, Doubled: %d\n&#34;</span>, <span style=color:#a6e22e>small</span>.<span style=color:#a6e22e>Value</span>, <span style=color:#a6e22e>doubled</span>.<span style=color:#a6e22e>Value</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Large data type</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>large</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>LargeData</span>{<span style=color:#a6e22e>Name</span>: <span style=color:#e6db74>&#34;Test&#34;</span>}
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;LargeData - Active before modification: %t\n&#34;</span>, <span style=color:#a6e22e>large</span>.<span style=color:#a6e22e>Active</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>large</span>.<span style=color:#a6e22e>Activate</span>()
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;LargeData - Active after modification: %t\n&#34;</span>, <span style=color:#a6e22e>large</span>.<span style=color:#a6e22e>Active</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Execution result:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>SmallData - Original: 5, Doubled: <span style=color:#ae81ff>10</span>
+</span></span><span style=display:flex><span>LargeData - Active before modification: false
+</span></span><span style=display:flex><span>LargeData - Active after modification: true
+</span></span></code></pre></div><h1 id=4-receivers-of-different-types>4. Receivers of Different Types</h1><h2 id=41-methods-for-basic-types>4.1 Methods for Basic Types</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Create alias for int type</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>MyInt</span> <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Add methods to custom type</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>mi</span> <span style=color:#a6e22e>MyInt</span>) <span style=color:#a6e22e>Double</span>() <span style=color:#a6e22e>MyInt</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>mi</span> <span style=color:#f92672>*</span> <span style=color:#ae81ff>2</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>mi</span> <span style=color:#a6e22e>MyInt</span>) <span style=color:#a6e22e>IsEven</span>() <span style=color:#66d9ef>bool</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>mi</span><span style=color:#f92672>%</span><span style=color:#ae81ff>2</span> <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>mi</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>MyInt</span>) <span style=color:#a6e22e>Increment</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#f92672>*</span><span style=color:#a6e22e>mi</span><span style=color:#f92672>++</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Create methods for built-in types (need type aliases)</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Celsius</span> <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Fahrenheit</span> <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#a6e22e>Celsius</span>) <span style=color:#a6e22e>ToFahrenheit</span>() <span style=color:#a6e22e>Fahrenheit</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>Fahrenheit</span>(<span style=color:#a6e22e>c</span><span style=color:#f92672>*</span><span style=color:#ae81ff>9</span><span style=color:#f92672>/</span><span style=color:#ae81ff>5</span> <span style=color:#f92672>+</span> <span style=color:#ae81ff>32</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>f</span> <span style=color:#a6e22e>Fahrenheit</span>) <span style=color:#a6e22e>ToCelsius</span>() <span style=color:#a6e22e>Celsius</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>Celsius</span>((<span style=color:#a6e22e>f</span> <span style=color:#f92672>-</span> <span style=color:#ae81ff>32</span>) <span style=color:#f92672>*</span> <span style=color:#ae81ff>5</span> <span style=color:#f92672>/</span> <span style=color:#ae81ff>9</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Custom int type</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>num</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>MyInt</span>(<span style=color:#ae81ff>10</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Original value: %d\n&#34;</span>, <span style=color:#a6e22e>num</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Doubled: %d\n&#34;</span>, <span style=color:#a6e22e>num</span>.<span style=color:#a6e22e>Double</span>())
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Is even: %t\n&#34;</span>, <span style=color:#a6e22e>num</span>.<span style=color:#a6e22e>IsEven</span>())
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>num</span>.<span style=color:#a6e22e>Increment</span>()
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;After increment: %d\n&#34;</span>, <span style=color:#a6e22e>num</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Temperature conversion</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>tempC</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Celsius</span>(<span style=color:#ae81ff>25</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>tempF</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>tempC</span>.<span style=color:#a6e22e>ToFahrenheit</span>()
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;\n%d°C = %.1f°F\n&#34;</span>, int(<span style=color:#a6e22e>tempC</span>), float64(<span style=color:#a6e22e>tempF</span>))
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>backToC</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>tempF</span>.<span style=color:#a6e22e>ToCelsius</span>()
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;%.1f°F = %d°C\n&#34;</span>, float64(<span style=color:#a6e22e>tempF</span>), int(<span style=color:#a6e22e>backToC</span>))
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Execution result:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>Original value: <span style=color:#ae81ff>10</span>
+</span></span><span style=display:flex><span>Doubled: <span style=color:#ae81ff>20</span>
+</span></span><span style=display:flex><span>Is even: true
+</span></span><span style=display:flex><span>After increment: <span style=color:#ae81ff>11</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>25°C <span style=color:#f92672>=</span> 77.0°F
+</span></span><span style=display:flex><span>77.0°F <span style=color:#f92672>=</span> 25°C
+</span></span></code></pre></div><h2 id=42-struct-methods>4.2 Struct Methods</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> (
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;math&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Point</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>X</span>, <span style=color:#a6e22e>Y</span> <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Circle</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Center</span> <span style=color:#a6e22e>Point</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Radius</span> <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Point methods</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>p</span> <span style=color:#a6e22e>Point</span>) <span style=color:#a6e22e>Distance</span>(<span style=color:#a6e22e>other</span> <span style=color:#a6e22e>Point</span>) <span style=color:#66d9ef>float64</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>dx</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>p</span>.<span style=color:#a6e22e>X</span> <span style=color:#f92672>-</span> <span style=color:#a6e22e>other</span>.<span style=color:#a6e22e>X</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>dy</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>p</span>.<span style=color:#a6e22e>Y</span> <span style=color:#f92672>-</span> <span style=color:#a6e22e>other</span>.<span style=color:#a6e22e>Y</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>math</span>.<span style=color:#a6e22e>Sqrt</span>(<span style=color:#a6e22e>dx</span><span style=color:#f92672>*</span><span style=color:#a6e22e>dx</span> <span style=color:#f92672>+</span> <span style=color:#a6e22e>dy</span><span style=color:#f92672>*</span><span style=color:#a6e22e>dy</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>p</span> <span style=color:#a6e22e>Point</span>) <span style=color:#a6e22e>Move</span>(<span style=color:#a6e22e>dx</span>, <span style=color:#a6e22e>dy</span> <span style=color:#66d9ef>float64</span>) <span style=color:#a6e22e>Point</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>Point</span>{<span style=color:#a6e22e>X</span>: <span style=color:#a6e22e>p</span>.<span style=color:#a6e22e>X</span> <span style=color:#f92672>+</span> <span style=color:#a6e22e>dx</span>, <span style=color:#a6e22e>Y</span>: <span style=color:#a6e22e>p</span>.<span style=color:#a6e22e>Y</span> <span style=color:#f92672>+</span> <span style=color:#a6e22e>dy</span>}
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Circle methods</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#a6e22e>Circle</span>) <span style=color:#a6e22e>Area</span>() <span style=color:#66d9ef>float64</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>math</span>.<span style=color:#a6e22e>Pi</span> <span style=color:#f92672>*</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Radius</span> <span style=color:#f92672>*</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Radius</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#a6e22e>Circle</span>) <span style=color:#a6e22e>Circumference</span>() <span style=color:#66d9ef>float64</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>2</span> <span style=color:#f92672>*</span> <span style=color:#a6e22e>math</span>.<span style=color:#a6e22e>Pi</span> <span style=color:#f92672>*</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Radius</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Circle</span>) <span style=color:#a6e22e>Scale</span>(<span style=color:#a6e22e>factor</span> <span style=color:#66d9ef>float64</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Radius</span> <span style=color:#f92672>*=</span> <span style=color:#a6e22e>factor</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Point operations</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>p1</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Point</span>{<span style=color:#a6e22e>X</span>: <span style=color:#ae81ff>0</span>, <span style=color:#a6e22e>Y</span>: <span style=color:#ae81ff>0</span>}
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>p2</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Point</span>{<span style=color:#a6e22e>X</span>: <span style=color:#ae81ff>3</span>, <span style=color:#a6e22e>Y</span>: <span style=color:#ae81ff>4</span>}
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>distance</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>p1</span>.<span style=color:#a6e22e>Distance</span>(<span style=color:#a6e22e>p2</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Distance between points: %.2f\n&#34;</span>, <span style=color:#a6e22e>distance</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>p3</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>p1</span>.<span style=color:#a6e22e>Move</span>(<span style=color:#ae81ff>1</span>, <span style=color:#ae81ff>1</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Point after moving: (%f, %f)\n&#34;</span>, <span style=color:#a6e22e>p3</span>.<span style=color:#a6e22e>X</span>, <span style=color:#a6e22e>p3</span>.<span style=color:#a6e22e>Y</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Circle operations</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>circle</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Circle</span>{
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Center</span>: <span style=color:#a6e22e>Point</span>{<span style=color:#a6e22e>X</span>: <span style=color:#ae81ff>0</span>, <span style=color:#a6e22e>Y</span>: <span style=color:#ae81ff>0</span>},
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Radius</span>: <span style=color:#ae81ff>5</span>,
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;\nCircle radius: %.2f\n&#34;</span>, <span style=color:#a6e22e>circle</span>.<span style=color:#a6e22e>Radius</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Circle area: %.2f\n&#34;</span>, <span style=color:#a6e22e>circle</span>.<span style=color:#a6e22e>Area</span>())
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Circle circumference: %.2f\n&#34;</span>, <span style=color:#a6e22e>circle</span>.<span style=color:#a6e22e>Circumference</span>())
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>circle</span>.<span style=color:#a6e22e>Scale</span>(<span style=color:#ae81ff>2</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;\nRadius after scaling: %.2f\n&#34;</span>, <span style=color:#a6e22e>circle</span>.<span style=color:#a6e22e>Radius</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Area after scaling: %.2f\n&#34;</span>, <span style=color:#a6e22e>circle</span>.<span style=color:#a6e22e>Area</span>())
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Execution result:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>Distance between points: 5.00
+</span></span><span style=display:flex><span>Point after moving: <span style=color:#f92672>(</span>1.000000, 1.000000<span style=color:#f92672>)</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Circle radius: 5.00
+</span></span><span style=display:flex><span>Circle area: 78.54
+</span></span><span style=display:flex><span>Circle circumference: 31.42
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Radius after scaling: 10.00
+</span></span><span style=display:flex><span>Area after scaling: 314.16
+</span></span></code></pre></div><h2 id=43-slice-and-map-methods>4.3 Slice and Map Methods</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Create alias for slice type</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>IntSlice</span> []<span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Create alias for map type</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>StringMap</span> <span style=color:#66d9ef>map</span>[<span style=color:#66d9ef>string</span>]<span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// IntSlice methods</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>is</span> <span style=color:#a6e22e>IntSlice</span>) <span style=color:#a6e22e>Sum</span>() <span style=color:#66d9ef>int</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>sum</span> <span style=color:#f92672>:=</span> <span style=color:#ae81ff>0</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span> <span style=color:#a6e22e>_</span>, <span style=color:#a6e22e>v</span> <span style=color:#f92672>:=</span> <span style=color:#66d9ef>range</span> <span style=color:#a6e22e>is</span> {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>sum</span> <span style=color:#f92672>+=</span> <span style=color:#a6e22e>v</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>sum</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>is</span> <span style=color:#a6e22e>IntSlice</span>) <span style=color:#a6e22e>Average</span>() <span style=color:#66d9ef>float64</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> len(<span style=color:#a6e22e>is</span>) <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span> {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> float64(<span style=color:#a6e22e>is</span>.<span style=color:#a6e22e>Sum</span>()) <span style=color:#f92672>/</span> float64(len(<span style=color:#a6e22e>is</span>))
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>is</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>IntSlice</span>) <span style=color:#a6e22e>Append</span>(<span style=color:#a6e22e>value</span> <span style=color:#66d9ef>int</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#f92672>*</span><span style=color:#a6e22e>is</span> = append(<span style=color:#f92672>*</span><span style=color:#a6e22e>is</span>, <span style=color:#a6e22e>value</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// StringMap methods</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>sm</span> <span style=color:#a6e22e>StringMap</span>) <span style=color:#a6e22e>Get</span>(<span style=color:#a6e22e>key</span> <span style=color:#66d9ef>string</span>) (<span style=color:#66d9ef>string</span>, <span style=color:#66d9ef>bool</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>value</span>, <span style=color:#a6e22e>exists</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>sm</span>[<span style=color:#a6e22e>key</span>]
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>value</span>, <span style=color:#a6e22e>exists</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>sm</span> <span style=color:#a6e22e>StringMap</span>) <span style=color:#a6e22e>Set</span>(<span style=color:#a6e22e>key</span>, <span style=color:#a6e22e>value</span> <span style=color:#66d9ef>string</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>sm</span>[<span style=color:#a6e22e>key</span>] = <span style=color:#a6e22e>value</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>sm</span> <span style=color:#a6e22e>StringMap</span>) <span style=color:#a6e22e>Keys</span>() []<span style=color:#66d9ef>string</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>keys</span> <span style=color:#f92672>:=</span> make([]<span style=color:#66d9ef>string</span>, <span style=color:#ae81ff>0</span>, len(<span style=color:#a6e22e>sm</span>))
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span> <span style=color:#a6e22e>k</span> <span style=color:#f92672>:=</span> <span style=color:#66d9ef>range</span> <span style=color:#a6e22e>sm</span> {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>keys</span> = append(<span style=color:#a6e22e>keys</span>, <span style=color:#a6e22e>k</span>)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>keys</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Slice methods</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>numbers</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>IntSlice</span>{<span style=color:#ae81ff>1</span>, <span style=color:#ae81ff>2</span>, <span style=color:#ae81ff>3</span>, <span style=color:#ae81ff>4</span>, <span style=color:#ae81ff>5</span>}
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Number slice: %v\n&#34;</span>, <span style=color:#a6e22e>numbers</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Sum: %d\n&#34;</span>, <span style=color:#a6e22e>numbers</span>.<span style=color:#a6e22e>Sum</span>())
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Average: %.2f\n&#34;</span>, <span style=color:#a6e22e>numbers</span>.<span style=color:#a6e22e>Average</span>())
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>numbers</span>.<span style=color:#a6e22e>Append</span>(<span style=color:#ae81ff>6</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>numbers</span>.<span style=color:#a6e22e>Append</span>(<span style=color:#ae81ff>7</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;After adding elements: %v\n&#34;</span>, <span style=color:#a6e22e>numbers</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;New sum: %d\n&#34;</span>, <span style=color:#a6e22e>numbers</span>.<span style=color:#a6e22e>Sum</span>())
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Map methods</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>studentGrades</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>StringMap</span>{
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;Zhang San&#34;</span>: <span style=color:#e6db74>&#34;85&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;Li Si&#34;</span>: <span style=color:#e6db74>&#34;92&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;Wang Wu&#34;</span>: <span style=color:#e6db74>&#34;78&#34;</span>,
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;\nStudent grades: %v\n&#34;</span>, <span style=color:#a6e22e>studentGrades</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Get value</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>grade</span>, <span style=color:#a6e22e>exists</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>studentGrades</span>.<span style=color:#a6e22e>Get</span>(<span style=color:#e6db74>&#34;Li Si&#34;</span>); <span style=color:#a6e22e>exists</span> {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Li Si&#39;s grade: %s\n&#34;</span>, <span style=color:#a6e22e>grade</span>)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Set new value</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>studentGrades</span>.<span style=color:#a6e22e>Set</span>(<span style=color:#e6db74>&#34;Zhao Liu&#34;</span>, <span style=color:#e6db74>&#34;88&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;After adding Zhao Liu: %v\n&#34;</span>, <span style=color:#a6e22e>studentGrades</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Get all keys</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>keys</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>studentGrades</span>.<span style=color:#a6e22e>Keys</span>()
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;All students: %v\n&#34;</span>, <span style=color:#a6e22e>keys</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Execution result:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>Number slice: <span style=color:#f92672>[</span><span style=color:#ae81ff>1</span> <span style=color:#ae81ff>2</span> <span style=color:#ae81ff>3</span> <span style=color:#ae81ff>4</span> 5<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span>Sum: <span style=color:#ae81ff>15</span>
+</span></span><span style=display:flex><span>Average: 3.00
+</span></span><span style=display:flex><span>After adding elements: <span style=color:#f92672>[</span><span style=color:#ae81ff>1</span> <span style=color:#ae81ff>2</span> <span style=color:#ae81ff>3</span> <span style=color:#ae81ff>4</span> <span style=color:#ae81ff>5</span> <span style=color:#ae81ff>6</span> 7<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span>New sum: <span style=color:#ae81ff>28</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Student grades: map<span style=color:#f92672>[</span>Zhang San:85 Li Si:92 Wang Wu:78<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span>Li Si<span style=color:#960050;background-color:#1e0010>&#39;</span>s grade: <span style=color:#ae81ff>92</span>
+</span></span><span style=display:flex><span>After adding Zhao Liu: map<span style=color:#f92672>[</span>Zhang San:85 Li Si:92 Wang Wu:78 Zhao Liu:88<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span>All students: <span style=color:#f92672>[</span>Zhang San Li Si Wang Wu Zhao Liu<span style=color:#f92672>]</span>
+</span></span></code></pre></div><h1 id=5-relationship-between-methods-and-interfaces>5. Relationship Between Methods and Interfaces</h1><h2 id=51-concept-of-method-sets>5.1 Concept of Method Sets</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Shape</span> <span style=color:#66d9ef>interface</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Area</span>() <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Perimeter</span>() <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Rectangle</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Width</span>  <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Height</span> <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Circle</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Radius</span> <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Rectangle implements Shape interface</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>r</span> <span style=color:#a6e22e>Rectangle</span>) <span style=color:#a6e22e>Area</span>() <span style=color:#66d9ef>float64</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>Width</span> <span style=color:#f92672>*</span> <span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>Height</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>r</span> <span style=color:#a6e22e>Rectangle</span>) <span style=color:#a6e22e>Perimeter</span>() <span style=color:#66d9ef>float64</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>2</span> <span style=color:#f92672>*</span> (<span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>Width</span> <span style=color:#f92672>+</span> <span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>Height</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Circle implements Shape interface</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#a6e22e>Circle</span>) <span style=color:#a6e22e>Area</span>() <span style=color:#66d9ef>float64</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>3.14159</span> <span style=color:#f92672>*</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Radius</span> <span style=color:#f92672>*</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Radius</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#a6e22e>Circle</span>) <span style=color:#a6e22e>Perimeter</span>() <span style=color:#66d9ef>float64</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>2</span> <span style=color:#f92672>*</span> <span style=color:#ae81ff>3.14159</span> <span style=color:#f92672>*</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Radius</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Function using interface</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>PrintShapeInfo</span>(<span style=color:#a6e22e>s</span> <span style=color:#a6e22e>Shape</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Area: %.2f\n&#34;</span>, <span style=color:#a6e22e>s</span>.<span style=color:#a6e22e>Area</span>())
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Perimeter: %.2f\n&#34;</span>, <span style=color:#a6e22e>s</span>.<span style=color:#a6e22e>Perimeter</span>())
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>rect</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Rectangle</span>{<span style=color:#a6e22e>Width</span>: <span style=color:#ae81ff>10</span>, <span style=color:#a6e22e>Height</span>: <span style=color:#ae81ff>5</span>}
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>circle</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Circle</span>{<span style=color:#a6e22e>Radius</span>: <span style=color:#ae81ff>3</span>}
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;=== Rectangle ===&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>PrintShapeInfo</span>(<span style=color:#a6e22e>rect</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;\n=== Circle ===&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>PrintShapeInfo</span>(<span style=color:#a6e22e>circle</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Interface slice</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>shapes</span> <span style=color:#f92672>:=</span> []<span style=color:#a6e22e>Shape</span>{<span style=color:#a6e22e>rect</span>, <span style=color:#a6e22e>circle</span>}
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;\n=== Batch processing ===&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span> <span style=color:#a6e22e>i</span>, <span style=color:#a6e22e>shape</span> <span style=color:#f92672>:=</span> <span style=color:#66d9ef>range</span> <span style=color:#a6e22e>shapes</span> {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Shape %d:\n&#34;</span>, <span style=color:#a6e22e>i</span><span style=color:#f92672>+</span><span style=color:#ae81ff>1</span>)
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>PrintShapeInfo</span>(<span style=color:#a6e22e>shape</span>)
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>()
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Execution result:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#f92672>===</span> Rectangle <span style=color:#f92672>===</span>
+</span></span><span style=display:flex><span>Area: 50.00
+</span></span><span style=display:flex><span>Perimeter: 30.00
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>===</span> Circle <span style=color:#f92672>===</span>
+</span></span><span style=display:flex><span>Area: 28.27
+</span></span><span style=display:flex><span>Perimeter: 18.85
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>===</span> Batch processing <span style=color:#f92672>===</span>
+</span></span><span style=display:flex><span>Shape 1:
+</span></span><span style=display:flex><span>Area: 50.00
+</span></span><span style=display:flex><span>Perimeter: 30.00
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Shape 2:
+</span></span><span style=display:flex><span>Area: 28.27
+</span></span><span style=display:flex><span>Perimeter: 18.85
+</span></span></code></pre></div><h1 id=6-advanced-method-usage>6. Advanced Method Usage</h1><h2 id=61-method-chaining>6.1 Method Chaining</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Calculator</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Result</span> <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#a6e22e>Calculator</span>) <span style=color:#a6e22e>Add</span>(<span style=color:#a6e22e>x</span> <span style=color:#66d9ef>float64</span>) <span style=color:#a6e22e>Calculator</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Result</span> <span style=color:#f92672>+=</span> <span style=color:#a6e22e>x</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>c</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#a6e22e>Calculator</span>) <span style=color:#a6e22e>Subtract</span>(<span style=color:#a6e22e>x</span> <span style=color:#66d9ef>float64</span>) <span style=color:#a6e22e>Calculator</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Result</span> <span style=color:#f92672>-=</span> <span style=color:#a6e22e>x</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>c</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#a6e22e>Calculator</span>) <span style=color:#a6e22e>Multiply</span>(<span style=color:#a6e22e>x</span> <span style=color:#66d9ef>float64</span>) <span style=color:#a6e22e>Calculator</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Result</span> <span style=color:#f92672>*=</span> <span style=color:#a6e22e>x</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>c</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#a6e22e>Calculator</span>) <span style=color:#a6e22e>Divide</span>(<span style=color:#a6e22e>x</span> <span style=color:#66d9ef>float64</span>) <span style=color:#a6e22e>Calculator</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>x</span> <span style=color:#f92672>!=</span> <span style=color:#ae81ff>0</span> {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Result</span> <span style=color:#f92672>/=</span> <span style=color:#a6e22e>x</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>c</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#a6e22e>Calculator</span>) <span style=color:#a6e22e>GetValue</span>() <span style=color:#66d9ef>float64</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Result</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>calc</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Calculator</span>{<span style=color:#a6e22e>Result</span>: <span style=color:#ae81ff>10</span>}
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>result</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>calc</span>.
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Add</span>(<span style=color:#ae81ff>5</span>).
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Multiply</span>(<span style=color:#ae81ff>2</span>).
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Subtract</span>(<span style=color:#ae81ff>3</span>).
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Divide</span>(<span style=color:#ae81ff>2</span>).
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>GetValue</span>()
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Calculation result: %.2f\n&#34;</span>, <span style=color:#a6e22e>result</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Step-by-step demonstration</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>calc2</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Calculator</span>{<span style=color:#a6e22e>Result</span>: <span style=color:#ae81ff>10</span>}
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Initial value: %.2f\n&#34;</span>, <span style=color:#a6e22e>calc2</span>.<span style=color:#a6e22e>GetValue</span>())
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>calc2</span> = <span style=color:#a6e22e>calc2</span>.<span style=color:#a6e22e>Add</span>(<span style=color:#ae81ff>5</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;After adding 5: %.2f\n&#34;</span>, <span style=color:#a6e22e>calc2</span>.<span style=color:#a6e22e>GetValue</span>())
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>calc2</span> = <span style=color:#a6e22e>calc2</span>.<span style=color:#a6e22e>Multiply</span>(<span style=color:#ae81ff>2</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;After multiplying by 2: %.2f\n&#34;</span>, <span style=color:#a6e22e>calc2</span>.<span style=color:#a6e22e>GetValue</span>())
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>calc2</span> = <span style=color:#a6e22e>calc2</span>.<span style=color:#a6e22e>Subtract</span>(<span style=color:#ae81ff>3</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;After subtracting 3: %.2f\n&#34;</span>, <span style=color:#a6e22e>calc2</span>.<span style=color:#a6e22e>GetValue</span>())
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>calc2</span> = <span style=color:#a6e22e>calc2</span>.<span style=color:#a6e22e>Divide</span>(<span style=color:#ae81ff>2</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;After dividing by 2: %.2f\n&#34;</span>, <span style=color:#a6e22e>calc2</span>.<span style=color:#a6e22e>GetValue</span>())
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Execution result:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>Calculation result: 13.50
+</span></span><span style=display:flex><span>Initial value: 10.00
+</span></span><span style=display:flex><span>After adding 5: 15.00
+</span></span><span style=display:flex><span>After multiplying by 2: 30.00
+</span></span><span style=display:flex><span>After subtracting 3: 27.00
+</span></span><span style=display:flex><span>After dividing by 2: 13.50
+</span></span></code></pre></div><h2 id=62-method-promotion-in-embedded-types>6.2 Method Promotion in Embedded Types</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Person</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Name</span> <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Age</span>  <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>p</span> <span style=color:#a6e22e>Person</span>) <span style=color:#a6e22e>GetName</span>() <span style=color:#66d9ef>string</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>p</span>.<span style=color:#a6e22e>Name</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>p</span> <span style=color:#a6e22e>Person</span>) <span style=color:#a6e22e>GetAge</span>() <span style=color:#66d9ef>int</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>p</span>.<span style=color:#a6e22e>Age</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Student</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Person</span>      <span style=color:#75715e>// Embed Person</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>School</span> <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Grade</span>  <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>s</span> <span style=color:#a6e22e>Student</span>) <span style=color:#a6e22e>GetSchool</span>() <span style=color:#66d9ef>string</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>s</span>.<span style=color:#a6e22e>School</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Teacher</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Person</span>      <span style=color:#75715e>// Embed Person</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Subject</span> <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Salary</span>  <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>t</span> <span style=color:#a6e22e>Teacher</span>) <span style=color:#a6e22e>GetSubject</span>() <span style=color:#66d9ef>string</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>t</span>.<span style=color:#a6e22e>Subject</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>student</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Student</span>{
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Person</span>: <span style=color:#a6e22e>Person</span>{<span style=color:#a6e22e>Name</span>: <span style=color:#e6db74>&#34;Xiao Ming&#34;</span>, <span style=color:#a6e22e>Age</span>: <span style=color:#ae81ff>18</span>},
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>School</span>: <span style=color:#e6db74>&#34;No.1 Middle School&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Grade</span>:  <span style=color:#ae81ff>12</span>,
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>teacher</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Teacher</span>{
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Person</span>:  <span style=color:#a6e22e>Person</span>{<span style=color:#a6e22e>Name</span>: <span style=color:#e6db74>&#34;Teacher Wang&#34;</span>, <span style=color:#a6e22e>Age</span>: <span style=color:#ae81ff>35</span>},
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Subject</span>: <span style=color:#e6db74>&#34;Mathematics&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Salary</span>:  <span style=color:#ae81ff>8000</span>,
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Can directly call embedded type methods</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Student name: %s\n&#34;</span>, <span style=color:#a6e22e>student</span>.<span style=color:#a6e22e>GetName</span>())    <span style=color:#75715e>// Promoted method</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Student age: %d\n&#34;</span>, <span style=color:#a6e22e>student</span>.<span style=color:#a6e22e>GetAge</span>())     <span style=color:#75715e>// Promoted method</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;School: %s\n&#34;</span>, <span style=color:#a6e22e>student</span>.<span style=color:#a6e22e>GetSchool</span>())
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Grade: %d\n&#34;</span>, <span style=color:#a6e22e>student</span>.<span style=color:#a6e22e>Grade</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;\nTeacher name: %s\n&#34;</span>, <span style=color:#a6e22e>teacher</span>.<span style=color:#a6e22e>GetName</span>())  <span style=color:#75715e>// Promoted method</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Teacher age: %d\n&#34;</span>, <span style=color:#a6e22e>teacher</span>.<span style=color:#a6e22e>GetAge</span>())     <span style=color:#75715e>// Promoted method</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Subject: %s\n&#34;</span>, <span style=color:#a6e22e>teacher</span>.<span style=color:#a6e22e>GetSubject</span>())
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Salary: %.2f\n&#34;</span>, <span style=color:#a6e22e>teacher</span>.<span style=color:#a6e22e>Salary</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Verify type relationship</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;\nStudent is also Person type: %t\n&#34;</span>, <span style=color:#a6e22e>isPerson</span>(<span style=color:#a6e22e>student</span>))
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Teacher is also Person type: %t\n&#34;</span>, <span style=color:#a6e22e>isPerson</span>(<span style=color:#a6e22e>teacher</span>))
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>isPerson</span>(<span style=color:#a6e22e>p</span> <span style=color:#a6e22e>Person</span>) <span style=color:#66d9ef>bool</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>true</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Execution result:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>Student name: Xiao Ming
+</span></span><span style=display:flex><span>Student age: <span style=color:#ae81ff>18</span>
+</span></span><span style=display:flex><span>School: No.1 Middle School
+</span></span><span style=display:flex><span>Grade: <span style=color:#ae81ff>12</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Teacher name: Teacher Wang
+</span></span><span style=display:flex><span>Teacher age: <span style=color:#ae81ff>35</span>
+</span></span><span style=display:flex><span>Subject: Mathematics
+</span></span><span style=display:flex><span>Salary: 8000.00
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Student is also Person type: true
+</span></span><span style=display:flex><span>Teacher is also Person type: true
+</span></span></code></pre></div><h1 id=7-method-considerations>7. Method Considerations</h1><h2 id=71-method-name-conflicts>7.1 Method Name Conflicts</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Base</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Name</span> <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>b</span> <span style=color:#a6e22e>Base</span>) <span style=color:#a6e22e>GetName</span>() <span style=color:#66d9ef>string</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>b</span>.<span style=color:#a6e22e>Name</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Derived</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Base</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Name</span> <span style=color:#66d9ef>string</span>  <span style=color:#75715e>// Same name as Name in Base</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>d</span> <span style=color:#a6e22e>Derived</span>) <span style=color:#a6e22e>GetName</span>() <span style=color:#66d9ef>string</span> {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Explicitly specify which GetName to call</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#e6db74>&#34;Derived: &#34;</span> <span style=color:#f92672>+</span> <span style=color:#a6e22e>d</span>.<span style=color:#a6e22e>Name</span> <span style=color:#f92672>+</span> <span style=color:#e6db74>&#34;, Base: &#34;</span> <span style=color:#f92672>+</span> <span style=color:#a6e22e>d</span>.<span style=color:#a6e22e>Base</span>.<span style=color:#a6e22e>GetName</span>()
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>derived</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Derived</span>{
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Base</span>: <span style=color:#a6e22e>Base</span>{<span style=color:#a6e22e>Name</span>: <span style=color:#e6db74>&#34;BaseName&#34;</span>},
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Name</span>: <span style=color:#e6db74>&#34;DerivedName&#34;</span>,
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Calling derived class GetName: %s\n&#34;</span>, <span style=color:#a6e22e>derived</span>.<span style=color:#a6e22e>GetName</span>())
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Direct access to Name: %s\n&#34;</span>, <span style=color:#a6e22e>derived</span>.<span style=color:#a6e22e>Name</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Access Base.Name: %s\n&#34;</span>, <span style=color:#a6e22e>derived</span>.<span style=color:#a6e22e>Base</span>.<span style=color:#a6e22e>Name</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Execution result:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>Calling derived class GetName: Derived: DerivedName, Base: BaseName
+</span></span><span style=display:flex><span>Direct access to Name: DerivedName
+</span></span><span style=display:flex><span>Access Base.Name: BaseName
+</span></span></code></pre></div><h2 id=72-calling-methods-on-nil-pointers>7.2 Calling Methods on Nil Pointers</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Data</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Value</span> <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>d</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Data</span>) <span style=color:#a6e22e>GetValue</span>() <span style=color:#66d9ef>int</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>d</span> <span style=color:#f92672>==</span> <span style=color:#66d9ef>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>  <span style=color:#75715e>// Safety check</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>d</span>.<span style=color:#a6e22e>Value</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>d</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Data</span>) <span style=color:#a6e22e>SetValue</span>(<span style=color:#a6e22e>v</span> <span style=color:#66d9ef>int</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>d</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {  <span style=color:#75715e>// Safety check</span>
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>d</span>.<span style=color:#a6e22e>Value</span> = <span style=color:#a6e22e>v</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>var</span> <span style=color:#a6e22e>ptr</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Data</span> = <span style=color:#66d9ef>nil</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Calling method on nil pointer (safe)</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Nil pointer GetValue: %d\n&#34;</span>, <span style=color:#a6e22e>ptr</span>.<span style=color:#a6e22e>GetValue</span>())
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Calling modification method on nil pointer (safe)</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>ptr</span>.<span style=color:#a6e22e>SetValue</span>(<span style=color:#ae81ff>100</span>)  <span style=color:#75715e>// No problem because of safety check</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Create actual object</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>actual</span> <span style=color:#f92672>:=</span> <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>Data</span>{<span style=color:#a6e22e>Value</span>: <span style=color:#ae81ff>42</span>}
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Actual object GetValue: %d\n&#34;</span>, <span style=color:#a6e22e>actual</span>.<span style=color:#a6e22e>GetValue</span>())
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>actual</span>.<span style=color:#a6e22e>SetValue</span>(<span style=color:#ae81ff>99</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;GetValue after modification: %d\n&#34;</span>, <span style=color:#a6e22e>actual</span>.<span style=color:#a6e22e>GetValue</span>())
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Execution result:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>Nil pointer GetValue: <span style=color:#ae81ff>0</span>
+</span></span><span style=display:flex><span>Actual object GetValue: <span style=color:#ae81ff>42</span>
+</span></span><span style=display:flex><span>GetValue after modification: <span style=color:#ae81ff>99</span>
+</span></span></code></pre></div><h1 id=8-summary>8. Summary</h1><p>Methods are the core mechanism for implementing object-oriented programming in Go language:</p><p><strong>Core concepts</strong>:</p><ul><li>Methods are functions bound to specific types</li><li>Associate methods with types through receivers</li><li>Value receivers and pointer receivers have different behavioral characteristics</li></ul><p><strong>Usage principles</strong>:</p><ul><li>Value receivers: Suitable for not modifying data, small data types</li><li>Pointer receivers: Suitable for needing to modify data, large data types</li><li>Maintain consistency in receiver types for all methods of a type</li></ul><p><strong>Important features</strong>:</p><ul><li>Method promotion: Embedded type methods can be called directly</li><li>Interface implementation: Methods are the foundation for implementing interfaces</li><li>Chaining: Returning receiver type supports method chaining</li></ul><p>Mastering method usage is key to understanding Go language&rsquo;s object-oriented features and lays a solid foundation for subsequent interface learning.</p></section><footer class=article-footer><section class=article-tags><a href=/en/tags/golang-syntax/>Golang Syntax</a></section></footer></article><aside class=related-content--wrapper><h2 class=section-title>Related content</h2><div class=related-content><div class="flex article-list--tile"><article><a href=/en/stu/golang-stu-09/><div class=article-details><h2 class=article-title>Golang Learning Journey [Part 9: Struct]</h2></div></a></article><article><a href=/en/stu/golang-stu-08/><div class=article-details><h2 class=article-title>Golang Learning Journey [Part 8: Pointer]</h2></div></a></article><article><a href=/en/stu/golang-stu-07/><div class=article-details><h2 class=article-title>Golang Learning Journey [Part 7: closures, types, defer, panic/recover & the time package]</h2></div></a></article><article><a href=/en/stu/golang-stu-06/><div class=article-details><h2 class=article-title>Golang Learning Journey [Part 6: Composite Types – Map & Function Primer]</h2></div></a></article><article><a href=/en/stu/golang-stu-05/><div class=article-details><h2 class=article-title>Golang Learning Journey [Part 5: Composite Types – Arrays & Slices]</h2></div></a></article></div></div></aside><script src=https://giscus.app/client.js data-repo=zg-dd/zg-dd.github.io data-repo-id=R_kgDOQwB7tw data-category=Announcements data-category-id=DIC_kwDOQwB7t84C0WGD data-mapping=pathname data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=preferred_color_scheme data-lang=zh-CN data-loading crossorigin=anonymous async></script><script>function setGiscusTheme(e){let t=document.querySelector("iframe.giscus-frame");t&&t.contentWindow.postMessage({giscus:{setConfig:{theme:e}}},"https://giscus.app")}(function(){addEventListener("message",t=>{if(event.origin!=="https://giscus.app")return;e()}),window.addEventListener("onColorSchemeChange",e);function e(){setGiscusTheme(document.documentElement.dataset.scheme==="light"?"preferred_color_scheme":"preferred_color_scheme")}})()</script><footer class=site-footer><section class=copyright>&copy;
+2026 小巷 Blog</section><section class=powerby>Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a><br>Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.33.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a></section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.c922af694cc257bf1ecc41c0dd7b0430f9114ec280ccf67cd2c6ad55f5316c4e.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>

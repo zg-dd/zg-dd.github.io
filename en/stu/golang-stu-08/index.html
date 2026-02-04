@@ -1,0 +1,440 @@
+<!doctype html><html lang=en dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="1. What is a Pointer\rA pointer is an important concept in programming. It acts like an &ldquo;address label&rdquo; that stores the specific location information of a variable in memory. Through pointers, we can directly access and manipulate data in memory.\n1.1 Basic Concepts of Pointers\rImagine a real-life scenario:\nYour home has a specific address (for example: xxx Street, Chaoyang District, Beijing) Others can find your home just by knowing this address A pointer is equivalent to this &ldquo;address&rdquo; - it stores the memory location of a variable In computers:\n"><title>Golang Learning Journey [Part 8: Pointer]</title><link rel=canonical href=https://zg-dd.github.io/en/stu/golang-stu-08/><link rel=stylesheet href=/scss/style.min.ff560f1cad7a040e336f2dd6880b9ee1ad344d6e3d8f5411e5a1aaa8b23bbdd0.css><meta property='og:title' content="Golang Learning Journey [Part 8: Pointer]"><meta property='og:description' content="1. What is a Pointer\rA pointer is an important concept in programming. It acts like an &ldquo;address label&rdquo; that stores the specific location information of a variable in memory. Through pointers, we can directly access and manipulate data in memory.\n1.1 Basic Concepts of Pointers\rImagine a real-life scenario:\nYour home has a specific address (for example: xxx Street, Chaoyang District, Beijing) Others can find your home just by knowing this address A pointer is equivalent to this &ldquo;address&rdquo; - it stores the memory location of a variable In computers:\n"><meta property='og:url' content='https://zg-dd.github.io/en/stu/golang-stu-08/'><meta property='og:site_name' content='小巷 Blog'><meta property='og:type' content='article'><meta property='article:section' content='Stu'><meta property='article:tag' content='Golang Syntax'><meta property='article:published_time' content='2026-02-04T16:15:16+08:00'><meta property='article:modified_time' content='2026-02-04T16:15:16+08:00'><meta name=twitter:title content="Golang Learning Journey [Part 8: Pointer]"><meta name=twitter:description content="1. What is a Pointer\rA pointer is an important concept in programming. It acts like an &ldquo;address label&rdquo; that stores the specific location information of a variable in memory. Through pointers, we can directly access and manipulate data in memory.\n1.1 Basic Concepts of Pointers\rImagine a real-life scenario:\nYour home has a specific address (for example: xxx Street, Chaoyang District, Beijing) Others can find your home just by knowing this address A pointer is equivalent to this &ldquo;address&rdquo; - it stores the memory location of a variable In computers:\n"></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label="Toggle Menu">
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/en/><img src=/img/avatar_hu_a0cc1cf57968b27d.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a><span class=emoji>🌱</span></figure><div class=site-meta><h1 class=site-name><a href=/en>小巷 Blog</a></h1><h2 class=site-description>Recording is not to prove myself; rather, to make a habit of 'solving problems → thinking → sedimentation'.</h2></div></header><ol class=menu id=main-menu><li class=current><a href=/en/stu/><span>Study Notes</span></a></li><li><a href=/en/blog/><span>Essays</span></a></li><li><a href=/en/life/><span>Life</span></a></li><li><a href=/categories/><span>Categories</span></a></li><li><a href=/tags/><span>Tags</span></a></li><li class=menu-bottom-section><ol class=menu><li id=i18n-switch><svg class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5h7"/><path d="M9 3v2c0 4.418-2.239 8-5 8"/><path d="M5 9c-.003 2.144 2.952 3.908 6.7 4"/><path d="M12 20l4-9 4 9"/><path d="M19.1 18h-6.2"/></svg>
+<select name=language title=language onchange="window.location.href=this.selectedOptions[0].value"><option value=https://zg-dd.github.io/>简体中文</option><option value=https://zg-dd.github.io/en/ selected>English</option></select></li><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>Dark Mode</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">Table of contents</h2><div class=widget--toc><nav id=TableOfContents><ul><li><a href=#11-basic-concepts-of-pointers>1.1 Basic Concepts of Pointers</a></li><li><a href=#12-why-do-we-need-pointers>1.2 Why Do We Need Pointers</a></li></ul><ul><li><a href=#21-pointer-declaration>2.1 Pointer Declaration</a></li><li><a href=#22-getting-variable-addresses--operator>2.2 Getting Variable Addresses (& Operator)</a></li><li><a href=#23-accessing-values-pointed-by-pointers--operator>2.3 Accessing Values Pointed by Pointers (* Operator)</a></li></ul><ul><li><a href=#31-pointer-zero-values>3.1 Pointer Zero Values</a></li><li><a href=#32-safe-checking-of-nil-pointers>3.2 Safe Checking of nil Pointers</a></li></ul><ul><li><a href=#41-pointers-as-function-parameters>4.1 Pointers as Function Parameters</a></li><li><a href=#42-functions-returning-pointers>4.2 Functions Returning Pointers</a></li></ul><ul><li><a href=#51-pointer-arrays>5.1 Pointer Arrays</a></li><li><a href=#52-array-pointers>5.2 Array Pointers</a></li></ul><ul><li><a href=#71-swapping-two-numbers>7.1 Swapping Two Numbers</a></li><li><a href=#72-linked-list-node-example>7.2 Linked List Node Example</a></li></ul><ul><li><a href=#81-important-notes>8.1 Important Notes</a></li><li><a href=#82-best-practices>8.2 Best Practices</a></li></ul><ul><li><a href=#91-new-function>9.1 new Function</a></li><li><a href=#92-make-function>9.2 make Function</a></li></ul></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/en/categories/golang/>Golang</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/en/stu/golang-stu-08/>Golang Learning Journey [Part 8: Pointer]</a></h2></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published datetime=2026-02-04T16:15:16+08:00>Feb 04, 2026</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>10 minute read</time></div></footer><footer class=article-translations><svg class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5h7"/><path d="M9 3v2c0 4.418-2.239 8-5 8"/><path d="M5 9c-.003 2.144 2.952 3.908 6.7 4"/><path d="M12 20l4-9 4 9"/><path d="M19.1 18h-6.2"/></svg><div><a href=https://zg-dd.github.io/stu/golang-stu-08/ class=link>简体中文</a></div></footer></div></header><section class=article-content><h1 id=1-what-is-a-pointer>1. What is a Pointer</h1><blockquote><p>A pointer is an important concept in programming. It acts like an &ldquo;address label&rdquo; that stores the specific location information of a variable in memory. Through pointers, we can directly access and manipulate data in memory.</p></blockquote><h2 id=11-basic-concepts-of-pointers>1.1 Basic Concepts of Pointers</h2><p>Imagine a real-life scenario:</p><ul><li>Your home has a specific address (for example: xxx Street, Chaoyang District, Beijing)</li><li>Others can find your home just by knowing this address</li><li>A pointer is equivalent to this &ldquo;address&rdquo; - it stores the memory location of a variable</li></ul><p>In computers:</p><ul><li>Each variable is allocated a piece of memory space to store data</li><li>This memory space has a unique address</li><li>Pointer variables store this memory address</li></ul><h2 id=12-why-do-we-need-pointers>1.2 Why Do We Need Pointers</h2><p>Pointers have several important roles:</p><ol><li><strong>Memory Saving</strong>: When passing large data structures, passing pointers is more efficient than passing the entire data</li><li><strong>Direct Modification</strong>: Original data can be modified directly within functions</li><li><strong>Dynamic Memory Management</strong>: Memory can be allocated and freed dynamically</li><li><strong>Data Structure Implementation</strong>: Foundation for implementing complex data structures like linked lists and trees</li></ol><h1 id=2-pointer-declaration-and-usage>2. Pointer Declaration and Usage</h1><h2 id=21-pointer-declaration>2.1 Pointer Declaration</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#75715e>// Pointer declaration syntax: var pointer_variable_name *data_type</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>var</span> <span style=color:#a6e22e>ptr</span> <span style=color:#f92672>*</span><span style=color:#66d9ef>int</span>     <span style=color:#75715e>// Declare a pointer to int type</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>var</span> <span style=color:#a6e22e>ptr2</span> <span style=color:#f92672>*</span><span style=color:#66d9ef>string</span> <span style=color:#75715e>// Declare a pointer to string type</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>var</span> <span style=color:#a6e22e>ptr3</span> <span style=color:#f92672>*</span><span style=color:#66d9ef>float64</span> <span style=color:#75715e>// Declare a pointer to float64 type</span>
+</span></span></code></pre></div><h2 id=22-getting-variable-addresses--operator>2.2 Getting Variable Addresses (& Operator)</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Declare ordinary variables</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>var</span> <span style=color:#a6e22e>num</span> <span style=color:#66d9ef>int</span> = <span style=color:#ae81ff>100</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>var</span> <span style=color:#a6e22e>name</span> <span style=color:#66d9ef>string</span> = <span style=color:#e6db74>&#34;Zhang San&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>var</span> <span style=color:#a6e22e>score</span> <span style=color:#66d9ef>float64</span> = <span style=color:#ae81ff>95.5</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Use &amp; operator to get variable&#39;s memory address</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>var</span> <span style=color:#a6e22e>ptrNum</span> <span style=color:#f92672>*</span><span style=color:#66d9ef>int</span> = <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>num</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>var</span> <span style=color:#a6e22e>ptrName</span> <span style=color:#f92672>*</span><span style=color:#66d9ef>string</span> = <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>name</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>var</span> <span style=color:#a6e22e>ptrScore</span> <span style=color:#f92672>*</span><span style=color:#66d9ef>float64</span> = <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>score</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Variable num value: %d, address: %p\n&#34;</span>, <span style=color:#a6e22e>num</span>, <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>num</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Variable name value: %s, address: %p\n&#34;</span>, <span style=color:#a6e22e>name</span>, <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>name</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Variable score value: %f, address: %p\n&#34;</span>, <span style=color:#a6e22e>score</span>, <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>score</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Pointer ptrNum stores address: %p, pointed value: %d\n&#34;</span>, <span style=color:#a6e22e>ptrNum</span>, <span style=color:#f92672>*</span><span style=color:#a6e22e>ptrNum</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Pointer ptrName stores address: %p, pointed value: %s\n&#34;</span>, <span style=color:#a6e22e>ptrName</span>, <span style=color:#f92672>*</span><span style=color:#a6e22e>ptrName</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Pointer ptrScore stores address: %p, pointed value: %f\n&#34;</span>, <span style=color:#a6e22e>ptrScore</span>, <span style=color:#f92672>*</span><span style=color:#a6e22e>ptrScore</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Execution result:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>Variable num value: 100, address: 0xc0000140a8
+</span></span><span style=display:flex><span>Variable name value: Zhang San, address: 0xc000010230
+</span></span><span style=display:flex><span>Variable score value: 95.500000, address: 0xc0000140b8
+</span></span><span style=display:flex><span>Pointer ptrNum stores address: 0xc0000140a8, pointed value: <span style=color:#ae81ff>100</span>
+</span></span><span style=display:flex><span>Pointer ptrName stores address: 0xc000010230, pointed value: Zhang San
+</span></span><span style=display:flex><span>Pointer ptrScore stores address: 0xc0000140b8, pointed value: 95.500000
+</span></span></code></pre></div><h2 id=23-accessing-values-pointed-by-pointers--operator>2.3 Accessing Values Pointed by Pointers (* Operator)</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>var</span> <span style=color:#a6e22e>num</span> <span style=color:#66d9ef>int</span> = <span style=color:#ae81ff>50</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>var</span> <span style=color:#a6e22e>ptr</span> <span style=color:#f92672>*</span><span style=color:#66d9ef>int</span> = <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>num</span>  <span style=color:#75715e>// ptr points to num&#39;s address</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;num value: %d\n&#34;</span>, <span style=color:#a6e22e>num</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;ptr stores address: %p\n&#34;</span>, <span style=color:#a6e22e>ptr</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Value accessed through pointer: %d\n&#34;</span>, <span style=color:#f92672>*</span><span style=color:#a6e22e>ptr</span>)  <span style=color:#75715e>// *ptr represents getting the value at the address ptr points to</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Modify value through pointer</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>*</span><span style=color:#a6e22e>ptr</span> = <span style=color:#ae81ff>100</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;num value after modification: %d\n&#34;</span>, <span style=color:#a6e22e>num</span>)  <span style=color:#75715e>// num&#39;s value is also modified</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Modified value accessed through pointer: %d\n&#34;</span>, <span style=color:#f92672>*</span><span style=color:#a6e22e>ptr</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Execution result:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>num value: <span style=color:#ae81ff>50</span>
+</span></span><span style=display:flex><span>ptr stores address: 0xc0000140a8
+</span></span><span style=display:flex><span>Value accessed through pointer: <span style=color:#ae81ff>50</span>
+</span></span><span style=display:flex><span>num value after modification: <span style=color:#ae81ff>100</span>
+</span></span><span style=display:flex><span>Modified value accessed through pointer: <span style=color:#ae81ff>100</span>
+</span></span></code></pre></div><h1 id=3-pointer-zero-values-and-nil>3. Pointer Zero Values and nil</h1><h2 id=31-pointer-zero-values>3.1 Pointer Zero Values</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Declare pointer variables without initialization</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>var</span> <span style=color:#a6e22e>ptr</span> <span style=color:#f92672>*</span><span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>var</span> <span style=color:#a6e22e>ptr2</span> <span style=color:#f92672>*</span><span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Uninitialized int pointer: %v, is nil: %t\n&#34;</span>, <span style=color:#a6e22e>ptr</span>, <span style=color:#a6e22e>ptr</span> <span style=color:#f92672>==</span> <span style=color:#66d9ef>nil</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Uninitialized string pointer: %v, is nil: %t\n&#34;</span>, <span style=color:#a6e22e>ptr2</span>, <span style=color:#a6e22e>ptr2</span> <span style=color:#f92672>==</span> <span style=color:#66d9ef>nil</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Trying to access values of uninitialized pointers will cause panic</span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// fmt.Println(*ptr)  // This line would cause an error!</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Execution result:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>Uninitialized int pointer: &lt;nil&gt;, is nil: true
+</span></span><span style=display:flex><span>Uninitialized string pointer: &lt;nil&gt;, is nil: true
+</span></span></code></pre></div><h2 id=32-safe-checking-of-nil-pointers>3.2 Safe Checking of nil Pointers</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>var</span> <span style=color:#a6e22e>ptr</span> <span style=color:#f92672>*</span><span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Safety check</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>ptr</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;Pointer is not nil, safe to access&#34;</span>)
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#f92672>*</span><span style=color:#a6e22e>ptr</span>)
+</span></span><span style=display:flex><span>    } <span style=color:#66d9ef>else</span> {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;Pointer is nil, cannot access&#34;</span>)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// After initializing pointer</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>num</span> <span style=color:#f92672>:=</span> <span style=color:#ae81ff>42</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>ptr</span> = <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>num</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>ptr</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;Pointer is not nil, safe to access&#34;</span>)
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;Value pointed by pointer: &#34;</span>, <span style=color:#f92672>*</span><span style=color:#a6e22e>ptr</span>)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Execution result:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>Pointer is nil, cannot access
+</span></span><span style=display:flex><span>Pointer is not nil, safe to access
+</span></span><span style=display:flex><span>Value pointed by pointer:  <span style=color:#ae81ff>42</span>
+</span></span></code></pre></div><h1 id=4-pointers-and-functions>4. Pointers and Functions</h1><h2 id=41-pointers-as-function-parameters>4.1 Pointers as Function Parameters</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Pass by value - won&#39;t modify original value</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>changeValueByValue</span>(<span style=color:#a6e22e>x</span> <span style=color:#66d9ef>int</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>x</span> = <span style=color:#ae81ff>100</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Value of x inside function: %d\n&#34;</span>, <span style=color:#a6e22e>x</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Pass by pointer - can modify original value</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>changeValueByPointer</span>(<span style=color:#a6e22e>ptr</span> <span style=color:#f92672>*</span><span style=color:#66d9ef>int</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#f92672>*</span><span style=color:#a6e22e>ptr</span> = <span style=color:#ae81ff>200</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Value modified through pointer inside function: %d\n&#34;</span>, <span style=color:#f92672>*</span><span style=color:#a6e22e>ptr</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>num</span> <span style=color:#f92672>:=</span> <span style=color:#ae81ff>50</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;num value before calling function: %d\n&#34;</span>, <span style=color:#a6e22e>num</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Call by value</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>changeValueByValue</span>(<span style=color:#a6e22e>num</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;num value after call by value: %d\n&#34;</span>, <span style=color:#a6e22e>num</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Call by pointer</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>changeValueByPointer</span>(<span style=color:#f92672>&amp;</span><span style=color:#a6e22e>num</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;num value after call by pointer: %d\n&#34;</span>, <span style=color:#a6e22e>num</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Execution result:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>num value before calling <span style=color:#66d9ef>function</span>: <span style=color:#ae81ff>50</span>
+</span></span><span style=display:flex><span>Value of x inside <span style=color:#66d9ef>function</span>: <span style=color:#ae81ff>100</span>
+</span></span><span style=display:flex><span>num value after call by value: <span style=color:#ae81ff>50</span>
+</span></span><span style=display:flex><span>Value modified through pointer inside <span style=color:#66d9ef>function</span>: <span style=color:#ae81ff>200</span>
+</span></span><span style=display:flex><span>num value after call by pointer: <span style=color:#ae81ff>200</span>
+</span></span></code></pre></div><h2 id=42-functions-returning-pointers>4.2 Functions Returning Pointers</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Return pointer to int</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>createIntPointer</span>(<span style=color:#a6e22e>value</span> <span style=color:#66d9ef>int</span>) <span style=color:#f92672>*</span><span style=color:#66d9ef>int</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>value</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Return pointer to struct</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>createStudentPointer</span>(<span style=color:#a6e22e>name</span> <span style=color:#66d9ef>string</span>, <span style=color:#a6e22e>age</span> <span style=color:#66d9ef>int</span>) <span style=color:#f92672>*</span><span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Name</span> <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Age</span>  <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>} {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>student</span> <span style=color:#f92672>:=</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Name</span> <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Age</span>  <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>    }{<span style=color:#a6e22e>name</span>, <span style=color:#a6e22e>age</span>}
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>student</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Get pointer</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>ptr</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>createIntPointer</span>(<span style=color:#ae81ff>999</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Pointer address: %p, pointed value: %d\n&#34;</span>, <span style=color:#a6e22e>ptr</span>, <span style=color:#f92672>*</span><span style=color:#a6e22e>ptr</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Modify value accessed through pointer</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>*</span><span style=color:#a6e22e>ptr</span> = <span style=color:#ae81ff>888</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Modified value: %d\n&#34;</span>, <span style=color:#f92672>*</span><span style=color:#a6e22e>ptr</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Struct pointer</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>studentPtr</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>createStudentPointer</span>(<span style=color:#e6db74>&#34;Li Si&#34;</span>, <span style=color:#ae81ff>20</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Student info: %s, %d years old\n&#34;</span>, (<span style=color:#f92672>*</span><span style=color:#a6e22e>studentPtr</span>).<span style=color:#a6e22e>Name</span>, (<span style=color:#f92672>*</span><span style=color:#a6e22e>studentPtr</span>).<span style=color:#a6e22e>Age</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Go provides simplified syntax</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Student info simplified syntax: %s, %d years old\n&#34;</span>, <span style=color:#a6e22e>studentPtr</span>.<span style=color:#a6e22e>Name</span>, <span style=color:#a6e22e>studentPtr</span>.<span style=color:#a6e22e>Age</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Execution result:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>Pointer address: 0xc0000140a8, pointed value: <span style=color:#ae81ff>999</span>
+</span></span><span style=display:flex><span>Modified value: <span style=color:#ae81ff>888</span>
+</span></span><span style=display:flex><span>Student info: Li Si, <span style=color:#ae81ff>20</span> years old
+</span></span><span style=display:flex><span>Student info simplified syntax: Li Si, <span style=color:#ae81ff>20</span> years old
+</span></span></code></pre></div><h1 id=5-pointer-arrays-and-array-pointers>5. Pointer Arrays and Array Pointers</h1><h2 id=51-pointer-arrays>5.1 Pointer Arrays</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Create several variables</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>a</span>, <span style=color:#a6e22e>b</span>, <span style=color:#a6e22e>c</span> <span style=color:#f92672>:=</span> <span style=color:#ae81ff>1</span>, <span style=color:#ae81ff>2</span>, <span style=color:#ae81ff>3</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Pointer array - each element of the array is a pointer</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>ptrArray</span> <span style=color:#f92672>:=</span> [<span style=color:#ae81ff>3</span>]<span style=color:#f92672>*</span><span style=color:#66d9ef>int</span>{<span style=color:#f92672>&amp;</span><span style=color:#a6e22e>a</span>, <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>b</span>, <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>c</span>}
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;Pointer array content:&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span> <span style=color:#a6e22e>i</span>, <span style=color:#a6e22e>ptr</span> <span style=color:#f92672>:=</span> <span style=color:#66d9ef>range</span> <span style=color:#a6e22e>ptrArray</span> {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Index %d: address %p, value %d\n&#34;</span>, <span style=color:#a6e22e>i</span>, <span style=color:#a6e22e>ptr</span>, <span style=color:#f92672>*</span><span style=color:#a6e22e>ptr</span>)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Modify original variables through pointer array</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>*</span><span style=color:#a6e22e>ptrArray</span>[<span style=color:#ae81ff>0</span>] = <span style=color:#ae81ff>10</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>*</span><span style=color:#a6e22e>ptrArray</span>[<span style=color:#ae81ff>1</span>] = <span style=color:#ae81ff>20</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>*</span><span style=color:#a6e22e>ptrArray</span>[<span style=color:#ae81ff>2</span>] = <span style=color:#ae81ff>30</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;After modification: a=%d, b=%d, c=%d\n&#34;</span>, <span style=color:#a6e22e>a</span>, <span style=color:#a6e22e>b</span>, <span style=color:#a6e22e>c</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Execution result:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>Pointer array content:
+</span></span><span style=display:flex><span>Index 0: address 0xc0000140a8, value <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span>Index 1: address 0xc0000140b0, value <span style=color:#ae81ff>2</span>
+</span></span><span style=display:flex><span>Index 2: address 0xc0000140b8, value <span style=color:#ae81ff>3</span>
+</span></span><span style=display:flex><span>After modification: a<span style=color:#f92672>=</span>10, b<span style=color:#f92672>=</span>20, c<span style=color:#f92672>=</span><span style=color:#ae81ff>30</span>
+</span></span></code></pre></div><h2 id=52-array-pointers>5.2 Array Pointers</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Ordinary array</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>arr</span> <span style=color:#f92672>:=</span> [<span style=color:#ae81ff>3</span>]<span style=color:#66d9ef>int</span>{<span style=color:#ae81ff>10</span>, <span style=color:#ae81ff>20</span>, <span style=color:#ae81ff>30</span>}
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Array pointer - pointer pointing to the entire array</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>arrPtr</span> <span style=color:#f92672>:=</span> <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>arr</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Array address: %p\n&#34;</span>, <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>arr</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Array pointer stores address: %p\n&#34;</span>, <span style=color:#a6e22e>arrPtr</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Access elements through array pointer: %d, %d, %d\n&#34;</span>, 
+</span></span><span style=display:flex><span>               (<span style=color:#f92672>*</span><span style=color:#a6e22e>arrPtr</span>)[<span style=color:#ae81ff>0</span>], (<span style=color:#f92672>*</span><span style=color:#a6e22e>arrPtr</span>)[<span style=color:#ae81ff>1</span>], (<span style=color:#f92672>*</span><span style=color:#a6e22e>arrPtr</span>)[<span style=color:#ae81ff>2</span>])
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Modify array elements</span>
+</span></span><span style=display:flex><span>    (<span style=color:#f92672>*</span><span style=color:#a6e22e>arrPtr</span>)[<span style=color:#ae81ff>0</span>] = <span style=color:#ae81ff>100</span>
+</span></span><span style=display:flex><span>    (<span style=color:#f92672>*</span><span style=color:#a6e22e>arrPtr</span>)[<span style=color:#ae81ff>1</span>] = <span style=color:#ae81ff>200</span>
+</span></span><span style=display:flex><span>    (<span style=color:#f92672>*</span><span style=color:#a6e22e>arrPtr</span>)[<span style=color:#ae81ff>2</span>] = <span style=color:#ae81ff>300</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Array after modification: %v\n&#34;</span>, <span style=color:#a6e22e>arr</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Go&#39;s simplified syntax</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>arrPtr</span>[<span style=color:#ae81ff>0</span>] = <span style=color:#ae81ff>1000</span>  <span style=color:#75715e>// Equivalent to (*arrPtr)[0] = 1000</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;After modification with simplified syntax: %v\n&#34;</span>, <span style=color:#a6e22e>arr</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Execution result:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>Array address: 0xc000016060
+</span></span><span style=display:flex><span>Array pointer stores address: 0xc000016060
+</span></span><span style=display:flex><span>Access elements through array pointer: 10, 20, <span style=color:#ae81ff>30</span>
+</span></span><span style=display:flex><span>Array after modification: <span style=color:#f92672>[</span><span style=color:#ae81ff>100</span> <span style=color:#ae81ff>200</span> 300<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span>After modification with simplified syntax: <span style=color:#f92672>[</span><span style=color:#ae81ff>1000</span> <span style=color:#ae81ff>200</span> 300<span style=color:#f92672>]</span>
+</span></span></code></pre></div><h1 id=6-pointers-to-pointers-multi-level-pointers>6. Pointers to Pointers (Multi-level Pointers)</h1><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>num</span> <span style=color:#f92672>:=</span> <span style=color:#ae81ff>42</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// First level pointer</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>ptr1</span> <span style=color:#f92672>:=</span> <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>num</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;num value: %d, address: %p\n&#34;</span>, <span style=color:#a6e22e>num</span>, <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>num</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;First level pointer ptr1: %p, pointed value: %d\n&#34;</span>, <span style=color:#a6e22e>ptr1</span>, <span style=color:#f92672>*</span><span style=color:#a6e22e>ptr1</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Second level pointer (pointer to pointer)</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>ptr2</span> <span style=color:#f92672>:=</span> <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>ptr1</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Second level pointer ptr2: %p, pointed address: %p, final value: %d\n&#34;</span>, 
+</span></span><span style=display:flex><span>               <span style=color:#a6e22e>ptr2</span>, <span style=color:#f92672>*</span><span style=color:#a6e22e>ptr2</span>, <span style=color:#f92672>**</span><span style=color:#a6e22e>ptr2</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Third level pointer</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>ptr3</span> <span style=color:#f92672>:=</span> <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>ptr2</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Third level pointer ptr3: %p, final value: %d\n&#34;</span>, <span style=color:#a6e22e>ptr3</span>, <span style=color:#f92672>***</span><span style=color:#a6e22e>ptr3</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Modify value through multi-level pointer</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>***</span><span style=color:#a6e22e>ptr3</span> = <span style=color:#ae81ff>999</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;num value after modification through third level pointer: %d\n&#34;</span>, <span style=color:#a6e22e>num</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Execution result:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>num value: 42, address: 0xc0000140a8
+</span></span><span style=display:flex><span>First level pointer ptr1: 0xc0000140a8, pointed value: <span style=color:#ae81ff>42</span>
+</span></span><span style=display:flex><span>Second level pointer ptr2: 0xc000006028, pointed address: 0xc0000140a8, final value: <span style=color:#ae81ff>42</span>
+</span></span><span style=display:flex><span>Third level pointer ptr3: 0xc000006038, final value: <span style=color:#ae81ff>42</span>
+</span></span><span style=display:flex><span>num value after modification through third level pointer: <span style=color:#ae81ff>999</span>
+</span></span></code></pre></div><h1 id=7-practical-application-examples-of-pointers>7. Practical Application Examples of Pointers</h1><h2 id=71-swapping-two-numbers>7.1 Swapping Two Numbers</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Swap two numbers using pointers</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>swap</span>(<span style=color:#a6e22e>a</span>, <span style=color:#a6e22e>b</span> <span style=color:#f92672>*</span><span style=color:#66d9ef>int</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>temp</span> <span style=color:#f92672>:=</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>a</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>*</span><span style=color:#a6e22e>a</span> = <span style=color:#f92672>*</span><span style=color:#a6e22e>b</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>*</span><span style=color:#a6e22e>b</span> = <span style=color:#a6e22e>temp</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>x</span>, <span style=color:#a6e22e>y</span> <span style=color:#f92672>:=</span> <span style=color:#ae81ff>10</span>, <span style=color:#ae81ff>20</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Before swap: x=%d, y=%d\n&#34;</span>, <span style=color:#a6e22e>x</span>, <span style=color:#a6e22e>y</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>swap</span>(<span style=color:#f92672>&amp;</span><span style=color:#a6e22e>x</span>, <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>y</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;After swap: x=%d, y=%d\n&#34;</span>, <span style=color:#a6e22e>x</span>, <span style=color:#a6e22e>y</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Execution result:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>Before swap: x<span style=color:#f92672>=</span>10, y<span style=color:#f92672>=</span><span style=color:#ae81ff>20</span>
+</span></span><span style=display:flex><span>After swap: x<span style=color:#f92672>=</span>20, y<span style=color:#f92672>=</span><span style=color:#ae81ff>10</span>
+</span></span></code></pre></div><h2 id=72-linked-list-node-example>7.2 Linked List Node Example</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Define linked list node structure</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>ListNode</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Value</span> <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Next</span>  <span style=color:#f92672>*</span><span style=color:#a6e22e>ListNode</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Create new node</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>NewNode</span>(<span style=color:#a6e22e>value</span> <span style=color:#66d9ef>int</span>) <span style=color:#f92672>*</span><span style=color:#a6e22e>ListNode</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>ListNode</span>{<span style=color:#a6e22e>Value</span>: <span style=color:#a6e22e>value</span>, <span style=color:#a6e22e>Next</span>: <span style=color:#66d9ef>nil</span>}
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Add node at the end of linked list</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>AppendNode</span>(<span style=color:#a6e22e>head</span> <span style=color:#f92672>**</span><span style=color:#a6e22e>ListNode</span>, <span style=color:#a6e22e>value</span> <span style=color:#66d9ef>int</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>newNode</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>NewNode</span>(<span style=color:#a6e22e>value</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>head</span> <span style=color:#f92672>==</span> <span style=color:#66d9ef>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#f92672>*</span><span style=color:#a6e22e>head</span> = <span style=color:#a6e22e>newNode</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>current</span> <span style=color:#f92672>:=</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>head</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span> <span style=color:#a6e22e>current</span>.<span style=color:#a6e22e>Next</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>current</span> = <span style=color:#a6e22e>current</span>.<span style=color:#a6e22e>Next</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>current</span>.<span style=color:#a6e22e>Next</span> = <span style=color:#a6e22e>newNode</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Print linked list</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>PrintList</span>(<span style=color:#a6e22e>head</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>ListNode</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>current</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>head</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span> <span style=color:#a6e22e>current</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;%d -&gt; &#34;</span>, <span style=color:#a6e22e>current</span>.<span style=color:#a6e22e>Value</span>)
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>current</span> = <span style=color:#a6e22e>current</span>.<span style=color:#a6e22e>Next</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;nil&#34;</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>var</span> <span style=color:#a6e22e>head</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>ListNode</span> = <span style=color:#66d9ef>nil</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Add nodes</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>AppendNode</span>(<span style=color:#f92672>&amp;</span><span style=color:#a6e22e>head</span>, <span style=color:#ae81ff>1</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>AppendNode</span>(<span style=color:#f92672>&amp;</span><span style=color:#a6e22e>head</span>, <span style=color:#ae81ff>2</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>AppendNode</span>(<span style=color:#f92672>&amp;</span><span style=color:#a6e22e>head</span>, <span style=color:#ae81ff>3</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>AppendNode</span>(<span style=color:#f92672>&amp;</span><span style=color:#a6e22e>head</span>, <span style=color:#ae81ff>4</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;Linked list content:&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>PrintList</span>(<span style=color:#a6e22e>head</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Execution result:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>Linked list content:
+</span></span><span style=display:flex><span><span style=color:#ae81ff>1</span> -&gt; <span style=color:#ae81ff>2</span> -&gt; <span style=color:#ae81ff>3</span> -&gt; <span style=color:#ae81ff>4</span> -&gt; nil
+</span></span></code></pre></div><h1 id=8-pointer-considerations-and-best-practices>8. Pointer Considerations and Best Practices</h1><h2 id=81-important-notes>8.1 Important Notes</h2><ol><li><strong>Danger of nil pointer access</strong>: Accessing nil pointers will cause program crashes</li><li><strong>Dangling pointer problem</strong>: Pointers pointing to released memory</li><li><strong>Memory leak</strong>: Forgetting to free dynamically allocated memory</li></ol><h2 id=82-best-practices>8.2 Best Practices</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 1. Always check if pointer is nil</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>var</span> <span style=color:#a6e22e>ptr</span> <span style=color:#f92672>*</span><span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>ptr</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#f92672>*</span><span style=color:#a6e22e>ptr</span>) <span style=color:#75715e>// Safe access</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 2. Initialize pointers</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>num</span> <span style=color:#f92672>:=</span> <span style=color:#ae81ff>100</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>ptr</span> = <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>num</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Safe access: %d\n&#34;</span>, <span style=color:#f92672>*</span><span style=color:#a6e22e>ptr</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 3. Consider lifetime when using pointers</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>data</span> <span style=color:#f92672>:=</span> make([]<span style=color:#66d9ef>int</span>, <span style=color:#ae81ff>5</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>ptrToSlice</span> <span style=color:#f92672>:=</span> <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>data</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Slice pointer: %v\n&#34;</span>, <span style=color:#f92672>*</span><span style=color:#a6e22e>ptrToSlice</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 4. Be careful when functions return pointers</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>func</span> <span style=color:#a6e22e>returnPointer</span>() <span style=color:#f92672>*</span><span style=color:#66d9ef>int</span> {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>value</span> <span style=color:#f92672>:=</span> <span style=color:#ae81ff>42</span>  <span style=color:#75715e>// Local variable</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>value</span> <span style=color:#75715e>// Dangerous! Returning address of local variable</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Correct approach</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>func</span> <span style=color:#a6e22e>returnPointerSafe</span>() <span style=color:#f92672>*</span><span style=color:#66d9ef>int</span> {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>value</span> <span style=color:#f92672>:=</span> new(<span style=color:#66d9ef>int</span>) <span style=color:#75715e>// Allocate memory on heap</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>*</span><span style=color:#a6e22e>value</span> = <span style=color:#ae81ff>42</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>value</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h1 id=9-difference-between-new-and-make-functions>9. Difference Between new and make Functions</h1><h2 id=91-new-function>9.1 new Function</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// new function allocates zero-value memory for specified type and returns pointer</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>ptr1</span> <span style=color:#f92672>:=</span> new(<span style=color:#66d9ef>int</span>)        <span style=color:#75715e>// *int type, value 0</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>ptr2</span> <span style=color:#f92672>:=</span> new(<span style=color:#66d9ef>string</span>)     <span style=color:#75715e>// *string type, value &#34;&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>ptr3</span> <span style=color:#f92672>:=</span> new([<span style=color:#ae81ff>3</span>]<span style=color:#66d9ef>int</span>)     <span style=color:#75715e>// *[3]int type, value [0,0,0]</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;int pointer: %p, value: %d\n&#34;</span>, <span style=color:#a6e22e>ptr1</span>, <span style=color:#f92672>*</span><span style=color:#a6e22e>ptr1</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;string pointer: %p, value: %s\n&#34;</span>, <span style=color:#a6e22e>ptr2</span>, <span style=color:#f92672>*</span><span style=color:#a6e22e>ptr2</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;array pointer: %p, value: %v\n&#34;</span>, <span style=color:#a6e22e>ptr3</span>, <span style=color:#f92672>*</span><span style=color:#a6e22e>ptr3</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Modify values</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>*</span><span style=color:#a6e22e>ptr1</span> = <span style=color:#ae81ff>100</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>*</span><span style=color:#a6e22e>ptr2</span> = <span style=color:#e6db74>&#34;Hello&#34;</span>
+</span></span><span style=display:flex><span>    (<span style=color:#f92672>*</span><span style=color:#a6e22e>ptr3</span>)[<span style=color:#ae81ff>0</span>] = <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span>    (<span style=color:#f92672>*</span><span style=color:#a6e22e>ptr3</span>)[<span style=color:#ae81ff>1</span>] = <span style=color:#ae81ff>2</span>
+</span></span><span style=display:flex><span>    (<span style=color:#f92672>*</span><span style=color:#a6e22e>ptr3</span>)[<span style=color:#ae81ff>2</span>] = <span style=color:#ae81ff>3</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Modified int value: %d\n&#34;</span>, <span style=color:#f92672>*</span><span style=color:#a6e22e>ptr1</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Modified string value: %s\n&#34;</span>, <span style=color:#f92672>*</span><span style=color:#a6e22e>ptr2</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Modified array value: %v\n&#34;</span>, <span style=color:#f92672>*</span><span style=color:#a6e22e>ptr3</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Execution result:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>int pointer: 0xc0000140a8, value: <span style=color:#ae81ff>0</span>
+</span></span><span style=display:flex><span>string pointer: 0xc000010230, value: 
+</span></span><span style=display:flex><span>array pointer: 0xc000016060, value: <span style=color:#f92672>[</span><span style=color:#ae81ff>0</span> <span style=color:#ae81ff>0</span> 0<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span>Modified int value: <span style=color:#ae81ff>100</span>
+</span></span><span style=display:flex><span>Modified string value: Hello
+</span></span><span style=display:flex><span>Modified array value: <span style=color:#f92672>[</span><span style=color:#ae81ff>1</span> <span style=color:#ae81ff>2</span> 3<span style=color:#f92672>]</span>
+</span></span></code></pre></div><h2 id=92-make-function>9.2 make Function</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// make function is used to create slices, maps, channels</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>slice</span> <span style=color:#f92672>:=</span> make([]<span style=color:#66d9ef>int</span>, <span style=color:#ae81ff>5</span>)        <span style=color:#75715e>// Create slice with length 5</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>mapData</span> <span style=color:#f92672>:=</span> make(<span style=color:#66d9ef>map</span>[<span style=color:#66d9ef>string</span>]<span style=color:#66d9ef>int</span>) <span style=color:#75715e>// Create map</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>ch</span> <span style=color:#f92672>:=</span> make(<span style=color:#66d9ef>chan</span> <span style=color:#66d9ef>int</span>)           <span style=color:#75715e>// Create channel</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Slice: %v, length: %d\n&#34;</span>, <span style=color:#a6e22e>slice</span>, len(<span style=color:#a6e22e>slice</span>))
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Map: %v\n&#34;</span>, <span style=color:#a6e22e>mapData</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Channel: %v\n&#34;</span>, <span style=color:#a6e22e>ch</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Initialize data</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>slice</span>[<span style=color:#ae81ff>0</span>] = <span style=color:#ae81ff>10</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>slice</span>[<span style=color:#ae81ff>1</span>] = <span style=color:#ae81ff>20</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>mapData</span>[<span style=color:#e6db74>&#34;one&#34;</span>] = <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>mapData</span>[<span style=color:#e6db74>&#34;two&#34;</span>] = <span style=color:#ae81ff>2</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Slice after initialization: %v\n&#34;</span>, <span style=color:#a6e22e>slice</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Map after initialization: %v\n&#34;</span>, <span style=color:#a6e22e>mapData</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h1 id=10-summary>10. Summary</h1><p>Pointers are a powerful but cautious feature in Golang:</p><p><strong>Core Concepts</strong>:</p><ul><li>Pointers store memory addresses, not actual values</li><li>Use <code>&</code> to get variable address, use <code>*</code> to access value pointed by pointer</li><li>The zero value of pointers is <code>nil</code></li></ul><p><strong>Main Uses</strong>:</p><ol><li>Sharing and modifying data between functions</li><li>Avoiding copy overhead of large data structures</li><li>Implementing complex data structures (linked lists, trees, etc.)</li><li>Dynamic memory management</li></ol><p><strong>Important Notes</strong>:</p><ul><li>Always check if pointers are nil</li><li>Pay attention to variable lifecycles</li><li>Avoid dangling pointers and memory leaks</li></ul><p>Mastering pointers is very important for deeply understanding Golang and writing efficient programs. Although it may seem complex when first learning, it can be mastered through extensive practice.</p></section><footer class=article-footer><section class=article-tags><a href=/en/tags/golang-syntax/>Golang Syntax</a></section></footer></article><aside class=related-content--wrapper><h2 class=section-title>Related content</h2><div class=related-content><div class="flex article-list--tile"><article><a href=/en/stu/golang-stu-07/><div class=article-details><h2 class=article-title>Golang Learning Journey [Part 7: closures, types, defer, panic/recover & the time package]</h2></div></a></article><article><a href=/en/stu/golang-stu-06/><div class=article-details><h2 class=article-title>Golang Learning Journey [Part 6: Composite Types – Map & Function Primer]</h2></div></a></article><article><a href=/en/stu/golang-stu-05/><div class=article-details><h2 class=article-title>Golang Learning Journey [Part 5: Composite Types – Arrays & Slices]</h2></div></a></article><article><a href=/en/stu/golang-stu-04/><div class=article-details><h2 class=article-title>Golang Learning Journey [Part 4: Operators & Control Flow]</h2></div></a></article><article><a href=/en/stu/golang-stu-03/><div class=article-details><h2 class=article-title>Golang Learning Journey [Part 3: Basic Data Types and Type Conversion]</h2></div></a></article></div></div></aside><script src=https://giscus.app/client.js data-repo=zg-dd/zg-dd.github.io data-repo-id=R_kgDOQwB7tw data-category=Announcements data-category-id=DIC_kwDOQwB7t84C0WGD data-mapping=pathname data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=preferred_color_scheme data-lang=zh-CN data-loading crossorigin=anonymous async></script><script>function setGiscusTheme(e){let t=document.querySelector("iframe.giscus-frame");t&&t.contentWindow.postMessage({giscus:{setConfig:{theme:e}}},"https://giscus.app")}(function(){addEventListener("message",t=>{if(event.origin!=="https://giscus.app")return;e()}),window.addEventListener("onColorSchemeChange",e);function e(){setGiscusTheme(document.documentElement.dataset.scheme==="light"?"preferred_color_scheme":"preferred_color_scheme")}})()</script><footer class=site-footer><section class=copyright>&copy;
+2026 小巷 Blog</section><section class=powerby>Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a><br>Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.33.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a></section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.c922af694cc257bf1ecc41c0dd7b0430f9114ec280ccf67cd2c6ad55f5316c4e.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>

@@ -1,0 +1,687 @@
+<!doctype html><html lang=en dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="1. What is a Struct\rA struct is an important composite data type in Go language that can combine multiple data of different types together to form a meaningful whole. A struct can be understood as an abstract representation of things in the real world.\n1.1 Basic Concepts of Structs\rImagine we want to describe a student&rsquo;s information:\nName: string type Age: integer type Score: floating-point type Enrolled status: boolean type Without structs, we need to define multiple variables separately:\n"><title>Golang Learning Journey [Part 9: Struct]</title><link rel=canonical href=https://zg-dd.github.io/en/stu/golang-stu-09/><link rel=stylesheet href=/scss/style.min.ff560f1cad7a040e336f2dd6880b9ee1ad344d6e3d8f5411e5a1aaa8b23bbdd0.css><meta property='og:title' content="Golang Learning Journey [Part 9: Struct]"><meta property='og:description' content="1. What is a Struct\rA struct is an important composite data type in Go language that can combine multiple data of different types together to form a meaningful whole. A struct can be understood as an abstract representation of things in the real world.\n1.1 Basic Concepts of Structs\rImagine we want to describe a student&rsquo;s information:\nName: string type Age: integer type Score: floating-point type Enrolled status: boolean type Without structs, we need to define multiple variables separately:\n"><meta property='og:url' content='https://zg-dd.github.io/en/stu/golang-stu-09/'><meta property='og:site_name' content='小巷 Blog'><meta property='og:type' content='article'><meta property='article:section' content='Stu'><meta property='article:tag' content='Golang Syntax'><meta property='article:published_time' content='2026-02-04T17:15:16+08:00'><meta property='article:modified_time' content='2026-02-04T17:15:16+08:00'><meta name=twitter:title content="Golang Learning Journey [Part 9: Struct]"><meta name=twitter:description content="1. What is a Struct\rA struct is an important composite data type in Go language that can combine multiple data of different types together to form a meaningful whole. A struct can be understood as an abstract representation of things in the real world.\n1.1 Basic Concepts of Structs\rImagine we want to describe a student&rsquo;s information:\nName: string type Age: integer type Score: floating-point type Enrolled status: boolean type Without structs, we need to define multiple variables separately:\n"></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label="Toggle Menu">
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/en/><img src=/img/avatar_hu_a0cc1cf57968b27d.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a><span class=emoji>🌱</span></figure><div class=site-meta><h1 class=site-name><a href=/en>小巷 Blog</a></h1><h2 class=site-description>Recording is not to prove myself; rather, to make a habit of 'solving problems → thinking → sedimentation'.</h2></div></header><ol class=menu id=main-menu><li class=current><a href=/en/stu/><span>Study Notes</span></a></li><li><a href=/en/blog/><span>Essays</span></a></li><li><a href=/en/life/><span>Life</span></a></li><li><a href=/categories/><span>Categories</span></a></li><li><a href=/tags/><span>Tags</span></a></li><li class=menu-bottom-section><ol class=menu><li id=i18n-switch><svg class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5h7"/><path d="M9 3v2c0 4.418-2.239 8-5 8"/><path d="M5 9c-.003 2.144 2.952 3.908 6.7 4"/><path d="M12 20l4-9 4 9"/><path d="M19.1 18h-6.2"/></svg>
+<select name=language title=language onchange="window.location.href=this.selectedOptions[0].value"><option value=https://zg-dd.github.io/>简体中文</option><option value=https://zg-dd.github.io/en/ selected>English</option></select></li><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>Dark Mode</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">Table of contents</h2><div class=widget--toc><nav id=TableOfContents><ul><li><a href=#11-basic-concepts-of-structs>1.1 Basic Concepts of Structs</a></li><li><a href=#12-why-do-we-need-structs>1.2 Why Do We Need Structs</a></li></ul><ul><li><a href=#21-basic-definition-syntax>2.1 Basic Definition Syntax</a></li><li><a href=#22-struct-definition-examples>2.2 Struct Definition Examples</a></li><li><a href=#23-anonymous-structs>2.3 Anonymous Structs</a></li></ul><ul><li><a href=#31-various-creation-methods>3.1 Various Creation Methods</a></li><li><a href=#32-struct-zero-values>3.2 Struct Zero Values</a></li></ul><ul><li><a href=#41-field-access>4.1 Field Access</a></li><li><a href=#42-pointer-access-to-struct-fields>4.2 Pointer Access to Struct Fields</a></li></ul><ul><li><a href=#51-basic-nesting>5.1 Basic Nesting</a></li><li><a href=#52-anonymous-nesting-anonymous-fields>5.2 Anonymous Nesting (Anonymous Fields)</a></li></ul><ul><li><a href=#61-basic-tag-usage>6.1 Basic Tag Usage</a></li><li><a href=#62-multiple-tags-example>6.2 Multiple Tags Example</a></li></ul><ul><li><a href=#71-struct-equality-comparison>7.1 Struct Equality Comparison</a></li></ul><ul><li><a href=#81-constructor-functions-for-creating-structs>8.1 Constructor Functions for Creating Structs</a></li></ul><ul><li><a href=#91-structs-as-function-parameters>9.1 Structs as Function Parameters</a></li></ul></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/en/categories/golang/>Golang</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/en/stu/golang-stu-09/>Golang Learning Journey [Part 9: Struct]</a></h2></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published datetime=2026-02-04T17:15:16+08:00>Feb 04, 2026</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>12 minute read</time></div></footer><footer class=article-translations><svg class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5h7"/><path d="M9 3v2c0 4.418-2.239 8-5 8"/><path d="M5 9c-.003 2.144 2.952 3.908 6.7 4"/><path d="M12 20l4-9 4 9"/><path d="M19.1 18h-6.2"/></svg><div><a href=https://zg-dd.github.io/stu/golang-stu-09/ class=link>简体中文</a></div></footer></div></header><section class=article-content><h1 id=1-what-is-a-struct>1. What is a Struct</h1><blockquote><p>A struct is an important composite data type in Go language that can combine multiple data of different types together to form a meaningful whole. A struct can be understood as an abstract representation of things in the real world.</p></blockquote><h2 id=11-basic-concepts-of-structs>1.1 Basic Concepts of Structs</h2><p>Imagine we want to describe a student&rsquo;s information:</p><ul><li>Name: string type</li><li>Age: integer type</li><li>Score: floating-point type</li><li>Enrolled status: boolean type</li></ul><p>Without structs, we need to define multiple variables separately:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>var</span> <span style=color:#a6e22e>name</span> <span style=color:#66d9ef>string</span> = <span style=color:#e6db74>&#34;Zhang San&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>var</span> <span style=color:#a6e22e>age</span> <span style=color:#66d9ef>int</span> = <span style=color:#ae81ff>18</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>var</span> <span style=color:#a6e22e>score</span> <span style=color:#66d9ef>float64</span> = <span style=color:#ae81ff>95.5</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>var</span> <span style=color:#a6e22e>isEnrolled</span> <span style=color:#66d9ef>bool</span> = <span style=color:#66d9ef>true</span>
+</span></span></code></pre></div><p>This is very inconvenient to manage and use. Structs can organize these related data together:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Student</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Name</span>      <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Age</span>       <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Score</span>     <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>IsEnrolled</span> <span style=color:#66d9ef>bool</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=12-why-do-we-need-structs>1.2 Why Do We Need Structs</h2><p>Main advantages of structs:</p><ol><li><strong>Data Aggregation</strong>: Organize related data together</li><li><strong>Code Clarity</strong>: Improve code readability and maintainability</li><li><strong>Type Safety</strong>: Create specialized data types</li><li><strong>Object-Oriented</strong>: Lay foundation for subsequent methods and interfaces</li></ol><h1 id=2-struct-definition-and-declaration>2. Struct Definition and Declaration</h1><h2 id=21-basic-definition-syntax>2.1 Basic Definition Syntax</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#75715e>// Basic syntax for struct definition</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>struct_name</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>field_name1</span> <span style=color:#a6e22e>data_type1</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>field_name2</span> <span style=color:#a6e22e>data_type2</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>field_name3</span> <span style=color:#a6e22e>data_type3</span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// ... more fields</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=22-struct-definition-examples>2.2 Struct Definition Examples</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Define student struct</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Student</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Name</span>      <span style=color:#66d9ef>string</span>  <span style=color:#75715e>// Name</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Age</span>       <span style=color:#66d9ef>int</span>     <span style=color:#75715e>// Age</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Score</span>     <span style=color:#66d9ef>float64</span> <span style=color:#75715e>// Score</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>IsEnrolled</span> <span style=color:#66d9ef>bool</span>    <span style=color:#75715e>// Enrollment status</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Define book struct</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Book</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Title</span>    <span style=color:#66d9ef>string</span>  <span style=color:#75715e>// Title</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Author</span>   <span style=color:#66d9ef>string</span>  <span style=color:#75715e>// Author</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Price</span>    <span style=color:#66d9ef>float64</span> <span style=color:#75715e>// Price</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Pages</span>    <span style=color:#66d9ef>int</span>     <span style=color:#75715e>// Number of pages</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>ISBN</span>     <span style=color:#66d9ef>string</span>  <span style=color:#75715e>// ISBN number</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Define coordinate point struct</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Point</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>X</span> <span style=color:#66d9ef>int</span> <span style=color:#75715e>// X coordinate</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Y</span> <span style=color:#66d9ef>int</span> <span style=color:#75715e>// Y coordinate</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;Struct definition completed&#34;</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=23-anonymous-structs>2.3 Anonymous Structs</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Anonymous struct definition and usage</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>person</span> <span style=color:#f92672>:=</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Name</span> <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Age</span>  <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>    }{
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Name</span>: <span style=color:#e6db74>&#34;Li Si&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Age</span>:  <span style=color:#ae81ff>25</span>,
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Anonymous struct: %+v\n&#34;</span>, <span style=color:#a6e22e>person</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Name: %s, Age: %d\n&#34;</span>, <span style=color:#a6e22e>person</span>.<span style=color:#a6e22e>Name</span>, <span style=color:#a6e22e>person</span>.<span style=color:#a6e22e>Age</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Anonymous struct slice</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>people</span> <span style=color:#f92672>:=</span> []<span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Name</span> <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>City</span> <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    }{
+</span></span><span style=display:flex><span>        {<span style=color:#e6db74>&#34;Wang Wu&#34;</span>, <span style=color:#e6db74>&#34;Beijing&#34;</span>},
+</span></span><span style=display:flex><span>        {<span style=color:#e6db74>&#34;Zhao Liu&#34;</span>, <span style=color:#e6db74>&#34;Shanghai&#34;</span>},
+</span></span><span style=display:flex><span>        {<span style=color:#e6db74>&#34;Sun Qi&#34;</span>, <span style=color:#e6db74>&#34;Guangzhou&#34;</span>},
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;People list:&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span> <span style=color:#a6e22e>_</span>, <span style=color:#a6e22e>p</span> <span style=color:#f92672>:=</span> <span style=color:#66d9ef>range</span> <span style=color:#a6e22e>people</span> {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Name: %s, City: %s\n&#34;</span>, <span style=color:#a6e22e>p</span>.<span style=color:#a6e22e>Name</span>, <span style=color:#a6e22e>p</span>.<span style=color:#a6e22e>City</span>)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Execution result:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>Anonymous struct: <span style=color:#f92672>{</span>Name:Li Si Age:25<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>Name: Li Si, Age: <span style=color:#ae81ff>25</span>
+</span></span><span style=display:flex><span>People list:
+</span></span><span style=display:flex><span>Name: Wang Wu, City: Beijing
+</span></span><span style=display:flex><span>Name: Zhao Liu, City: Shanghai
+</span></span><span style=display:flex><span>Name: Sun Qi, City: Guangzhou
+</span></span></code></pre></div><h1 id=3-struct-instantiation>3. Struct Instantiation</h1><h2 id=31-various-creation-methods>3.1 Various Creation Methods</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Student</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Name</span>  <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Age</span>   <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Score</span> <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Method 1: Complete field initialization</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>student1</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Student</span>{
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Name</span>:  <span style=color:#e6db74>&#34;Zhang San&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Age</span>:   <span style=color:#ae81ff>18</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Score</span>: <span style=color:#ae81ff>95.5</span>,
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Method 2: Initialize by field order (must specify all fields)</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>student2</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Student</span>{<span style=color:#e6db74>&#34;Li Si&#34;</span>, <span style=color:#ae81ff>19</span>, <span style=color:#ae81ff>88.0</span>}
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Method 3: Partial field initialization (must specify field names)</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>student3</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Student</span>{
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Name</span>: <span style=color:#e6db74>&#34;Wang Wu&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Age</span>:  <span style=color:#ae81ff>20</span>,
+</span></span><span style=display:flex><span>        <span style=color:#75715e>// Score uses default value 0.0</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Method 4: Use new function to create (all fields have zero values)</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>student4</span> <span style=color:#f92672>:=</span> new(<span style=color:#a6e22e>Student</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>student4</span>.<span style=color:#a6e22e>Name</span> = <span style=color:#e6db74>&#34;Zhao Liu&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>student4</span>.<span style=color:#a6e22e>Age</span> = <span style=color:#ae81ff>21</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>student4</span>.<span style=color:#a6e22e>Score</span> = <span style=color:#ae81ff>92.5</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Method 5: Use &amp; to create and initialize</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>student5</span> <span style=color:#f92672>:=</span> <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>Student</span>{
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Name</span>:  <span style=color:#e6db74>&#34;Sun Qi&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Age</span>:   <span style=color:#ae81ff>17</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Score</span>: <span style=color:#ae81ff>87.5</span>,
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Student 1: %+v\n&#34;</span>, <span style=color:#a6e22e>student1</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Student 2: %+v\n&#34;</span>, <span style=color:#a6e22e>student2</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Student 3: %+v\n&#34;</span>, <span style=color:#a6e22e>student3</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Student 4: %+v\n&#34;</span>, <span style=color:#f92672>*</span><span style=color:#a6e22e>student4</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Student 5: %+v\n&#34;</span>, <span style=color:#f92672>*</span><span style=color:#a6e22e>student5</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Execution result:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>Student 1: <span style=color:#f92672>{</span>Name:Zhang San Age:18 Score:95.5<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>Student 2: <span style=color:#f92672>{</span>Name:Li Si Age:19 Score:88<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>Student 3: <span style=color:#f92672>{</span>Name:Wang Wu Age:20 Score:0<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>Student 4: <span style=color:#f92672>{</span>Name:Zhao Liu Age:21 Score:92.5<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>Student 5: <span style=color:#f92672>{</span>Name:Sun Qi Age:17 Score:87.5<span style=color:#f92672>}</span>
+</span></span></code></pre></div><h2 id=32-struct-zero-values>3.2 Struct Zero Values</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Person</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Name</span>     <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Age</span>      <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Height</span>   <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>IsActive</span> <span style=color:#66d9ef>bool</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Scores</span>   []<span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Info</span>     <span style=color:#66d9ef>map</span>[<span style=color:#66d9ef>string</span>]<span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Declare struct variable without initialization</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>var</span> <span style=color:#a6e22e>person</span> <span style=color:#a6e22e>Person</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Struct zero value: %+v\n&#34;</span>, <span style=color:#a6e22e>person</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;String zero value: %q\n&#34;</span>, <span style=color:#a6e22e>person</span>.<span style=color:#a6e22e>Name</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Integer zero value: %d\n&#34;</span>, <span style=color:#a6e22e>person</span>.<span style=color:#a6e22e>Age</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Float zero value: %f\n&#34;</span>, <span style=color:#a6e22e>person</span>.<span style=color:#a6e22e>Height</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Boolean zero value: %t\n&#34;</span>, <span style=color:#a6e22e>person</span>.<span style=color:#a6e22e>IsActive</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Slice zero value: %v, is nil: %t\n&#34;</span>, <span style=color:#a6e22e>person</span>.<span style=color:#a6e22e>Scores</span>, <span style=color:#a6e22e>person</span>.<span style=color:#a6e22e>Scores</span> <span style=color:#f92672>==</span> <span style=color:#66d9ef>nil</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Map zero value: %v, is nil: %t\n&#34;</span>, <span style=color:#a6e22e>person</span>.<span style=color:#a6e22e>Info</span>, <span style=color:#a6e22e>person</span>.<span style=color:#a6e22e>Info</span> <span style=color:#f92672>==</span> <span style=color:#66d9ef>nil</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Execution result:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>Struct zero value: <span style=color:#f92672>{</span>Name: Age:0 Height:0 IsActive:false Scores:<span style=color:#f92672>[]</span> Info:map<span style=color:#f92672>[]}</span>
+</span></span><span style=display:flex><span>String zero value: <span style=color:#e6db74>&#34;&#34;</span>
+</span></span><span style=display:flex><span>Integer zero value: <span style=color:#ae81ff>0</span>
+</span></span><span style=display:flex><span>Float zero value: 0.000000
+</span></span><span style=display:flex><span>Boolean zero value: false
+</span></span><span style=display:flex><span>Slice zero value: <span style=color:#f92672>[]</span>, is nil: true
+</span></span><span style=display:flex><span>Map zero value: map<span style=color:#f92672>[]</span>, is nil: true
+</span></span></code></pre></div><h1 id=4-struct-field-access-and-modification>4. Struct Field Access and Modification</h1><h2 id=41-field-access>4.1 Field Access</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Employee</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Name</span>       <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Age</span>        <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Salary</span>     <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Department</span> <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Create employee instance</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>emp</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Employee</span>{
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Name</span>:       <span style=color:#e6db74>&#34;Zhang San&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Age</span>:        <span style=color:#ae81ff>28</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Salary</span>:     <span style=color:#ae81ff>15000.0</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Department</span>: <span style=color:#e6db74>&#34;Technology Department&#34;</span>,
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Access fields</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Employee name: %s\n&#34;</span>, <span style=color:#a6e22e>emp</span>.<span style=color:#a6e22e>Name</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Employee age: %d\n&#34;</span>, <span style=color:#a6e22e>emp</span>.<span style=color:#a6e22e>Age</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Employee salary: %.2f\n&#34;</span>, <span style=color:#a6e22e>emp</span>.<span style=color:#a6e22e>Salary</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Department: %s\n&#34;</span>, <span style=color:#a6e22e>emp</span>.<span style=color:#a6e22e>Department</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Modify field values</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>emp</span>.<span style=color:#a6e22e>Age</span> = <span style=color:#ae81ff>29</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>emp</span>.<span style=color:#a6e22e>Salary</span> = <span style=color:#ae81ff>16000.0</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>emp</span>.<span style=color:#a6e22e>Department</span> = <span style=color:#e6db74>&#34;R&amp;D Department&#34;</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;\nInformation after modification:\n&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Employee name: %s\n&#34;</span>, <span style=color:#a6e22e>emp</span>.<span style=color:#a6e22e>Name</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Employee age: %d\n&#34;</span>, <span style=color:#a6e22e>emp</span>.<span style=color:#a6e22e>Age</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Employee salary: %.2f\n&#34;</span>, <span style=color:#a6e22e>emp</span>.<span style=color:#a6e22e>Salary</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Department: %s\n&#34;</span>, <span style=color:#a6e22e>emp</span>.<span style=color:#a6e22e>Department</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Execution result:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>Employee name: Zhang San
+</span></span><span style=display:flex><span>Employee age: <span style=color:#ae81ff>28</span>
+</span></span><span style=display:flex><span>Employee salary: 15000.00
+</span></span><span style=display:flex><span>Department: Technology Department
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Information after modification:
+</span></span><span style=display:flex><span>Employee name: Zhang San
+</span></span><span style=display:flex><span>Employee age: <span style=color:#ae81ff>29</span>
+</span></span><span style=display:flex><span>Employee salary: 16000.00
+</span></span><span style=display:flex><span>Department: R&amp;D Department
+</span></span></code></pre></div><h2 id=42-pointer-access-to-struct-fields>4.2 Pointer Access to Struct Fields</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Product</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Name</span>  <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Price</span> <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Stock</span> <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Ordinary struct variable</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>product1</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Product</span>{<span style=color:#a6e22e>Name</span>: <span style=color:#e6db74>&#34;Phone&#34;</span>, <span style=color:#a6e22e>Price</span>: <span style=color:#ae81ff>3999.0</span>, <span style=color:#a6e22e>Stock</span>: <span style=color:#ae81ff>100</span>}
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Struct pointer</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>product2</span> <span style=color:#f92672>:=</span> <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>Product</span>{<span style=color:#a6e22e>Name</span>: <span style=color:#e6db74>&#34;Computer&#34;</span>, <span style=color:#a6e22e>Price</span>: <span style=color:#ae81ff>8999.0</span>, <span style=color:#a6e22e>Stock</span>: <span style=color:#ae81ff>50</span>}
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Access method 1: Direct access through variable name</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Product 1 - Name: %s, Price: %.2f, Stock: %d\n&#34;</span>, 
+</span></span><span style=display:flex><span>               <span style=color:#a6e22e>product1</span>.<span style=color:#a6e22e>Name</span>, <span style=color:#a6e22e>product1</span>.<span style=color:#a6e22e>Price</span>, <span style=color:#a6e22e>product1</span>.<span style=color:#a6e22e>Stock</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Access method 2: Access through pointer (Go automatically dereferences)</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Product 2 - Name: %s, Price: %.2f, Stock: %d\n&#34;</span>, 
+</span></span><span style=display:flex><span>               <span style=color:#a6e22e>product2</span>.<span style=color:#a6e22e>Name</span>, <span style=color:#a6e22e>product2</span>.<span style=color:#a6e22e>Price</span>, <span style=color:#a6e22e>product2</span>.<span style=color:#a6e22e>Stock</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Access method 3: Explicit dereferencing</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Product 2 explicit dereference - Name: %s, Price: %.2f, Stock: %d\n&#34;</span>, 
+</span></span><span style=display:flex><span>               (<span style=color:#f92672>*</span><span style=color:#a6e22e>product2</span>).<span style=color:#a6e22e>Name</span>, (<span style=color:#f92672>*</span><span style=color:#a6e22e>product2</span>).<span style=color:#a6e22e>Price</span>, (<span style=color:#f92672>*</span><span style=color:#a6e22e>product2</span>).<span style=color:#a6e22e>Stock</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Modify values</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>product1</span>.<span style=color:#a6e22e>Price</span> = <span style=color:#ae81ff>3599.0</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>product2</span>.<span style=color:#a6e22e>Stock</span> = <span style=color:#ae81ff>75</span>  <span style=color:#75715e>// Equivalent to (*product2).Stock = 75</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;\nAfter modification:\n&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Product 1 price: %.2f\n&#34;</span>, <span style=color:#a6e22e>product1</span>.<span style=color:#a6e22e>Price</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Product 2 stock: %d\n&#34;</span>, <span style=color:#a6e22e>product2</span>.<span style=color:#a6e22e>Stock</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Execution result:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>Product <span style=color:#ae81ff>1</span> - Name: Phone, Price: 3999.00, Stock: <span style=color:#ae81ff>100</span>
+</span></span><span style=display:flex><span>Product <span style=color:#ae81ff>2</span> - Name: Computer, Price: 8999.00, Stock: <span style=color:#ae81ff>50</span>
+</span></span><span style=display:flex><span>Product <span style=color:#ae81ff>2</span> explicit dereference - Name: Computer, Price: 8999.00, Stock: <span style=color:#ae81ff>50</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>After modification:
+</span></span><span style=display:flex><span>Product <span style=color:#ae81ff>1</span> price: 3599.00
+</span></span><span style=display:flex><span>Product <span style=color:#ae81ff>2</span> stock: <span style=color:#ae81ff>75</span>
+</span></span></code></pre></div><h1 id=5-struct-nesting>5. Struct Nesting</h1><h2 id=51-basic-nesting>5.1 Basic Nesting</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Address struct</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Address</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Province</span> <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>City</span>     <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Street</span>   <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>ZipCode</span>  <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Company struct</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Company</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Name</span>    <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Address</span> <span style=color:#a6e22e>Address</span>  <span style=color:#75715e>// Nested Address struct</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Employee struct</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Employee</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Name</span>    <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Age</span>     <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Company</span> <span style=color:#a6e22e>Company</span>  <span style=color:#75715e>// Nested Company struct</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Create nested struct</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>employee</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Employee</span>{
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Name</span>: <span style=color:#e6db74>&#34;Zhang San&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Age</span>:  <span style=color:#ae81ff>30</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Company</span>: <span style=color:#a6e22e>Company</span>{
+</span></span><span style=display:flex><span>            <span style=color:#a6e22e>Name</span>: <span style=color:#e6db74>&#34;Technology Co., Ltd.&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#a6e22e>Address</span>: <span style=color:#a6e22e>Address</span>{
+</span></span><span style=display:flex><span>                <span style=color:#a6e22e>Province</span>: <span style=color:#e6db74>&#34;Beijing&#34;</span>,
+</span></span><span style=display:flex><span>                <span style=color:#a6e22e>City</span>:     <span style=color:#e6db74>&#34;Beijing&#34;</span>,
+</span></span><span style=display:flex><span>                <span style=color:#a6e22e>Street</span>:   <span style=color:#e6db74>&#34;Zhongguancun Street 1&#34;</span>,
+</span></span><span style=display:flex><span>                <span style=color:#a6e22e>ZipCode</span>:  <span style=color:#e6db74>&#34;100080&#34;</span>,
+</span></span><span style=display:flex><span>            },
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Access nested fields</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Employee name: %s\n&#34;</span>, <span style=color:#a6e22e>employee</span>.<span style=color:#a6e22e>Name</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Employee age: %d\n&#34;</span>, <span style=color:#a6e22e>employee</span>.<span style=color:#a6e22e>Age</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Company name: %s\n&#34;</span>, <span style=color:#a6e22e>employee</span>.<span style=color:#a6e22e>Company</span>.<span style=color:#a6e22e>Name</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Company province: %s\n&#34;</span>, <span style=color:#a6e22e>employee</span>.<span style=color:#a6e22e>Company</span>.<span style=color:#a6e22e>Address</span>.<span style=color:#a6e22e>Province</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Company city: %s\n&#34;</span>, <span style=color:#a6e22e>employee</span>.<span style=color:#a6e22e>Company</span>.<span style=color:#a6e22e>Address</span>.<span style=color:#a6e22e>City</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Company street: %s\n&#34;</span>, <span style=color:#a6e22e>employee</span>.<span style=color:#a6e22e>Company</span>.<span style=color:#a6e22e>Address</span>.<span style=color:#a6e22e>Street</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Zip code: %s\n&#34;</span>, <span style=color:#a6e22e>employee</span>.<span style=color:#a6e22e>Company</span>.<span style=color:#a6e22e>Address</span>.<span style=color:#a6e22e>ZipCode</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Modify nested fields</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>employee</span>.<span style=color:#a6e22e>Company</span>.<span style=color:#a6e22e>Address</span>.<span style=color:#a6e22e>Street</span> = <span style=color:#e6db74>&#34;Zhongguancun Street 2&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;\nStreet after modification: %s\n&#34;</span>, <span style=color:#a6e22e>employee</span>.<span style=color:#a6e22e>Company</span>.<span style=color:#a6e22e>Address</span>.<span style=color:#a6e22e>Street</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Execution result:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>Employee name: Zhang San
+</span></span><span style=display:flex><span>Employee age: <span style=color:#ae81ff>30</span>
+</span></span><span style=display:flex><span>Company name: Technology Co., Ltd.
+</span></span><span style=display:flex><span>Company province: Beijing
+</span></span><span style=display:flex><span>Company city: Beijing
+</span></span><span style=display:flex><span>Company street: Zhongguancun Street <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span>Zip code: <span style=color:#ae81ff>100080</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Street after modification: Zhongguancun Street <span style=color:#ae81ff>2</span>
+</span></span></code></pre></div><h2 id=52-anonymous-nesting-anonymous-fields>5.2 Anonymous Nesting (Anonymous Fields)</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Person</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Name</span> <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Age</span>  <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Student</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Person</span>      <span style=color:#75715e>// Anonymous nested Person struct</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>School</span> <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Grade</span>  <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Teacher</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Person</span>      <span style=color:#75715e>// Anonymous nested Person struct</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Subject</span> <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Salary</span>  <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Create student</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>student</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Student</span>{
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Person</span>: <span style=color:#a6e22e>Person</span>{<span style=color:#a6e22e>Name</span>: <span style=color:#e6db74>&#34;Xiao Ming&#34;</span>, <span style=color:#a6e22e>Age</span>: <span style=color:#ae81ff>18</span>},
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>School</span>: <span style=color:#e6db74>&#34;No.1 Middle School&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Grade</span>:  <span style=color:#ae81ff>12</span>,
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Create teacher</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>teacher</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Teacher</span>{
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Person</span>:  <span style=color:#a6e22e>Person</span>{<span style=color:#a6e22e>Name</span>: <span style=color:#e6db74>&#34;Teacher Wang&#34;</span>, <span style=color:#a6e22e>Age</span>: <span style=color:#ae81ff>35</span>},
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Subject</span>: <span style=color:#e6db74>&#34;Mathematics&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Salary</span>:  <span style=color:#ae81ff>8000.0</span>,
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Access promoted fields (can directly access nested struct fields)</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Student name: %s\n&#34;</span>, <span style=color:#a6e22e>student</span>.<span style=color:#a6e22e>Name</span>)  <span style=color:#75715e>// Equivalent to student.Person.Name</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Student age: %d\n&#34;</span>, <span style=color:#a6e22e>student</span>.<span style=color:#a6e22e>Age</span>)   <span style=color:#75715e>// Equivalent to student.Person.Age</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;School: %s\n&#34;</span>, <span style=color:#a6e22e>student</span>.<span style=color:#a6e22e>School</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Grade: %d\n&#34;</span>, <span style=color:#a6e22e>student</span>.<span style=color:#a6e22e>Grade</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;\nTeacher name: %s\n&#34;</span>, <span style=color:#a6e22e>teacher</span>.<span style=color:#a6e22e>Name</span>)  <span style=color:#75715e>// Equivalent to teacher.Person.Name</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Teacher age: %d\n&#34;</span>, <span style=color:#a6e22e>teacher</span>.<span style=color:#a6e22e>Age</span>)     <span style=color:#75715e>// Equivalent to teacher.Person.Age</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Subject: %s\n&#34;</span>, <span style=color:#a6e22e>teacher</span>.<span style=color:#a6e22e>Subject</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Salary: %.2f\n&#34;</span>, <span style=color:#a6e22e>teacher</span>.<span style=color:#a6e22e>Salary</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Modify promoted fields</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>student</span>.<span style=color:#a6e22e>Age</span> = <span style=color:#ae81ff>19</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>teacher</span>.<span style=color:#a6e22e>Name</span> = <span style=color:#e6db74>&#34;Teacher Li&#34;</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;\nStudent age after modification: %d\n&#34;</span>, <span style=color:#a6e22e>student</span>.<span style=color:#a6e22e>Age</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Teacher name after modification: %s\n&#34;</span>, <span style=color:#a6e22e>teacher</span>.<span style=color:#a6e22e>Name</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Execution result:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>Student name: Xiao Ming
+</span></span><span style=display:flex><span>Student age: <span style=color:#ae81ff>18</span>
+</span></span><span style=display:flex><span>School: No.1 Middle School
+</span></span><span style=display:flex><span>Grade: <span style=color:#ae81ff>12</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Teacher name: Teacher Wang
+</span></span><span style=display:flex><span>Teacher age: <span style=color:#ae81ff>35</span>
+</span></span><span style=display:flex><span>Subject: Mathematics
+</span></span><span style=display:flex><span>Salary: 8000.00
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Student age after modification: <span style=color:#ae81ff>19</span>
+</span></span><span style=display:flex><span>Teacher name after modification: Teacher Li
+</span></span></code></pre></div><h1 id=6-struct-tags>6. Struct Tags</h1><h2 id=61-basic-tag-usage>6.1 Basic Tag Usage</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> (
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;encoding/json&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>User</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>ID</span>       <span style=color:#66d9ef>int</span>    <span style=color:#e6db74>`json:&#34;id&#34;`</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>UserName</span> <span style=color:#66d9ef>string</span> <span style=color:#e6db74>`json:&#34;username&#34;`</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Email</span>    <span style=color:#66d9ef>string</span> <span style=color:#e6db74>`json:&#34;email&#34;`</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Password</span> <span style=color:#66d9ef>string</span> <span style=color:#e6db74>`json:&#34;-&#34;`</span>              <span style=color:#75715e>// - means ignore this field</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Active</span>   <span style=color:#66d9ef>bool</span>   <span style=color:#e6db74>`json:&#34;active,omitempty&#34;`</span> <span style=color:#75715e>// omitempty means ignore when value is empty</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>user</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>User</span>{
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>ID</span>:       <span style=color:#ae81ff>1</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>UserName</span>: <span style=color:#e6db74>&#34;zhangsan&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Email</span>:    <span style=color:#e6db74>&#34;zhangsan@example.com&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Password</span>: <span style=color:#e6db74>&#34;123456&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Active</span>:   <span style=color:#66d9ef>true</span>,
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Serialize to JSON</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>jsonData</span>, <span style=color:#a6e22e>err</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>json</span>.<span style=color:#a6e22e>Marshal</span>(<span style=color:#a6e22e>user</span>)
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Serialization error: %v\n&#34;</span>, <span style=color:#a6e22e>err</span>)
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;JSON data: %s\n&#34;</span>, <span style=color:#a6e22e>jsonData</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Deserialize</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>var</span> <span style=color:#a6e22e>newUser</span> <span style=color:#a6e22e>User</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>jsonStr</span> <span style=color:#f92672>:=</span> <span style=color:#e6db74>`{&#34;id&#34;:2,&#34;username&#34;:&#34;lisi&#34;,&#34;email&#34;:&#34;lisi@example.com&#34;,&#34;active&#34;:false}`</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>err</span> = <span style=color:#a6e22e>json</span>.<span style=color:#a6e22e>Unmarshal</span>([]byte(<span style=color:#a6e22e>jsonStr</span>), <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>newUser</span>)
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Deserialization error: %v\n&#34;</span>, <span style=color:#a6e22e>err</span>)
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Deserialization result: %+v\n&#34;</span>, <span style=color:#a6e22e>newUser</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Execution result:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>JSON data: <span style=color:#f92672>{</span><span style=color:#e6db74>&#34;id&#34;</span>:1,<span style=color:#e6db74>&#34;username&#34;</span>:<span style=color:#e6db74>&#34;zhangsan&#34;</span>,<span style=color:#e6db74>&#34;email&#34;</span>:<span style=color:#e6db74>&#34;zhangsan@example.com&#34;</span>,<span style=color:#e6db74>&#34;active&#34;</span>:true<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>Deserialization result: <span style=color:#f92672>{</span>ID:2 UserName:lisi Email:lisi@example.com Password: Active:false<span style=color:#f92672>}</span>
+</span></span></code></pre></div><h2 id=62-multiple-tags-example>6.2 Multiple Tags Example</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> (
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;encoding/json&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Product</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>ID</span>          <span style=color:#66d9ef>int</span>     <span style=color:#e6db74>`json:&#34;id&#34; db:&#34;product_id&#34;`</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Name</span>        <span style=color:#66d9ef>string</span>  <span style=color:#e6db74>`json:&#34;name&#34; db:&#34;product_name&#34;`</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Price</span>       <span style=color:#66d9ef>float64</span> <span style=color:#e6db74>`json:&#34;price&#34; db:&#34;price&#34;`</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Description</span> <span style=color:#66d9ef>string</span>  <span style=color:#e6db74>`json:&#34;description,omitempty&#34; db:&#34;description&#34;`</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Category</span>    <span style=color:#66d9ef>string</span>  <span style=color:#e6db74>`json:&#34;category&#34; db:&#34;category&#34;`</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>products</span> <span style=color:#f92672>:=</span> []<span style=color:#a6e22e>Product</span>{
+</span></span><span style=display:flex><span>        {
+</span></span><span style=display:flex><span>            <span style=color:#a6e22e>ID</span>:          <span style=color:#ae81ff>1</span>,
+</span></span><span style=display:flex><span>            <span style=color:#a6e22e>Name</span>:        <span style=color:#e6db74>&#34;iPhone 15&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#a6e22e>Price</span>:       <span style=color:#ae81ff>5999.0</span>,
+</span></span><span style=display:flex><span>            <span style=color:#a6e22e>Description</span>: <span style=color:#e6db74>&#34;Latest Apple phone&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#a6e22e>Category</span>:    <span style=color:#e6db74>&#34;Electronics&#34;</span>,
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>        {
+</span></span><span style=display:flex><span>            <span style=color:#a6e22e>ID</span>:          <span style=color:#ae81ff>2</span>,
+</span></span><span style=display:flex><span>            <span style=color:#a6e22e>Name</span>:        <span style=color:#e6db74>&#34;MacBook Pro&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#a6e22e>Price</span>:       <span style=color:#ae81ff>12999.0</span>,
+</span></span><span style=display:flex><span>            <span style=color:#75715e>// Description is empty, will be ignored by omitempty</span>
+</span></span><span style=display:flex><span>            <span style=color:#a6e22e>Category</span>: <span style=color:#e6db74>&#34;Computers&#34;</span>,
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// JSON serialization</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>jsonData</span>, <span style=color:#a6e22e>_</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>json</span>.<span style=color:#a6e22e>MarshalIndent</span>(<span style=color:#a6e22e>products</span>, <span style=color:#e6db74>&#34;&#34;</span>, <span style=color:#e6db74>&#34;  &#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;JSON formatted data:\n%s\n&#34;</span>, <span style=color:#a6e22e>jsonData</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Execution result:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>JSON formatted data:
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;id&#34;</span>: 1,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;name&#34;</span>: <span style=color:#e6db74>&#34;iPhone 15&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;price&#34;</span>: 5999,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;description&#34;</span>: <span style=color:#e6db74>&#34;Latest Apple phone&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;category&#34;</span>: <span style=color:#e6db74>&#34;Electronics&#34;</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>}</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;id&#34;</span>: 2,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;name&#34;</span>: <span style=color:#e6db74>&#34;MacBook Pro&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;price&#34;</span>: 12999,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;category&#34;</span>: <span style=color:#e6db74>&#34;Computers&#34;</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>]</span>
+</span></span></code></pre></div><h1 id=7-struct-comparison>7. Struct Comparison</h1><h2 id=71-struct-equality-comparison>7.1 Struct Equality Comparison</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Point</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>X</span>, <span style=color:#a6e22e>Y</span> <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Person</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Name</span> <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Age</span>  <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Data</span> []<span style=color:#66d9ef>int</span>  <span style=color:#75715e>// Slice field</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Comparable structs</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>p1</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Point</span>{<span style=color:#ae81ff>1</span>, <span style=color:#ae81ff>2</span>}
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>p2</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Point</span>{<span style=color:#ae81ff>1</span>, <span style=color:#ae81ff>2</span>}
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>p3</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Point</span>{<span style=color:#ae81ff>3</span>, <span style=color:#ae81ff>4</span>}
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;p1 == p2: %t\n&#34;</span>, <span style=color:#a6e22e>p1</span> <span style=color:#f92672>==</span> <span style=color:#a6e22e>p2</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;p1 == p3: %t\n&#34;</span>, <span style=color:#a6e22e>p1</span> <span style=color:#f92672>==</span> <span style=color:#a6e22e>p3</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Structs containing non-comparable fields</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>person1</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Person</span>{<span style=color:#a6e22e>Name</span>: <span style=color:#e6db74>&#34;Zhang San&#34;</span>, <span style=color:#a6e22e>Age</span>: <span style=color:#ae81ff>20</span>, <span style=color:#a6e22e>Data</span>: []<span style=color:#66d9ef>int</span>{<span style=color:#ae81ff>1</span>, <span style=color:#ae81ff>2</span>, <span style=color:#ae81ff>3</span>}}
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>person2</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Person</span>{<span style=color:#a6e22e>Name</span>: <span style=color:#e6db74>&#34;Zhang San&#34;</span>, <span style=color:#a6e22e>Age</span>: <span style=color:#ae81ff>20</span>, <span style=color:#a6e22e>Data</span>: []<span style=color:#66d9ef>int</span>{<span style=color:#ae81ff>1</span>, <span style=color:#ae81ff>2</span>, <span style=color:#ae81ff>3</span>}}
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// The following code would cause compilation error because it contains slice fields</span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// fmt.Printf(&#34;person1 == person2: %t\n&#34;, person1 == person2)</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Manual comparison</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>equal</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>person1</span>.<span style=color:#a6e22e>Name</span> <span style=color:#f92672>==</span> <span style=color:#a6e22e>person2</span>.<span style=color:#a6e22e>Name</span> <span style=color:#f92672>&amp;&amp;</span> 
+</span></span><span style=display:flex><span>             <span style=color:#a6e22e>person1</span>.<span style=color:#a6e22e>Age</span> <span style=color:#f92672>==</span> <span style=color:#a6e22e>person2</span>.<span style=color:#a6e22e>Age</span> <span style=color:#f92672>&amp;&amp;</span>
+</span></span><span style=display:flex><span>             len(<span style=color:#a6e22e>person1</span>.<span style=color:#a6e22e>Data</span>) <span style=color:#f92672>==</span> len(<span style=color:#a6e22e>person2</span>.<span style=color:#a6e22e>Data</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>equal</span> {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> <span style=color:#a6e22e>i</span> <span style=color:#f92672>:=</span> <span style=color:#66d9ef>range</span> <span style=color:#a6e22e>person1</span>.<span style=color:#a6e22e>Data</span> {
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>person1</span>.<span style=color:#a6e22e>Data</span>[<span style=color:#a6e22e>i</span>] <span style=color:#f92672>!=</span> <span style=color:#a6e22e>person2</span>.<span style=color:#a6e22e>Data</span>[<span style=color:#a6e22e>i</span>] {
+</span></span><span style=display:flex><span>                <span style=color:#a6e22e>equal</span> = <span style=color:#66d9ef>false</span>
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>break</span>
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Manual comparison result: %t\n&#34;</span>, <span style=color:#a6e22e>equal</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Execution result:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>p1 <span style=color:#f92672>==</span> p2: true
+</span></span><span style=display:flex><span>p1 <span style=color:#f92672>==</span> p3: false
+</span></span><span style=display:flex><span>Manual comparison result: true
+</span></span></code></pre></div><h1 id=8-struct-factory-functions>8. Struct Factory Functions</h1><h2 id=81-constructor-functions-for-creating-structs>8.1 Constructor Functions for Creating Structs</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> (
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;time&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>User</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>ID</span>        <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Username</span>  <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Email</span>     <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>CreatedAt</span> <span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Time</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>IsActive</span>  <span style=color:#66d9ef>bool</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Constructor 1: Create ordinary user</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>NewUser</span>(<span style=color:#a6e22e>username</span>, <span style=color:#a6e22e>email</span> <span style=color:#66d9ef>string</span>) <span style=color:#f92672>*</span><span style=color:#a6e22e>User</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>User</span>{
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Username</span>:  <span style=color:#a6e22e>username</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Email</span>:     <span style=color:#a6e22e>email</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>CreatedAt</span>: <span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Now</span>(),
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>IsActive</span>:  <span style=color:#66d9ef>true</span>,
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Constructor 2: Create admin user</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>NewAdminUser</span>(<span style=color:#a6e22e>username</span>, <span style=color:#a6e22e>email</span> <span style=color:#66d9ef>string</span>) <span style=color:#f92672>*</span><span style=color:#a6e22e>User</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>user</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>NewUser</span>(<span style=color:#a6e22e>username</span>, <span style=color:#a6e22e>email</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>user</span>.<span style=color:#a6e22e>ID</span> = <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>  <span style=color:#75715e>// Set admin ID to special value</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>user</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Constructor 3: Constructor with validation</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>NewUserWithValidation</span>(<span style=color:#a6e22e>username</span>, <span style=color:#a6e22e>email</span> <span style=color:#66d9ef>string</span>) (<span style=color:#f92672>*</span><span style=color:#a6e22e>User</span>, <span style=color:#66d9ef>error</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> len(<span style=color:#a6e22e>username</span>) &lt; <span style=color:#ae81ff>3</span> {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>nil</span>, <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Errorf</span>(<span style=color:#e6db74>&#34;username length cannot be less than 3 characters&#34;</span>)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> len(<span style=color:#a6e22e>email</span>) &lt; <span style=color:#ae81ff>5</span> <span style=color:#f92672>||</span> !<span style=color:#a6e22e>contains</span>(<span style=color:#a6e22e>email</span>, <span style=color:#e6db74>&#34;@&#34;</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>nil</span>, <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Errorf</span>(<span style=color:#e6db74>&#34;incorrect email format&#34;</span>)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>User</span>{
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Username</span>:  <span style=color:#a6e22e>username</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Email</span>:     <span style=color:#a6e22e>email</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>CreatedAt</span>: <span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Now</span>(),
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>IsActive</span>:  <span style=color:#66d9ef>true</span>,
+</span></span><span style=display:flex><span>    }, <span style=color:#66d9ef>nil</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Helper function</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>contains</span>(<span style=color:#a6e22e>s</span>, <span style=color:#a6e22e>substr</span> <span style=color:#66d9ef>string</span>) <span style=color:#66d9ef>bool</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span> <span style=color:#a6e22e>i</span> <span style=color:#f92672>:=</span> <span style=color:#ae81ff>0</span>; <span style=color:#a6e22e>i</span> <span style=color:#f92672>&lt;=</span> len(<span style=color:#a6e22e>s</span>)<span style=color:#f92672>-</span>len(<span style=color:#a6e22e>substr</span>); <span style=color:#a6e22e>i</span><span style=color:#f92672>++</span> {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>s</span>[<span style=color:#a6e22e>i</span>:<span style=color:#a6e22e>i</span><span style=color:#f92672>+</span>len(<span style=color:#a6e22e>substr</span>)] <span style=color:#f92672>==</span> <span style=color:#a6e22e>substr</span> {
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>true</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>false</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Create users using constructors</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>user1</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>NewUser</span>(<span style=color:#e6db74>&#34;zhangsan&#34;</span>, <span style=color:#e6db74>&#34;zhangsan@example.com&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Ordinary user: %+v\n&#34;</span>, <span style=color:#f92672>*</span><span style=color:#a6e22e>user1</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>admin</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>NewAdminUser</span>(<span style=color:#e6db74>&#34;admin&#34;</span>, <span style=color:#e6db74>&#34;admin@example.com&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Admin user: %+v\n&#34;</span>, <span style=color:#f92672>*</span><span style=color:#a6e22e>admin</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Constructor with validation</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>user2</span>, <span style=color:#a6e22e>err</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>NewUserWithValidation</span>(<span style=color:#e6db74>&#34;li&#34;</span>, <span style=color:#e6db74>&#34;invalid-email&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;User creation failed: %v\n&#34;</span>, <span style=color:#a6e22e>err</span>)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>user3</span>, <span style=color:#a6e22e>err</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>NewUserWithValidation</span>(<span style=color:#e6db74>&#34;lisi&#34;</span>, <span style=color:#e6db74>&#34;lisi@example.com&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;User creation failed: %v\n&#34;</span>, <span style=color:#a6e22e>err</span>)
+</span></span><span style=display:flex><span>    } <span style=color:#66d9ef>else</span> {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Validated user: %+v\n&#34;</span>, <span style=color:#f92672>*</span><span style=color:#a6e22e>user3</span>)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Execution result:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>Ordinary user: <span style=color:#f92672>{</span>ID:0 Username:zhangsan Email:zhangsan@example.com CreatedAt:2024-01-15 10:30:45.123456789 +0800 CST IsActive:true<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>Admin user: <span style=color:#f92672>{</span>ID:-1 Username:admin Email:admin@example.com CreatedAt:2024-01-15 10:30:45.123456789 +0800 CST IsActive:true<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>User creation failed: username length cannot be less than <span style=color:#ae81ff>3</span> characters
+</span></span><span style=display:flex><span>Validated user: <span style=color:#f92672>{</span>ID:0 Username:lisi Email:lisi@example.com CreatedAt:2024-01-15 10:30:45.123456789 +0800 CST IsActive:true<span style=color:#f92672>}</span>
+</span></span></code></pre></div><h1 id=9-structs-and-functions>9. Structs and Functions</h1><h2 id=91-structs-as-function-parameters>9.1 Structs as Function Parameters</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Rectangle</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Width</span>  <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Height</span> <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Pass by value</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>calculateArea</span>(<span style=color:#a6e22e>rect</span> <span style=color:#a6e22e>Rectangle</span>) <span style=color:#66d9ef>float64</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>rect</span>.<span style=color:#a6e22e>Width</span> <span style=color:#f92672>*</span> <span style=color:#a6e22e>rect</span>.<span style=color:#a6e22e>Height</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Pass by pointer (can modify original struct)</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>scaleRectangle</span>(<span style=color:#a6e22e>rect</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Rectangle</span>, <span style=color:#a6e22e>factor</span> <span style=color:#66d9ef>float64</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>rect</span>.<span style=color:#a6e22e>Width</span> <span style=color:#f92672>*=</span> <span style=color:#a6e22e>factor</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>rect</span>.<span style=color:#a6e22e>Height</span> <span style=color:#f92672>*=</span> <span style=color:#a6e22e>factor</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Return struct</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>createSquare</span>(<span style=color:#a6e22e>side</span> <span style=color:#66d9ef>float64</span>) <span style=color:#a6e22e>Rectangle</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>Rectangle</span>{<span style=color:#a6e22e>Width</span>: <span style=color:#a6e22e>side</span>, <span style=color:#a6e22e>Height</span>: <span style=color:#a6e22e>side</span>}
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Create rectangle</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>rect</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Rectangle</span>{<span style=color:#a6e22e>Width</span>: <span style=color:#ae81ff>10</span>, <span style=color:#a6e22e>Height</span>: <span style=color:#ae81ff>5</span>}
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Original rectangle: %+v\n&#34;</span>, <span style=color:#a6e22e>rect</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Calculate area by value passing</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>area</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>calculateArea</span>(<span style=color:#a6e22e>rect</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Area: %.2f\n&#34;</span>, <span style=color:#a6e22e>area</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Rectangle after calculation: %+v\n&#34;</span>, <span style=color:#a6e22e>rect</span>)  <span style=color:#75715e>// Original rectangle unchanged</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Scale by pointer passing</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>scaleRectangle</span>(<span style=color:#f92672>&amp;</span><span style=color:#a6e22e>rect</span>, <span style=color:#ae81ff>2.0</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Rectangle after scaling: %+v\n&#34;</span>, <span style=color:#a6e22e>rect</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Area after scaling: %.2f\n&#34;</span>, <span style=color:#a6e22e>calculateArea</span>(<span style=color:#a6e22e>rect</span>))
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Create square</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>square</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>createSquare</span>(<span style=color:#ae81ff>8</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Created square: %+v\n&#34;</span>, <span style=color:#a6e22e>square</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;Square area: %.2f\n&#34;</span>, <span style=color:#a6e22e>calculateArea</span>(<span style=color:#a6e22e>square</span>))
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Execution result:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>Original rectangle: <span style=color:#f92672>{</span>Width:10 Height:5<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>Area: 50.00
+</span></span><span style=display:flex><span>Rectangle after calculation: <span style=color:#f92672>{</span>Width:10 Height:5<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>Rectangle after scaling: <span style=color:#f92672>{</span>Width:20 Height:10<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>Area after scaling: 200.00
+</span></span><span style=display:flex><span>Created square: <span style=color:#f92672>{</span>Width:8 Height:8<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>Square area: 64.00
+</span></span></code></pre></div><h1 id=10-summary>10. Summary</h1><p>Structs are important tools in Go language for organizing and managing related data:</p><p><strong>Key Features</strong>:</p><ul><li>Combine multiple related data fields together</li><li>Can nest other structs</li><li>Support tags for operations like serialization</li><li>Constructor functions can be defined to standardize creation process</li></ul><p><strong>Usage Scenarios</strong>:</p><ol><li>Represent real-world entities (users, products, orders, etc.)</li><li>Organize configuration information</li><li>Pass complex data as function parameters</li><li>Foundation for object-oriented programming implementation</li></ol><p><strong>Best Practices</strong>:</p><ul><li>Use constructor functions to create struct instances</li><li>Add tags to important structs</li><li>Reasonably use pointer passing to avoid unnecessary copying</li><li>Pay attention to struct comparison issues with non-comparable fields</li></ul><p>Structs are the foundation of object-oriented programming in Go language. Mastering struct usage is very important for subsequent learning of methods and interfaces.</p></section><footer class=article-footer><section class=article-tags><a href=/en/tags/golang-syntax/>Golang Syntax</a></section></footer></article><aside class=related-content--wrapper><h2 class=section-title>Related content</h2><div class=related-content><div class="flex article-list--tile"><article><a href=/en/stu/golang-stu-08/><div class=article-details><h2 class=article-title>Golang Learning Journey [Part 8: Pointer]</h2></div></a></article><article><a href=/en/stu/golang-stu-07/><div class=article-details><h2 class=article-title>Golang Learning Journey [Part 7: closures, types, defer, panic/recover & the time package]</h2></div></a></article><article><a href=/en/stu/golang-stu-06/><div class=article-details><h2 class=article-title>Golang Learning Journey [Part 6: Composite Types – Map & Function Primer]</h2></div></a></article><article><a href=/en/stu/golang-stu-05/><div class=article-details><h2 class=article-title>Golang Learning Journey [Part 5: Composite Types – Arrays & Slices]</h2></div></a></article><article><a href=/en/stu/golang-stu-04/><div class=article-details><h2 class=article-title>Golang Learning Journey [Part 4: Operators & Control Flow]</h2></div></a></article></div></div></aside><script src=https://giscus.app/client.js data-repo=zg-dd/zg-dd.github.io data-repo-id=R_kgDOQwB7tw data-category=Announcements data-category-id=DIC_kwDOQwB7t84C0WGD data-mapping=pathname data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=preferred_color_scheme data-lang=zh-CN data-loading crossorigin=anonymous async></script><script>function setGiscusTheme(e){let t=document.querySelector("iframe.giscus-frame");t&&t.contentWindow.postMessage({giscus:{setConfig:{theme:e}}},"https://giscus.app")}(function(){addEventListener("message",t=>{if(event.origin!=="https://giscus.app")return;e()}),window.addEventListener("onColorSchemeChange",e);function e(){setGiscusTheme(document.documentElement.dataset.scheme==="light"?"preferred_color_scheme":"preferred_color_scheme")}})()</script><footer class=site-footer><section class=copyright>&copy;
+2026 小巷 Blog</section><section class=powerby>Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a><br>Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.33.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a></section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.c922af694cc257bf1ecc41c0dd7b0430f9114ec280ccf67cd2c6ad55f5316c4e.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>

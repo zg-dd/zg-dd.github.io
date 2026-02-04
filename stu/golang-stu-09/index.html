@@ -1,0 +1,687 @@
+<!doctype html><html lang=zh-cn dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="1. 什么是结构体\r结构体是Go语言中一种重要的复合数据类型，它可以将多个不同类型的数据组合在一起，形成一个有意义的整体。可以把结构体理解为现实世界中事物的抽象表示。\n"><title>Golang学习历程【第九篇 结构体(struct)】</title><link rel=canonical href=https://zg-dd.github.io/stu/golang-stu-09/><link rel=stylesheet href=/scss/style.min.ff560f1cad7a040e336f2dd6880b9ee1ad344d6e3d8f5411e5a1aaa8b23bbdd0.css><meta property='og:title' content="Golang学习历程【第九篇 结构体(struct)】"><meta property='og:description' content="1. 什么是结构体\r结构体是Go语言中一种重要的复合数据类型，它可以将多个不同类型的数据组合在一起，形成一个有意义的整体。可以把结构体理解为现实世界中事物的抽象表示。\n"><meta property='og:url' content='https://zg-dd.github.io/stu/golang-stu-09/'><meta property='og:site_name' content='小巷的随笔'><meta property='og:type' content='article'><meta property='article:section' content='Stu'><meta property='article:tag' content='Golang语法'><meta property='article:published_time' content='2026-02-04T17:15:16+08:00'><meta property='article:modified_time' content='2026-02-04T17:15:16+08:00'><meta name=twitter:title content="Golang学习历程【第九篇 结构体(struct)】"><meta name=twitter:description content="1. 什么是结构体\r结构体是Go语言中一种重要的复合数据类型，它可以将多个不同类型的数据组合在一起，形成一个有意义的整体。可以把结构体理解为现实世界中事物的抽象表示。\n"></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/avatar_hu_a0cc1cf57968b27d.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a><span class=emoji>🌱</span></figure><div class=site-meta><h1 class=site-name><a href=/>小巷的随笔</a></h1><h2 class=site-description>记录，不是为了证明自己；而是把“解决问题 → 思考 → 沉淀”形成习惯。</h2></div></header><ol class=menu id=main-menu><li class=current><a href=/stu/><span>学习笔记</span></a></li><li><a href=/blog/><span>随笔思考</span></a></li><li><a href=/life/><span>生活记录</span></a></li><li><a href=/categories/><span>分类</span></a></li><li><a href=/tags/><span>标签</span></a></li><li class=menu-bottom-section><ol class=menu><li id=i18n-switch><svg class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5h7"/><path d="M9 3v2c0 4.418-2.239 8-5 8"/><path d="M5 9c-.003 2.144 2.952 3.908 6.7 4"/><path d="M12 20l4-9 4 9"/><path d="M19.1 18h-6.2"/></svg>
+<select name=language title=language onchange="window.location.href=this.selectedOptions[0].value"><option value=https://zg-dd.github.io/ selected>简体中文</option><option value=https://zg-dd.github.io/en/>English</option></select></li><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav id=TableOfContents><ul><li><a href=#11-结构体的基本概念>1.1 结构体的基本概念</a></li><li><a href=#12-为什么需要结构体>1.2 为什么需要结构体</a></li></ul><ul><li><a href=#21-基本定义语法>2.1 基本定义语法</a></li><li><a href=#22-结构体定义示例>2.2 结构体定义示例</a></li><li><a href=#23-匿名结构体>2.3 匿名结构体</a></li></ul><ul><li><a href=#31-各种创建方式>3.1 各种创建方式</a></li><li><a href=#32-结构体的零值>3.2 结构体的零值</a></li></ul><ul><li><a href=#41-字段访问>4.1 字段访问</a></li><li><a href=#42-指针访问结构体字段>4.2 指针访问结构体字段</a></li></ul><ul><li><a href=#51-基本嵌套>5.1 基本嵌套</a></li><li><a href=#52-匿名嵌套匿名字段>5.2 匿名嵌套（匿名字段）</a></li></ul><ul><li><a href=#61-基本标签使用>6.1 基本标签使用</a></li><li><a href=#62-多个标签示例>6.2 多个标签示例</a></li></ul><ul><li><a href=#71-结构体相等性比较>7.1 结构体相等性比较</a></li></ul><ul><li><a href=#81-创建结构体的构造函数>8.1 创建结构体的构造函数</a></li></ul><ul><li><a href=#91-结构体作为函数参数>9.1 结构体作为函数参数</a></li></ul></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/golang/>Golang</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/stu/golang-stu-09/>Golang学习历程【第九篇 结构体(struct)】</a></h2></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published datetime=2026-02-04T17:15:16+08:00>Feb 04, 2026</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>阅读时长: 13 分钟</time></div></footer><footer class=article-translations><svg class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5h7"/><path d="M9 3v2c0 4.418-2.239 8-5 8"/><path d="M5 9c-.003 2.144 2.952 3.908 6.7 4"/><path d="M12 20l4-9 4 9"/><path d="M19.1 18h-6.2"/></svg><div><a href=https://zg-dd.github.io/en/stu/golang-stu-09/ class=link>English</a></div></footer></div></header><section class=article-content><h1 id=1-什么是结构体>1. 什么是结构体</h1><blockquote><p>结构体是Go语言中一种重要的复合数据类型，它可以将多个不同类型的数据组合在一起，形成一个有意义的整体。可以把结构体理解为现实世界中事物的抽象表示。</p></blockquote><h2 id=11-结构体的基本概念>1.1 结构体的基本概念</h2><p>想象我们要描述一个学生的信息：</p><ul><li>姓名：字符串类型</li><li>年龄：整数类型</li><li>成绩：浮点数类型</li><li>是否在校：布尔类型</li></ul><p>如果没有结构体，我们需要分别定义多个变量：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>var</span> <span style=color:#a6e22e>name</span> <span style=color:#66d9ef>string</span> = <span style=color:#e6db74>&#34;张三&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>var</span> <span style=color:#a6e22e>age</span> <span style=color:#66d9ef>int</span> = <span style=color:#ae81ff>18</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>var</span> <span style=color:#a6e22e>score</span> <span style=color:#66d9ef>float64</span> = <span style=color:#ae81ff>95.5</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>var</span> <span style=color:#a6e22e>isEnrolled</span> <span style=color:#66d9ef>bool</span> = <span style=color:#66d9ef>true</span>
+</span></span></code></pre></div><p>这样很不方便管理和使用。而结构体可以将这些相关数据组织在一起：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Student</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Name</span>      <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Age</span>       <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Score</span>     <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>IsEnrolled</span> <span style=color:#66d9ef>bool</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=12-为什么需要结构体>1.2 为什么需要结构体</h2><p>结构体的主要优势：</p><ol><li><strong>数据聚合</strong>：将相关的数据组织在一起</li><li><strong>代码清晰</strong>：提高代码的可读性和可维护性</li><li><strong>类型安全</strong>：创建专门的数据类型</li><li><strong>面向对象</strong>：为后续的方法和接口打基础</li></ol><h1 id=2-结构体的定义和声明>2. 结构体的定义和声明</h1><h2 id=21-基本定义语法>2.1 基本定义语法</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#75715e>// 结构体定义的基本语法</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>结构体名</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>字段名1</span> <span style=color:#a6e22e>数据类型1</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>字段名2</span> <span style=color:#a6e22e>数据类型2</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>字段名3</span> <span style=color:#a6e22e>数据类型3</span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// ... 更多字段</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=22-结构体定义示例>2.2 结构体定义示例</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 定义学生结构体</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Student</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Name</span>      <span style=color:#66d9ef>string</span>  <span style=color:#75715e>// 姓名</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Age</span>       <span style=color:#66d9ef>int</span>     <span style=color:#75715e>// 年龄</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Score</span>     <span style=color:#66d9ef>float64</span> <span style=color:#75715e>// 成绩</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>IsEnrolled</span> <span style=color:#66d9ef>bool</span>    <span style=color:#75715e>// 是否在校</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 定义图书结构体</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Book</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Title</span>    <span style=color:#66d9ef>string</span>  <span style=color:#75715e>// 书名</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Author</span>   <span style=color:#66d9ef>string</span>  <span style=color:#75715e>// 作者</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Price</span>    <span style=color:#66d9ef>float64</span> <span style=color:#75715e>// 价格</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Pages</span>    <span style=color:#66d9ef>int</span>     <span style=color:#75715e>// 页数</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>ISBN</span>     <span style=color:#66d9ef>string</span>  <span style=color:#75715e>// ISBN编号</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 定义坐标点结构体</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Point</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>X</span> <span style=color:#66d9ef>int</span> <span style=color:#75715e>// X坐标</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Y</span> <span style=color:#66d9ef>int</span> <span style=color:#75715e>// Y坐标</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;结构体定义完成&#34;</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=23-匿名结构体>2.3 匿名结构体</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 匿名结构体定义和使用</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>person</span> <span style=color:#f92672>:=</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Name</span> <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Age</span>  <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>    }{
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Name</span>: <span style=color:#e6db74>&#34;李四&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Age</span>:  <span style=color:#ae81ff>25</span>,
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;匿名结构体：%+v\n&#34;</span>, <span style=color:#a6e22e>person</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;姓名：%s，年龄：%d\n&#34;</span>, <span style=color:#a6e22e>person</span>.<span style=color:#a6e22e>Name</span>, <span style=color:#a6e22e>person</span>.<span style=color:#a6e22e>Age</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 匿名结构体切片</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>people</span> <span style=color:#f92672>:=</span> []<span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Name</span> <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>City</span> <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    }{
+</span></span><span style=display:flex><span>        {<span style=color:#e6db74>&#34;王五&#34;</span>, <span style=color:#e6db74>&#34;北京&#34;</span>},
+</span></span><span style=display:flex><span>        {<span style=color:#e6db74>&#34;赵六&#34;</span>, <span style=color:#e6db74>&#34;上海&#34;</span>},
+</span></span><span style=display:flex><span>        {<span style=color:#e6db74>&#34;孙七&#34;</span>, <span style=color:#e6db74>&#34;广州&#34;</span>},
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;人员列表：&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span> <span style=color:#a6e22e>_</span>, <span style=color:#a6e22e>p</span> <span style=color:#f92672>:=</span> <span style=color:#66d9ef>range</span> <span style=color:#a6e22e>people</span> {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;姓名：%s，城市：%s\n&#34;</span>, <span style=color:#a6e22e>p</span>.<span style=color:#a6e22e>Name</span>, <span style=color:#a6e22e>p</span>.<span style=color:#a6e22e>City</span>)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>运行结果：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>匿名结构体：<span style=color:#f92672>{</span>Name:李四 Age:25<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>姓名：李四，年龄：25
+</span></span><span style=display:flex><span>人员列表：
+</span></span><span style=display:flex><span>姓名：王五，城市：北京
+</span></span><span style=display:flex><span>姓名：赵六，城市：上海
+</span></span><span style=display:flex><span>姓名：孙七，城市：广州
+</span></span></code></pre></div><h1 id=3-结构体的实例化>3. 结构体的实例化</h1><h2 id=31-各种创建方式>3.1 各种创建方式</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Student</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Name</span>  <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Age</span>   <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Score</span> <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 方式1：完整字段初始化</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>student1</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Student</span>{
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Name</span>:  <span style=color:#e6db74>&#34;张三&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Age</span>:   <span style=color:#ae81ff>18</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Score</span>: <span style=color:#ae81ff>95.5</span>,
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 方式2：按字段顺序初始化（必须指定所有字段）</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>student2</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Student</span>{<span style=color:#e6db74>&#34;李四&#34;</span>, <span style=color:#ae81ff>19</span>, <span style=color:#ae81ff>88.0</span>}
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 方式3：部分字段初始化（必须指定字段名）</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>student3</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Student</span>{
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Name</span>: <span style=color:#e6db74>&#34;王五&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Age</span>:  <span style=color:#ae81ff>20</span>,
+</span></span><span style=display:flex><span>        <span style=color:#75715e>// Score使用默认值0.0</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 方式4：使用new函数创建（所有字段为零值）</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>student4</span> <span style=color:#f92672>:=</span> new(<span style=color:#a6e22e>Student</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>student4</span>.<span style=color:#a6e22e>Name</span> = <span style=color:#e6db74>&#34;赵六&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>student4</span>.<span style=color:#a6e22e>Age</span> = <span style=color:#ae81ff>21</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>student4</span>.<span style=color:#a6e22e>Score</span> = <span style=color:#ae81ff>92.5</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 方式5：使用&amp;创建并初始化</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>student5</span> <span style=color:#f92672>:=</span> <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>Student</span>{
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Name</span>:  <span style=color:#e6db74>&#34;孙七&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Age</span>:   <span style=color:#ae81ff>17</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Score</span>: <span style=color:#ae81ff>87.5</span>,
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;学生1：%+v\n&#34;</span>, <span style=color:#a6e22e>student1</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;学生2：%+v\n&#34;</span>, <span style=color:#a6e22e>student2</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;学生3：%+v\n&#34;</span>, <span style=color:#a6e22e>student3</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;学生4：%+v\n&#34;</span>, <span style=color:#f92672>*</span><span style=color:#a6e22e>student4</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;学生5：%+v\n&#34;</span>, <span style=color:#f92672>*</span><span style=color:#a6e22e>student5</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>运行结果：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>学生1：<span style=color:#f92672>{</span>Name:张三 Age:18 Score:95.5<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>学生2：<span style=color:#f92672>{</span>Name:李四 Age:19 Score:88<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>学生3：<span style=color:#f92672>{</span>Name:王五 Age:20 Score:0<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>学生4：<span style=color:#f92672>{</span>Name:赵六 Age:21 Score:92.5<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>学生5：<span style=color:#f92672>{</span>Name:孙七 Age:17 Score:87.5<span style=color:#f92672>}</span>
+</span></span></code></pre></div><h2 id=32-结构体的零值>3.2 结构体的零值</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Person</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Name</span>     <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Age</span>      <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Height</span>   <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>IsActive</span> <span style=color:#66d9ef>bool</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Scores</span>   []<span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Info</span>     <span style=color:#66d9ef>map</span>[<span style=color:#66d9ef>string</span>]<span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 声明结构体变量但不初始化</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>var</span> <span style=color:#a6e22e>person</span> <span style=color:#a6e22e>Person</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;结构体零值：%+v\n&#34;</span>, <span style=color:#a6e22e>person</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;字符串零值：%q\n&#34;</span>, <span style=color:#a6e22e>person</span>.<span style=color:#a6e22e>Name</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;整数零值：%d\n&#34;</span>, <span style=color:#a6e22e>person</span>.<span style=color:#a6e22e>Age</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;浮点数零值：%f\n&#34;</span>, <span style=color:#a6e22e>person</span>.<span style=color:#a6e22e>Height</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;布尔零值：%t\n&#34;</span>, <span style=color:#a6e22e>person</span>.<span style=color:#a6e22e>IsActive</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;切片零值：%v，是否为nil：%t\n&#34;</span>, <span style=color:#a6e22e>person</span>.<span style=color:#a6e22e>Scores</span>, <span style=color:#a6e22e>person</span>.<span style=color:#a6e22e>Scores</span> <span style=color:#f92672>==</span> <span style=color:#66d9ef>nil</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;map零值：%v，是否为nil：%t\n&#34;</span>, <span style=color:#a6e22e>person</span>.<span style=color:#a6e22e>Info</span>, <span style=color:#a6e22e>person</span>.<span style=color:#a6e22e>Info</span> <span style=color:#f92672>==</span> <span style=color:#66d9ef>nil</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>运行结果：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>结构体零值：<span style=color:#f92672>{</span>Name: Age:0 Height:0 IsActive:false Scores:<span style=color:#f92672>[]</span> Info:map<span style=color:#f92672>[]}</span>
+</span></span><span style=display:flex><span>字符串零值：<span style=color:#e6db74>&#34;&#34;</span>
+</span></span><span style=display:flex><span>整数零值：0
+</span></span><span style=display:flex><span>浮点数零值：0.000000
+</span></span><span style=display:flex><span>布尔零值：false
+</span></span><span style=display:flex><span>切片零值：<span style=color:#f92672>[]</span>，是否为nil：true
+</span></span><span style=display:flex><span>map零值：map<span style=color:#f92672>[]</span>，是否为nil：true
+</span></span></code></pre></div><h1 id=4-结构体字段访问和修改>4. 结构体字段访问和修改</h1><h2 id=41-字段访问>4.1 字段访问</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Employee</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Name</span>    <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Age</span>     <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Salary</span>  <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Department</span> <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 创建员工实例</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>emp</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Employee</span>{
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Name</span>:       <span style=color:#e6db74>&#34;张三&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Age</span>:        <span style=color:#ae81ff>28</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Salary</span>:     <span style=color:#ae81ff>15000.0</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Department</span>: <span style=color:#e6db74>&#34;技术部&#34;</span>,
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 访问字段</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;员工姓名：%s\n&#34;</span>, <span style=color:#a6e22e>emp</span>.<span style=color:#a6e22e>Name</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;员工年龄：%d\n&#34;</span>, <span style=color:#a6e22e>emp</span>.<span style=color:#a6e22e>Age</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;员工薪资：%.2f\n&#34;</span>, <span style=color:#a6e22e>emp</span>.<span style=color:#a6e22e>Salary</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;所在部门：%s\n&#34;</span>, <span style=color:#a6e22e>emp</span>.<span style=color:#a6e22e>Department</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 修改字段值</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>emp</span>.<span style=color:#a6e22e>Age</span> = <span style=color:#ae81ff>29</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>emp</span>.<span style=color:#a6e22e>Salary</span> = <span style=color:#ae81ff>16000.0</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>emp</span>.<span style=color:#a6e22e>Department</span> = <span style=color:#e6db74>&#34;研发部&#34;</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;\n修改后信息：\n&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;员工姓名：%s\n&#34;</span>, <span style=color:#a6e22e>emp</span>.<span style=color:#a6e22e>Name</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;员工年龄：%d\n&#34;</span>, <span style=color:#a6e22e>emp</span>.<span style=color:#a6e22e>Age</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;员工薪资：%.2f\n&#34;</span>, <span style=color:#a6e22e>emp</span>.<span style=color:#a6e22e>Salary</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;所在部门：%s\n&#34;</span>, <span style=color:#a6e22e>emp</span>.<span style=color:#a6e22e>Department</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>运行结果：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>员工姓名：张三
+</span></span><span style=display:flex><span>员工年龄：28
+</span></span><span style=display:flex><span>员工薪资：15000.00
+</span></span><span style=display:flex><span>所在部门：技术部
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>修改后信息：
+</span></span><span style=display:flex><span>员工姓名：张三
+</span></span><span style=display:flex><span>员工年龄：29
+</span></span><span style=display:flex><span>员工薪资：16000.00
+</span></span><span style=display:flex><span>所在部门：研发部
+</span></span></code></pre></div><h2 id=42-指针访问结构体字段>4.2 指针访问结构体字段</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Product</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Name</span>  <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Price</span> <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Stock</span> <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 普通结构体变量</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>product1</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Product</span>{<span style=color:#a6e22e>Name</span>: <span style=color:#e6db74>&#34;手机&#34;</span>, <span style=color:#a6e22e>Price</span>: <span style=color:#ae81ff>3999.0</span>, <span style=color:#a6e22e>Stock</span>: <span style=color:#ae81ff>100</span>}
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 结构体指针</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>product2</span> <span style=color:#f92672>:=</span> <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>Product</span>{<span style=color:#a6e22e>Name</span>: <span style=color:#e6db74>&#34;电脑&#34;</span>, <span style=color:#a6e22e>Price</span>: <span style=color:#ae81ff>8999.0</span>, <span style=color:#a6e22e>Stock</span>: <span style=color:#ae81ff>50</span>}
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 访问方式1：通过变量名直接访问</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;产品1 - 名称：%s，价格：%.2f，库存：%d\n&#34;</span>, 
+</span></span><span style=display:flex><span>               <span style=color:#a6e22e>product1</span>.<span style=color:#a6e22e>Name</span>, <span style=color:#a6e22e>product1</span>.<span style=color:#a6e22e>Price</span>, <span style=color:#a6e22e>product1</span>.<span style=color:#a6e22e>Stock</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 访问方式2：通过指针访问（Go自动解引用）</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;产品2 - 名称：%s，价格：%.2f，库存：%d\n&#34;</span>, 
+</span></span><span style=display:flex><span>               <span style=color:#a6e22e>product2</span>.<span style=color:#a6e22e>Name</span>, <span style=color:#a6e22e>product2</span>.<span style=color:#a6e22e>Price</span>, <span style=color:#a6e22e>product2</span>.<span style=color:#a6e22e>Stock</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 访问方式3：显式解引用</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;产品2显式解引用 - 名称：%s，价格：%.2f，库存：%d\n&#34;</span>, 
+</span></span><span style=display:flex><span>               (<span style=color:#f92672>*</span><span style=color:#a6e22e>product2</span>).<span style=color:#a6e22e>Name</span>, (<span style=color:#f92672>*</span><span style=color:#a6e22e>product2</span>).<span style=color:#a6e22e>Price</span>, (<span style=color:#f92672>*</span><span style=color:#a6e22e>product2</span>).<span style=color:#a6e22e>Stock</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 修改值</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>product1</span>.<span style=color:#a6e22e>Price</span> = <span style=color:#ae81ff>3599.0</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>product2</span>.<span style=color:#a6e22e>Stock</span> = <span style=color:#ae81ff>75</span>  <span style=color:#75715e>// 等价于 (*product2).Stock = 75</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;\n修改后：\n&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;产品1价格：%.2f\n&#34;</span>, <span style=color:#a6e22e>product1</span>.<span style=color:#a6e22e>Price</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;产品2库存：%d\n&#34;</span>, <span style=color:#a6e22e>product2</span>.<span style=color:#a6e22e>Stock</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>运行结果：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>产品1 - 名称：手机，价格：3999.00，库存：100
+</span></span><span style=display:flex><span>产品2 - 名称：电脑，价格：8999.00，库存：50
+</span></span><span style=display:flex><span>产品2显式解引用 - 名称：电脑，价格：8999.00，库存：50
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>修改后：
+</span></span><span style=display:flex><span>产品1价格：3599.00
+</span></span><span style=display:flex><span>产品2库存：75
+</span></span></code></pre></div><h1 id=5-结构体嵌套>5. 结构体嵌套</h1><h2 id=51-基本嵌套>5.1 基本嵌套</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 地址结构体</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Address</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Province</span> <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>City</span>     <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Street</span>   <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>ZipCode</span>  <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 公司结构体</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Company</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Name</span>    <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Address</span> <span style=color:#a6e22e>Address</span>  <span style=color:#75715e>// 嵌套Address结构体</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 员工结构体</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Employee</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Name</span>    <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Age</span>     <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Company</span> <span style=color:#a6e22e>Company</span>  <span style=color:#75715e>// 嵌套Company结构体</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 创建嵌套结构体</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>employee</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Employee</span>{
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Name</span>: <span style=color:#e6db74>&#34;张三&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Age</span>:  <span style=color:#ae81ff>30</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Company</span>: <span style=color:#a6e22e>Company</span>{
+</span></span><span style=display:flex><span>            <span style=color:#a6e22e>Name</span>: <span style=color:#e6db74>&#34;科技有限公司&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#a6e22e>Address</span>: <span style=color:#a6e22e>Address</span>{
+</span></span><span style=display:flex><span>                <span style=color:#a6e22e>Province</span>: <span style=color:#e6db74>&#34;北京市&#34;</span>,
+</span></span><span style=display:flex><span>                <span style=color:#a6e22e>City</span>:     <span style=color:#e6db74>&#34;北京市&#34;</span>,
+</span></span><span style=display:flex><span>                <span style=color:#a6e22e>Street</span>:   <span style=color:#e6db74>&#34;中关村大街1号&#34;</span>,
+</span></span><span style=display:flex><span>                <span style=color:#a6e22e>ZipCode</span>:  <span style=color:#e6db74>&#34;100080&#34;</span>,
+</span></span><span style=display:flex><span>            },
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 访问嵌套字段</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;员工姓名：%s\n&#34;</span>, <span style=color:#a6e22e>employee</span>.<span style=color:#a6e22e>Name</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;员工年龄：%d\n&#34;</span>, <span style=color:#a6e22e>employee</span>.<span style=color:#a6e22e>Age</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;公司名称：%s\n&#34;</span>, <span style=color:#a6e22e>employee</span>.<span style=color:#a6e22e>Company</span>.<span style=color:#a6e22e>Name</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;公司省份：%s\n&#34;</span>, <span style=color:#a6e22e>employee</span>.<span style=color:#a6e22e>Company</span>.<span style=color:#a6e22e>Address</span>.<span style=color:#a6e22e>Province</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;公司城市：%s\n&#34;</span>, <span style=color:#a6e22e>employee</span>.<span style=color:#a6e22e>Company</span>.<span style=color:#a6e22e>Address</span>.<span style=color:#a6e22e>City</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;公司街道：%s\n&#34;</span>, <span style=color:#a6e22e>employee</span>.<span style=color:#a6e22e>Company</span>.<span style=color:#a6e22e>Address</span>.<span style=color:#a6e22e>Street</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;邮政编码：%s\n&#34;</span>, <span style=color:#a6e22e>employee</span>.<span style=color:#a6e22e>Company</span>.<span style=color:#a6e22e>Address</span>.<span style=color:#a6e22e>ZipCode</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 修改嵌套字段</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>employee</span>.<span style=color:#a6e22e>Company</span>.<span style=color:#a6e22e>Address</span>.<span style=color:#a6e22e>Street</span> = <span style=color:#e6db74>&#34;中关村大街2号&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;\n修改后街道：%s\n&#34;</span>, <span style=color:#a6e22e>employee</span>.<span style=color:#a6e22e>Company</span>.<span style=color:#a6e22e>Address</span>.<span style=color:#a6e22e>Street</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>运行结果：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>员工姓名：张三
+</span></span><span style=display:flex><span>员工年龄：30
+</span></span><span style=display:flex><span>公司名称：科技有限公司
+</span></span><span style=display:flex><span>公司省份：北京市
+</span></span><span style=display:flex><span>公司城市：北京市
+</span></span><span style=display:flex><span>公司街道：中关村大街1号
+</span></span><span style=display:flex><span>邮政编码：100080
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>修改后街道：中关村大街2号
+</span></span></code></pre></div><h2 id=52-匿名嵌套匿名字段>5.2 匿名嵌套（匿名字段）</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Person</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Name</span> <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Age</span>  <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Student</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Person</span>      <span style=color:#75715e>// 匿名嵌套Person结构体</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>School</span> <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Grade</span>  <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Teacher</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Person</span>      <span style=color:#75715e>// 匿名嵌套Person结构体</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Subject</span> <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Salary</span>  <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 创建学生</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>student</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Student</span>{
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Person</span>: <span style=color:#a6e22e>Person</span>{<span style=color:#a6e22e>Name</span>: <span style=color:#e6db74>&#34;小明&#34;</span>, <span style=color:#a6e22e>Age</span>: <span style=color:#ae81ff>18</span>},
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>School</span>: <span style=color:#e6db74>&#34;第一中学&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Grade</span>:  <span style=color:#ae81ff>12</span>,
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 创建老师</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>teacher</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Teacher</span>{
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Person</span>:  <span style=color:#a6e22e>Person</span>{<span style=color:#a6e22e>Name</span>: <span style=color:#e6db74>&#34;王老师&#34;</span>, <span style=color:#a6e22e>Age</span>: <span style=color:#ae81ff>35</span>},
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Subject</span>: <span style=color:#e6db74>&#34;数学&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Salary</span>:  <span style=color:#ae81ff>8000.0</span>,
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 访问提升字段（可以直接访问嵌套结构体的字段）</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;学生姓名：%s\n&#34;</span>, <span style=color:#a6e22e>student</span>.<span style=color:#a6e22e>Name</span>)  <span style=color:#75715e>// 等价于 student.Person.Name</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;学生年龄：%d\n&#34;</span>, <span style=color:#a6e22e>student</span>.<span style=color:#a6e22e>Age</span>)   <span style=color:#75715e>// 等价于 student.Person.Age</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;学校：%s\n&#34;</span>, <span style=color:#a6e22e>student</span>.<span style=color:#a6e22e>School</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;年级：%d\n&#34;</span>, <span style=color:#a6e22e>student</span>.<span style=color:#a6e22e>Grade</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;\n老师姓名：%s\n&#34;</span>, <span style=color:#a6e22e>teacher</span>.<span style=color:#a6e22e>Name</span>)  <span style=color:#75715e>// 等价于 teacher.Person.Name</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;老师年龄：%d\n&#34;</span>, <span style=color:#a6e22e>teacher</span>.<span style=color:#a6e22e>Age</span>)     <span style=color:#75715e>// 等价于 teacher.Person.Age</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;科目：%s\n&#34;</span>, <span style=color:#a6e22e>teacher</span>.<span style=color:#a6e22e>Subject</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;薪资：%.2f\n&#34;</span>, <span style=color:#a6e22e>teacher</span>.<span style=color:#a6e22e>Salary</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 修改提升字段</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>student</span>.<span style=color:#a6e22e>Age</span> = <span style=color:#ae81ff>19</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>teacher</span>.<span style=color:#a6e22e>Name</span> = <span style=color:#e6db74>&#34;李老师&#34;</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;\n修改后学生年龄：%d\n&#34;</span>, <span style=color:#a6e22e>student</span>.<span style=color:#a6e22e>Age</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;修改后老师姓名：%s\n&#34;</span>, <span style=color:#a6e22e>teacher</span>.<span style=color:#a6e22e>Name</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>运行结果：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>学生姓名：小明
+</span></span><span style=display:flex><span>学生年龄：18
+</span></span><span style=display:flex><span>学校：第一中学
+</span></span><span style=display:flex><span>年级：12
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>老师姓名：王老师
+</span></span><span style=display:flex><span>老师年龄：35
+</span></span><span style=display:flex><span>科目：数学
+</span></span><span style=display:flex><span>薪资：8000.00
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>修改后学生年龄：19
+</span></span><span style=display:flex><span>修改后老师姓名：李老师
+</span></span></code></pre></div><h1 id=6-结构体标签struct-tags>6. 结构体标签（Struct Tags）</h1><h2 id=61-基本标签使用>6.1 基本标签使用</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> (
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;encoding/json&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>User</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>ID</span>       <span style=color:#66d9ef>int</span>    <span style=color:#e6db74>`json:&#34;id&#34;`</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>UserName</span> <span style=color:#66d9ef>string</span> <span style=color:#e6db74>`json:&#34;username&#34;`</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Email</span>    <span style=color:#66d9ef>string</span> <span style=color:#e6db74>`json:&#34;email&#34;`</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Password</span> <span style=color:#66d9ef>string</span> <span style=color:#e6db74>`json:&#34;-&#34;`</span>              <span style=color:#75715e>// -表示忽略此字段</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Active</span>   <span style=color:#66d9ef>bool</span>   <span style=color:#e6db74>`json:&#34;active,omitempty&#34;`</span> <span style=color:#75715e>// omitempty表示空值时忽略</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>user</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>User</span>{
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>ID</span>:       <span style=color:#ae81ff>1</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>UserName</span>: <span style=color:#e6db74>&#34;zhangsan&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Email</span>:    <span style=color:#e6db74>&#34;zhangsan@example.com&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Password</span>: <span style=color:#e6db74>&#34;123456&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Active</span>:   <span style=color:#66d9ef>true</span>,
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 序列化为JSON</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>jsonData</span>, <span style=color:#a6e22e>err</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>json</span>.<span style=color:#a6e22e>Marshal</span>(<span style=color:#a6e22e>user</span>)
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;序列化错误：%v\n&#34;</span>, <span style=color:#a6e22e>err</span>)
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;JSON数据：%s\n&#34;</span>, <span style=color:#a6e22e>jsonData</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 反序列化</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>var</span> <span style=color:#a6e22e>newUser</span> <span style=color:#a6e22e>User</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>jsonStr</span> <span style=color:#f92672>:=</span> <span style=color:#e6db74>`{&#34;id&#34;:2,&#34;username&#34;:&#34;lisi&#34;,&#34;email&#34;:&#34;lisi@example.com&#34;,&#34;active&#34;:false}`</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>err</span> = <span style=color:#a6e22e>json</span>.<span style=color:#a6e22e>Unmarshal</span>([]byte(<span style=color:#a6e22e>jsonStr</span>), <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>newUser</span>)
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;反序列化错误：%v\n&#34;</span>, <span style=color:#a6e22e>err</span>)
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;反序列化结果：%+v\n&#34;</span>, <span style=color:#a6e22e>newUser</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>运行结果：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>JSON数据：<span style=color:#f92672>{</span><span style=color:#e6db74>&#34;id&#34;</span>:1,<span style=color:#e6db74>&#34;username&#34;</span>:<span style=color:#e6db74>&#34;zhangsan&#34;</span>,<span style=color:#e6db74>&#34;email&#34;</span>:<span style=color:#e6db74>&#34;zhangsan@example.com&#34;</span>,<span style=color:#e6db74>&#34;active&#34;</span>:true<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>反序列化结果：<span style=color:#f92672>{</span>ID:2 UserName:lisi Email:lisi@example.com Password: Active:false<span style=color:#f92672>}</span>
+</span></span></code></pre></div><h2 id=62-多个标签示例>6.2 多个标签示例</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> (
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;encoding/json&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Product</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>ID</span>          <span style=color:#66d9ef>int</span>     <span style=color:#e6db74>`json:&#34;id&#34; db:&#34;product_id&#34;`</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Name</span>        <span style=color:#66d9ef>string</span>  <span style=color:#e6db74>`json:&#34;name&#34; db:&#34;product_name&#34;`</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Price</span>       <span style=color:#66d9ef>float64</span> <span style=color:#e6db74>`json:&#34;price&#34; db:&#34;price&#34;`</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Description</span> <span style=color:#66d9ef>string</span>  <span style=color:#e6db74>`json:&#34;description,omitempty&#34; db:&#34;description&#34;`</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Category</span>    <span style=color:#66d9ef>string</span>  <span style=color:#e6db74>`json:&#34;category&#34; db:&#34;category&#34;`</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>products</span> <span style=color:#f92672>:=</span> []<span style=color:#a6e22e>Product</span>{
+</span></span><span style=display:flex><span>        {
+</span></span><span style=display:flex><span>            <span style=color:#a6e22e>ID</span>:    <span style=color:#ae81ff>1</span>,
+</span></span><span style=display:flex><span>            <span style=color:#a6e22e>Name</span>:  <span style=color:#e6db74>&#34;iPhone 15&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#a6e22e>Price</span>: <span style=color:#ae81ff>5999.0</span>,
+</span></span><span style=display:flex><span>            <span style=color:#a6e22e>Description</span>: <span style=color:#e6db74>&#34;最新款苹果手机&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#a6e22e>Category</span>:    <span style=color:#e6db74>&#34;电子产品&#34;</span>,
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>        {
+</span></span><span style=display:flex><span>            <span style=color:#a6e22e>ID</span>:    <span style=color:#ae81ff>2</span>,
+</span></span><span style=display:flex><span>            <span style=color:#a6e22e>Name</span>:  <span style=color:#e6db74>&#34;MacBook Pro&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#a6e22e>Price</span>: <span style=color:#ae81ff>12999.0</span>,
+</span></span><span style=display:flex><span>            <span style=color:#75715e>// Description为空，会被omitempty忽略</span>
+</span></span><span style=display:flex><span>            <span style=color:#a6e22e>Category</span>: <span style=color:#e6db74>&#34;电脑&#34;</span>,
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// JSON序列化</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>jsonData</span>, <span style=color:#a6e22e>_</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>json</span>.<span style=color:#a6e22e>MarshalIndent</span>(<span style=color:#a6e22e>products</span>, <span style=color:#e6db74>&#34;&#34;</span>, <span style=color:#e6db74>&#34;  &#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;JSON格式数据：\n%s\n&#34;</span>, <span style=color:#a6e22e>jsonData</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>运行结果：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>JSON格式数据：
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;id&#34;</span>: 1,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;name&#34;</span>: <span style=color:#e6db74>&#34;iPhone 15&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;price&#34;</span>: 5999,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;description&#34;</span>: <span style=color:#e6db74>&#34;最新款苹果手机&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;category&#34;</span>: <span style=color:#e6db74>&#34;电子产品&#34;</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>}</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;id&#34;</span>: 2,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;name&#34;</span>: <span style=color:#e6db74>&#34;MacBook Pro&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;price&#34;</span>: 12999,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;category&#34;</span>: <span style=color:#e6db74>&#34;电脑&#34;</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>]</span>
+</span></span></code></pre></div><h1 id=7-结构体比较>7. 结构体比较</h1><h2 id=71-结构体相等性比较>7.1 结构体相等性比较</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Point</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>X</span>, <span style=color:#a6e22e>Y</span> <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Person</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Name</span> <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Age</span>  <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Data</span> []<span style=color:#66d9ef>int</span>  <span style=color:#75715e>// 切片字段</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 可比较的结构体</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>p1</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Point</span>{<span style=color:#ae81ff>1</span>, <span style=color:#ae81ff>2</span>}
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>p2</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Point</span>{<span style=color:#ae81ff>1</span>, <span style=color:#ae81ff>2</span>}
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>p3</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Point</span>{<span style=color:#ae81ff>3</span>, <span style=color:#ae81ff>4</span>}
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;p1 == p2: %t\n&#34;</span>, <span style=color:#a6e22e>p1</span> <span style=color:#f92672>==</span> <span style=color:#a6e22e>p2</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;p1 == p3: %t\n&#34;</span>, <span style=color:#a6e22e>p1</span> <span style=color:#f92672>==</span> <span style=color:#a6e22e>p3</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 包含不可比较字段的结构体</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>person1</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Person</span>{<span style=color:#a6e22e>Name</span>: <span style=color:#e6db74>&#34;张三&#34;</span>, <span style=color:#a6e22e>Age</span>: <span style=color:#ae81ff>20</span>, <span style=color:#a6e22e>Data</span>: []<span style=color:#66d9ef>int</span>{<span style=color:#ae81ff>1</span>, <span style=color:#ae81ff>2</span>, <span style=color:#ae81ff>3</span>}}
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>person2</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Person</span>{<span style=color:#a6e22e>Name</span>: <span style=color:#e6db74>&#34;张三&#34;</span>, <span style=color:#a6e22e>Age</span>: <span style=color:#ae81ff>20</span>, <span style=color:#a6e22e>Data</span>: []<span style=color:#66d9ef>int</span>{<span style=color:#ae81ff>1</span>, <span style=color:#ae81ff>2</span>, <span style=color:#ae81ff>3</span>}}
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 以下代码会编译错误，因为包含切片字段</span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// fmt.Printf(&#34;person1 == person2: %t\n&#34;, person1 == person2)</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 手动比较</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>equal</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>person1</span>.<span style=color:#a6e22e>Name</span> <span style=color:#f92672>==</span> <span style=color:#a6e22e>person2</span>.<span style=color:#a6e22e>Name</span> <span style=color:#f92672>&amp;&amp;</span> 
+</span></span><span style=display:flex><span>             <span style=color:#a6e22e>person1</span>.<span style=color:#a6e22e>Age</span> <span style=color:#f92672>==</span> <span style=color:#a6e22e>person2</span>.<span style=color:#a6e22e>Age</span> <span style=color:#f92672>&amp;&amp;</span>
+</span></span><span style=display:flex><span>             len(<span style=color:#a6e22e>person1</span>.<span style=color:#a6e22e>Data</span>) <span style=color:#f92672>==</span> len(<span style=color:#a6e22e>person2</span>.<span style=color:#a6e22e>Data</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>equal</span> {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> <span style=color:#a6e22e>i</span> <span style=color:#f92672>:=</span> <span style=color:#66d9ef>range</span> <span style=color:#a6e22e>person1</span>.<span style=color:#a6e22e>Data</span> {
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>person1</span>.<span style=color:#a6e22e>Data</span>[<span style=color:#a6e22e>i</span>] <span style=color:#f92672>!=</span> <span style=color:#a6e22e>person2</span>.<span style=color:#a6e22e>Data</span>[<span style=color:#a6e22e>i</span>] {
+</span></span><span style=display:flex><span>                <span style=color:#a6e22e>equal</span> = <span style=color:#66d9ef>false</span>
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>break</span>
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;手动比较结果：%t\n&#34;</span>, <span style=color:#a6e22e>equal</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>运行结果：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>p1 <span style=color:#f92672>==</span> p2: true
+</span></span><span style=display:flex><span>p1 <span style=color:#f92672>==</span> p3: false
+</span></span><span style=display:flex><span>手动比较结果：true
+</span></span></code></pre></div><h1 id=8-结构体工厂函数>8. 结构体工厂函数</h1><h2 id=81-创建结构体的构造函数>8.1 创建结构体的构造函数</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> (
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;time&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>User</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>ID</span>        <span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Username</span>  <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Email</span>     <span style=color:#66d9ef>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>CreatedAt</span> <span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Time</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>IsActive</span>  <span style=color:#66d9ef>bool</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 构造函数1：创建普通用户</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>NewUser</span>(<span style=color:#a6e22e>username</span>, <span style=color:#a6e22e>email</span> <span style=color:#66d9ef>string</span>) <span style=color:#f92672>*</span><span style=color:#a6e22e>User</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>User</span>{
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Username</span>:  <span style=color:#a6e22e>username</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Email</span>:     <span style=color:#a6e22e>email</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>CreatedAt</span>: <span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Now</span>(),
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>IsActive</span>:  <span style=color:#66d9ef>true</span>,
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 构造函数2：创建管理员用户</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>NewAdminUser</span>(<span style=color:#a6e22e>username</span>, <span style=color:#a6e22e>email</span> <span style=color:#66d9ef>string</span>) <span style=color:#f92672>*</span><span style=color:#a6e22e>User</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>user</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>NewUser</span>(<span style=color:#a6e22e>username</span>, <span style=color:#a6e22e>email</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>user</span>.<span style=color:#a6e22e>ID</span> = <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>  <span style=color:#75715e>// 管理员ID设为特殊值</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>user</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 构造函数3：带验证的构造函数</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>NewUserWithValidation</span>(<span style=color:#a6e22e>username</span>, <span style=color:#a6e22e>email</span> <span style=color:#66d9ef>string</span>) (<span style=color:#f92672>*</span><span style=color:#a6e22e>User</span>, <span style=color:#66d9ef>error</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> len(<span style=color:#a6e22e>username</span>) &lt; <span style=color:#ae81ff>3</span> {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>nil</span>, <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Errorf</span>(<span style=color:#e6db74>&#34;用户名长度不能少于3个字符&#34;</span>)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> len(<span style=color:#a6e22e>email</span>) &lt; <span style=color:#ae81ff>5</span> <span style=color:#f92672>||</span> !<span style=color:#a6e22e>contains</span>(<span style=color:#a6e22e>email</span>, <span style=color:#e6db74>&#34;@&#34;</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>nil</span>, <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Errorf</span>(<span style=color:#e6db74>&#34;邮箱格式不正确&#34;</span>)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>User</span>{
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Username</span>:  <span style=color:#a6e22e>username</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>Email</span>:     <span style=color:#a6e22e>email</span>,
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>CreatedAt</span>: <span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Now</span>(),
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>IsActive</span>:  <span style=color:#66d9ef>true</span>,
+</span></span><span style=display:flex><span>    }, <span style=color:#66d9ef>nil</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 辅助函数</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>contains</span>(<span style=color:#a6e22e>s</span>, <span style=color:#a6e22e>substr</span> <span style=color:#66d9ef>string</span>) <span style=color:#66d9ef>bool</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span> <span style=color:#a6e22e>i</span> <span style=color:#f92672>:=</span> <span style=color:#ae81ff>0</span>; <span style=color:#a6e22e>i</span> <span style=color:#f92672>&lt;=</span> len(<span style=color:#a6e22e>s</span>)<span style=color:#f92672>-</span>len(<span style=color:#a6e22e>substr</span>); <span style=color:#a6e22e>i</span><span style=color:#f92672>++</span> {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>s</span>[<span style=color:#a6e22e>i</span>:<span style=color:#a6e22e>i</span><span style=color:#f92672>+</span>len(<span style=color:#a6e22e>substr</span>)] <span style=color:#f92672>==</span> <span style=color:#a6e22e>substr</span> {
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>true</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>false</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 使用构造函数创建用户</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>user1</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>NewUser</span>(<span style=color:#e6db74>&#34;zhangsan&#34;</span>, <span style=color:#e6db74>&#34;zhangsan@example.com&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;普通用户：%+v\n&#34;</span>, <span style=color:#f92672>*</span><span style=color:#a6e22e>user1</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>admin</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>NewAdminUser</span>(<span style=color:#e6db74>&#34;admin&#34;</span>, <span style=color:#e6db74>&#34;admin@example.com&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;管理员用户：%+v\n&#34;</span>, <span style=color:#f92672>*</span><span style=color:#a6e22e>admin</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 带验证的构造函数</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>user2</span>, <span style=color:#a6e22e>err</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>NewUserWithValidation</span>(<span style=color:#e6db74>&#34;li&#34;</span>, <span style=color:#e6db74>&#34;invalid-email&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;创建用户失败：%v\n&#34;</span>, <span style=color:#a6e22e>err</span>)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>user3</span>, <span style=color:#a6e22e>err</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>NewUserWithValidation</span>(<span style=color:#e6db74>&#34;lisi&#34;</span>, <span style=color:#e6db74>&#34;lisi@example.com&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;创建用户失败：%v\n&#34;</span>, <span style=color:#a6e22e>err</span>)
+</span></span><span style=display:flex><span>    } <span style=color:#66d9ef>else</span> {
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;验证通过的用户：%+v\n&#34;</span>, <span style=color:#f92672>*</span><span style=color:#a6e22e>user3</span>)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>运行结果：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>普通用户：<span style=color:#f92672>{</span>ID:0 Username:zhangsan Email:zhangsan@example.com CreatedAt:2024-01-15 10:30:45.123456789 +0800 CST IsActive:true<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>管理员用户：<span style=color:#f92672>{</span>ID:-1 Username:admin Email:admin@example.com CreatedAt:2024-01-15 10:30:45.123456789 +0800 CST IsActive:true<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>创建用户失败：用户名长度不能少于3个字符
+</span></span><span style=display:flex><span>验证通过的用户：<span style=color:#f92672>{</span>ID:0 Username:lisi Email:lisi@example.com CreatedAt:2024-01-15 10:30:45.123456789 +0800 CST IsActive:true<span style=color:#f92672>}</span>
+</span></span></code></pre></div><h1 id=9-结构体与函数>9. 结构体与函数</h1><h2 id=91-结构体作为函数参数>9.1 结构体作为函数参数</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Rectangle</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Width</span>  <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>Height</span> <span style=color:#66d9ef>float64</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 值传递</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>calculateArea</span>(<span style=color:#a6e22e>rect</span> <span style=color:#a6e22e>Rectangle</span>) <span style=color:#66d9ef>float64</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>rect</span>.<span style=color:#a6e22e>Width</span> <span style=color:#f92672>*</span> <span style=color:#a6e22e>rect</span>.<span style=color:#a6e22e>Height</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 指针传递（可以修改原结构体）</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>scaleRectangle</span>(<span style=color:#a6e22e>rect</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Rectangle</span>, <span style=color:#a6e22e>factor</span> <span style=color:#66d9ef>float64</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>rect</span>.<span style=color:#a6e22e>Width</span> <span style=color:#f92672>*=</span> <span style=color:#a6e22e>factor</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>rect</span>.<span style=color:#a6e22e>Height</span> <span style=color:#f92672>*=</span> <span style=color:#a6e22e>factor</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// 返回结构体</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>createSquare</span>(<span style=color:#a6e22e>side</span> <span style=color:#66d9ef>float64</span>) <span style=color:#a6e22e>Rectangle</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>Rectangle</span>{<span style=color:#a6e22e>Width</span>: <span style=color:#a6e22e>side</span>, <span style=color:#a6e22e>Height</span>: <span style=color:#a6e22e>side</span>}
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 创建矩形</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>rect</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Rectangle</span>{<span style=color:#a6e22e>Width</span>: <span style=color:#ae81ff>10</span>, <span style=color:#a6e22e>Height</span>: <span style=color:#ae81ff>5</span>}
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;原始矩形：%+v\n&#34;</span>, <span style=color:#a6e22e>rect</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 值传递计算面积</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>area</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>calculateArea</span>(<span style=color:#a6e22e>rect</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;面积：%.2f\n&#34;</span>, <span style=color:#a6e22e>area</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;计算后矩形：%+v\n&#34;</span>, <span style=color:#a6e22e>rect</span>)  <span style=color:#75715e>// 原矩形未改变</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 指针传递缩放</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>scaleRectangle</span>(<span style=color:#f92672>&amp;</span><span style=color:#a6e22e>rect</span>, <span style=color:#ae81ff>2.0</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;缩放后矩形：%+v\n&#34;</span>, <span style=color:#a6e22e>rect</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;缩放后面积：%.2f\n&#34;</span>, <span style=color:#a6e22e>calculateArea</span>(<span style=color:#a6e22e>rect</span>))
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// 创建正方形</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>square</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>createSquare</span>(<span style=color:#ae81ff>8</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;创建的正方形：%+v\n&#34;</span>, <span style=color:#a6e22e>square</span>)
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;正方形面积：%.2f\n&#34;</span>, <span style=color:#a6e22e>calculateArea</span>(<span style=color:#a6e22e>square</span>))
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>运行结果：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>原始矩形：<span style=color:#f92672>{</span>Width:10 Height:5<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>面积：50.00
+</span></span><span style=display:flex><span>计算后矩形：<span style=color:#f92672>{</span>Width:10 Height:5<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>缩放后矩形：<span style=color:#f92672>{</span>Width:20 Height:10<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>缩放后面积：200.00
+</span></span><span style=display:flex><span>创建的正方形：<span style=color:#f92672>{</span>Width:8 Height:8<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>正方形面积：64.00
+</span></span></code></pre></div><h1 id=10-总结>10. 总结</h1><p>结构体是Go语言中组织和管理相关数据的重要工具：</p><p><strong>核心特点</strong>：</p><ul><li>将多个相关的数据字段组合在一起</li><li>可以嵌套其他结构体</li><li>支持标签用于序列化等操作</li><li>可以定义构造函数来规范化创建过程</li></ul><p><strong>使用场景</strong>：</p><ol><li>表示现实世界的实体（用户、商品、订单等）</li><li>组织配置信息</li><li>作为函数参数传递复杂数据</li><li>实现面向对象编程的基础</li></ol><p><strong>最佳实践</strong>：</p><ul><li>使用构造函数来创建结构体实例</li><li>为重要的结构体添加标签</li><li>合理使用指针传递避免不必要的拷贝</li><li>注意包含不可比较字段的结构体比较问题</li></ul><p>结构体是Go语言面向对象编程的基础，掌握好结构体的使用对后续学习方法和接口非常重要。</p></section><footer class=article-footer><section class=article-tags><a href=/tags/golang%E8%AF%AD%E6%B3%95/>Golang语法</a></section></footer></article><aside class=related-content--wrapper><h2 class=section-title>相关文章</h2><div class=related-content><div class="flex article-list--tile"><article><a href=/stu/golang-stu-08/><div class=article-details><h2 class=article-title>Golang学习历程【第八篇 指针(pointer)】</h2></div></a></article><article><a href=/stu/golang-stu-07/><div class=article-details><h2 class=article-title>Golang学习历程【第七篇 闭包&amp;type defer panic recover了解&amp;time包】</h2></div></a></article><article><a href=/stu/golang-stu-06/><div class=article-details><h2 class=article-title>Golang学习历程【第六篇 复合数据类型map&函数初识】</h2></div></a></article><article><a href=/stu/golang-stu-05/><div class=article-details><h2 class=article-title>Golang学习历程【第五篇 复合数据类型：数组&切片】</h2></div></a></article><article><a href=/stu/golang-stu-04/><div class=article-details><h2 class=article-title>Golang学习历程【第四篇 运算符&流程控制】</h2></div></a></article></div></div></aside><script src=https://giscus.app/client.js data-repo=zg-dd/zg-dd.github.io data-repo-id=R_kgDOQwB7tw data-category=Announcements data-category-id=DIC_kwDOQwB7t84C0WGD data-mapping=pathname data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=preferred_color_scheme data-lang=zh-CN data-loading crossorigin=anonymous async></script><script>function setGiscusTheme(e){let t=document.querySelector("iframe.giscus-frame");t&&t.contentWindow.postMessage({giscus:{setConfig:{theme:e}}},"https://giscus.app")}(function(){addEventListener("message",t=>{if(event.origin!=="https://giscus.app")return;e()}),window.addEventListener("onColorSchemeChange",e);function e(){setGiscusTheme(document.documentElement.dataset.scheme==="light"?"preferred_color_scheme":"preferred_color_scheme")}})()</script><footer class=site-footer><section class=copyright>&copy;
+2026 小巷的随笔</section><section class=powerby>使用 <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> 构建<br>主题 <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.33.0>Stack</a></b> 由 <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> 设计</section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.c922af694cc257bf1ecc41c0dd7b0430f9114ec280ccf67cd2c6ad55f5316c4e.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>
