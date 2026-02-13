@@ -6,25 +6,26 @@
 <span>暗色模式</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav id=TableOfContents><ul><li><a href=#-概述>📋 概述</a></li><li><a href=#脚本>📜脚本</a></li><li><a href=#-主要特性>🚀 主要特性</a><ul><li><a href=#-核心功能>✅ 核心功能</a></li><li><a href=#-高级特性>🎯 高级特性</a></li></ul></li><li><a href=#-安装要求>📦 安装要求</a><ul><li><a href=#系统环境>系统环境</a></li><li><a href=#依赖库>依赖库</a></li></ul></li><li><a href=#-使用方法>🛠️ 使用方法</a><ul><li><a href=#1-基本用法>1. 基本用法</a></li><li><a href=#2-路径使用>2. 路径使用</a></li></ul></li><li><a href=#-转换示例>📝 转换示例</a><ul><li><a href=#输入文件示例-applicationproperties>输入文件示例 (application.properties)</a></li><li><a href=#输出文件示例-applicationyaml>输出文件示例 (application.yaml)</a></li></ul></li><li><a href=#-功能详解>🔧 功能详解</a><ul><li><a href=#1-类型推断机制>1. 类型推断机制</a></li><li><a href=#2-注释处理机制>2. 注释处理机制</a></li><li><a href=#3-嵌套结构处理>3. 嵌套结构处理</a></li><li><a href=#4-顺序保持机制>4. 顺序保持机制</a></li></ul></li><li><a href=#-高级用法>⚙️ 高级用法</a><ul><li><a href=#1-批量处理脚本>1. 批量处理脚本</a></li><li><a href=#2-集成到cicd流程>2. 集成到CI/CD流程</a></li><li><a href=#3-作为模块导入>3. 作为模块导入</a></li></ul></li><li><a href=#-输出格式说明>📊 输出格式说明</a><ul><li><a href=#生成文件命名>生成文件命名</a></li><li><a href=#yaml格式特点>YAML格式特点</a></li></ul></li><li><a href=#-错误处理>🚨 错误处理</a><ul><li><a href=#常见错误及解决方案>常见错误及解决方案</a></li></ul></li><li><a href=#-故障排除>🔍 故障排除</a><ul><li><a href=#调试技巧>调试技巧</a></li></ul></li><li><a href=#-性能说明>📈 性能说明</a><ul><li><a href=#处理能力>处理能力</a></li></ul></li></ul></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/java/>Java
 </a><a href=/categories/%E8%BF%90%E7%BB%B4%E5%B7%A5%E5%85%B7/>运维工具</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/blog/properties-to-yaml/>Properties转YAML转换工具</a></h2></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
 <time class=article-time--published datetime=2026-02-09T00:32:40+08:00>Feb 09, 2026</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
-<time class=article-time--reading>阅读时长: 8 分钟</time></div></footer><footer class=article-translations><svg class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5h7"/><path d="M9 3v2c0 4.418-2.239 8-5 8"/><path d="M5 9c-.003 2.144 2.952 3.908 6.7 4"/><path d="M12 20l4-9 4 9"/><path d="M19.1 18h-6.2"/></svg><div><a href=https://zg-dd.github.io/en/blog/properties-to-yaml/ class=link>English</a></div></footer></div></header><section class=article-content><h1 id=properties转yaml转换工具使用手册>Properties转YAML转换工具使用手册</h1><h2 id=-概述>📋 概述</h2><p>这是一个功能强大的Python脚本工具，用于将Java <code>.properties</code> 配置文件转换为YAML格式。该工具不仅支持基本的格式转换，还具备智能的注释保留、类型推断和结构保持功能。</p><h2 id=脚本>📜脚本</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e>#!/usr/bin/env python3</span>
+<time class=article-time--reading>阅读时长: 7 分钟</time></div></footer><footer class=article-translations><svg class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5h7"/><path d="M9 3v2c0 4.418-2.239 8-5 8"/><path d="M5 9c-.003 2.144 2.952 3.908 6.7 4"/><path d="M12 20l4-9 4 9"/><path d="M19.1 18h-6.2"/></svg><div><a href=https://zg-dd.github.io/en/blog/properties-to-yaml/ class=link>English</a></div></footer></div></header><section class=article-content><h1 id=properties转yaml转换工具使用手册>Properties转YAML转换工具使用手册</h1><h2 id=-概述>📋 概述</h2><p>这是一个功能强大的Python脚本工具，用于将Java <code>.properties</code> 配置文件转换为YAML格式。该工具不仅支持基本的格式转换，还具备智能的注释保留、类型推断和结构保持功能。</p><h2 id=脚本>📜脚本</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e>#!/usr/bin/env python3</span>
 </span></span><span style=display:flex><span><span style=color:#75715e># -*- coding: utf-8 -*-</span>
 </span></span><span style=display:flex><span><span style=color:#e6db74>&#34;&#34;&#34;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>Properties文件转YAML文件工具（修复版）
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>修复了值被强制转换为字符串的问题
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>Properties文件转YAML文件工具（优化版）
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>优化点：
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>1. 使用普通dict替代OrderedDict（Python 3.7+保持插入顺序）
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>2. 减少数据冗余存储
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>3. 缓存重复的字符串操作
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>4. 简化逻辑流程
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>&#34;&#34;&#34;</span>
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#f92672>import</span> sys
 </span></span><span style=display:flex><span><span style=color:#f92672>import</span> argparse
 </span></span><span style=display:flex><span><span style=color:#f92672>from</span> pathlib <span style=color:#f92672>import</span> Path
-</span></span><span style=display:flex><span><span style=color:#f92672>from</span> collections <span style=color:#f92672>import</span> OrderedDict
 </span></span><span style=display:flex><span><span style=color:#f92672>import</span> yaml
 </span></span><span style=display:flex><span><span style=color:#f92672>import</span> re
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#66d9ef>def</span> <span style=color:#a6e22e>infer_value_type</span>(value_str):
-</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;&#34;&#34;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    推断值的类型并返回适当的Python对象
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    &#34;&#34;&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;&#34;&#34;推断值的类型并返回适当的Python对象&#34;&#34;&#34;</span>
 </span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> <span style=color:#f92672>not</span> isinstance(value_str, str):
 </span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> value_str
 </span></span><span style=display:flex><span>
@@ -39,400 +40,266 @@
 </span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> value_str<span style=color:#f92672>.</span>lower() <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;true&#39;</span>
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    <span style=color:#75715e># 数字（整数）</span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>try</span>:
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> <span style=color:#e6db74>&#39;.&#39;</span> <span style=color:#f92672>not</span> <span style=color:#f92672>in</span> value_str <span style=color:#f92672>and</span> re<span style=color:#f92672>.</span><span style=color:#66d9ef>match</span>(<span style=color:#e6db74>r</span><span style=color:#e6db74>&#39;^-?\d+$&#39;</span>, value_str):
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> <span style=color:#e6db74>&#39;.&#39;</span> <span style=color:#f92672>not</span> <span style=color:#f92672>in</span> value_str <span style=color:#f92672>and</span> re<span style=color:#f92672>.</span><span style=color:#66d9ef>match</span>(<span style=color:#e6db74>r</span><span style=color:#e6db74>&#39;^-?\d+$&#39;</span>, value_str):
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>try</span>:
 </span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> int(value_str)
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>except</span> <span style=color:#a6e22e>ValueError</span>:
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>pass</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>except</span> <span style=color:#a6e22e>ValueError</span>:
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>pass</span>
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    <span style=color:#75715e># 数字（浮点数）</span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>try</span>:
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> re<span style=color:#f92672>.</span><span style=color:#66d9ef>match</span>(<span style=color:#e6db74>r</span><span style=color:#e6db74>&#39;^-?\d+\.?\d*$&#39;</span>, value_str):
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> re<span style=color:#f92672>.</span><span style=color:#66d9ef>match</span>(<span style=color:#e6db74>r</span><span style=color:#e6db74>&#39;^-?\d+\.?\d*$&#39;</span>, value_str):
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>try</span>:
 </span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> float(value_str)
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>except</span> <span style=color:#a6e22e>ValueError</span>:
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>pass</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>except</span> <span style=color:#a6e22e>ValueError</span>:
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>pass</span>
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    <span style=color:#75715e># 去掉可能的引号</span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> (value_str<span style=color:#f92672>.</span>startswith(<span style=color:#e6db74>&#39;&#34;&#39;</span>) <span style=color:#f92672>and</span> value_str<span style=color:#f92672>.</span>endswith(<span style=color:#e6db74>&#39;&#34;&#39;</span>)) <span style=color:#f92672>or</span> \
-</span></span><span style=display:flex><span>            (value_str<span style=color:#f92672>.</span>startswith(<span style=color:#e6db74>&#34;&#39;&#34;</span>) <span style=color:#f92672>and</span> value_str<span style=color:#f92672>.</span>endswith(<span style=color:#e6db74>&#34;&#39;&#34;</span>)):
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> len(value_str) <span style=color:#f92672>&gt;=</span> <span style=color:#ae81ff>2</span> <span style=color:#f92672>and</span> (
+</span></span><span style=display:flex><span>        (value_str[<span style=color:#ae81ff>0</span>] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;&#34;&#39;</span> <span style=color:#f92672>and</span> value_str[<span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;&#34;&#39;</span>) <span style=color:#f92672>or</span>
+</span></span><span style=display:flex><span>        (value_str[<span style=color:#ae81ff>0</span>] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#34;&#39;&#34;</span> <span style=color:#f92672>and</span> value_str[<span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#34;&#39;&#34;</span>)
+</span></span><span style=display:flex><span>    ):
 </span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> value_str[<span style=color:#ae81ff>1</span>:<span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>]
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> value_str
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#66d9ef>def</span> <span style=color:#a6e22e>parse_properties_content</span>(content):
-</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;&#34;&#34;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    解析properties文件内容，严格按照原文顺序和结构
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    &#34;&#34;&#34;</span>
-</span></span><span style=display:flex><span>    result <span style=color:#f92672>=</span> OrderedDict()
-</span></span><span style=display:flex><span>    result[<span style=color:#e6db74>&#39;_structure&#39;</span>] <span style=color:#f92672>=</span> []
-</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;&#34;&#34;解析properties文件内容&#34;&#34;&#34;</span>
+</span></span><span style=display:flex><span>    structure <span style=color:#f92672>=</span> []
 </span></span><span style=display:flex><span>    lines <span style=color:#f92672>=</span> content<span style=color:#f92672>.</span>splitlines()
-</span></span><span style=display:flex><span>    i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>while</span> i <span style=color:#f92672>&lt;</span> len(lines):
-</span></span><span style=display:flex><span>        line <span style=color:#f92672>=</span> lines[i]
-</span></span><span style=display:flex><span>        stripped_line <span style=color:#f92672>=</span> line<span style=color:#f92672>.</span>strip()
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span> i, line <span style=color:#f92672>in</span> enumerate(lines):
+</span></span><span style=display:flex><span>        stripped <span style=color:#f92672>=</span> line<span style=color:#f92672>.</span>strip()
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> stripped_line<span style=color:#f92672>.</span>startswith(<span style=color:#e6db74>&#39;#&#39;</span>) <span style=color:#f92672>or</span> stripped_line<span style=color:#f92672>.</span>startswith(<span style=color:#e6db74>&#39;!&#39;</span>):
-</span></span><span style=display:flex><span>            comment_content <span style=color:#f92672>=</span> stripped_line[<span style=color:#ae81ff>1</span>:]<span style=color:#f92672>.</span>strip()
-</span></span><span style=display:flex><span>            result[<span style=color:#e6db74>&#39;_structure&#39;</span>]<span style=color:#f92672>.</span>append({
+</span></span><span style=display:flex><span>        <span style=color:#75715e># 注释行</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> stripped<span style=color:#f92672>.</span>startswith(<span style=color:#e6db74>&#39;#&#39;</span>) <span style=color:#f92672>or</span> stripped<span style=color:#f92672>.</span>startswith(<span style=color:#e6db74>&#39;!&#39;</span>):
+</span></span><span style=display:flex><span>            structure<span style=color:#f92672>.</span>append({
 </span></span><span style=display:flex><span>                <span style=color:#e6db74>&#39;type&#39;</span>: <span style=color:#e6db74>&#39;comment&#39;</span>,
-</span></span><span style=display:flex><span>                <span style=color:#e6db74>&#39;content&#39;</span>: comment_content,
-</span></span><span style=display:flex><span>                <span style=color:#e6db74>&#39;original_line&#39;</span>: line
+</span></span><span style=display:flex><span>                <span style=color:#e6db74>&#39;content&#39;</span>: stripped[<span style=color:#ae81ff>1</span>:]<span style=color:#f92672>.</span>strip(),
+</span></span><span style=display:flex><span>                <span style=color:#e6db74>&#39;line_num&#39;</span>: i <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>
 </span></span><span style=display:flex><span>            })
-</span></span><span style=display:flex><span>            i <span style=color:#f92672>+=</span> <span style=color:#ae81ff>1</span>
 </span></span><span style=display:flex><span>            <span style=color:#66d9ef>continue</span>
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> <span style=color:#f92672>not</span> stripped_line:
-</span></span><span style=display:flex><span>            result[<span style=color:#e6db74>&#39;_structure&#39;</span>]<span style=color:#f92672>.</span>append({
-</span></span><span style=display:flex><span>                <span style=color:#e6db74>&#39;type&#39;</span>: <span style=color:#e6db74>&#39;empty_line&#39;</span>,
-</span></span><span style=display:flex><span>                <span style=color:#e6db74>&#39;original_line&#39;</span>: line
-</span></span><span style=display:flex><span>            })
-</span></span><span style=display:flex><span>            i <span style=color:#f92672>+=</span> <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span>        <span style=color:#75715e># 空行</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> <span style=color:#f92672>not</span> stripped:
+</span></span><span style=display:flex><span>            structure<span style=color:#f92672>.</span>append({<span style=color:#e6db74>&#39;type&#39;</span>: <span style=color:#e6db74>&#39;empty_line&#39;</span>, <span style=color:#e6db74>&#39;line_num&#39;</span>: i <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>})
 </span></span><span style=display:flex><span>            <span style=color:#66d9ef>continue</span>
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> <span style=color:#e6db74>&#39;=&#39;</span> <span style=color:#f92672>in</span> stripped_line <span style=color:#f92672>or</span> <span style=color:#e6db74>&#39;:&#39;</span> <span style=color:#f92672>in</span> stripped_line:
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> <span style=color:#e6db74>&#39;=&#39;</span> <span style=color:#f92672>in</span> stripped_line:
-</span></span><span style=display:flex><span>                separator <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;=&#39;</span>
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>else</span>:
-</span></span><span style=display:flex><span>                separator <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;:&#39;</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>            key, value <span style=color:#f92672>=</span> stripped_line<span style=color:#f92672>.</span>split(separator, <span style=color:#ae81ff>1</span>)
+</span></span><span style=display:flex><span>        <span style=color:#75715e># 属性行</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> <span style=color:#e6db74>&#39;=&#39;</span> <span style=color:#f92672>in</span> stripped <span style=color:#f92672>or</span> <span style=color:#e6db74>&#39;:&#39;</span> <span style=color:#f92672>in</span> stripped:
+</span></span><span style=display:flex><span>            separator <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;=&#39;</span> <span style=color:#66d9ef>if</span> <span style=color:#e6db74>&#39;=&#39;</span> <span style=color:#f92672>in</span> stripped <span style=color:#66d9ef>else</span> <span style=color:#e6db74>&#39;:&#39;</span>
+</span></span><span style=display:flex><span>            key, value <span style=color:#f92672>=</span> stripped<span style=color:#f92672>.</span>split(separator, <span style=color:#ae81ff>1</span>)
 </span></span><span style=display:flex><span>            key <span style=color:#f92672>=</span> key<span style=color:#f92672>.</span>strip()
 </span></span><span style=display:flex><span>            value <span style=color:#f92672>=</span> value<span style=color:#f92672>.</span>strip()
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>            <span style=color:#75715e># 推断值类型</span>
-</span></span><span style=display:flex><span>            typed_value <span style=color:#f92672>=</span> infer_value_type(value)
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>            struct_entry <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>            structure<span style=color:#f92672>.</span>append({
 </span></span><span style=display:flex><span>                <span style=color:#e6db74>&#39;type&#39;</span>: <span style=color:#e6db74>&#39;property&#39;</span>,
 </span></span><span style=display:flex><span>                <span style=color:#e6db74>&#39;key&#39;</span>: key,
-</span></span><span style=display:flex><span>                <span style=color:#e6db74>&#39;value&#39;</span>: value,  <span style=color:#75715e># 原始字符串值</span>
-</span></span><span style=display:flex><span>                <span style=color:#e6db74>&#39;typed_value&#39;</span>: typed_value,  <span style=color:#75715e># 类型推断后的值</span>
-</span></span><span style=display:flex><span>                <span style=color:#e6db74>&#39;original_line&#39;</span>: line
-</span></span><span style=display:flex><span>            }
-</span></span><span style=display:flex><span>            result[<span style=color:#e6db74>&#39;_structure&#39;</span>]<span style=color:#f92672>.</span>append(struct_entry)
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> <span style=color:#e6db74>&#39;.&#39;</span> <span style=color:#f92672>in</span> key:
-</span></span><span style=display:flex><span>                keys <span style=color:#f92672>=</span> key<span style=color:#f92672>.</span>split(<span style=color:#e6db74>&#39;.&#39;</span>)
-</span></span><span style=display:flex><span>                current_dict <span style=color:#f92672>=</span> result
-</span></span><span style=display:flex><span>                <span style=color:#66d9ef>for</span> j, k <span style=color:#f92672>in</span> enumerate(keys[:<span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>]):
-</span></span><span style=display:flex><span>                    <span style=color:#66d9ef>if</span> k <span style=color:#f92672>not</span> <span style=color:#f92672>in</span> current_dict:
-</span></span><span style=display:flex><span>                        current_dict[k] <span style=color:#f92672>=</span> OrderedDict()
-</span></span><span style=display:flex><span>                    <span style=color:#66d9ef>elif</span> <span style=color:#f92672>not</span> isinstance(current_dict[k], OrderedDict):
-</span></span><span style=display:flex><span>                        current_dict[k] <span style=color:#f92672>=</span> OrderedDict([(<span style=color:#e6db74>&#39;_value&#39;</span>, current_dict[k])])
-</span></span><span style=display:flex><span>                    current_dict <span style=color:#f92672>=</span> current_dict[k]
-</span></span><span style=display:flex><span>                current_dict[keys[<span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>]] <span style=color:#f92672>=</span> typed_value
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>else</span>:
-</span></span><span style=display:flex><span>                result[key] <span style=color:#f92672>=</span> typed_value
+</span></span><span style=display:flex><span>                <span style=color:#e6db74>&#39;value&#39;</span>: infer_value_type(value),
+</span></span><span style=display:flex><span>                <span style=color:#e6db74>&#39;line_num&#39;</span>: i <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span>            })
 </span></span><span style=display:flex><span>        <span style=color:#66d9ef>else</span>:
-</span></span><span style=display:flex><span>            print(<span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;警告：第</span><span style=color:#e6db74>{</span>i <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span><span style=color:#e6db74>}</span><span style=color:#e6db74>行格式不正确，跳过: </span><span style=color:#e6db74>{</span>stripped_line<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>)
-</span></span><span style=display:flex><span>        i <span style=color:#f92672>+=</span> <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span>            print(<span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;警告：第</span><span style=color:#e6db74>{</span>i <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span><span style=color:#e6db74>}</span><span style=color:#e6db74>行格式不正确，跳过: </span><span style=color:#e6db74>{</span>stripped<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>)
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> result
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> structure
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>def</span> <span style=color:#a6e22e>dump_yaml_with_structure</span>(data, stream<span style=color:#f92672>=</span><span style=color:#66d9ef>None</span>):
-</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;&#34;&#34;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    修复版本：正确处理值类型，避免强制字符串化
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    &#34;&#34;&#34;</span>
-</span></span><span style=display:flex><span>    <span style=color:#75715e># 构建嵌套结构（使用类型推断后的值）</span>
-</span></span><span style=display:flex><span>    ordered_nested <span style=color:#f92672>=</span> OrderedDict()
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span> i, item <span style=color:#f92672>in</span> enumerate(data[<span style=color:#e6db74>&#39;_structure&#39;</span>]):
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> item[<span style=color:#e6db74>&#39;type&#39;</span>] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;property&#39;</span>:
-</span></span><span style=display:flex><span>            key <span style=color:#f92672>=</span> item[<span style=color:#e6db74>&#39;key&#39;</span>]
-</span></span><span style=display:flex><span>            typed_value <span style=color:#f92672>=</span> item<span style=color:#f92672>.</span>get(<span style=color:#e6db74>&#39;typed_value&#39;</span>, item[<span style=color:#e6db74>&#39;value&#39;</span>])
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> <span style=color:#e6db74>&#39;.&#39;</span> <span style=color:#f92672>in</span> key:
-</span></span><span style=display:flex><span>                top_level_key <span style=color:#f92672>=</span> key<span style=color:#f92672>.</span>split(<span style=color:#e6db74>&#39;.&#39;</span>)[<span style=color:#ae81ff>0</span>]
-</span></span><span style=display:flex><span>                <span style=color:#66d9ef>if</span> top_level_key <span style=color:#f92672>not</span> <span style=color:#f92672>in</span> ordered_nested:
-</span></span><span style=display:flex><span>                    ordered_nested[top_level_key] <span style=color:#f92672>=</span> OrderedDict()
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>                parts <span style=color:#f92672>=</span> key<span style=color:#f92672>.</span>split(<span style=color:#e6db74>&#39;.&#39;</span>)
-</span></span><span style=display:flex><span>                current <span style=color:#f92672>=</span> ordered_nested
-</span></span><span style=display:flex><span>                <span style=color:#66d9ef>for</span> part <span style=color:#f92672>in</span> parts[:<span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>]:
-</span></span><span style=display:flex><span>                    <span style=color:#66d9ef>if</span> part <span style=color:#f92672>not</span> <span style=color:#f92672>in</span> current:
-</span></span><span style=display:flex><span>                        current[part] <span style=color:#f92672>=</span> OrderedDict()
-</span></span><span style=display:flex><span>                    <span style=color:#66d9ef>elif</span> <span style=color:#f92672>not</span> isinstance(current[part], OrderedDict):
-</span></span><span style=display:flex><span>                        current[part] <span style=color:#f92672>=</span> OrderedDict([(<span style=color:#e6db74>&#39;_value&#39;</span>, current[part])])
-</span></span><span style=display:flex><span>                    current <span style=color:#f92672>=</span> current[part]
-</span></span><span style=display:flex><span>                current[parts[<span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>]] <span style=color:#f92672>=</span> typed_value
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>else</span>:
-</span></span><span style=display:flex><span>                ordered_nested[key] <span style=color:#f92672>=</span> typed_value
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>    <span style=color:#75715e># 生成YAML（使用标准yaml.dump，它会自动处理类型）</span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>OrderedDumper</span>(yaml<span style=color:#f92672>.</span>SafeDumper):
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>pass</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>def</span> <span style=color:#a6e22e>represent_ordereddict</span>(dumper, data):
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> dumper<span style=color:#f92672>.</span>represent_dict(data<span style=color:#f92672>.</span>items())
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>    OrderedDumper<span style=color:#f92672>.</span>add_representer(OrderedDict, represent_ordereddict)
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>    <span style=color:#75715e># 处理注释和结构</span>
-</span></span><span style=display:flex><span>    output_lines <span style=color:#f92672>=</span> []
-</span></span><span style=display:flex><span>    processed_groups <span style=color:#f92672>=</span> set()
-</span></span><span style=display:flex><span>    <span style=color:#75715e># 注释处理逻辑：识别独立和关联注释块</span>
-</span></span><span style=display:flex><span>    <span style=color:#75715e># 独立注释块：上下为空行或文件边界</span>
-</span></span><span style=display:flex><span>    <span style=color:#75715e># 关联注释块：下一行是属性项</span>
-</span></span><span style=display:flex><span>    <span style=color:#75715e># 黏性处理：独立注释块优先向上查找，找不到则向下</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>def</span> <span style=color:#a6e22e>build_comment_mapping</span>(structure):
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;&#34;&#34;构建注释到属性的映射关系&#34;&#34;&#34;</span>
 </span></span><span style=display:flex><span>    comment_mapping <span style=color:#f92672>=</span> {}
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>    <span style=color:#75715e># 第一遍扫描：识别注释块类型和位置</span>
-</span></span><span style=display:flex><span>    scan_index <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>while</span> scan_index <span style=color:#f92672>&lt;</span> len(data[<span style=color:#e6db74>&#39;_structure&#39;</span>]):
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> data[<span style=color:#e6db74>&#39;_structure&#39;</span>][scan_index][<span style=color:#e6db74>&#39;type&#39;</span>] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;comment&#39;</span>:
-</span></span><span style=display:flex><span>            <span style=color:#75715e># 找到注释块的开始和结束</span>
-</span></span><span style=display:flex><span>            comment_block_start <span style=color:#f92672>=</span> scan_index
-</span></span><span style=display:flex><span>            comment_contents <span style=color:#f92672>=</span> []
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>            <span style=color:#75715e># 收集连续的注释</span>
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>while</span> scan_index <span style=color:#f92672>&lt;</span> len(data[<span style=color:#e6db74>&#39;_structure&#39;</span>]) <span style=color:#f92672>and</span> data[<span style=color:#e6db74>&#39;_structure&#39;</span>][scan_index][<span style=color:#e6db74>&#39;type&#39;</span>] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;comment&#39;</span>:
-</span></span><span style=display:flex><span>                comment_contents<span style=color:#f92672>.</span>append(data[<span style=color:#e6db74>&#39;_structure&#39;</span>][scan_index][<span style=color:#e6db74>&#39;content&#39;</span>])
-</span></span><span style=display:flex><span>                scan_index <span style=color:#f92672>+=</span> <span style=color:#ae81ff>1</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>            comment_block_end <span style=color:#f92672>=</span> scan_index <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>            <span style=color:#75715e># 判断注释块类型和黏性处理</span>
-</span></span><span style=display:flex><span>            target_property <span style=color:#f92672>=</span> <span style=color:#66d9ef>None</span>
-</span></span><span style=display:flex><span>            target_position <span style=color:#f92672>=</span> <span style=color:#66d9ef>None</span>
-</span></span><span style=display:flex><span>            comment_type <span style=color:#f92672>=</span> <span style=color:#66d9ef>None</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>            <span style=color:#75715e># 检查上下文环境</span>
-</span></span><span style=display:flex><span>            prev_is_empty_or_start <span style=color:#f92672>=</span> (comment_block_start <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span> <span style=color:#f92672>or</span>
-</span></span><span style=display:flex><span>                                      data[<span style=color:#e6db74>&#39;_structure&#39;</span>][comment_block_start <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>][<span style=color:#e6db74>&#39;type&#39;</span>] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;empty_line&#39;</span>)
-</span></span><span style=display:flex><span>            next_is_empty_or_end <span style=color:#f92672>=</span> (comment_block_end <span style=color:#f92672>==</span> len(data[<span style=color:#e6db74>&#39;_structure&#39;</span>]) <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span> <span style=color:#f92672>or</span>
-</span></span><span style=display:flex><span>                                    data[<span style=color:#e6db74>&#39;_structure&#39;</span>][comment_block_end <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>][<span style=color:#e6db74>&#39;type&#39;</span>] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;empty_line&#39;</span>)
-</span></span><span style=display:flex><span>            next_is_property <span style=color:#f92672>=</span> (comment_block_end <span style=color:#f92672>&lt;</span> len(data[<span style=color:#e6db74>&#39;_structure&#39;</span>]) <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span> <span style=color:#f92672>and</span>
-</span></span><span style=display:flex><span>                                data[<span style=color:#e6db74>&#39;_structure&#39;</span>][comment_block_end <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>][<span style=color:#e6db74>&#39;type&#39;</span>] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;property&#39;</span>)
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>            <span style=color:#75715e># 黏性处理逻辑</span>
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> prev_is_empty_or_start <span style=color:#f92672>and</span> next_is_empty_or_end:
-</span></span><span style=display:flex><span>                <span style=color:#75715e># 独立注释块的黏性处理</span>
-</span></span><span style=display:flex><span>                <span style=color:#75715e># 先尝试往上寻找属性项</span>
-</span></span><span style=display:flex><span>                found_upward_property <span style=color:#f92672>=</span> <span style=color:#66d9ef>None</span>
-</span></span><span style=display:flex><span>                <span style=color:#66d9ef>for</span> j <span style=color:#f92672>in</span> range(comment_block_start <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>, <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>, <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>):
-</span></span><span style=display:flex><span>                    <span style=color:#66d9ef>if</span> data[<span style=color:#e6db74>&#39;_structure&#39;</span>][j][<span style=color:#e6db74>&#39;type&#39;</span>] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;property&#39;</span>:
-</span></span><span style=display:flex><span>                        found_upward_property <span style=color:#f92672>=</span> data[<span style=color:#e6db74>&#39;_structure&#39;</span>][j][<span style=color:#e6db74>&#39;key&#39;</span>]
-</span></span><span style=display:flex><span>                        <span style=color:#66d9ef>break</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>                <span style=color:#66d9ef>if</span> found_upward_property:
-</span></span><span style=display:flex><span>                    <span style=color:#75715e># 上方找到属性项，设为下方独立注释块</span>
-</span></span><span style=display:flex><span>                    target_property <span style=color:#f92672>=</span> found_upward_property
-</span></span><span style=display:flex><span>                    target_position <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;below&#39;</span>
-</span></span><span style=display:flex><span>                    comment_type <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;isolated_below&#39;</span>
-</span></span><span style=display:flex><span>                <span style=color:#66d9ef>else</span>:
-</span></span><span style=display:flex><span>                    <span style=color:#75715e># 上方没找到，黏性往下寻找第一个属性项</span>
-</span></span><span style=display:flex><span>                    <span style=color:#66d9ef>for</span> j <span style=color:#f92672>in</span> range(comment_block_end <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>, len(data[<span style=color:#e6db74>&#39;_structure&#39;</span>])):
-</span></span><span style=display:flex><span>                        <span style=color:#66d9ef>if</span> data[<span style=color:#e6db74>&#39;_structure&#39;</span>][j][<span style=color:#e6db74>&#39;type&#39;</span>] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;property&#39;</span>:
-</span></span><span style=display:flex><span>                            target_property <span style=color:#f92672>=</span> data[<span style=color:#e6db74>&#39;_structure&#39;</span>][j][<span style=color:#e6db74>&#39;key&#39;</span>]
-</span></span><span style=display:flex><span>                            <span style=color:#66d9ef>break</span>
-</span></span><span style=display:flex><span>                    <span style=color:#66d9ef>if</span> target_property:
-</span></span><span style=display:flex><span>                        target_position <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;above&#39;</span>
-</span></span><span style=display:flex><span>                        comment_type <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;isolated_above&#39;</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>elif</span> next_is_property:
-</span></span><span style=display:flex><span>                <span style=color:#75715e># 关联注释块：往下寻找黏性选择第一个属性项</span>
-</span></span><span style=display:flex><span>                target_property <span style=color:#f92672>=</span> data[<span style=color:#e6db74>&#39;_structure&#39;</span>][comment_block_end <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>][<span style=color:#e6db74>&#39;key&#39;</span>]
-</span></span><span style=display:flex><span>                target_position <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;above&#39;</span>
-</span></span><span style=display:flex><span>                comment_type <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;associated&#39;</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>            <span style=color:#75715e># 如果找到了目标属性，添加注释块</span>
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> target_property <span style=color:#f92672>and</span> target_position <span style=color:#f92672>and</span> comment_type:
-</span></span><span style=display:flex><span>                <span style=color:#66d9ef>if</span> target_property <span style=color:#f92672>not</span> <span style=color:#f92672>in</span> comment_mapping:
-</span></span><span style=display:flex><span>                    comment_mapping[target_property] <span style=color:#f92672>=</span> []
-</span></span><span style=display:flex><span>                <span style=color:#75715e># 将注释块添加到列表中，保持顺序</span>
-</span></span><span style=display:flex><span>                comment_mapping[target_property]<span style=color:#f92672>.</span>append({
-</span></span><span style=display:flex><span>                    <span style=color:#e6db74>&#39;comments&#39;</span>: comment_contents<span style=color:#f92672>.</span>copy(),
-</span></span><span style=display:flex><span>                    <span style=color:#e6db74>&#39;type&#39;</span>: comment_type,
-</span></span><span style=display:flex><span>                    <span style=color:#e6db74>&#39;position&#39;</span>: target_position
-</span></span><span style=display:flex><span>                })
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>else</span>:
-</span></span><span style=display:flex><span>            scan_index <span style=color:#f92672>+=</span> <span style=color:#ae81ff>1</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>    <span style=color:#75715e># 注释映射结果调试信息已移除</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>    <span style=color:#75715e># 结构处理：按属性组处理，保留注释位置</span>
 </span></span><span style=display:flex><span>    i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>while</span> i <span style=color:#f92672>&lt;</span> len(data[<span style=color:#e6db74>&#39;_structure&#39;</span>]):
-</span></span><span style=display:flex><span>        item <span style=color:#f92672>=</span> data[<span style=color:#e6db74>&#39;_structure&#39;</span>][i]
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> item[<span style=color:#e6db74>&#39;type&#39;</span>] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;property&#39;</span>:
-</span></span><span style=display:flex><span>            key <span style=color:#f92672>=</span> item[<span style=color:#e6db74>&#39;key&#39;</span>]
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> <span style=color:#e6db74>&#39;.&#39;</span> <span style=color:#f92672>in</span> key:
-</span></span><span style=display:flex><span>                top_level_key <span style=color:#f92672>=</span> key<span style=color:#f92672>.</span>split(<span style=color:#e6db74>&#39;.&#39;</span>)[<span style=color:#ae81ff>0</span>]
-</span></span><span style=display:flex><span>                <span style=color:#75715e># 只处理未处理过的组</span>
-</span></span><span style=display:flex><span>                <span style=color:#66d9ef>if</span> top_level_key <span style=color:#f92672>not</span> <span style=color:#f92672>in</span> processed_groups:
-</span></span><span style=display:flex><span>                    <span style=color:#75715e># 在处理组之前，检查是否有上方注释需要插入</span>
-</span></span><span style=display:flex><span>                    <span style=color:#75715e># 对于组级别的注释，检查组内第一个属性的注释</span>
-</span></span><span style=display:flex><span>                    first_group_property <span style=color:#f92672>=</span> <span style=color:#66d9ef>None</span>
-</span></span><span style=display:flex><span>                    <span style=color:#75715e># 找到该组的第一个属性</span>
-</span></span><span style=display:flex><span>                    <span style=color:#66d9ef>for</span> j <span style=color:#f92672>in</span> range(i, len(data[<span style=color:#e6db74>&#39;_structure&#39;</span>])):
-</span></span><span style=display:flex><span>                        <span style=color:#66d9ef>if</span> data[<span style=color:#e6db74>&#39;_structure&#39;</span>][j][<span style=color:#e6db74>&#39;type&#39;</span>] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;property&#39;</span>:
-</span></span><span style=display:flex><span>                            prop_key <span style=color:#f92672>=</span> data[<span style=color:#e6db74>&#39;_structure&#39;</span>][j][<span style=color:#e6db74>&#39;key&#39;</span>]
-</span></span><span style=display:flex><span>                            <span style=color:#66d9ef>if</span> prop_key<span style=color:#f92672>.</span>split(<span style=color:#e6db74>&#39;.&#39;</span>)[<span style=color:#ae81ff>0</span>] <span style=color:#f92672>==</span> top_level_key:
-</span></span><span style=display:flex><span>                                first_group_property <span style=color:#f92672>=</span> prop_key
-</span></span><span style=display:flex><span>                                <span style=color:#66d9ef>break</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>                    <span style=color:#66d9ef>if</span> first_group_property <span style=color:#f92672>and</span> first_group_property <span style=color:#f92672>in</span> comment_mapping:
-</span></span><span style=display:flex><span>                        <span style=color:#66d9ef>for</span> comment_block <span style=color:#f92672>in</span> comment_mapping[first_group_property]:
-</span></span><span style=display:flex><span>                            <span style=color:#66d9ef>if</span> comment_block[<span style=color:#e6db74>&#39;position&#39;</span>] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;above&#39;</span>:
-</span></span><span style=display:flex><span>                                <span style=color:#66d9ef>for</span> comment <span style=color:#f92672>in</span> comment_block[<span style=color:#e6db74>&#39;comments&#39;</span>]:
-</span></span><span style=display:flex><span>                                    output_lines<span style=color:#f92672>.</span>append(<span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;# </span><span style=color:#e6db74>{</span>comment<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>)
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>                    <span style=color:#75715e># 收集该组的所有属性（在整个结构中查找所有同组属性）</span>
-</span></span><span style=display:flex><span>                    group_properties <span style=color:#f92672>=</span> []
-</span></span><span style=display:flex><span>                    
-</span></span><span style=display:flex><span>                    <span style=color:#75715e># 遍历整个结构，收集所有属于该组的属性</span>
-</span></span><span style=display:flex><span>                    <span style=color:#66d9ef>for</span> j <span style=color:#f92672>in</span> range(len(data[<span style=color:#e6db74>&#39;_structure&#39;</span>])):
-</span></span><span style=display:flex><span>                        <span style=color:#66d9ef>if</span> data[<span style=color:#e6db74>&#39;_structure&#39;</span>][j][<span style=color:#e6db74>&#39;type&#39;</span>] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;property&#39;</span>:
-</span></span><span style=display:flex><span>                            prop_key <span style=color:#f92672>=</span> data[<span style=color:#e6db74>&#39;_structure&#39;</span>][j][<span style=color:#e6db74>&#39;key&#39;</span>]
-</span></span><span style=display:flex><span>                            <span style=color:#66d9ef>if</span> prop_key<span style=color:#f92672>.</span>split(<span style=color:#e6db74>&#39;.&#39;</span>)[<span style=color:#ae81ff>0</span>] <span style=color:#f92672>==</span> top_level_key:
-</span></span><span style=display:flex><span>                                group_properties<span style=color:#f92672>.</span>append({
-</span></span><span style=display:flex><span>                                    <span style=color:#e6db74>&#39;key&#39;</span>: prop_key,
-</span></span><span style=display:flex><span>                                    <span style=color:#e6db74>&#39;typed_value&#39;</span>: data[<span style=color:#e6db74>&#39;_structure&#39;</span>][j]<span style=color:#f92672>.</span>get(<span style=color:#e6db74>&#39;typed_value&#39;</span>, data[<span style=color:#e6db74>&#39;_structure&#39;</span>][j][<span style=color:#e6db74>&#39;value&#39;</span>])
-</span></span><span style=display:flex><span>                                })
-</span></span><span style=display:flex><span>                    
-</span></span><span style=display:flex><span>                    <span style=color:#75715e># 输出组开始</span>
-</span></span><span style=display:flex><span>                    output_lines<span style=color:#f92672>.</span>append(<span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;</span><span style=color:#e6db74>{</span>top_level_key<span style=color:#e6db74>}</span><span style=color:#e6db74>:&#34;</span>)
-</span></span><span style=display:flex><span>                    
-</span></span><span style=display:flex><span>                    <span style=color:#75715e># 逐个处理组内属性</span>
-</span></span><span style=display:flex><span>                    current_nested_path <span style=color:#f92672>=</span> []  <span style=color:#75715e># 跟踪当前嵌套路径</span>
-</span></span><span style=display:flex><span>                    
-</span></span><span style=display:flex><span>                    <span style=color:#66d9ef>for</span> idx, prop_info <span style=color:#f92672>in</span> enumerate(group_properties):
-</span></span><span style=display:flex><span>                        prop_key <span style=color:#f92672>=</span> prop_info[<span style=color:#e6db74>&#39;key&#39;</span>]
-</span></span><span style=display:flex><span>                        typed_value <span style=color:#f92672>=</span> prop_info[<span style=color:#e6db74>&#39;typed_value&#39;</span>]
-</span></span><span style=display:flex><span>                        
-</span></span><span style=display:flex><span>                        <span style=color:#75715e># 处理上方注释（排除第一个属性的组级注释）</span>
-</span></span><span style=display:flex><span>                        <span style=color:#66d9ef>if</span> prop_key <span style=color:#f92672>in</span> comment_mapping:
-</span></span><span style=display:flex><span>                            <span style=color:#66d9ef>for</span> comment_block <span style=color:#f92672>in</span> comment_mapping[prop_key]:
-</span></span><span style=display:flex><span>                                <span style=color:#66d9ef>if</span> comment_block[<span style=color:#e6db74>&#39;position&#39;</span>] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;above&#39;</span>:
-</span></span><span style=display:flex><span>                                    <span style=color:#75715e># 如果是第一个属性（idx=0），且该属性就是组的第一个属性，则跳过</span>
-</span></span><span style=display:flex><span>                                    <span style=color:#75715e># 因为它的注释已经在组级处理过了</span>
-</span></span><span style=display:flex><span>                                    <span style=color:#66d9ef>if</span> <span style=color:#f92672>not</span> (idx <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span> <span style=color:#f92672>and</span> prop_key <span style=color:#f92672>==</span> first_group_property):
-</span></span><span style=display:flex><span>                                        <span style=color:#66d9ef>for</span> comment <span style=color:#f92672>in</span> comment_block[<span style=color:#e6db74>&#39;comments&#39;</span>]:
-</span></span><span style=display:flex><span>                                            output_lines<span style=color:#f92672>.</span>append(<span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;  # </span><span style=color:#e6db74>{</span>comment<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>)
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>                        <span style=color:#75715e># 输出属性（优化嵌套结构处理）</span>
-</span></span><span style=display:flex><span>                        <span style=color:#66d9ef>if</span> <span style=color:#e6db74>&#39;.&#39;</span> <span style=color:#f92672>in</span> prop_key:
-</span></span><span style=display:flex><span>                            <span style=color:#75715e># 嵌套属性</span>
-</span></span><span style=display:flex><span>                            nested_parts <span style=color:#f92672>=</span> prop_key<span style=color:#f92672>.</span>split(<span style=color:#e6db74>&#39;.&#39;</span>)[<span style=color:#ae81ff>1</span>:]  <span style=color:#75715e># 去掉顶层key</span>
-</span></span><span style=display:flex><span>                            
-</span></span><span style=display:flex><span>                            <span style=color:#66d9ef>if</span> len(nested_parts) <span style=color:#f92672>==</span> <span style=color:#ae81ff>1</span>:
-</span></span><span style=display:flex><span>                                <span style=color:#75715e># 二级属性</span>
-</span></span><span style=display:flex><span>                                temp_dict <span style=color:#f92672>=</span> {nested_parts[<span style=color:#ae81ff>0</span>]: typed_value}
-</span></span><span style=display:flex><span>                                formatted_line <span style=color:#f92672>=</span> yaml<span style=color:#f92672>.</span>dump(temp_dict, Dumper<span style=color:#f92672>=</span>OrderedDumper,
-</span></span><span style=display:flex><span>                                                         allow_unicode<span style=color:#f92672>=</span><span style=color:#66d9ef>True</span>, default_flow_style<span style=color:#f92672>=</span><span style=color:#66d9ef>False</span>,
-</span></span><span style=display:flex><span>                                                         indent<span style=color:#f92672>=</span><span style=color:#ae81ff>2</span>, sort_keys<span style=color:#f92672>=</span><span style=color:#66d9ef>False</span>)<span style=color:#f92672>.</span>strip()
-</span></span><span style=display:flex><span>                                <span style=color:#75715e># 添加适当的缩进</span>
-</span></span><span style=display:flex><span>                                indented_line <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;  &#39;</span> <span style=color:#f92672>+</span> formatted_line
-</span></span><span style=display:flex><span>                                output_lines<span style=color:#f92672>.</span>append(indented_line)
-</span></span><span style=display:flex><span>                            <span style=color:#66d9ef>else</span>:
-</span></span><span style=display:flex><span>                                <span style=color:#75715e># 更深层嵌套 - 需要构建正确的层级结构</span>
-</span></span><span style=display:flex><span>                                <span style=color:#75715e># 先输出父级结构</span>
-</span></span><span style=display:flex><span>                                <span style=color:#66d9ef>for</span> level <span style=color:#f92672>in</span> range(len(nested_parts) <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>):
-</span></span><span style=display:flex><span>                                    current_part <span style=color:#f92672>=</span> nested_parts[level]
-</span></span><span style=display:flex><span>                                    indent_spaces <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;  &#39;</span> <span style=color:#f92672>*</span> (level <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>)
-</span></span><span style=display:flex><span>                                    
-</span></span><span style=display:flex><span>                                    <span style=color:#75715e># 检查是否已经输出过这个层级</span>
-</span></span><span style=display:flex><span>                                    path_so_far <span style=color:#f92672>=</span> nested_parts[:level<span style=color:#f92672>+</span><span style=color:#ae81ff>1</span>]
-</span></span><span style=display:flex><span>                                    <span style=color:#66d9ef>if</span> path_so_far <span style=color:#f92672>!=</span> current_nested_path[:len(path_so_far)]:
-</span></span><span style=display:flex><span>                                        output_lines<span style=color:#f92672>.</span>append(<span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;</span><span style=color:#e6db74>{</span>indent_spaces<span style=color:#e6db74>}{</span>current_part<span style=color:#e6db74>}</span><span style=color:#e6db74>:&#34;</span>)
-</span></span><span style=display:flex><span>                                        <span style=color:#75715e># 更新当前路径</span>
-</span></span><span style=display:flex><span>                                        <span style=color:#66d9ef>if</span> len(current_nested_path) <span style=color:#f92672>&lt;=</span> level:
-</span></span><span style=display:flex><span>                                            current_nested_path<span style=color:#f92672>.</span>extend(path_so_far[len(current_nested_path):])
-</span></span><span style=display:flex><span>                                        <span style=color:#66d9ef>else</span>:
-</span></span><span style=display:flex><span>                                            current_nested_path <span style=color:#f92672>=</span> path_so_far[:]
-</span></span><span style=display:flex><span>                                
-</span></span><span style=display:flex><span>                                <span style=color:#75715e># 输出最后一级属性</span>
-</span></span><span style=display:flex><span>                                final_level <span style=color:#f92672>=</span> len(nested_parts) <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>
-</span></span><span style=display:flex><span>                                final_indent <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;  &#39;</span> <span style=color:#f92672>*</span> (final_level <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>)
-</span></span><span style=display:flex><span>                                final_key <span style=color:#f92672>=</span> nested_parts[final_level]
-</span></span><span style=display:flex><span>                                temp_dict <span style=color:#f92672>=</span> {final_key: typed_value}
-</span></span><span style=display:flex><span>                                formatted_line <span style=color:#f92672>=</span> yaml<span style=color:#f92672>.</span>dump(temp_dict, Dumper<span style=color:#f92672>=</span>OrderedDumper,
-</span></span><span style=display:flex><span>                                                         allow_unicode<span style=color:#f92672>=</span><span style=color:#66d9ef>True</span>, default_flow_style<span style=color:#f92672>=</span><span style=color:#66d9ef>False</span>,
-</span></span><span style=display:flex><span>                                                         indent<span style=color:#f92672>=</span><span style=color:#ae81ff>2</span>, sort_keys<span style=color:#f92672>=</span><span style=color:#66d9ef>False</span>)<span style=color:#f92672>.</span>strip()
-</span></span><span style=display:flex><span>                                <span style=color:#75715e># 移除键名，只保留值</span>
-</span></span><span style=display:flex><span>                                <span style=color:#66d9ef>if</span> <span style=color:#e6db74>&#39;:&#39;</span> <span style=color:#f92672>in</span> formatted_line:
-</span></span><span style=display:flex><span>                                    value_part <span style=color:#f92672>=</span> formatted_line<span style=color:#f92672>.</span>split(<span style=color:#e6db74>&#39;:&#39;</span>, <span style=color:#ae81ff>1</span>)[<span style=color:#ae81ff>1</span>]<span style=color:#f92672>.</span>strip()
-</span></span><span style=display:flex><span>                                <span style=color:#66d9ef>else</span>:
-</span></span><span style=display:flex><span>                                    value_part <span style=color:#f92672>=</span> str(typed_value)
-</span></span><span style=display:flex><span>                                output_lines<span style=color:#f92672>.</span>append(<span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;</span><span style=color:#e6db74>{</span>final_indent<span style=color:#e6db74>}{</span>final_key<span style=color:#e6db74>}</span><span style=color:#e6db74>: </span><span style=color:#e6db74>{</span>value_part<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>)
-</span></span><span style=display:flex><span>                        <span style=color:#66d9ef>else</span>:
-</span></span><span style=display:flex><span>                            <span style=color:#75715e># 简单属性（理论上不应该出现在组内，但为了安全）</span>
-</span></span><span style=display:flex><span>                            temp_dict <span style=color:#f92672>=</span> {prop_key: typed_value}
-</span></span><span style=display:flex><span>                            formatted_line <span style=color:#f92672>=</span> yaml<span style=color:#f92672>.</span>dump(temp_dict, Dumper<span style=color:#f92672>=</span>OrderedDumper,
-</span></span><span style=display:flex><span>                                                     allow_unicode<span style=color:#f92672>=</span><span style=color:#66d9ef>True</span>, default_flow_style<span style=color:#f92672>=</span><span style=color:#66d9ef>False</span>,
-</span></span><span style=display:flex><span>                                                     indent<span style=color:#f92672>=</span><span style=color:#ae81ff>2</span>, sort_keys<span style=color:#f92672>=</span><span style=color:#66d9ef>False</span>)<span style=color:#f92672>.</span>strip()
-</span></span><span style=display:flex><span>                            output_lines<span style=color:#f92672>.</span>append(<span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;  </span><span style=color:#e6db74>{</span>formatted_line<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>)
-</span></span><span style=display:flex><span>                        
-</span></span><span style=display:flex><span>                        <span style=color:#75715e># 处理下方注释</span>
-</span></span><span style=display:flex><span>                        <span style=color:#66d9ef>if</span> prop_key <span style=color:#f92672>in</span> comment_mapping:
-</span></span><span style=display:flex><span>                            has_below_comments <span style=color:#f92672>=</span> <span style=color:#66d9ef>False</span>
-</span></span><span style=display:flex><span>                            <span style=color:#66d9ef>for</span> comment_block <span style=color:#f92672>in</span> comment_mapping[prop_key]:
-</span></span><span style=display:flex><span>                                <span style=color:#66d9ef>if</span> comment_block[<span style=color:#e6db74>&#39;position&#39;</span>] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;below&#39;</span>:
-</span></span><span style=display:flex><span>                                    <span style=color:#66d9ef>if</span> <span style=color:#f92672>not</span> has_below_comments:
-</span></span><span style=display:flex><span>                                        output_lines<span style=color:#f92672>.</span>append(<span style=color:#e6db74>&#34;&#34;</span>)  <span style=color:#75715e># 添加分隔空行</span>
-</span></span><span style=display:flex><span>                                        has_below_comments <span style=color:#f92672>=</span> <span style=color:#66d9ef>True</span>
-</span></span><span style=display:flex><span>                                    <span style=color:#66d9ef>for</span> comment <span style=color:#f92672>in</span> comment_block[<span style=color:#e6db74>&#39;comments&#39;</span>]:
-</span></span><span style=display:flex><span>                                        output_lines<span style=color:#f92672>.</span>append(<span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;# </span><span style=color:#e6db74>{</span>comment<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>)
-</span></span><span style=display:flex><span>                                    output_lines<span style=color:#f92672>.</span>append(<span style=color:#e6db74>&#34;&#34;</span>)  <span style=color:#75715e># 单独添加空行</span>
-</span></span><span style=display:flex><span>                    
-</span></span><span style=display:flex><span>                    processed_groups<span style=color:#f92672>.</span>add(top_level_key)
-</span></span><span style=display:flex><span>                    <span style=color:#75715e># 跳过已处理的属性</span>
-</span></span><span style=display:flex><span>                    <span style=color:#66d9ef>while</span> i <span style=color:#f92672>&lt;</span> len(data[<span style=color:#e6db74>&#39;_structure&#39;</span>]) <span style=color:#f92672>and</span> data[<span style=color:#e6db74>&#39;_structure&#39;</span>][i][<span style=color:#e6db74>&#39;type&#39;</span>] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;property&#39;</span>:
-</span></span><span style=display:flex><span>                        <span style=color:#66d9ef>if</span> data[<span style=color:#e6db74>&#39;_structure&#39;</span>][i][<span style=color:#e6db74>&#39;key&#39;</span>]<span style=color:#f92672>.</span>split(<span style=color:#e6db74>&#39;.&#39;</span>)[<span style=color:#ae81ff>0</span>] <span style=color:#f92672>==</span> top_level_key:
-</span></span><span style=display:flex><span>                            i <span style=color:#f92672>+=</span> <span style=color:#ae81ff>1</span>
-</span></span><span style=display:flex><span>                        <span style=color:#66d9ef>else</span>:
-</span></span><span style=display:flex><span>                            <span style=color:#66d9ef>break</span>
-</span></span><span style=display:flex><span>                    <span style=color:#66d9ef>continue</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>                <span style=color:#75715e># 跳过该组的所有属性</span>
-</span></span><span style=display:flex><span>                <span style=color:#66d9ef>while</span> i <span style=color:#f92672>&lt;</span> len(data[<span style=color:#e6db74>&#39;_structure&#39;</span>]) <span style=color:#f92672>and</span> data[<span style=color:#e6db74>&#39;_structure&#39;</span>][i][<span style=color:#e6db74>&#39;type&#39;</span>] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;property&#39;</span>:
-</span></span><span style=display:flex><span>                    next_key <span style=color:#f92672>=</span> data[<span style=color:#e6db74>&#39;_structure&#39;</span>][i][<span style=color:#e6db74>&#39;key&#39;</span>]
-</span></span><span style=display:flex><span>                    <span style=color:#66d9ef>if</span> next_key<span style=color:#f92672>.</span>split(<span style=color:#e6db74>&#39;.&#39;</span>)[<span style=color:#ae81ff>0</span>] <span style=color:#f92672>==</span> top_level_key:
-</span></span><span style=display:flex><span>                        i <span style=color:#f92672>+=</span> <span style=color:#ae81ff>1</span>
-</span></span><span style=display:flex><span>                    <span style=color:#66d9ef>else</span>:
-</span></span><span style=display:flex><span>                        <span style=color:#66d9ef>break</span>
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>else</span>:
-</span></span><span style=display:flex><span>                <span style=color:#75715e># 处理简单属性的注释和输出</span>
-</span></span><span style=display:flex><span>                <span style=color:#66d9ef>if</span> key <span style=color:#f92672>in</span> comment_mapping:
-</span></span><span style=display:flex><span>                    <span style=color:#75715e># 处理上方注释</span>
-</span></span><span style=display:flex><span>                    <span style=color:#66d9ef>for</span> comment_block <span style=color:#f92672>in</span> comment_mapping[key]:
-</span></span><span style=display:flex><span>                        <span style=color:#66d9ef>if</span> comment_block[<span style=color:#e6db74>&#39;position&#39;</span>] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;above&#39;</span>:
-</span></span><span style=display:flex><span>                            <span style=color:#66d9ef>for</span> comment <span style=color:#f92672>in</span> comment_block[<span style=color:#e6db74>&#39;comments&#39;</span>]:
-</span></span><span style=display:flex><span>                                output_lines<span style=color:#f92672>.</span>append(<span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;# </span><span style=color:#e6db74>{</span>comment<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>)
-</span></span><span style=display:flex><span>                
-</span></span><span style=display:flex><span>                <span style=color:#75715e># 输出属性</span>
-</span></span><span style=display:flex><span>                value <span style=color:#f92672>=</span> item[<span style=color:#e6db74>&#39;value&#39;</span>]
-</span></span><span style=display:flex><span>                output_lines<span style=color:#f92672>.</span>append(<span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;</span><span style=color:#e6db74>{</span>key<span style=color:#e6db74>}</span><span style=color:#e6db74>: &#39;</span><span style=color:#e6db74>{</span>value<span style=color:#e6db74>}</span><span style=color:#e6db74>&#39;&#34;</span>)
-</span></span><span style=display:flex><span>                
-</span></span><span style=display:flex><span>                <span style=color:#75715e># 处理下方注释</span>
-</span></span><span style=display:flex><span>                <span style=color:#66d9ef>if</span> key <span style=color:#f92672>in</span> comment_mapping:
-</span></span><span style=display:flex><span>                    has_below_comments <span style=color:#f92672>=</span> <span style=color:#66d9ef>False</span>
-</span></span><span style=display:flex><span>                    <span style=color:#66d9ef>for</span> comment_block <span style=color:#f92672>in</span> comment_mapping[key]:
-</span></span><span style=display:flex><span>                        <span style=color:#66d9ef>if</span> comment_block[<span style=color:#e6db74>&#39;position&#39;</span>] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;below&#39;</span>:
-</span></span><span style=display:flex><span>                            <span style=color:#66d9ef>if</span> <span style=color:#f92672>not</span> has_below_comments:
-</span></span><span style=display:flex><span>                                output_lines<span style=color:#f92672>.</span>append(<span style=color:#e6db74>&#34;&#34;</span>)  <span style=color:#75715e># 分隔空行</span>
-</span></span><span style=display:flex><span>                                has_below_comments <span style=color:#f92672>=</span> <span style=color:#66d9ef>True</span>
-</span></span><span style=display:flex><span>                            <span style=color:#66d9ef>for</span> comment <span style=color:#f92672>in</span> comment_block[<span style=color:#e6db74>&#39;comments&#39;</span>]:
-</span></span><span style=display:flex><span>                                output_lines<span style=color:#f92672>.</span>append(<span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;# </span><span style=color:#e6db74>{</span>comment<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>)
-</span></span><span style=display:flex><span>                            output_lines<span style=color:#f92672>.</span>append(<span style=color:#e6db74>&#34;&#34;</span>)  <span style=color:#75715e># 注释后空行</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>                i <span style=color:#f92672>+=</span> <span style=color:#ae81ff>1</span>
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>else</span>:
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>while</span> i <span style=color:#f92672>&lt;</span> len(structure):
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> structure[i][<span style=color:#e6db74>&#39;type&#39;</span>] <span style=color:#f92672>!=</span> <span style=color:#e6db74>&#39;comment&#39;</span>:
 </span></span><span style=display:flex><span>            i <span style=color:#f92672>+=</span> <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>continue</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#75715e># 收集连续注释块</span>
+</span></span><span style=display:flex><span>        comment_start <span style=color:#f92672>=</span> i
+</span></span><span style=display:flex><span>        comments <span style=color:#f92672>=</span> []
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>while</span> i <span style=color:#f92672>&lt;</span> len(structure) <span style=color:#f92672>and</span> structure[i][<span style=color:#e6db74>&#39;type&#39;</span>] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;comment&#39;</span>:
+</span></span><span style=display:flex><span>            comments<span style=color:#f92672>.</span>append(structure[i][<span style=color:#e6db74>&#39;content&#39;</span>])
+</span></span><span style=display:flex><span>            i <span style=color:#f92672>+=</span> <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span>        comment_end <span style=color:#f92672>=</span> i <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#75715e># 判断注释块类型和目标属性</span>
+</span></span><span style=display:flex><span>        prev_empty <span style=color:#f92672>=</span> (comment_start <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span> <span style=color:#f92672>or</span>
+</span></span><span style=display:flex><span>                     structure[comment_start <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>][<span style=color:#e6db74>&#39;type&#39;</span>] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;empty_line&#39;</span>)
+</span></span><span style=display:flex><span>        next_empty <span style=color:#f92672>=</span> (comment_end <span style=color:#f92672>==</span> len(structure) <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span> <span style=color:#f92672>or</span>
+</span></span><span style=display:flex><span>                     structure[comment_end <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>][<span style=color:#e6db74>&#39;type&#39;</span>] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;empty_line&#39;</span>)
+</span></span><span style=display:flex><span>        next_property <span style=color:#f92672>=</span> (comment_end <span style=color:#f92672>&lt;</span> len(structure) <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span> <span style=color:#f92672>and</span>
+</span></span><span style=display:flex><span>                        structure[comment_end <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>][<span style=color:#e6db74>&#39;type&#39;</span>] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;property&#39;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        target_key <span style=color:#f92672>=</span> <span style=color:#66d9ef>None</span>
+</span></span><span style=display:flex><span>        position <span style=color:#f92672>=</span> <span style=color:#66d9ef>None</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#75715e># 独立注释块（上下都是空行）</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> prev_empty <span style=color:#f92672>and</span> next_empty:
+</span></span><span style=display:flex><span>            <span style=color:#75715e># 向上查找属性</span>
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>for</span> j <span style=color:#f92672>in</span> range(comment_start <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>, <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>, <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>):
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>if</span> structure[j][<span style=color:#e6db74>&#39;type&#39;</span>] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;property&#39;</span>:
+</span></span><span style=display:flex><span>                    target_key <span style=color:#f92672>=</span> structure[j][<span style=color:#e6db74>&#39;key&#39;</span>]
+</span></span><span style=display:flex><span>                    position <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;below&#39;</span>
+</span></span><span style=display:flex><span>                    <span style=color:#66d9ef>break</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            <span style=color:#75715e># 向上没找到，向下查找</span>
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> <span style=color:#f92672>not</span> target_key:
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>for</span> j <span style=color:#f92672>in</span> range(comment_end <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>, len(structure)):
+</span></span><span style=display:flex><span>                    <span style=color:#66d9ef>if</span> structure[j][<span style=color:#e6db74>&#39;type&#39;</span>] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;property&#39;</span>:
+</span></span><span style=display:flex><span>                        target_key <span style=color:#f92672>=</span> structure[j][<span style=color:#e6db74>&#39;key&#39;</span>]
+</span></span><span style=display:flex><span>                        position <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;above&#39;</span>
+</span></span><span style=display:flex><span>                        <span style=color:#66d9ef>break</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#75715e># 关联注释块（下方是属性）</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>elif</span> next_property:
+</span></span><span style=display:flex><span>            target_key <span style=color:#f92672>=</span> structure[comment_end <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>][<span style=color:#e6db74>&#39;key&#39;</span>]
+</span></span><span style=display:flex><span>            position <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;above&#39;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#75715e># 添加到映射</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> target_key <span style=color:#f92672>and</span> position:
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> target_key <span style=color:#f92672>not</span> <span style=color:#f92672>in</span> comment_mapping:
+</span></span><span style=display:flex><span>                comment_mapping[target_key] <span style=color:#f92672>=</span> []
+</span></span><span style=display:flex><span>            comment_mapping[target_key]<span style=color:#f92672>.</span>append({
+</span></span><span style=display:flex><span>                <span style=color:#e6db74>&#39;comments&#39;</span>: comments,
+</span></span><span style=display:flex><span>                <span style=color:#e6db74>&#39;position&#39;</span>: position
+</span></span><span style=display:flex><span>            })
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> comment_mapping
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>def</span> <span style=color:#a6e22e>dump_yaml_with_structure</span>(structure):
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;&#34;&#34;生成YAML内容&#34;&#34;&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e># 构建注释映射</span>
+</span></span><span style=display:flex><span>    comment_mapping <span style=color:#f92672>=</span> build_comment_mapping(structure)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e># 提取所有属性并按组分类</span>
+</span></span><span style=display:flex><span>    properties <span style=color:#f92672>=</span> [item <span style=color:#66d9ef>for</span> item <span style=color:#f92672>in</span> structure <span style=color:#66d9ef>if</span> item[<span style=color:#e6db74>&#39;type&#39;</span>] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;property&#39;</span>]
+</span></span><span style=display:flex><span>    groups <span style=color:#f92672>=</span> {}  <span style=color:#75715e># {top_level_key: [properties]}</span>
+</span></span><span style=display:flex><span>    simple_props <span style=color:#f92672>=</span> []  <span style=color:#75715e># 无点号的简单属性</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span> prop <span style=color:#f92672>in</span> properties:
+</span></span><span style=display:flex><span>        key <span style=color:#f92672>=</span> prop[<span style=color:#e6db74>&#39;key&#39;</span>]
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> <span style=color:#e6db74>&#39;.&#39;</span> <span style=color:#f92672>in</span> key:
+</span></span><span style=display:flex><span>            top_key <span style=color:#f92672>=</span> key<span style=color:#f92672>.</span>split(<span style=color:#e6db74>&#39;.&#39;</span>, <span style=color:#ae81ff>1</span>)[<span style=color:#ae81ff>0</span>]
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> top_key <span style=color:#f92672>not</span> <span style=color:#f92672>in</span> groups:
+</span></span><span style=display:flex><span>                groups[top_key] <span style=color:#f92672>=</span> []
+</span></span><span style=display:flex><span>            groups[top_key]<span style=color:#f92672>.</span>append(prop)
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>else</span>:
+</span></span><span style=display:flex><span>            simple_props<span style=color:#f92672>.</span>append(prop)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e># 生成输出</span>
+</span></span><span style=display:flex><span>    output_lines <span style=color:#f92672>=</span> []
+</span></span><span style=display:flex><span>    processed_keys <span style=color:#f92672>=</span> set()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e># 按原始顺序处理</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span> item <span style=color:#f92672>in</span> structure:
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> item[<span style=color:#e6db74>&#39;type&#39;</span>] <span style=color:#f92672>!=</span> <span style=color:#e6db74>&#39;property&#39;</span>:
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>continue</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        key <span style=color:#f92672>=</span> item[<span style=color:#e6db74>&#39;key&#39;</span>]
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> key <span style=color:#f92672>in</span> processed_keys:
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>continue</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#75715e># 处理分组属性</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> <span style=color:#e6db74>&#39;.&#39;</span> <span style=color:#f92672>in</span> key:
+</span></span><span style=display:flex><span>            top_key <span style=color:#f92672>=</span> key<span style=color:#f92672>.</span>split(<span style=color:#e6db74>&#39;.&#39;</span>, <span style=color:#ae81ff>1</span>)[<span style=color:#ae81ff>0</span>]
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> top_key <span style=color:#f92672>in</span> processed_keys:
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>continue</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            <span style=color:#75715e># 标记该组所有属性为已处理</span>
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>for</span> prop <span style=color:#f92672>in</span> groups[top_key]:
+</span></span><span style=display:flex><span>                processed_keys<span style=color:#f92672>.</span>add(prop[<span style=color:#e6db74>&#39;key&#39;</span>])
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            <span style=color:#75715e># 输出组级上方注释（使用组内第一个属性的注释）</span>
+</span></span><span style=display:flex><span>            first_key <span style=color:#f92672>=</span> groups[top_key][<span style=color:#ae81ff>0</span>][<span style=color:#e6db74>&#39;key&#39;</span>]
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> first_key <span style=color:#f92672>in</span> comment_mapping:
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>for</span> block <span style=color:#f92672>in</span> comment_mapping[first_key]:
+</span></span><span style=display:flex><span>                    <span style=color:#66d9ef>if</span> block[<span style=color:#e6db74>&#39;position&#39;</span>] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;above&#39;</span>:
+</span></span><span style=display:flex><span>                        <span style=color:#66d9ef>for</span> comment <span style=color:#f92672>in</span> block[<span style=color:#e6db74>&#39;comments&#39;</span>]:
+</span></span><span style=display:flex><span>                            output_lines<span style=color:#f92672>.</span>append(<span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;# </span><span style=color:#e6db74>{</span>comment<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            <span style=color:#75715e># 输出组名</span>
+</span></span><span style=display:flex><span>            output_lines<span style=color:#f92672>.</span>append(<span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;</span><span style=color:#e6db74>{</span>top_key<span style=color:#e6db74>}</span><span style=color:#e6db74>:&#34;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            <span style=color:#75715e># 输出组内属性</span>
+</span></span><span style=display:flex><span>            nested_path <span style=color:#f92672>=</span> []
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>for</span> idx, prop <span style=color:#f92672>in</span> enumerate(groups[top_key]):
+</span></span><span style=display:flex><span>                prop_key <span style=color:#f92672>=</span> prop[<span style=color:#e6db74>&#39;key&#39;</span>]
+</span></span><span style=display:flex><span>                value <span style=color:#f92672>=</span> prop[<span style=color:#e6db74>&#39;value&#39;</span>]
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>                <span style=color:#75715e># 属性级上方注释（跳过第一个属性的组级注释）</span>
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>if</span> prop_key <span style=color:#f92672>in</span> comment_mapping <span style=color:#f92672>and</span> <span style=color:#f92672>not</span> (idx <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span> <span style=color:#f92672>and</span> prop_key <span style=color:#f92672>==</span> first_key):
+</span></span><span style=display:flex><span>                    <span style=color:#66d9ef>for</span> block <span style=color:#f92672>in</span> comment_mapping[prop_key]:
+</span></span><span style=display:flex><span>                        <span style=color:#66d9ef>if</span> block[<span style=color:#e6db74>&#39;position&#39;</span>] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;above&#39;</span>:
+</span></span><span style=display:flex><span>                            <span style=color:#66d9ef>for</span> comment <span style=color:#f92672>in</span> block[<span style=color:#e6db74>&#39;comments&#39;</span>]:
+</span></span><span style=display:flex><span>                                output_lines<span style=color:#f92672>.</span>append(<span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;  # </span><span style=color:#e6db74>{</span>comment<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>                <span style=color:#75715e># 输出属性</span>
+</span></span><span style=display:flex><span>                parts <span style=color:#f92672>=</span> prop_key<span style=color:#f92672>.</span>split(<span style=color:#e6db74>&#39;.&#39;</span>)[<span style=color:#ae81ff>1</span>:]  <span style=color:#75715e># 去掉顶层key</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>if</span> len(parts) <span style=color:#f92672>==</span> <span style=color:#ae81ff>1</span>:
+</span></span><span style=display:flex><span>                    <span style=color:#75715e># 二级属性</span>
+</span></span><span style=display:flex><span>                    yaml_str <span style=color:#f92672>=</span> yaml<span style=color:#f92672>.</span>dump({parts[<span style=color:#ae81ff>0</span>]: value},
+</span></span><span style=display:flex><span>                                        allow_unicode<span style=color:#f92672>=</span><span style=color:#66d9ef>True</span>,
+</span></span><span style=display:flex><span>                                        default_flow_style<span style=color:#f92672>=</span><span style=color:#66d9ef>False</span>,
+</span></span><span style=display:flex><span>                                        sort_keys<span style=color:#f92672>=</span><span style=color:#66d9ef>False</span>)<span style=color:#f92672>.</span>strip()
+</span></span><span style=display:flex><span>                    output_lines<span style=color:#f92672>.</span>append(<span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;  </span><span style=color:#e6db74>{</span>yaml_str<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>)
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>else</span>:
+</span></span><span style=display:flex><span>                    <span style=color:#75715e># 多级嵌套</span>
+</span></span><span style=display:flex><span>                    <span style=color:#66d9ef>for</span> level, part <span style=color:#f92672>in</span> enumerate(parts[:<span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>]):
+</span></span><span style=display:flex><span>                        path <span style=color:#f92672>=</span> parts[:level<span style=color:#f92672>+</span><span style=color:#ae81ff>1</span>]
+</span></span><span style=display:flex><span>                        <span style=color:#66d9ef>if</span> path <span style=color:#f92672>!=</span> nested_path[:len(path)]:
+</span></span><span style=display:flex><span>                            indent <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;  &#39;</span> <span style=color:#f92672>*</span> (level <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>)
+</span></span><span style=display:flex><span>                            output_lines<span style=color:#f92672>.</span>append(<span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;</span><span style=color:#e6db74>{</span>indent<span style=color:#e6db74>}{</span>part<span style=color:#e6db74>}</span><span style=color:#e6db74>:&#34;</span>)
+</span></span><span style=display:flex><span>                            nested_path <span style=color:#f92672>=</span> path[:]
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>                    <span style=color:#75715e># 最后一级</span>
+</span></span><span style=display:flex><span>                    final_indent <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;  &#39;</span> <span style=color:#f92672>*</span> len(parts)
+</span></span><span style=display:flex><span>                    final_key <span style=color:#f92672>=</span> parts[<span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>]
+</span></span><span style=display:flex><span>                    yaml_str <span style=color:#f92672>=</span> yaml<span style=color:#f92672>.</span>dump({final_key: value},
+</span></span><span style=display:flex><span>                                        allow_unicode<span style=color:#f92672>=</span><span style=color:#66d9ef>True</span>,
+</span></span><span style=display:flex><span>                                        default_flow_style<span style=color:#f92672>=</span><span style=color:#66d9ef>False</span>,
+</span></span><span style=display:flex><span>                                        sort_keys<span style=color:#f92672>=</span><span style=color:#66d9ef>False</span>)<span style=color:#f92672>.</span>strip()
+</span></span><span style=display:flex><span>                    value_part <span style=color:#f92672>=</span> yaml_str<span style=color:#f92672>.</span>split(<span style=color:#e6db74>&#39;:&#39;</span>, <span style=color:#ae81ff>1</span>)[<span style=color:#ae81ff>1</span>]<span style=color:#f92672>.</span>strip() <span style=color:#66d9ef>if</span> <span style=color:#e6db74>&#39;:&#39;</span> <span style=color:#f92672>in</span> yaml_str <span style=color:#66d9ef>else</span> str(value)
+</span></span><span style=display:flex><span>                    output_lines<span style=color:#f92672>.</span>append(<span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;</span><span style=color:#e6db74>{</span>final_indent<span style=color:#e6db74>}{</span>final_key<span style=color:#e6db74>}</span><span style=color:#e6db74>: </span><span style=color:#e6db74>{</span>value_part<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>                <span style=color:#75715e># 属性级下方注释</span>
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>if</span> prop_key <span style=color:#f92672>in</span> comment_mapping:
+</span></span><span style=display:flex><span>                    <span style=color:#66d9ef>for</span> block <span style=color:#f92672>in</span> comment_mapping[prop_key]:
+</span></span><span style=display:flex><span>                        <span style=color:#66d9ef>if</span> block[<span style=color:#e6db74>&#39;position&#39;</span>] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;below&#39;</span>:
+</span></span><span style=display:flex><span>                            output_lines<span style=color:#f92672>.</span>append(<span style=color:#e6db74>&#34;&#34;</span>)
+</span></span><span style=display:flex><span>                            <span style=color:#66d9ef>for</span> comment <span style=color:#f92672>in</span> block[<span style=color:#e6db74>&#39;comments&#39;</span>]:
+</span></span><span style=display:flex><span>                                output_lines<span style=color:#f92672>.</span>append(<span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;# </span><span style=color:#e6db74>{</span>comment<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>)
+</span></span><span style=display:flex><span>                            output_lines<span style=color:#f92672>.</span>append(<span style=color:#e6db74>&#34;&#34;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#75715e># 处理简单属性</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>else</span>:
+</span></span><span style=display:flex><span>            processed_keys<span style=color:#f92672>.</span>add(key)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            <span style=color:#75715e># 上方注释</span>
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> key <span style=color:#f92672>in</span> comment_mapping:
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>for</span> block <span style=color:#f92672>in</span> comment_mapping[key]:
+</span></span><span style=display:flex><span>                    <span style=color:#66d9ef>if</span> block[<span style=color:#e6db74>&#39;position&#39;</span>] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;above&#39;</span>:
+</span></span><span style=display:flex><span>                        <span style=color:#66d9ef>for</span> comment <span style=color:#f92672>in</span> block[<span style=color:#e6db74>&#39;comments&#39;</span>]:
+</span></span><span style=display:flex><span>                            output_lines<span style=color:#f92672>.</span>append(<span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;# </span><span style=color:#e6db74>{</span>comment<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            <span style=color:#75715e># 输出属性</span>
+</span></span><span style=display:flex><span>            output_lines<span style=color:#f92672>.</span>append(<span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;</span><span style=color:#e6db74>{</span>key<span style=color:#e6db74>}</span><span style=color:#e6db74>: &#39;</span><span style=color:#e6db74>{</span>item[<span style=color:#e6db74>&#39;value&#39;</span>]<span style=color:#e6db74>}</span><span style=color:#e6db74>&#39;&#34;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            <span style=color:#75715e># 下方注释</span>
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> key <span style=color:#f92672>in</span> comment_mapping:
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>for</span> block <span style=color:#f92672>in</span> comment_mapping[key]:
+</span></span><span style=display:flex><span>                    <span style=color:#66d9ef>if</span> block[<span style=color:#e6db74>&#39;position&#39;</span>] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;below&#39;</span>:
+</span></span><span style=display:flex><span>                        output_lines<span style=color:#f92672>.</span>append(<span style=color:#e6db74>&#34;&#34;</span>)
+</span></span><span style=display:flex><span>                        <span style=color:#66d9ef>for</span> comment <span style=color:#f92672>in</span> block[<span style=color:#e6db74>&#39;comments&#39;</span>]:
+</span></span><span style=display:flex><span>                            output_lines<span style=color:#f92672>.</span>append(<span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;# </span><span style=color:#e6db74>{</span>comment<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>)
+</span></span><span style=display:flex><span>                        output_lines<span style=color:#f92672>.</span>append(<span style=color:#e6db74>&#34;&#34;</span>)
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    <span style=color:#75715e># 移除末尾空行</span>
 </span></span><span style=display:flex><span>    <span style=color:#66d9ef>while</span> output_lines <span style=color:#f92672>and</span> output_lines[<span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#34;&#34;</span>:
 </span></span><span style=display:flex><span>        output_lines<span style=color:#f92672>.</span>pop()
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>    result <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#39;</span><span style=color:#f92672>.</span>join(output_lines)
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> stream:
-</span></span><span style=display:flex><span>        stream<span style=color:#f92672>.</span>write(result)
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> result
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#e6db74>&#39;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#39;</span><span style=color:#f92672>.</span>join(output_lines)
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#66d9ef>def</span> <span style=color:#a6e22e>properties_to_yaml</span>(properties_file_path):
@@ -451,15 +318,12 @@
 </span></span><span style=display:flex><span>        <span style=color:#66d9ef>with</span> open(prop_path, <span style=color:#e6db74>&#39;r&#39;</span>, encoding<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;utf-8&#39;</span>) <span style=color:#66d9ef>as</span> f:
 </span></span><span style=display:flex><span>            content <span style=color:#f92672>=</span> f<span style=color:#f92672>.</span>read()
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>        properties_dict <span style=color:#f92672>=</span> parse_properties_content(content)
+</span></span><span style=display:flex><span>        structure <span style=color:#f92672>=</span> parse_properties_content(content)
+</span></span><span style=display:flex><span>        yaml_content <span style=color:#f92672>=</span> dump_yaml_with_structure(structure)
 </span></span><span style=display:flex><span>        yaml_file_path <span style=color:#f92672>=</span> prop_path<span style=color:#f92672>.</span>with_suffix(<span style=color:#e6db74>&#39;.yaml&#39;</span>)
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>        result <span style=color:#f92672>=</span> dump_yaml_with_structure(properties_dict)
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>        <span style=color:#75715e># 最终内容检查调试信息已移除</span>
-</span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>        <span style=color:#66d9ef>with</span> open(yaml_file_path, <span style=color:#e6db74>&#39;w&#39;</span>, encoding<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;utf-8&#39;</span>) <span style=color:#66d9ef>as</span> f:
-</span></span><span style=display:flex><span>            f<span style=color:#f92672>.</span>write(result)
+</span></span><span style=display:flex><span>            f<span style=color:#f92672>.</span>write(yaml_content)
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>        print(<span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;成功转换：</span><span style=color:#e6db74>{</span>properties_file_path<span style=color:#e6db74>}</span><span style=color:#e6db74> -&gt; </span><span style=color:#e6db74>{</span>yaml_file_path<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>)
 </span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>True</span>
