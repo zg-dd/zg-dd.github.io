@@ -1,4 +1,1419 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>小巷的随笔</title><link>https://zg-dd.github.io/</link><description>Recent content on 小巷的随笔</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Mon, 09 Feb 2026 00:32:40 +0800</lastBuildDate><atom:link href="https://zg-dd.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>Properties转YAML转换工具</title><link>https://zg-dd.github.io/blog/properties-to-yaml/</link><pubDate>Mon, 09 Feb 2026 00:32:40 +0800</pubDate><guid>https://zg-dd.github.io/blog/properties-to-yaml/</guid><description>&lt;h1 id="properties转yaml转换工具使用手册"&gt;Properties转YAML转换工具使用手册
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>小巷的随笔</title><link>https://zg-dd.github.io/</link><description>Recent content on 小巷的随笔</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sat, 14 Feb 2026 10:21:18 +0800</lastBuildDate><atom:link href="https://zg-dd.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>Claude Code Skills 完整学习指南</title><link>https://zg-dd.github.io/stu/complete-skills-guide/</link><pubDate>Sat, 14 Feb 2026 10:21:18 +0800</pubDate><guid>https://zg-dd.github.io/stu/complete-skills-guide/</guid><description>&lt;h2 id="第一章什么是-skills"&gt;第一章：什么是 Skills
+&lt;/h2&gt;&lt;h3 id="11-skills-简介"&gt;1.1 Skills 简介
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;Skills&lt;/strong&gt; 是 Claude Code 的扩展功能系统，就像给 Claude 安装&amp;quot;技能包&amp;quot;一样。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;通俗理解&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;就像手机 APP：你可以给手机安装不同的 APP 来实现不同功能&lt;/li&gt;
+&lt;li&gt;Skills 就是给 Claude 安装的&amp;quot;功能插件&amp;quot;&lt;/li&gt;
+&lt;li&gt;每个 Skill 让 Claude 学会一项新技能&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;举例说明&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;安装 &lt;code&gt;docx&lt;/code&gt; skill → Claude 就会创建和编辑 Word 文档&lt;/li&gt;
+&lt;li&gt;安装 &lt;code&gt;pdf&lt;/code&gt; skill → Claude 就会处理 PDF 文件&lt;/li&gt;
+&lt;li&gt;安装 &lt;code&gt;mysql-manager&lt;/code&gt; skill → Claude 就会操作数据库&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="12-skills-的类型"&gt;1.2 Skills 的类型
+&lt;/h3&gt;&lt;h4 id="官方-skillsanthropic-提供"&gt;官方 Skills（Anthropic 提供）
+&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;由 Claude 官方团队开发和维护&lt;/li&gt;
+&lt;li&gt;质量有保证，功能稳定&lt;/li&gt;
+&lt;li&gt;免费使用&lt;/li&gt;
+&lt;li&gt;例如：docx、pdf、pptx、xlsx 等&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id="社区-skills第三方开发"&gt;社区 Skills（第三方开发）
+&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;由社区开发者贡献&lt;/li&gt;
+&lt;li&gt;功能多样化&lt;/li&gt;
+&lt;li&gt;需要自行评估质量&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id="自定义-skills你自己创建"&gt;自定义 Skills（你自己创建）
+&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;根据自己的需求定制&lt;/li&gt;
+&lt;li&gt;完全可控&lt;/li&gt;
+&lt;li&gt;本教程会教你如何创建&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="13-为什么要使用-skills"&gt;1.3 为什么要使用 Skills
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;没有 Skills 的情况&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;你：帮我创建一个 Word 文档
+Claude：抱歉，我不能直接创建 Word 文档
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;有 Skills 的情况&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;你：帮我创建一个 Word 文档
+Claude：好的！（自动使用 docx skill 创建文档）
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Skills 的优势&lt;/strong&gt;：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;✅ 扩展 Claude 的能力&lt;/li&gt;
+&lt;li&gt;✅ 自动化重复任务&lt;/li&gt;
+&lt;li&gt;✅ 提高工作效率&lt;/li&gt;
+&lt;li&gt;✅ 可以定制专属功能&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id="14-skills-的工作原理"&gt;1.4 Skills 的工作原理
+&lt;/h3&gt;&lt;pre tabindex="0"&gt;&lt;code&gt;你的请求 → Claude 分析 → 选择合适的 Skill → 执行操作 → 返回结果
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;示例流程&lt;/strong&gt;：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;你说：&amp;ldquo;创建一个 Word 文档&amp;rdquo;&lt;/li&gt;
+&lt;li&gt;Claude 识别到需要文档处理&lt;/li&gt;
+&lt;li&gt;Claude 调用 &lt;code&gt;docx&lt;/code&gt; skill&lt;/li&gt;
+&lt;li&gt;docx skill 执行创建文档的代码&lt;/li&gt;
+&lt;li&gt;返回创建好的文档&lt;/li&gt;
+&lt;/ol&gt;
+&lt;hr&gt;
+&lt;h2 id="第二章环境准备"&gt;第二章：环境准备
+&lt;/h2&gt;&lt;h3 id="21-前置要求"&gt;2.1 前置要求
+&lt;/h3&gt;&lt;p&gt;在开始之前，确保你已经安装了：&lt;/p&gt;
+&lt;h4 id="必需软件"&gt;必需软件
+&lt;/h4&gt;&lt;p&gt;&lt;strong&gt;1. Claude Code CLI&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;这是 Claude 的命令行工具&lt;/li&gt;
+&lt;li&gt;如果你能运行 Claude Code，说明已经安装了&lt;/li&gt;
+&lt;li&gt;检查方法：
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;claude --version
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;2. Node.js&lt;/strong&gt;（某些 skills 需要）&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;版本要求：14.0 或更高&lt;/li&gt;
+&lt;li&gt;检查是否安装：
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;node --version
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;npm --version
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;如果没有安装，访问：https://nodejs.org/&lt;/li&gt;
+&lt;li&gt;下载 LTS（长期支持）版本&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;3. Git&lt;/strong&gt;（可选，用于克隆官方仓库）&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;检查是否安装：
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;git --version
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;如果没有安装，访问：https://git-scm.com/&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="22-了解文件位置"&gt;2.2 了解文件位置
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;重要目录结构&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;你的用户目录/
+├── .claude/ # Claude 配置目录
+│ ├── skills/ # 自定义 skills 存放位置
+│ │ └── mysql-manager/ # 示例：自定义 skill
+│ │ ├── SKILL.md # Skill 定义文件
+│ │ ├── config.json # 配置文件
+│ │ ├── mysql-tool.js # 工具脚本
+│ │ └── README.md # 说明文档
+│ ├── plugins/ # 插件目录
+│ │ └── marketplaces/ # Skills 市场
+│ │ └── anthropic-agent-skills/
+│ │ └── skills/ # 官方 skills
+│ │ ├── docx/
+│ │ ├── pdf/
+│ │ └── ...
+│ └── config.json # 全局配置文件
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;不同操作系统的路径&lt;/strong&gt;：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Windows&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;用户目录：&lt;code&gt;C:\Users\你的用户名\&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Claude 目录：&lt;code&gt;C:\Users\你的用户名\.claude\&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;查看方法：
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;echo %USERPROFILE%&lt;span style="color:#ae81ff"&gt;\.&lt;/span&gt;claude
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Mac&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;用户目录：&lt;code&gt;/Users/你的用户名/&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Claude 目录：&lt;code&gt;/Users/你的用户名/.claude/&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;查看方法：
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;echo ~/.claude
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Linux&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;用户目录：&lt;code&gt;/home/你的用户名/&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Claude 目录：&lt;code&gt;/home/你的用户名/.claude/&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;查看方法：
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;echo ~/.claude
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="23-检查环境"&gt;2.3 检查环境
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;步骤 1：检查 Claude Code&lt;/strong&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;claude --version
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;预期输出：显示版本号&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;步骤 2：检查 Node.js&lt;/strong&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;node --version
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;npm --version
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;预期输出：显示版本号（如 v20.9.0）&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;步骤 3：检查配置目录&lt;/strong&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Windows&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;dir %USERPROFILE%&lt;span style="color:#ae81ff"&gt;\.&lt;/span&gt;claude
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Mac/Linux&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;ls -la ~/.claude
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;预期输出：显示 .claude 目录内容&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id="第三章安装官方-skills"&gt;第三章：安装官方 Skills
+&lt;/h2&gt;&lt;h3 id="31-添加官方-skills-市场"&gt;3.1 添加官方 Skills 市场
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;步骤 1：启动 Claude Code&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;在终端或命令行中：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;claude-code
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;步骤 2：添加官方市场&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;在 Claude Code 中输入：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;/plugin marketplace add anthropics/skills
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;预期结果&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;Successfully added marketplace: anthropic-agent-skills
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;这一步做了什么&lt;/strong&gt;？&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;连接到 Anthropic 官方的 skills 仓库（GitHub）&lt;/li&gt;
+&lt;li&gt;下载 skills 列表到你的电脑&lt;/li&gt;
+&lt;li&gt;存储位置：&lt;code&gt;~/.claude/plugins/marketplaces/anthropic-agent-skills/&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;但还没有安装具体的 skills&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;如果失败怎么办&lt;/strong&gt;？&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;检查网络连接&lt;/li&gt;
+&lt;li&gt;确保可以访问 GitHub&lt;/li&gt;
+&lt;li&gt;尝试使用代理（如果在国内）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="32-浏览可用的-skills"&gt;3.2 浏览可用的 Skills
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;方法 1：通过命令浏览&lt;/strong&gt;&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;/plugin browse
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;方法 2：查看已下载的 skills&lt;/strong&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Windows&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;dir %USERPROFILE%&lt;span style="color:#ae81ff"&gt;\.&lt;/span&gt;claude&lt;span style="color:#ae81ff"&gt;\p&lt;/span&gt;lugins&lt;span style="color:#ae81ff"&gt;\m&lt;/span&gt;arketplaces&lt;span style="color:#ae81ff"&gt;\a&lt;/span&gt;nthropic-agent-skills&lt;span style="color:#ae81ff"&gt;\s&lt;/span&gt;kills
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Mac/Linux&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;ls ~/.claude/plugins/marketplaces/anthropic-agent-skills/skills/
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;你会看到这些 skills&lt;/strong&gt;：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Skill 名称&lt;/th&gt;
+&lt;th&gt;功能说明&lt;/th&gt;
+&lt;th&gt;适用场景&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;docx&lt;/td&gt;
+&lt;td&gt;Word 文档处理&lt;/td&gt;
+&lt;td&gt;创建报告、编辑文档&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;pdf&lt;/td&gt;
+&lt;td&gt;PDF 文件处理&lt;/td&gt;
+&lt;td&gt;提取文本、合并PDF&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;pptx&lt;/td&gt;
+&lt;td&gt;PowerPoint 演示&lt;/td&gt;
+&lt;td&gt;创建幻灯片&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;xlsx&lt;/td&gt;
+&lt;td&gt;Excel 表格&lt;/td&gt;
+&lt;td&gt;数据处理、表格创建&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;frontend-design&lt;/td&gt;
+&lt;td&gt;前端设计&lt;/td&gt;
+&lt;td&gt;网页设计、UI组件&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;algorithmic-art&lt;/td&gt;
+&lt;td&gt;算法艺术&lt;/td&gt;
+&lt;td&gt;生成艺术、动画&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;canvas-design&lt;/td&gt;
+&lt;td&gt;画布设计&lt;/td&gt;
+&lt;td&gt;海报、图形设计&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;mcp-builder&lt;/td&gt;
+&lt;td&gt;MCP 服务器&lt;/td&gt;
+&lt;td&gt;API 集成&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;webapp-testing&lt;/td&gt;
+&lt;td&gt;Web 测试&lt;/td&gt;
+&lt;td&gt;自动化测试&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;skill-creator&lt;/td&gt;
+&lt;td&gt;Skill 创建&lt;/td&gt;
+&lt;td&gt;创建自定义 skill&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;更多&amp;hellip;&lt;/td&gt;
+&lt;td&gt;&amp;hellip;&lt;/td&gt;
+&lt;td&gt;&amp;hellip;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="33-安装-skills"&gt;3.3 安装 Skills
+&lt;/h3&gt;&lt;h4 id="方式-1安装示例-skills-包推荐新手"&gt;方式 1：安装示例 skills 包（推荐新手）
+&lt;/h4&gt;&lt;pre tabindex="0"&gt;&lt;code&gt;/plugin install example-skills@anthropic-agent-skills
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;这个命令会安装&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;所有示例 skills（16个）&lt;/li&gt;
+&lt;li&gt;包括文档处理、设计、开发等&lt;/li&gt;
+&lt;li&gt;适合学习和日常使用&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;预期结果&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;✓ Installed example-skills. Restart Claude Code to load new plugins.
+&lt;/code&gt;&lt;/pre&gt;&lt;h4 id="方式-2安装文档-skills-包"&gt;方式 2：安装文档 skills 包
+&lt;/h4&gt;&lt;p&gt;如果只需要文档处理功能：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;/plugin install document-skills@anthropic-agent-skills
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;这个命令会安装&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;docx（Word）&lt;/li&gt;
+&lt;li&gt;pdf（PDF）&lt;/li&gt;
+&lt;li&gt;pptx（PowerPoint）&lt;/li&gt;
+&lt;li&gt;xlsx（Excel）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id="方式-3安装单个-skill高级"&gt;方式 3：安装单个 skill（高级）
+&lt;/h4&gt;&lt;pre tabindex="0"&gt;&lt;code&gt;/plugin install docx@anthropic-agent-skills
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id="34-重启-claude-code"&gt;3.4 重启 Claude Code
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;重要&lt;/strong&gt;：安装后必须重启 Claude Code 才能生效！&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;步骤&lt;/strong&gt;：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;退出当前 Claude Code 会话&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;输入 &lt;code&gt;exit&lt;/code&gt; 或&lt;/li&gt;
+&lt;li&gt;按 &lt;code&gt;Ctrl+C&lt;/code&gt;（Windows/Linux）或 &lt;code&gt;Cmd+C&lt;/code&gt;（Mac）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;重新启动：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;claude-code
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id="35-验证安装"&gt;3.5 验证安装
+&lt;/h3&gt;&lt;h4 id="方法-1询问-claude"&gt;方法 1：询问 Claude
+&lt;/h4&gt;&lt;p&gt;在 Claude Code 中输入：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;你有哪些 skills？
+列出所有可用的 skills
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Claude 会列出所有已安装的 skills。&lt;/p&gt;
+&lt;h4 id="方法-2测试一个-skill"&gt;方法 2：测试一个 skill
+&lt;/h4&gt;&lt;pre tabindex="0"&gt;&lt;code&gt;帮我创建一个测试 Word 文档
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;如果 Claude 成功创建了文档，说明 skills 安装成功！&lt;/p&gt;
+&lt;h4 id="方法-3查看系统信息"&gt;方法 3：查看系统信息
+&lt;/h4&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 查看已安装的 skills&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;ls ~/.claude/plugins/cache/
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
+&lt;h2 id="第四章使用-skills"&gt;第四章：使用 Skills
+&lt;/h2&gt;&lt;h3 id="41-skills-的三种使用方式"&gt;4.1 Skills 的三种使用方式
+&lt;/h3&gt;&lt;h4 id="方式-1自然语言推荐新手"&gt;方式 1：自然语言（推荐新手）
+&lt;/h4&gt;&lt;p&gt;直接用日常语言描述你的需求，Claude 会自动选择合适的 skill。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;示例&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;创建一个 Word 文档
+处理这个 PDF 文件
+设计一个登录页面
+查询数据库
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;优点&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;最简单，不需要记住 skill 名称&lt;/li&gt;
+&lt;li&gt;Claude 会自动判断使用哪个 skill&lt;/li&gt;
+&lt;li&gt;适合日常使用&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;缺点&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;有时 Claude 可能选错 skill&lt;/li&gt;
+&lt;li&gt;不够精确&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id="方式-2明确指定-skill"&gt;方式 2：明确指定 skill
+&lt;/h4&gt;&lt;p&gt;如果你知道要用哪个 skill，可以明确指定。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;示例&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;使用 docx skill 创建报告
+使用 pdf skill 提取文本
+使用 mysql-manager 查询数据
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;优点&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;更精确&lt;/li&gt;
+&lt;li&gt;避免 Claude 选错 skill&lt;/li&gt;
+&lt;li&gt;适合重复性任务&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;缺点&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;需要记住 skill 名称&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id="方式-3直接调用命令高级用户"&gt;方式 3：直接调用命令（高级用户）
+&lt;/h4&gt;&lt;p&gt;对于自定义 skills，可以直接调用命令。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;示例&lt;/strong&gt;：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;cd ~/.claude/skills/mysql-manager
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;node mysql-tool.js list-databases
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;优点&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;最快速&lt;/li&gt;
+&lt;li&gt;完全控制&lt;/li&gt;
+&lt;li&gt;适合脚本化&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;缺点&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;需要了解命令行&lt;/li&gt;
+&lt;li&gt;需要知道具体命令&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="42-常用-skills-使用示例"&gt;4.2 常用 Skills 使用示例
+&lt;/h3&gt;&lt;h4 id="-文档处理-skills"&gt;📄 文档处理 Skills
+&lt;/h4&gt;&lt;p&gt;&lt;strong&gt;创建 Word 文档（docx）&lt;/strong&gt;：&lt;/p&gt;
+&lt;p&gt;基础用法：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;创建一个 Word 文档
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;详细用法：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;创建一个项目报告文档，包含：
+- 标题：2024年度总结
+- 副标题：技术部门
+- 三个章节：背景、实施、成果
+- 一个数据表格
+- 页脚包含日期
+保存为 report.docx
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;处理 PDF（pdf）&lt;/strong&gt;：&lt;/p&gt;
+&lt;p&gt;提取文本：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;从 report.pdf 中提取所有文本
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;合并 PDF：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;合并 file1.pdf 和 file2.pdf 为 merged.pdf
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;分割 PDF：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;将 document.pdf 的第 1-5 页提取为新文件
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;创建 PowerPoint（pptx）&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;创建一个产品介绍演示文稿，包含：
+- 封面页
+- 产品特点（3页）
+- 价格方案（1页）
+- 联系方式（1页）
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;处理 Excel（xlsx）&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;创建一个销售数据表格，包含：
+- 列：日期、产品、数量、金额
+- 10行测试数据
+- 添加求和公式
+&lt;/code&gt;&lt;/pre&gt;&lt;h4 id="-设计类-skills"&gt;🎨 设计类 Skills
+&lt;/h4&gt;&lt;p&gt;&lt;strong&gt;前端设计（frontend-design）&lt;/strong&gt;：&lt;/p&gt;
+&lt;p&gt;登录页面：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;设计一个现代风格的登录页面，包含：
+- 用户名和密码输入框
+- 记住我选项
+- 登录按钮
+- 使用蓝色主题
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;导航栏：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;创建一个响应式导航栏，包含：
+- Logo
+- 首页、产品、关于我们、联系
+- 移动端汉堡菜单
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;算法艺术（algorithmic-art）&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;用粒子系统创建一个动画，包含：
+- 1000个粒子
+- 随机颜色
+- 鼠标交互
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Canvas 设计（canvas-design）&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;设计一张活动海报：
+- 主题：春季促销
+- 尺寸：A4
+- 包含标题、日期、二维码
+&lt;/code&gt;&lt;/pre&gt;&lt;h4 id="-开发类-skills"&gt;🛠️ 开发类 Skills
+&lt;/h4&gt;&lt;p&gt;&lt;strong&gt;Web 测试（webapp-testing）&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;测试 localhost:3000 的登录功能：
+1. 打开页面
+2. 输入用户名和密码
+3. 点击登录按钮
+4. 截图保存
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;MCP 构建（mcp-builder）&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;创建一个连接 GitHub API 的 MCP 服务器，功能：
+- 获取仓库列表
+- 创建 Issue
+- 查看 Pull Request
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id="43-skills-使用技巧"&gt;4.3 Skills 使用技巧
+&lt;/h3&gt;&lt;h4 id="技巧-1提供详细信息"&gt;技巧 1：提供详细信息
+&lt;/h4&gt;&lt;p&gt;&lt;strong&gt;不好的示例&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;创建一个文档
+&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
+&lt;li&gt;太模糊&lt;/li&gt;
+&lt;li&gt;Claude 不知道要创建什么内容&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;好的示例&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;创建一个 Word 文档，文件名为 report.docx，包含：
+- 标题：项目报告
+- 三个章节：背景、方案、结论
+- 每个章节包含 2-3 段文字
+- 保存到当前目录
+&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
+&lt;li&gt;清晰明确&lt;/li&gt;
+&lt;li&gt;Claude 知道具体要做什么&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id="技巧-2分步骤操作"&gt;技巧 2：分步骤操作
+&lt;/h4&gt;&lt;p&gt;对于复杂任务，分步骤进行：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;第一步：先帮我查看数据库有哪些表
+（等待结果）
+第二步：查询 users 表的结构
+（等待结果）
+第三步：导出 users 表为 CSV
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;为什么要分步骤&lt;/strong&gt;？&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;每一步都能确认结果&lt;/li&gt;
+&lt;li&gt;出错时容易定位问题&lt;/li&gt;
+&lt;li&gt;可以根据结果调整下一步&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id="技巧-3查看-skill-能做什么"&gt;技巧 3：查看 Skill 能做什么
+&lt;/h4&gt;&lt;pre tabindex="0"&gt;&lt;code&gt;docx skill 有哪些功能？
+pdf skill 可以做什么？
+mysql-manager 支持哪些操作？
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Claude 会列出该 skill 的所有功能。&lt;/p&gt;
+&lt;h4 id="技巧-4提供示例"&gt;技巧 4：提供示例
+&lt;/h4&gt;&lt;p&gt;如果有参考样式：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;创建一个类似 example.docx 的文档，但内容改为...
+&lt;/code&gt;&lt;/pre&gt;&lt;h4 id="技巧-5指定输出位置"&gt;技巧 5：指定输出位置
+&lt;/h4&gt;&lt;pre tabindex="0"&gt;&lt;code&gt;创建文档并保存到桌面
+导出数据到 D:/exports/ 目录
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id="44-常见使用场景"&gt;4.4 常见使用场景
+&lt;/h3&gt;&lt;h4 id="场景-1日常办公"&gt;场景 1：日常办公
+&lt;/h4&gt;&lt;p&gt;&lt;strong&gt;需求&lt;/strong&gt;：每周写工作周报&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;使用 Skills&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;使用 docx skill 创建本周工作周报：
+- 标题：第X周工作周报
+- 本周完成的工作（列表）
+- 下周计划（列表）
+- 遇到的问题
+&lt;/code&gt;&lt;/pre&gt;&lt;h4 id="场景-2数据处理"&gt;场景 2：数据处理
+&lt;/h4&gt;&lt;p&gt;&lt;strong&gt;需求&lt;/strong&gt;：处理 Excel 数据&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;使用 Skills&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;使用 xlsx skill：
+1. 读取 sales.xlsx
+2. 筛选金额大于 1000 的记录
+3. 按日期排序
+4. 导出为新文件
+&lt;/code&gt;&lt;/pre&gt;&lt;h4 id="场景-3网页开发"&gt;场景 3：网页开发
+&lt;/h4&gt;&lt;p&gt;&lt;strong&gt;需求&lt;/strong&gt;：快速创建页面原型&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;使用 Skills&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;使用 frontend-design skill 创建：
+- 一个产品展示页面
+- 包含图片轮播
+- 产品卡片网格
+- 响应式布局
+&lt;/code&gt;&lt;/pre&gt;&lt;h4 id="场景-4数据库管理"&gt;场景 4：数据库管理
+&lt;/h4&gt;&lt;p&gt;&lt;strong&gt;需求&lt;/strong&gt;：定期备份数据库&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;使用 Skills&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;使用 mysql-manager skill：
+1. 备份 production 数据库
+2. 保存到 /backups/ 目录
+3. 文件名包含日期
+&lt;/code&gt;&lt;/pre&gt;&lt;hr&gt;
+&lt;h2 id="第六章实战案例---mysql-数据库管理-skill"&gt;第六章：实战案例 - MySQL 数据库管理 Skill
+&lt;/h2&gt;&lt;p&gt;本章将通过一个完整的实战案例，教你如何创建一个功能强大的 MySQL 数据库管理 Skill。&lt;/p&gt;
+&lt;h3 id="61-需求分析"&gt;6.1 需求分析
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;目标&lt;/strong&gt;：创建一个 Skill 来管理 MySQL 数据库&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;功能需求&lt;/strong&gt;：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;数据库管理（创建、删除、列出）&lt;/li&gt;
+&lt;li&gt;表管理（创建、删除、查看结构）&lt;/li&gt;
+&lt;li&gt;数据查询（SELECT、统计）&lt;/li&gt;
+&lt;li&gt;数据操作（插入、更新、删除）&lt;/li&gt;
+&lt;li&gt;导入导出（CSV、JSON、SQL）&lt;/li&gt;
+&lt;li&gt;备份与恢复&lt;/li&gt;
+&lt;li&gt;用户管理&lt;/li&gt;
+&lt;li&gt;性能分析&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;技术选型&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Node.js + mysql2 库&lt;/li&gt;
+&lt;li&gt;配置文件存储连接信息&lt;/li&gt;
+&lt;li&gt;命令行工具实现各种操作&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="62-创建-skill-结构"&gt;6.2 创建 Skill 结构
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;步骤 1：创建目录&lt;/strong&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;mkdir -p ~/.claude/skills/mysql-manager
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;cd ~/.claude/skills/mysql-manager
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;步骤 2：初始化 npm 项目&lt;/strong&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;npm init -y
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;npm install mysql2
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="63-创建配置文件"&gt;6.3 创建配置文件
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;config.json&lt;/strong&gt;：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-json" data-lang="json"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;host&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;localhost&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;port&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;3306&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;user&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;root&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;password&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;root&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;database&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;charset&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;utf8mb4&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;connectionLimit&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;10&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;connectTimeout&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;10000&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;backupPath&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;~/.claude/skills/mysql-manager/backups&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;配置说明&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;host&lt;/code&gt;: 数据库服务器地址&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;port&lt;/code&gt;: 端口号（默认 3306）&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;user&lt;/code&gt;: 数据库用户名&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;password&lt;/code&gt;: 数据库密码&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;database&lt;/code&gt;: 默认数据库（可为空）&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;backupPath&lt;/code&gt;: 备份文件存储路径&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;安全提示&lt;/strong&gt;：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 设置配置文件权限（只有所有者可读写）&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;chmod &lt;span style="color:#ae81ff"&gt;600&lt;/span&gt; config.json
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="64-创建核心工具脚本"&gt;6.4 创建核心工具脚本
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;mysql-tool.js&lt;/strong&gt;（核心功能实现）：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-javascript" data-lang="javascript"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#!/usr/bin/env node
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;const&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;mysql&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;require&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#39;mysql2/promise&amp;#39;&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;const&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;fs&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;require&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#39;fs&amp;#39;&lt;/span&gt;).&lt;span style="color:#a6e22e"&gt;promises&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;const&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;path&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;require&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#39;path&amp;#39;&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 加载配置
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;async&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;function&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;loadConfig&lt;/span&gt;() {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;const&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;configPath&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;path&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;join&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;__dirname&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#39;config.json&amp;#39;&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;const&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;configData&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;await&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;fs&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;readFile&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;configPath&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#39;utf8&amp;#39;&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;return&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;JSON&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;parse&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;configData&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 创建数据库连接
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;async&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;function&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;createConnection&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;dbName&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;null&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;const&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;config&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;await&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;loadConfig&lt;/span&gt;();
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;if&lt;/span&gt; (&lt;span style="color:#a6e22e"&gt;dbName&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;config&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;database&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;dbName&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;return&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;await&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;mysql&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;createConnection&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;config&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 列出所有数据库
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;async&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;function&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;listDatabases&lt;/span&gt;() {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;const&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;conn&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;await&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;createConnection&lt;/span&gt;();
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;const&lt;/span&gt; [&lt;span style="color:#a6e22e"&gt;rows&lt;/span&gt;] &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;await&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;conn&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;execute&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#39;SHOW DATABASES&amp;#39;&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;await&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;conn&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;end&lt;/span&gt;();
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;return&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;rows&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;map&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;row&lt;/span&gt; =&amp;gt; &lt;span style="color:#a6e22e"&gt;row&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;Database&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 列出所有表
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;async&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;function&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;listTables&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;dbName&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;const&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;conn&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;await&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;createConnection&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;dbName&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;const&lt;/span&gt; [&lt;span style="color:#a6e22e"&gt;rows&lt;/span&gt;] &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;await&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;conn&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;execute&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#39;SHOW TABLES&amp;#39;&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;await&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;conn&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;end&lt;/span&gt;();
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;return&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;rows&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;map&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;row&lt;/span&gt; =&amp;gt; Object.&lt;span style="color:#a6e22e"&gt;values&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;row&lt;/span&gt;)[&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;]);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 查询数据
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;async&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;function&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;selectAll&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;dbName&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;tableName&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;limit&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;100&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;const&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;conn&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;await&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;createConnection&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;dbName&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;const&lt;/span&gt; [&lt;span style="color:#a6e22e"&gt;rows&lt;/span&gt;] &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;await&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;conn&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;execute&lt;/span&gt;(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;`SELECT * FROM \`&lt;/span&gt;&lt;span style="color:#e6db74"&gt;${&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;tableName&lt;/span&gt;&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt;\` LIMIT ?`&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; [&lt;span style="color:#a6e22e"&gt;limit&lt;/span&gt;]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; );
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;await&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;conn&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;end&lt;/span&gt;();
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;return&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;rows&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 主函数
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;async&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;function&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;main&lt;/span&gt;() {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;const&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;args&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;process&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;argv&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;slice&lt;/span&gt;(&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;const&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;command&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;args&lt;/span&gt;[&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;];
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;try&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;let&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;result&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;switch&lt;/span&gt; (&lt;span style="color:#a6e22e"&gt;command&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;case&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#39;list-databases&amp;#39;&lt;/span&gt;&lt;span style="color:#f92672"&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;result&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;await&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;listDatabases&lt;/span&gt;();
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;break&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;case&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#39;list-tables&amp;#39;&lt;/span&gt;&lt;span style="color:#f92672"&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;result&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;await&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;listTables&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;args&lt;/span&gt;[&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;]);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;break&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;case&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#39;select-all&amp;#39;&lt;/span&gt;&lt;span style="color:#f92672"&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;result&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;await&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;selectAll&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;args&lt;/span&gt;[&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;], &lt;span style="color:#a6e22e"&gt;args&lt;/span&gt;[&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;], parseInt(&lt;span style="color:#a6e22e"&gt;args&lt;/span&gt;[&lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;] &lt;span style="color:#f92672"&gt;||&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;100&lt;/span&gt;));
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;break&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;default&lt;/span&gt;&lt;span style="color:#f92672"&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;console&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;error&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#39;未知命令:&amp;#39;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;command&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;process&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;exit&lt;/span&gt;(&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;console&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;log&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;JSON&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;stringify&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;result&lt;/span&gt;, &lt;span style="color:#66d9ef"&gt;null&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;));
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; } &lt;span style="color:#66d9ef"&gt;catch&lt;/span&gt; (&lt;span style="color:#a6e22e"&gt;error&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;console&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;error&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#39;错误:&amp;#39;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;error&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;message&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;process&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;exit&lt;/span&gt;(&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;if&lt;/span&gt; (&lt;span style="color:#a6e22e"&gt;require&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;main&lt;/span&gt; &lt;span style="color:#f92672"&gt;===&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;module&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;main&lt;/span&gt;();
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;设置执行权限&lt;/strong&gt;：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;chmod +x mysql-tool.js
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="65-创建-skillmd"&gt;6.5 创建 SKILL.md
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-markdown" data-lang="markdown"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;---
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;name: mysql-manager
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;description: 全面的 MySQL 数据库管理工具。支持连接数据库、执行查询、数据导入导出、备份恢复、表结构管理等操作。使用前需要配置数据库连接信息。
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;---
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;# MySQL 数据库管理 Skill
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;这个 skill 提供全面的 MySQL 数据库操作功能。
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;## 配置
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;数据库连接信息存储在 &lt;span style="color:#e6db74"&gt;`~/.claude/skills/mysql-manager/config.json`&lt;/span&gt; 中。
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;默认配置：
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;```json
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &amp;#34;host&amp;#34;: &amp;#34;localhost&amp;#34;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &amp;#34;port&amp;#34;: 3306,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &amp;#34;user&amp;#34;: &amp;#34;root&amp;#34;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &amp;#34;password&amp;#34;: &amp;#34;root&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="支持的操作"&gt;支持的操作
+&lt;/h2&gt;&lt;h3 id="数据库管理"&gt;数据库管理
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;列出所有数据库&lt;/li&gt;
+&lt;li&gt;创建数据库&lt;/li&gt;
+&lt;li&gt;删除数据库&lt;/li&gt;
+&lt;li&gt;查看数据库大小&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="表管理"&gt;表管理
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;列出所有表&lt;/li&gt;
+&lt;li&gt;创建表&lt;/li&gt;
+&lt;li&gt;删除表&lt;/li&gt;
+&lt;li&gt;查看表结构&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="数据查询"&gt;数据查询
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;SELECT 查询&lt;/li&gt;
+&lt;li&gt;条件查询&lt;/li&gt;
+&lt;li&gt;统计查询&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="数据操作"&gt;数据操作
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;插入数据&lt;/li&gt;
+&lt;li&gt;更新数据&lt;/li&gt;
+&lt;li&gt;删除数据&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="导入导出"&gt;导入导出
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;导出为 CSV&lt;/li&gt;
+&lt;li&gt;导出为 JSON&lt;/li&gt;
+&lt;li&gt;导出为 SQL&lt;/li&gt;
+&lt;li&gt;从 SQL 导入&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="备份与恢复"&gt;备份与恢复
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;备份数据库&lt;/li&gt;
+&lt;li&gt;恢复数据库&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="使用示例"&gt;使用示例
+&lt;/h2&gt;&lt;pre tabindex="0"&gt;&lt;code&gt;使用 mysql-manager 列出所有数据库
+使用 mysql-manager 查询 users 表的数据
+使用 mysql-manager 备份 mydb 数据库
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id="安全注意事项"&gt;安全注意事项
+&lt;/h2&gt;&lt;ol&gt;
+&lt;li&gt;配置文件包含敏感信息，确保权限设置正确&lt;/li&gt;
+&lt;li&gt;生产环境使用只读用户进行查询&lt;/li&gt;
+&lt;li&gt;删除操作前务必确认&lt;/li&gt;
+&lt;li&gt;定期备份重要数据&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;
+### 6.6 创建使用文档
+**README.md**：
+```markdown
+# MySQL Manager Skill 使用指南
+## 安装
+1. 创建目录：
+```bash
+mkdir -p ~/.claude/skills/mysql-manager
+cd ~/.claude/skills/mysql-manager
+&lt;/code&gt;&lt;/pre&gt;&lt;ol start="2"&gt;
+&lt;li&gt;安装依赖：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;npm install mysql2
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ol start="3"&gt;
+&lt;li&gt;配置数据库连接：
+编辑 &lt;code&gt;config.json&lt;/code&gt; 文件&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id="命令参考"&gt;命令参考
+&lt;/h2&gt;&lt;h3 id="数据库管理-1"&gt;数据库管理
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 列出所有数据库&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;node mysql-tool.js list-databases
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 列出所有表&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;node mysql-tool.js list-tables mydb
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 查询数据&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;node mysql-tool.js &lt;span style="color:#66d9ef"&gt;select&lt;/span&gt;-all mydb users &lt;span style="color:#ae81ff"&gt;10&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="在-claude-code-中使用"&gt;在 Claude Code 中使用
+&lt;/h2&gt;&lt;pre tabindex="0"&gt;&lt;code&gt;使用 mysql-manager 列出所有数据库
+使用 mysql-manager 查询 test 数据库中 users 表的数据
+使用 mysql-manager 备份 mydb 数据库
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id="故障排除"&gt;故障排除
+&lt;/h2&gt;&lt;h3 id="连接失败"&gt;连接失败
+&lt;/h3&gt;&lt;p&gt;检查：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;MySQL 服务是否运行&lt;/li&gt;
+&lt;li&gt;配置文件中的连接信息是否正确&lt;/li&gt;
+&lt;li&gt;防火墙是否允许连接&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;
+### 6.7 测试 Skill
+**步骤 1：测试连接**
+```bash
+cd ~/.claude/skills/mysql-manager
+node mysql-tool.js list-databases
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;预期输出&lt;/strong&gt;：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-json" data-lang="json"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;[
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;information_schema&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;mysql&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;performance_schema&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;test&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;]
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;步骤 2：在 Claude Code 中测试&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;重启 Claude Code，然后：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;使用 mysql-manager 列出所有数据库
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;步骤 3：测试查询功能&lt;/strong&gt;&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;使用 mysql-manager 查询 test 数据库中 users 表的数据
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id="68-扩展功能"&gt;6.8 扩展功能
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;添加更多命令&lt;/strong&gt;：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;创建数据库&lt;/strong&gt;：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-javascript" data-lang="javascript"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;async&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;function&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;createDatabase&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;dbName&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;const&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;conn&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;await&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;createConnection&lt;/span&gt;();
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;await&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;conn&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;execute&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;`CREATE DATABASE IF NOT EXISTS \`&lt;/span&gt;&lt;span style="color:#e6db74"&gt;${&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;dbName&lt;/span&gt;&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt;\``&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;await&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;conn&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;end&lt;/span&gt;();
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;return&lt;/span&gt; &lt;span style="color:#e6db74"&gt;`数据库 &lt;/span&gt;&lt;span style="color:#e6db74"&gt;${&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;dbName&lt;/span&gt;&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt; 创建成功`&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ol start="2"&gt;
+&lt;li&gt;&lt;strong&gt;导出为 CSV&lt;/strong&gt;：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-javascript" data-lang="javascript"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;async&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;function&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;exportToCSV&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;dbName&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;tableName&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;outputPath&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;const&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;conn&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;await&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;createConnection&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;dbName&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;const&lt;/span&gt; [&lt;span style="color:#a6e22e"&gt;rows&lt;/span&gt;] &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;await&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;conn&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;execute&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;`SELECT * FROM \`&lt;/span&gt;&lt;span style="color:#e6db74"&gt;${&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;tableName&lt;/span&gt;&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt;\``&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;await&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;conn&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;end&lt;/span&gt;();
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;const&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;headers&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; Object.&lt;span style="color:#a6e22e"&gt;keys&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;rows&lt;/span&gt;[&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;]).&lt;span style="color:#a6e22e"&gt;join&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#39;,&amp;#39;&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;const&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;csvRows&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;rows&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;map&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;row&lt;/span&gt; =&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; Object.&lt;span style="color:#a6e22e"&gt;values&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;row&lt;/span&gt;).&lt;span style="color:#a6e22e"&gt;map&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;val&lt;/span&gt; =&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;typeof&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;val&lt;/span&gt; &lt;span style="color:#f92672"&gt;===&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#39;string&amp;#39;&lt;/span&gt; &lt;span style="color:#f92672"&gt;?&lt;/span&gt; &lt;span style="color:#e6db74"&gt;`&amp;#34;&lt;/span&gt;&lt;span style="color:#e6db74"&gt;${&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;val&lt;/span&gt;&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;`&lt;/span&gt; &lt;span style="color:#f92672"&gt;:&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;val&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; ).&lt;span style="color:#a6e22e"&gt;join&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#39;,&amp;#39;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; );
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;const&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;csv&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; [&lt;span style="color:#a6e22e"&gt;headers&lt;/span&gt;, ...&lt;span style="color:#a6e22e"&gt;csvRows&lt;/span&gt;].&lt;span style="color:#a6e22e"&gt;join&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#39;\n&amp;#39;&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;await&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;fs&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;writeFile&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;outputPath&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;csv&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#39;utf8&amp;#39;&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;return&lt;/span&gt; &lt;span style="color:#e6db74"&gt;`导出成功: &lt;/span&gt;&lt;span style="color:#e6db74"&gt;${&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;outputPath&lt;/span&gt;&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt;`&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ol start="3"&gt;
+&lt;li&gt;&lt;strong&gt;备份数据库&lt;/strong&gt;：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-javascript" data-lang="javascript"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;async&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;function&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;backupDatabase&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;dbName&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;outputPath&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;const&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;cmd&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#e6db74"&gt;`mysqldump -u &lt;/span&gt;&lt;span style="color:#e6db74"&gt;${&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;config&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;user&lt;/span&gt;&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt; -p&lt;/span&gt;&lt;span style="color:#e6db74"&gt;${&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;config&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;password&lt;/span&gt;&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt; &lt;/span&gt;&lt;span style="color:#e6db74"&gt;${&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;dbName&lt;/span&gt;&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt; &amp;gt; &amp;#34;&lt;/span&gt;&lt;span style="color:#e6db74"&gt;${&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;outputPath&lt;/span&gt;&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;`&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;await&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;execPromise&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;cmd&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;return&lt;/span&gt; &lt;span style="color:#e6db74"&gt;`备份成功: &lt;/span&gt;&lt;span style="color:#e6db74"&gt;${&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;outputPath&lt;/span&gt;&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt;`&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="69-实战演练"&gt;6.9 实战演练
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;任务 1：查看数据库列表&lt;/strong&gt;&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;使用 mysql-manager 列出所有数据库
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;任务 2：查询表数据&lt;/strong&gt;&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;使用 mysql-manager 查询 test 数据库中 t_user 表的前 10 条数据
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;任务 3：插入测试数据&lt;/strong&gt;&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;使用 mysql-manager 在 test 数据库的 t_user 表中插入 10 条测试数据
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;任务 4：导出数据&lt;/strong&gt;&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;使用 mysql-manager 将 t_user 表导出为 CSV 文件
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;任务 5：备份数据库&lt;/strong&gt;&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;使用 mysql-manager 备份 test 数据库
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id="610-总结"&gt;6.10 总结
+&lt;/h3&gt;&lt;p&gt;通过这个实战案例，你学会了：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;✅ 如何规划 Skill 的功能&lt;/li&gt;
+&lt;li&gt;✅ 如何创建 Skill 的目录结构&lt;/li&gt;
+&lt;li&gt;✅ 如何编写配置文件&lt;/li&gt;
+&lt;li&gt;✅ 如何实现核心功能&lt;/li&gt;
+&lt;li&gt;✅ 如何编写 SKILL.md&lt;/li&gt;
+&lt;li&gt;✅ 如何测试 Skill&lt;/li&gt;
+&lt;li&gt;✅ 如何扩展功能&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;关键要点&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;配置文件分离敏感信息&lt;/li&gt;
+&lt;li&gt;错误处理要完善&lt;/li&gt;
+&lt;li&gt;文档要详细&lt;/li&gt;
+&lt;li&gt;测试要充分&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id="第七章常见问题与解决方案"&gt;第七章：常见问题与解决方案
+&lt;/h2&gt;&lt;h3 id="71-安装相关问题"&gt;7.1 安装相关问题
+&lt;/h3&gt;&lt;h4 id="问题-1无法添加官方市场"&gt;问题 1：无法添加官方市场
+&lt;/h4&gt;&lt;p&gt;&lt;strong&gt;错误信息&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;Failed to add marketplace
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;可能原因&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;网络连接问题&lt;/li&gt;
+&lt;li&gt;无法访问 GitHub&lt;/li&gt;
+&lt;li&gt;代理设置问题&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;解决方案&lt;/strong&gt;：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;检查网络连接：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;ping github.com
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ol start="2"&gt;
+&lt;li&gt;配置 Git 代理（如果在国内）：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;git config --global http.proxy http://proxy.example.com:8080
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;git config --global https.proxy https://proxy.example.com:8080
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ol start="3"&gt;
+&lt;li&gt;使用 VPN 或代理&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id="问题-2skills-安装后不显示"&gt;问题 2：Skills 安装后不显示
+&lt;/h4&gt;&lt;p&gt;&lt;strong&gt;症状&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;安装成功但 Claude 看不到 skills&lt;/li&gt;
+&lt;li&gt;询问&amp;quot;你有哪些 skills&amp;quot;时没有列出&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;解决方案&lt;/strong&gt;：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;重启 Claude Code&lt;/strong&gt;（最常见原因）：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 退出&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;exit
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 重新启动&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;claude-code
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ol start="2"&gt;
+&lt;li&gt;&lt;strong&gt;检查安装位置&lt;/strong&gt;：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;ls ~/.claude/plugins/cache/
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ol start="3"&gt;
+&lt;li&gt;&lt;strong&gt;重新安装&lt;/strong&gt;：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;/plugin uninstall example-skills
+/plugin install example-skills@anthropic-agent-skills
+&lt;/code&gt;&lt;/pre&gt;&lt;h4 id="问题-3依赖安装失败"&gt;问题 3：依赖安装失败
+&lt;/h4&gt;&lt;p&gt;&lt;strong&gt;错误信息&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;npm ERR! Cannot find module &amp;#39;mysql2&amp;#39;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;解决方案&lt;/strong&gt;：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;进入 skill 目录：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;cd ~/.claude/skills/mysql-manager
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ol start="2"&gt;
+&lt;li&gt;安装依赖：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;npm install mysql2
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ol start="3"&gt;
+&lt;li&gt;如果还是失败，清除缓存：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;npm cache clean --force
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;npm install
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="72-使用相关问题"&gt;7.2 使用相关问题
+&lt;/h3&gt;&lt;h4 id="问题-4skill-执行失败"&gt;问题 4：Skill 执行失败
+&lt;/h4&gt;&lt;p&gt;&lt;strong&gt;错误信息&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;Error: Command failed
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;排查步骤&lt;/strong&gt;：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;检查命令是否正确&lt;/strong&gt;：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 手动测试命令&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;cd ~/.claude/skills/mysql-manager
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;node mysql-tool.js list-databases
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ol start="2"&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;查看错误详情&lt;/strong&gt;：
+Claude 通常会显示详细的错误信息&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;检查权限&lt;/strong&gt;：&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 确保脚本有执行权限&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;chmod +x mysql-tool.js
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ol start="4"&gt;
+&lt;li&gt;&lt;strong&gt;检查配置文件&lt;/strong&gt;：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 验证 JSON 格式&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;cat config.json | python -m json.tool
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id="问题-5claude-选错了-skill"&gt;问题 5：Claude 选错了 Skill
+&lt;/h4&gt;&lt;p&gt;&lt;strong&gt;症状&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;你想用 A skill，但 Claude 用了 B skill&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;解决方案&lt;/strong&gt;：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;明确指定 skill&lt;/strong&gt;：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;使用 docx skill 创建文档（而不是&amp;#34;创建文档&amp;#34;）
+&lt;/code&gt;&lt;/pre&gt;&lt;ol start="2"&gt;
+&lt;li&gt;&lt;strong&gt;提供更详细的描述&lt;/strong&gt;：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;使用 mysql-manager skill 查询数据库
+&lt;/code&gt;&lt;/pre&gt;&lt;ol start="3"&gt;
+&lt;li&gt;&lt;strong&gt;检查 SKILL.md 的 description&lt;/strong&gt;：
+确保描述清晰，不会与其他 skills 混淆&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id="问题-6配置文件找不到"&gt;问题 6：配置文件找不到
+&lt;/h4&gt;&lt;p&gt;&lt;strong&gt;错误信息&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;Error: ENOENT: no such file or directory
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;解决方案&lt;/strong&gt;：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;检查文件是否存在&lt;/strong&gt;：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;ls ~/.claude/skills/mysql-manager/config.json
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ol start="2"&gt;
+&lt;li&gt;&lt;strong&gt;检查路径是否正确&lt;/strong&gt;：
+在脚本中使用绝对路径：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-javascript" data-lang="javascript"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;const&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;configPath&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;path&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;join&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;__dirname&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#39;config.json&amp;#39;&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ol start="3"&gt;
+&lt;li&gt;&lt;strong&gt;创建配置文件&lt;/strong&gt;：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;cd ~/.claude/skills/mysql-manager
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;cat &amp;gt; config.json &lt;span style="color:#e6db74"&gt;&amp;lt;&amp;lt; EOF
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e6db74"&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e6db74"&gt; &amp;#34;host&amp;#34;: &amp;#34;localhost&amp;#34;,
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e6db74"&gt; &amp;#34;port&amp;#34;: 3306
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e6db74"&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e6db74"&gt;EOF&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="73-数据库相关问题"&gt;7.3 数据库相关问题
+&lt;/h3&gt;&lt;h4 id="问题-7无法连接数据库"&gt;问题 7：无法连接数据库
+&lt;/h4&gt;&lt;p&gt;&lt;strong&gt;错误信息&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;Error: connect ECONNREFUSED
+Error: Access denied for user
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;解决方案&lt;/strong&gt;：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;检查 MySQL 服务是否运行&lt;/strong&gt;：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Windows&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sc query MySQL
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Mac&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;brew services list | grep mysql
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Linux&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;systemctl status mysql
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ol start="2"&gt;
+&lt;li&gt;&lt;strong&gt;检查连接信息&lt;/strong&gt;：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 测试连接&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;mysql -h localhost -u root -p
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ol start="3"&gt;
+&lt;li&gt;&lt;strong&gt;检查防火墙&lt;/strong&gt;：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Linux&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo ufw status
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Windows&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;netsh advfirewall show allprofiles
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ol start="4"&gt;
+&lt;li&gt;&lt;strong&gt;检查用户权限&lt;/strong&gt;：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;-- 在 MySQL 中执行
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;SHOW&lt;/span&gt; GRANTS &lt;span style="color:#66d9ef"&gt;FOR&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#39;root&amp;#39;&lt;/span&gt;&lt;span style="color:#f92672"&gt;@&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#39;localhost&amp;#39;&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id="问题-8备份失败"&gt;问题 8：备份失败
+&lt;/h4&gt;&lt;p&gt;&lt;strong&gt;错误信息&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;mysqldump: command not found
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;解决方案&lt;/strong&gt;：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;安装 MySQL 客户端工具&lt;/strong&gt;：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Ubuntu/Debian&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo apt-get install mysql-client
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Mac&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;brew install mysql-client
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Windows&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 下载 MySQL Installer&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ol start="2"&gt;
+&lt;li&gt;&lt;strong&gt;添加到 PATH&lt;/strong&gt;（Windows）：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;将 C:\Program Files\MySQL\MySQL Server 8.0\bin 添加到系统 PATH
+&lt;/code&gt;&lt;/pre&gt;&lt;ol start="3"&gt;
+&lt;li&gt;&lt;strong&gt;使用完整路径&lt;/strong&gt;：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-javascript" data-lang="javascript"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;const&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;mysqldumpPath&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#39;C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysqldump.exe&amp;#39;&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="74-性能相关问题"&gt;7.4 性能相关问题
+&lt;/h3&gt;&lt;h4 id="问题-9查询很慢"&gt;问题 9：查询很慢
+&lt;/h4&gt;&lt;p&gt;&lt;strong&gt;症状&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;查询大表时响应很慢&lt;/li&gt;
+&lt;li&gt;Claude 长时间无响应&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;解决方案&lt;/strong&gt;：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;限制查询数量&lt;/strong&gt;：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-javascript" data-lang="javascript"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 默认限制 100 条
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;async&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;function&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;selectAll&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;dbName&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;tableName&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;limit&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;100&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#75715e"&gt;// ...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ol start="2"&gt;
+&lt;li&gt;&lt;strong&gt;添加索引&lt;/strong&gt;：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;CREATE&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;INDEX&lt;/span&gt; idx_name &lt;span style="color:#66d9ef"&gt;ON&lt;/span&gt; users(name);
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ol start="3"&gt;
+&lt;li&gt;&lt;strong&gt;使用分页&lt;/strong&gt;：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-javascript" data-lang="javascript"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;async&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;function&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;selectPage&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;dbName&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;tableName&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;page&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;pageSize&lt;/span&gt;) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;const&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;offset&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; (&lt;span style="color:#a6e22e"&gt;page&lt;/span&gt; &lt;span style="color:#f92672"&gt;-&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;) &lt;span style="color:#f92672"&gt;*&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;pageSize&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;const&lt;/span&gt; [&lt;span style="color:#a6e22e"&gt;rows&lt;/span&gt;] &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;await&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;conn&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;execute&lt;/span&gt;(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;`SELECT * FROM \`&lt;/span&gt;&lt;span style="color:#e6db74"&gt;${&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;tableName&lt;/span&gt;&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt;\` LIMIT ? OFFSET ?`&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; [&lt;span style="color:#a6e22e"&gt;pageSize&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;offset&lt;/span&gt;]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; );
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;return&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;rows&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id="问题-10内存占用过高"&gt;问题 10：内存占用过高
+&lt;/h4&gt;&lt;p&gt;&lt;strong&gt;症状&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Node.js 进程占用大量内存&lt;/li&gt;
+&lt;li&gt;系统变慢&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;解决方案&lt;/strong&gt;：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;使用流式处理&lt;/strong&gt;：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-javascript" data-lang="javascript"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;const&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;stream&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;conn&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;query&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;`SELECT * FROM large_table`&lt;/span&gt;).&lt;span style="color:#a6e22e"&gt;stream&lt;/span&gt;();
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;stream&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;on&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#39;data&amp;#39;&lt;/span&gt;, (&lt;span style="color:#a6e22e"&gt;row&lt;/span&gt;) =&amp;gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#75715e"&gt;// 处理每一行
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;});
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ol start="2"&gt;
+&lt;li&gt;&lt;strong&gt;及时关闭连接&lt;/strong&gt;：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-javascript" data-lang="javascript"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;try&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#75715e"&gt;// 操作
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;} &lt;span style="color:#66d9ef"&gt;finally&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;await&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;conn&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;end&lt;/span&gt;();
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ol start="3"&gt;
+&lt;li&gt;&lt;strong&gt;限制连接池大小&lt;/strong&gt;：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-json" data-lang="json"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;connectionLimit&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;5&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="75-文档相关问题"&gt;7.5 文档相关问题
+&lt;/h3&gt;&lt;h4 id="问题-11word-文档创建失败"&gt;问题 11：Word 文档创建失败
+&lt;/h4&gt;&lt;p&gt;&lt;strong&gt;错误信息&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;Cannot find module &amp;#39;docx&amp;#39;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;解决方案&lt;/strong&gt;：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;全局安装 docx&lt;/strong&gt;：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;npm install -g docx
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ol start="2"&gt;
+&lt;li&gt;&lt;strong&gt;或在项目中安装&lt;/strong&gt;：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;cd /path/to/project
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;npm install docx
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id="问题-12pdf-处理失败"&gt;问题 12：PDF 处理失败
+&lt;/h4&gt;&lt;p&gt;&lt;strong&gt;错误信息&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;pdftoppm: command not found
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;解决方案&lt;/strong&gt;：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;安装 Poppler&lt;/strong&gt;：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Ubuntu/Debian&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo apt-get install poppler-utils
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Mac&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;brew install poppler
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Windows&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 下载 Poppler for Windows&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="76-调试技巧"&gt;7.6 调试技巧
+&lt;/h3&gt;&lt;h4 id="技巧-1启用详细日志"&gt;技巧 1：启用详细日志
+&lt;/h4&gt;&lt;p&gt;在脚本中添加日志：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-javascript" data-lang="javascript"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;console&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;log&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#39;开始执行:&amp;#39;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;command&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;console&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;log&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#39;参数:&amp;#39;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;args&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;console&lt;/span&gt;.&lt;span style="color:#a6e22e"&gt;log&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#39;配置:&amp;#39;&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;config&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id="技巧-2使用调试模式"&gt;技巧 2：使用调试模式
+&lt;/h4&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Node.js 调试&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;node --inspect mysql-tool.js list-databases
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id="技巧-3测试单个功能"&gt;技巧 3：测试单个功能
+&lt;/h4&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 单独测试每个函数&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;node -e &lt;span style="color:#e6db74"&gt;&amp;#34;require(&amp;#39;./mysql-tool.js&amp;#39;).listDatabases().then(console.log)&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id="技巧-4查看-claude-code-日志"&gt;技巧 4：查看 Claude Code 日志
+&lt;/h4&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 查看日志目录&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;ls ~/.claude/logs/
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 查看最新日志&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;tail -f ~/.claude/logs/latest.log
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="77-获取帮助"&gt;7.7 获取帮助
+&lt;/h3&gt;&lt;h4 id="官方资源"&gt;官方资源
+&lt;/h4&gt;&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Claude Code 文档&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a class="link" href="https://docs.claude.com/" target="_blank" rel="noopener"
+&gt;https://docs.claude.com/&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Skills 仓库&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a class="link" href="https://github.com/anthropics/skills" target="_blank" rel="noopener"
+&gt;https://github.com/anthropics/skills&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;问题反馈&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a class="link" href="https://github.com/anthropics/claude-code/issues" target="_blank" rel="noopener"
+&gt;https://github.com/anthropics/claude-code/issues&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id="社区资源"&gt;社区资源
+&lt;/h4&gt;&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Discord 社区&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Stack Overflow&lt;/strong&gt;（标签：claude-code）&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;GitHub Discussions&lt;/strong&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id="寻求帮助的技巧"&gt;寻求帮助的技巧
+&lt;/h4&gt;&lt;p&gt;&lt;strong&gt;提问时提供&lt;/strong&gt;：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;完整的错误信息&lt;/li&gt;
+&lt;li&gt;你的操作步骤&lt;/li&gt;
+&lt;li&gt;系统环境信息&lt;/li&gt;
+&lt;li&gt;相关的配置文件（去除敏感信息）&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;好的提问示例&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;问题：mysql-manager skill 无法连接数据库
+环境：
+- OS: Windows 10
+- Node.js: v20.9.0
+- MySQL: 8.0.35
+错误信息：
+Error: connect ECONNREFUSED 127.0.0.1:3306
+已尝试：
+1. 确认 MySQL 服务正在运行
+2. 可以用 mysql 命令行连接
+3. 配置文件中的信息正确
+配置文件（已去除密码）：
+{
+&amp;#34;host&amp;#34;: &amp;#34;localhost&amp;#34;,
+&amp;#34;port&amp;#34;: 3306,
+&amp;#34;user&amp;#34;: &amp;#34;root&amp;#34;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;hr&gt;
+&lt;h2 id="附录完整命令参考"&gt;附录：完整命令参考
+&lt;/h2&gt;&lt;h3 id="a-claude-code-基本命令"&gt;A. Claude Code 基本命令
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 启动 Claude Code&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;claude-code
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 查看版本&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;claude --version
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 查看帮助&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;claude --help
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 退出&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;exit
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="b-plugin-管理命令"&gt;B. Plugin 管理命令
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 添加市场&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;/plugin marketplace add anthropics/skills
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 浏览插件&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;/plugin browse
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 安装插件&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;/plugin install example-skills@anthropic-agent-skills
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;/plugin install document-skills@anthropic-agent-skills
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 卸载插件&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;/plugin uninstall example-skills
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 列出已安装插件&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;/plugin list
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="c-文件操作命令"&gt;C. 文件操作命令
+&lt;/h3&gt;&lt;h4 id="windows"&gt;Windows
+&lt;/h4&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 查看目录&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;dir %USERPROFILE%&lt;span style="color:#ae81ff"&gt;\.&lt;/span&gt;claude
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 进入目录&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;cd %USERPROFILE%&lt;span style="color:#ae81ff"&gt;\.&lt;/span&gt;claude&lt;span style="color:#ae81ff"&gt;\s&lt;/span&gt;kills
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 创建目录&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;mkdir my-skill
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 删除目录&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;rmdir /s my-skill
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 查看文件内容&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;type config.json
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 编辑文件&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;notepad config.json
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id="maclinux"&gt;Mac/Linux
+&lt;/h4&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 查看目录&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;ls -la ~/.claude
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 进入目录&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;cd ~/.claude/skills
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 创建目录&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;mkdir -p my-skill
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 删除目录&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;rm -rf my-skill
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 查看文件内容&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;cat config.json
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 编辑文件&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;nano config.json
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 或&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;vim config.json
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="d-nodejs-命令"&gt;D. Node.js 命令
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 初始化项目&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;npm init -y
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 安装依赖&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;npm install mysql2
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;npm install docx
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 全局安装&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;npm install -g docx
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 查看已安装包&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;npm list
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 运行脚本&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;node script.js
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 调试模式&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;node --inspect script.js
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="e-git-命令"&gt;E. Git 命令
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 克隆仓库&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;git clone https://github.com/anthropics/skills.git
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 查看状态&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;git status
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 拉取更新&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;git pull
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 查看日志&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;git log --oneline -10
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="f-mysql-命令"&gt;F. MySQL 命令
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 连接数据库&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;mysql -h localhost -u root -p
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 导出数据库&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;mysqldump -u root -p mydb &amp;gt; backup.sql
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 导入数据库&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;mysql -u root -p mydb &amp;lt; backup.sql
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 查看进程&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;mysqladmin -u root -p processlist
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="g-常用-skill-命令模板"&gt;G. 常用 Skill 命令模板
+&lt;/h3&gt;&lt;h4 id="mysql-manager"&gt;MySQL Manager
+&lt;/h4&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 列出数据库&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;node mysql-tool.js list-databases
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 列出表&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;node mysql-tool.js list-tables mydb
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 查询数据&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;node mysql-tool.js &lt;span style="color:#66d9ef"&gt;select&lt;/span&gt;-all mydb users &lt;span style="color:#ae81ff"&gt;10&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 导出 CSV&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;node mysql-tool.js export-csv mydb users output.csv
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 备份&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;node mysql-tool.js backup mydb backup.sql
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id="文件统计"&gt;文件统计
+&lt;/h4&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 统计当前目录&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;node file-stats.js .
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 统计指定目录&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;node file-stats.js /path/to/directory
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
+&lt;h2 id="附录-b配置文件模板"&gt;附录 B：配置文件模板
+&lt;/h2&gt;&lt;h3 id="1-skillmd-模板"&gt;1. SKILL.md 模板
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-markdown" data-lang="markdown"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;---
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;name: skill-name
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;description: 详细描述这个 skill 的功能和使用场景
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;---
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;# Skill Name
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;简短的介绍。
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;## 功能
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;-&lt;/span&gt; 功能 1
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;-&lt;/span&gt; 功能 2
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;-&lt;/span&gt; 功能 3
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;## 使用方法
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;详细的使用说明...
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;## 示例
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;使用 skill-name 做某事&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;
+## 配置
+如果需要配置，在这里说明。
+## 依赖
+列出所需的依赖。
+## 注意事项
+重要的注意事项。
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id="2-configjson-模板"&gt;2. config.json 模板
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-json" data-lang="json"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;host&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;localhost&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;port&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;3306&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;user&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;username&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;password&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;password&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;database&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;dbname&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;options&amp;#34;&lt;/span&gt;: {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;key&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;value&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="3-packagejson-模板"&gt;3. package.json 模板
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-json" data-lang="json"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;name&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;skill-name&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;version&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;1.0.0&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;description&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;Skill description&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;main&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;index.js&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;scripts&amp;#34;&lt;/span&gt;: {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;test&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;node test.js&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; },
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;dependencies&amp;#34;&lt;/span&gt;: {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;mysql2&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;^3.0.0&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; },
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;author&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;Your Name&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;license&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;MIT&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="4-readmemd-模板"&gt;4. README.md 模板
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-markdown" data-lang="markdown"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;# Skill Name
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;简短描述。
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;## 安装
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;```bash
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;cd ~/.claude/skills/skill-name
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;npm install
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="配置"&gt;配置
+&lt;/h2&gt;&lt;p&gt;编辑 &lt;code&gt;config.json&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-json" data-lang="json"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;key&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;value&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="使用"&gt;使用
+&lt;/h2&gt;&lt;h3 id="命令行"&gt;命令行
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;node tool.js command
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="claude-code"&gt;Claude Code
+&lt;/h3&gt;&lt;pre tabindex="0"&gt;&lt;code&gt;使用 skill-name 做某事
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id="命令参考-1"&gt;命令参考
+&lt;/h2&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;命令&lt;/th&gt;
+&lt;th&gt;说明&lt;/th&gt;
+&lt;th&gt;示例&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;command1&lt;/td&gt;
+&lt;td&gt;说明&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;node tool.js command1&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;command2&lt;/td&gt;
+&lt;td&gt;说明&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;node tool.js command2&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;</description></item><item><title>Properties转YAML转换工具</title><link>https://zg-dd.github.io/blog/properties-to-yaml/</link><pubDate>Mon, 09 Feb 2026 00:32:40 +0800</pubDate><guid>https://zg-dd.github.io/blog/properties-to-yaml/</guid><description>&lt;h1 id="properties转yaml转换工具使用手册"&gt;Properties转YAML转换工具使用手册
 &lt;/h1&gt;&lt;h2 id="-概述"&gt;📋 概述
 &lt;/h2&gt;&lt;p&gt;这是一个功能强大的Python脚本工具，用于将Java &lt;code&gt;.properties&lt;/code&gt; 配置文件转换为YAML格式。该工具不仅支持基本的格式转换，还具备智能的注释保留、类型推断和结构保持功能。&lt;/p&gt;
 &lt;h2 id="脚本"&gt;📜脚本

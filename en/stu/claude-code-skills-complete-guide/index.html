@@ -1,0 +1,693 @@
+<!doctype html><html lang=en dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content=" Personal study notes\nChapter 1: What are Skills\r1.1 Introduction to Skills\rSkills are an extension system for Claude Code, similar to installing &ldquo;skill packs&rdquo; for Claude.\nSimple Understanding:\nLike mobile apps: you can install different apps on your phone to achieve different functions Skills are &ldquo;functional plugins&rdquo; installed for Claude Each Skill teaches Claude a new capability Examples:\nInstall docx skill → Claude can create and edit Word documents Install pdf skill → Claude can process PDF files Install mysql-manager skill → Claude can operate databases 1.2 Types of Skills\rOfficial Skills (Provided by Anthropic)\rDeveloped and maintained by Claude&rsquo;s official team Guaranteed quality and stable functionality Free to use Examples: docx, pdf, pptx, xlsx, etc. Community Skills (Third-party Development)\rContributed by community developers Diverse functionalities Quality needs to be evaluated independently Custom Skills (Created by You)\rCustomized according to your needs Fully controllable This tutorial will teach you how to create them 1.3 Why Use Skills\rWithout Skills:\n"><title>Complete Guide to Claude Code Skills</title><link rel=canonical href=https://zg-dd.github.io/en/stu/claude-code-skills-complete-guide/><link rel=stylesheet href=/scss/style.min.ff560f1cad7a040e336f2dd6880b9ee1ad344d6e3d8f5411e5a1aaa8b23bbdd0.css><meta property='og:title' content="Complete Guide to Claude Code Skills"><meta property='og:description' content=" Personal study notes\nChapter 1: What are Skills\r1.1 Introduction to Skills\rSkills are an extension system for Claude Code, similar to installing &ldquo;skill packs&rdquo; for Claude.\nSimple Understanding:\nLike mobile apps: you can install different apps on your phone to achieve different functions Skills are &ldquo;functional plugins&rdquo; installed for Claude Each Skill teaches Claude a new capability Examples:\nInstall docx skill → Claude can create and edit Word documents Install pdf skill → Claude can process PDF files Install mysql-manager skill → Claude can operate databases 1.2 Types of Skills\rOfficial Skills (Provided by Anthropic)\rDeveloped and maintained by Claude&rsquo;s official team Guaranteed quality and stable functionality Free to use Examples: docx, pdf, pptx, xlsx, etc. Community Skills (Third-party Development)\rContributed by community developers Diverse functionalities Quality needs to be evaluated independently Custom Skills (Created by You)\rCustomized according to your needs Fully controllable This tutorial will teach you how to create them 1.3 Why Use Skills\rWithout Skills:\n"><meta property='og:url' content='https://zg-dd.github.io/en/stu/claude-code-skills-complete-guide/'><meta property='og:site_name' content='小巷 Blog'><meta property='og:type' content='article'><meta property='article:section' content='Stu'><meta property='article:tag' content='Skills'><meta property='article:published_time' content='2026-02-14T10:21:18+08:00'><meta property='article:modified_time' content='2026-02-14T10:21:18+08:00'><meta name=twitter:title content="Complete Guide to Claude Code Skills"><meta name=twitter:description content=" Personal study notes\nChapter 1: What are Skills\r1.1 Introduction to Skills\rSkills are an extension system for Claude Code, similar to installing &ldquo;skill packs&rdquo; for Claude.\nSimple Understanding:\nLike mobile apps: you can install different apps on your phone to achieve different functions Skills are &ldquo;functional plugins&rdquo; installed for Claude Each Skill teaches Claude a new capability Examples:\nInstall docx skill → Claude can create and edit Word documents Install pdf skill → Claude can process PDF files Install mysql-manager skill → Claude can operate databases 1.2 Types of Skills\rOfficial Skills (Provided by Anthropic)\rDeveloped and maintained by Claude&rsquo;s official team Guaranteed quality and stable functionality Free to use Examples: docx, pdf, pptx, xlsx, etc. Community Skills (Third-party Development)\rContributed by community developers Diverse functionalities Quality needs to be evaluated independently Custom Skills (Created by You)\rCustomized according to your needs Fully controllable This tutorial will teach you how to create them 1.3 Why Use Skills\rWithout Skills:\n"></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label="Toggle Menu">
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/en/><img src=/img/avatar_hu_a0cc1cf57968b27d.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a><span class=emoji>🌱</span></figure><div class=site-meta><h1 class=site-name><a href=/en>小巷 Blog</a></h1><h2 class=site-description>Recording is not to prove myself; rather, to make a habit of 'solving problems → thinking → sedimentation'.</h2></div></header><ol class=menu id=main-menu><li class=current><a href=/en/stu/><span>Study Notes</span></a></li><li><a href=/en/blog/><span>Essays</span></a></li><li><a href=/en/life/><span>Life</span></a></li><li><a href=/categories/><span>Categories</span></a></li><li><a href=/tags/><span>Tags</span></a></li><li class=menu-bottom-section><ol class=menu><li id=i18n-switch><svg class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5h7"/><path d="M9 3v2c0 4.418-2.239 8-5 8"/><path d="M5 9c-.003 2.144 2.952 3.908 6.7 4"/><path d="M12 20l4-9 4 9"/><path d="M19.1 18h-6.2"/></svg>
+<select name=language title=language onchange="window.location.href=this.selectedOptions[0].value"><option value=https://zg-dd.github.io/>简体中文</option><option value=https://zg-dd.github.io/en/ selected>English</option></select></li><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>Dark Mode</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">Table of contents</h2><div class=widget--toc><nav id=TableOfContents><ul><li><a href=#chapter-1-what-are-skills>Chapter 1: What are Skills</a><ul><li><a href=#11-introduction-to-skills>1.1 Introduction to Skills</a></li><li><a href=#12-types-of-skills>1.2 Types of Skills</a></li><li><a href=#13-why-use-skills>1.3 Why Use Skills</a></li><li><a href=#14-how-skills-work>1.4 How Skills Work</a></li></ul></li><li><a href=#chapter-2-environment-preparation>Chapter 2: Environment Preparation</a><ul><li><a href=#21-prerequisites>2.1 Prerequisites</a></li><li><a href=#22-understanding-file-locations>2.2 Understanding File Locations</a></li><li><a href=#23-environment-check>2.3 Environment Check</a></li></ul></li><li><a href=#chapter-3-installing-official-skills>Chapter 3: Installing Official Skills</a><ul><li><a href=#31-adding-official-skills-marketplace>3.1 Adding Official Skills Marketplace</a></li><li><a href=#32-browsing-available-skills>3.2 Browsing Available Skills</a></li><li><a href=#33-installing-skills>3.3 Installing Skills</a></li><li><a href=#34-restart-claude-code>3.4 Restart Claude Code</a></li><li><a href=#35-verify-installation>3.5 Verify Installation</a></li></ul></li><li><a href=#chapter-4-using-skills>Chapter 4: Using Skills</a><ul><li><a href=#41-three-ways-to-use-skills>4.1 Three Ways to Use Skills</a></li><li><a href=#42-common-skills-usage-examples>4.2 Common Skills Usage Examples</a></li><li><a href=#43-skills-usage-tips>4.3 Skills Usage Tips</a></li><li><a href=#44-common-usage-scenarios>4.4 Common Usage Scenarios</a></li></ul></li><li><a href=#chapter-6-practical-case---mysql-database-management-skill>Chapter 6: Practical Case - MySQL Database Management Skill</a><ul><li><a href=#61-requirements-analysis>6.1 Requirements Analysis</a></li><li><a href=#62-creating-skill-structure>6.2 Creating Skill Structure</a></li><li><a href=#63-creating-configuration-file>6.3 Creating Configuration File</a></li><li><a href=#64-creating-core-tool-script>6.4 Creating Core Tool Script</a></li><li><a href=#65-creating-skillmd>6.5 Creating SKILL.md</a></li></ul></li><li><a href=#supported-operations>Supported Operations</a><ul><li><a href=#database-management>Database Management</a></li><li><a href=#table-management>Table Management</a></li><li><a href=#data-query>Data Query</a></li><li><a href=#data-operations>Data Operations</a></li><li><a href=#importexport>Import/Export</a></li><li><a href=#backup-and-recovery>Backup and Recovery</a></li></ul></li><li><a href=#usage-examples>Usage Examples</a></li><li><a href=#security-considerations>Security Considerations</a></li><li><a href=#command-reference>Command Reference</a><ul><li><a href=#database-management-1>Database Management</a></li></ul></li><li><a href=#using-in-claude-code>Using in Claude Code</a></li><li><a href=#troubleshooting>Troubleshooting</a><ul><li><a href=#connection-failed>Connection Failed</a></li><li><a href=#68-extending-functions>6.8 Extending Functions</a></li><li><a href=#69-practical-exercises>6.9 Practical Exercises</a></li><li><a href=#610-summary>6.10 Summary</a></li></ul></li><li><a href=#chapter-7-common-problems-and-solutions>Chapter 7: Common Problems and Solutions</a><ul><li><a href=#71-installation-issues>7.1 Installation Issues</a></li><li><a href=#72-usage-issues>7.2 Usage Issues</a></li><li><a href=#73-database-issues>7.3 Database Issues</a></li><li><a href=#74-performance-issues>7.4 Performance Issues</a></li><li><a href=#75-document-issues>7.5 Document Issues</a></li><li><a href=#76-debugging-tips>7.6 Debugging Tips</a></li><li><a href=#77-getting-help>7.7 Getting Help</a></li></ul></li><li><a href=#appendix-complete-command-reference>Appendix: Complete Command Reference</a><ul><li><a href=#a-claude-code-basic-commands>A. Claude Code Basic Commands</a></li><li><a href=#b-plugin-management-commands>B. Plugin Management Commands</a></li><li><a href=#c-file-operation-commands>C. File Operation Commands</a></li><li><a href=#d-nodejs-commands>D. Node.js Commands</a></li><li><a href=#e-git-commands>E. Git Commands</a></li><li><a href=#f-mysql-commands>F. MySQL Commands</a></li><li><a href=#g-common-skill-command-templates>G. Common Skill Command Templates</a></li></ul></li><li><a href=#appendix-b-configuration-file-templates>Appendix B: Configuration File Templates</a><ul><li><a href=#1-skillmd-template>1. SKILL.md Template</a></li><li><a href=#2-configjson-template>2. config.json Template</a></li><li><a href=#3-packagejson-template>3. package.json Template</a></li><li><a href=#4-readmemd-template>4. README.md Template</a></li></ul></li><li><a href=#configuration>Configuration</a></li><li><a href=#usage>Usage</a><ul><li><a href=#command-line>Command Line</a></li><li><a href=#claude-code>Claude Code</a></li></ul></li><li><a href=#command-reference-1>Command Reference</a></li></ul></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/en/categories/ai/>AI</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/en/stu/claude-code-skills-complete-guide/>Complete Guide to Claude Code Skills</a></h2></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published datetime=2026-02-14T10:21:18+08:00>Feb 14, 2026</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>19 minute read</time></div></footer><footer class=article-translations><svg class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5h7"/><path d="M9 3v2c0 4.418-2.239 8-5 8"/><path d="M5 9c-.003 2.144 2.952 3.908 6.7 4"/><path d="M12 20l4-9 4 9"/><path d="M19.1 18h-6.2"/></svg><div><a href=https://zg-dd.github.io/stu/complete-skills-guide/ class=link>简体中文</a></div></footer></div></header><section class=article-content><blockquote><p>Personal study notes</p></blockquote><h2 id=chapter-1-what-are-skills>Chapter 1: What are Skills</h2><h3 id=11-introduction-to-skills>1.1 Introduction to Skills</h3><p><strong>Skills</strong> are an extension system for Claude Code, similar to installing &ldquo;skill packs&rdquo; for Claude.</p><p><strong>Simple Understanding</strong>:</p><ul><li>Like mobile apps: you can install different apps on your phone to achieve different functions</li><li>Skills are &ldquo;functional plugins&rdquo; installed for Claude</li><li>Each Skill teaches Claude a new capability</li></ul><p><strong>Examples</strong>:</p><ul><li>Install <code>docx</code> skill → Claude can create and edit Word documents</li><li>Install <code>pdf</code> skill → Claude can process PDF files</li><li>Install <code>mysql-manager</code> skill → Claude can operate databases</li></ul><h3 id=12-types-of-skills>1.2 Types of Skills</h3><h4 id=official-skills-provided-by-anthropic>Official Skills (Provided by Anthropic)</h4><ul><li>Developed and maintained by Claude&rsquo;s official team</li><li>Guaranteed quality and stable functionality</li><li>Free to use</li><li>Examples: docx, pdf, pptx, xlsx, etc.</li></ul><h4 id=community-skills-third-party-development>Community Skills (Third-party Development)</h4><ul><li>Contributed by community developers</li><li>Diverse functionalities</li><li>Quality needs to be evaluated independently</li></ul><h4 id=custom-skills-created-by-you>Custom Skills (Created by You)</h4><ul><li>Customized according to your needs</li><li>Fully controllable</li><li>This tutorial will teach you how to create them</li></ul><h3 id=13-why-use-skills>1.3 Why Use Skills</h3><p><strong>Without Skills</strong>:</p><pre tabindex=0><code>You: Help me create a Word document
+Claude: Sorry, I cannot directly create Word documents
+</code></pre><p><strong>With Skills</strong>:</p><pre tabindex=0><code>You: Help me create a Word document
+Claude: OK! (Automatically uses docx skill to create document)
+</code></pre><p><strong>Advantages of Skills</strong>:</p><ol><li>✅ Extend Claude&rsquo;s capabilities</li><li>✅ Automate repetitive tasks</li><li>✅ Improve work efficiency</li><li>✅ Can customize exclusive functions</li></ol><h3 id=14-how-skills-work>1.4 How Skills Work</h3><pre tabindex=0><code>Your request → Claude analyzes → Select appropriate Skill → Execute operation → Return results
+</code></pre><p><strong>Example Process</strong>:</p><ol><li>You say: &ldquo;Create a Word document&rdquo;</li><li>Claude identifies that document processing is needed</li><li>Claude calls the <code>docx</code> skill</li><li>docx skill executes document creation code</li><li>Returns the created document</li></ol><hr><h2 id=chapter-2-environment-preparation>Chapter 2: Environment Preparation</h2><h3 id=21-prerequisites>2.1 Prerequisites</h3><p>Before starting, ensure you have installed:</p><h4 id=required-software>Required Software</h4><p><strong>1. Claude Code CLI</strong></p><ul><li>This is Claude&rsquo;s command-line tool</li><li>If you can run Claude Code, it means you&rsquo;ve already installed it</li><li>Check method:<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>claude --version
+</span></span></code></pre></div></li></ul><p><strong>2. Node.js</strong> (Required for some skills)</p><ul><li>Version requirement: 14.0 or higher</li><li>Check installation:<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>node --version
+</span></span><span style=display:flex><span>npm --version
+</span></span></code></pre></div></li><li>If not installed, visit: <a class=link href=https://nodejs.org/ target=_blank rel=noopener>https://nodejs.org/</a></li><li>Download LTS (Long Term Support) version</li></ul><p><strong>3. Git</strong> (Optional, for cloning official repository)</p><ul><li>Check installation:<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>git --version
+</span></span></code></pre></div></li><li>If not installed, visit: <a class=link href=https://git-scm.com/ target=_blank rel=noopener>https://git-scm.com/</a></li></ul><h3 id=22-understanding-file-locations>2.2 Understanding File Locations</h3><p><strong>Important Directory Structure</strong>:</p><pre tabindex=0><code>Your user directory/
+├── .claude/                          # Claude configuration directory
+│   ├── skills/                       # Custom skills storage location
+│   │   └── mysql-manager/            # Example: custom skill
+│   │       ├── SKILL.md              # Skill definition file
+│   │       ├── config.json           # Configuration file
+│   │       ├── mysql-tool.js         # Tool script
+│   │       └── README.md             # Documentation
+│   ├── plugins/                      # Plugins directory
+│   │   └── marketplaces/             # Skills marketplace
+│   │       └── anthropic-agent-skills/
+│   │           └── skills/           # Official skills
+│   │               ├── docx/
+│   │               ├── pdf/
+│   │               └── ...
+│   └── config.json                   # Global configuration file
+</code></pre><p><strong>Paths on Different Operating Systems</strong>:</p><p><strong>Windows</strong>:</p><ul><li>User directory: <code>C:\Users\YourUsername\</code></li><li>Claude directory: <code>C:\Users\YourUsername\.claude\</code></li><li>View method:<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>echo %USERPROFILE%<span style=color:#ae81ff>\.</span>claude
+</span></span></code></pre></div></li></ul><p><strong>Mac</strong>:</p><ul><li>User directory: <code>/Users/YourUsername/</code></li><li>Claude directory: <code>/Users/YourUsername/.claude/</code></li><li>View method:<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>echo ~/.claude
+</span></span></code></pre></div></li></ul><p><strong>Linux</strong>:</p><ul><li>User directory: <code>/home/YourUsername/</code></li><li>Claude directory: <code>/home/YourUsername/.claude/</code></li><li>View method:<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>echo ~/.claude
+</span></span></code></pre></div></li></ul><h3 id=23-environment-check>2.3 Environment Check</h3><p><strong>Step 1: Check Claude Code</strong></p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>claude --version
+</span></span></code></pre></div><p>Expected output: Shows version number</p><p><strong>Step 2: Check Node.js</strong></p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>node --version
+</span></span><span style=display:flex><span>npm --version
+</span></span></code></pre></div><p>Expected output: Shows version number (e.g., v20.9.0)</p><p><strong>Step 3: Check Configuration Directory</strong></p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Windows</span>
+</span></span><span style=display:flex><span>dir %USERPROFILE%<span style=color:#ae81ff>\.</span>claude
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Mac/Linux</span>
+</span></span><span style=display:flex><span>ls -la ~/.claude
+</span></span></code></pre></div><p>Expected output: Shows .claude directory contents</p><hr><h2 id=chapter-3-installing-official-skills>Chapter 3: Installing Official Skills</h2><h3 id=31-adding-official-skills-marketplace>3.1 Adding Official Skills Marketplace</h3><p><strong>Step 1: Start Claude Code</strong></p><p>In terminal or command line:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>claude-code
+</span></span></code></pre></div><p><strong>Step 2: Add Official Marketplace</strong></p><p>In Claude Code, enter:</p><pre tabindex=0><code>/plugin marketplace add anthropics/skills
+</code></pre><p><strong>Expected Result</strong>:</p><pre tabindex=0><code>Successfully added marketplace: anthropic-agent-skills
+</code></pre><p><strong>What did this do?</strong></p><ul><li>Connected to Anthropic&rsquo;s official skills repository (GitHub)</li><li>Downloaded skills list to your computer</li><li>Storage location: <code>~/.claude/plugins/marketplaces/anthropic-agent-skills/</code></li><li>But hasn&rsquo;t installed specific skills yet</li></ul><p><strong>What if it fails?</strong></p><ul><li>Check network connection</li><li>Ensure GitHub access</li><li>Try using proxy (if in China)</li></ul><h3 id=32-browsing-available-skills>3.2 Browsing Available Skills</h3><p><strong>Method 1: Browse via Command</strong></p><pre tabindex=0><code>/plugin browse
+</code></pre><p><strong>Method 2: View Downloaded Skills</strong></p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Windows</span>
+</span></span><span style=display:flex><span>dir %USERPROFILE%<span style=color:#ae81ff>\.</span>claude<span style=color:#ae81ff>\p</span>lugins<span style=color:#ae81ff>\m</span>arketplaces<span style=color:#ae81ff>\a</span>nthropic-agent-skills<span style=color:#ae81ff>\s</span>kills
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Mac/Linux</span>
+</span></span><span style=display:flex><span>ls ~/.claude/plugins/marketplaces/anthropic-agent-skills/skills/
+</span></span></code></pre></div><p><strong>Available Skills</strong>:</p><div class=table-wrapper><table><thead><tr><th>Skill Name</th><th>Function Description</th><th>Use Cases</th></tr></thead><tbody><tr><td>docx</td><td>Word document processing</td><td>Create reports, edit documents</td></tr><tr><td>pdf</td><td>PDF file processing</td><td>Extract text, merge PDFs</td></tr><tr><td>pptx</td><td>PowerPoint presentations</td><td>Create slides</td></tr><tr><td>xlsx</td><td>Excel spreadsheets</td><td>Data processing, table creation</td></tr><tr><td>frontend-design</td><td>Frontend design</td><td>Web design, UI components</td></tr><tr><td>algorithmic-art</td><td>Algorithmic art</td><td>Generate art, animations</td></tr><tr><td>canvas-design</td><td>Canvas design</td><td>Posters, graphic design</td></tr><tr><td>mcp-builder</td><td>MCP servers</td><td>API integration</td></tr><tr><td>webapp-testing</td><td>Web testing</td><td>Automated testing</td></tr><tr><td>skill-creator</td><td>Skill creation</td><td>Create custom skills</td></tr><tr><td>More&mldr;</td><td>&mldr;</td><td>&mldr;</td></tr></tbody></table></div><h3 id=33-installing-skills>3.3 Installing Skills</h3><h4 id=method-1-install-example-skills-package-recommended-for-beginners>Method 1: Install Example Skills Package (Recommended for Beginners)</h4><pre tabindex=0><code>/plugin install example-skills@anthropic-agent-skills
+</code></pre><p><strong>This command will install</strong>:</p><ul><li>All example skills (16 total)</li><li>Including document processing, design, development, etc.</li><li>Suitable for learning and daily use</li></ul><p><strong>Expected Result</strong>:</p><pre tabindex=0><code>✓ Installed example-skills. Restart Claude Code to load new plugins.
+</code></pre><h4 id=method-2-install-document-skills-package>Method 2: Install Document Skills Package</h4><p>If you only need document processing functions:</p><pre tabindex=0><code>/plugin install document-skills@anthropic-agent-skills
+</code></pre><p><strong>This command will install</strong>:</p><ul><li>docx (Word)</li><li>pdf (PDF)</li><li>pptx (PowerPoint)</li><li>xlsx (Excel)</li></ul><h4 id=method-3-install-single-skill-advanced>Method 3: Install Single Skill (Advanced)</h4><pre tabindex=0><code>/plugin install docx@anthropic-agent-skills
+</code></pre><h3 id=34-restart-claude-code>3.4 Restart Claude Code</h3><p><strong>Important</strong>: Must restart Claude Code after installation for changes to take effect!</p><p><strong>Steps</strong>:</p><ol><li><p>Exit current Claude Code session</p><ul><li>Enter <code>exit</code> or</li><li>Press <code>Ctrl+C</code> (Windows/Linux) or <code>Cmd+C</code> (Mac)</li></ul></li><li><p>Restart:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>claude-code
+</span></span></code></pre></div></li></ol><h3 id=35-verify-installation>3.5 Verify Installation</h3><h4 id=method-1-ask-claude>Method 1: Ask Claude</h4><p>In Claude Code, enter:</p><pre tabindex=0><code>What skills do you have?
+List all available skills
+</code></pre><p>Claude will list all installed skills.</p><h4 id=method-2-test-a-skill>Method 2: Test a Skill</h4><pre tabindex=0><code>Help me create a test Word document
+</code></pre><p>If Claude successfully creates the document, skills installation succeeded!</p><h4 id=method-3-view-system-information>Method 3: View System Information</h4><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># View installed skills</span>
+</span></span><span style=display:flex><span>ls ~/.claude/plugins/cache/
+</span></span></code></pre></div><hr><h2 id=chapter-4-using-skills>Chapter 4: Using Skills</h2><h3 id=41-three-ways-to-use-skills>4.1 Three Ways to Use Skills</h3><h4 id=method-1-natural-language-recommended-for-beginners>Method 1: Natural Language (Recommended for Beginners)</h4><p>Directly describe your needs in everyday language, Claude will automatically select the appropriate skill.</p><p><strong>Examples</strong>:</p><pre tabindex=0><code>Create a Word document
+Process this PDF file
+Design a login page
+Query database
+</code></pre><p><strong>Advantages</strong>:</p><ul><li>Simplest, no need to remember skill names</li><li>Claude automatically determines which skill to use</li><li>Suitable for daily use</li></ul><p><strong>Disadvantages</strong>:</p><ul><li>Sometimes Claude might choose the wrong skill</li><li>Not precise enough</li></ul><h4 id=method-2-explicitly-specify-skill>Method 2: Explicitly Specify Skill</h4><p>If you know which skill to use, you can specify it explicitly.</p><p><strong>Examples</strong>:</p><pre tabindex=0><code>Use docx skill to create report
+Use pdf skill to extract text
+Use mysql-manager to query data
+</code></pre><p><strong>Advantages</strong>:</p><ul><li>More precise</li><li>Avoids Claude choosing wrong skill</li><li>Suitable for repetitive tasks</li></ul><p><strong>Disadvantages</strong>:</p><ul><li>Need to remember skill names</li></ul><h4 id=method-3-direct-command-call-advanced-users>Method 3: Direct Command Call (Advanced Users)</h4><p>For custom skills, can call commands directly.</p><p><strong>Examples</strong>:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>cd ~/.claude/skills/mysql-manager
+</span></span><span style=display:flex><span>node mysql-tool.js list-databases
+</span></span></code></pre></div><p><strong>Advantages</strong>:</p><ul><li>Fastest</li><li>Full control</li><li>Suitable for scripting</li></ul><p><strong>Disadvantages</strong>:</p><ul><li>Need command-line knowledge</li><li>Need to know specific commands</li></ul><h3 id=42-common-skills-usage-examples>4.2 Common Skills Usage Examples</h3><h4 id=-document-processing-skills>📄 Document Processing Skills</h4><p><strong>Create Word Document (docx)</strong>:</p><p>Basic usage:</p><pre tabindex=0><code>Create a Word document
+</code></pre><p>Detailed usage:</p><pre tabindex=0><code>Create a project report document, including:
+- Title: 2024 Annual Summary
+- Subtitle: Technical Department
+- Three chapters: Background, Implementation, Results
+- One data table
+- Footer with date
+Save as report.docx
+</code></pre><p><strong>Process PDF (pdf)</strong>:</p><p>Extract text:</p><pre tabindex=0><code>Extract all text from report.pdf
+</code></pre><p>Merge PDFs:</p><pre tabindex=0><code>Merge file1.pdf and file2.pdf into merged.pdf
+</code></pre><p>Split PDF:</p><pre tabindex=0><code>Extract pages 1-5 from document.pdf as new file
+</code></pre><p><strong>Create PowerPoint (pptx)</strong>:</p><pre tabindex=0><code>Create a product introduction presentation, including:
+- Cover page
+- Product features (3 pages)
+- Pricing plan (1 page)
+- Contact information (1 page)
+</code></pre><p><strong>Process Excel (xlsx)</strong>:</p><pre tabindex=0><code>Create a sales data spreadsheet, including:
+- Columns: Date, Product, Quantity, Amount
+- 10 rows of test data
+- Add sum formulas
+</code></pre><h4 id=-design-skills>🎨 Design Skills</h4><p><strong>Frontend Design (frontend-design)</strong>:</p><p>Login page:</p><pre tabindex=0><code>Design a modern-style login page, including:
+- Username and password input fields
+- Remember me option
+- Login button
+- Blue theme
+</code></pre><p>Navigation bar:</p><pre tabindex=0><code>Create a responsive navigation bar, including:
+- Logo
+- Home, Products, About Us, Contact
+- Mobile hamburger menu
+</code></pre><p><strong>Algorithmic Art (algorithmic-art)</strong>:</p><pre tabindex=0><code>Create an animation with particle system, including:
+- 1000 particles
+- Random colors
+- Mouse interaction
+</code></pre><p><strong>Canvas Design (canvas-design)</strong>:</p><pre tabindex=0><code>Design an event poster:
+- Theme: Spring Sale
+- Size: A4
+- Include title, date, QR code
+</code></pre><h4 id=-development-skills>🛠️ Development Skills</h4><p><strong>Web Testing (webapp-testing)</strong>:</p><pre tabindex=0><code>Test login functionality on localhost:3000:
+1. Open page
+2. Enter username and password
+3. Click login button
+4. Take screenshot and save
+</code></pre><p><strong>MCP Builder (mcp-builder)</strong>:</p><pre tabindex=0><code>Create an MCP server connecting to GitHub API, functions:
+- Get repository list
+- Create Issue
+- View Pull Request
+</code></pre><h3 id=43-skills-usage-tips>4.3 Skills Usage Tips</h3><h4 id=tip-1-provide-detailed-information>Tip 1: Provide Detailed Information</h4><p><strong>Poor Example</strong>:</p><pre tabindex=0><code>Create a document
+</code></pre><ul><li>Too vague</li><li>Claude doesn&rsquo;t know what content to create</li></ul><p><strong>Good Example</strong>:</p><pre tabindex=0><code>Create a Word document, filename report.docx, including:
+- Title: Project Report
+- Three chapters: Background, Solution, Conclusion
+- Each chapter contains 2-3 paragraphs
+- Save to current directory
+</code></pre><ul><li>Clear and specific</li><li>Claude knows exactly what to do</li></ul><h4 id=tip-2-operate-step-by-step>Tip 2: Operate Step by Step</h4><p>For complex tasks, proceed step by step:</p><pre tabindex=0><code>Step 1: First help me check what tables are in the database
+(wait for results)
+
+Step 2: Query the structure of users table
+(wait for results)
+
+Step 3: Export users table as CSV
+</code></pre><p><strong>Why step by step?</strong></p><ul><li>Each step can confirm results</li><li>Easy to locate problems when errors occur</li><li>Can adjust next step based on results</li></ul><h4 id=tip-3-check-what-skills-can-do>Tip 3: Check What Skills Can Do</h4><pre tabindex=0><code>What functions does docx skill have?
+What can pdf skill do?
+What operations does mysql-manager support?
+</code></pre><p>Claude will list all functions of that skill.</p><h4 id=tip-4-provide-examples>Tip 4: Provide Examples</h4><p>If you have reference styles:</p><pre tabindex=0><code>Create a document similar to example.docx, but change content to...
+</code></pre><h4 id=tip-5-specify-output-location>Tip 5: Specify Output Location</h4><pre tabindex=0><code>Create document and save to desktop
+Export data to D:/exports/ directory
+</code></pre><h3 id=44-common-usage-scenarios>4.4 Common Usage Scenarios</h3><h4 id=scenario-1-daily-office-work>Scenario 1: Daily Office Work</h4><p><strong>Requirement</strong>: Write weekly work reports</p><p><strong>Using Skills</strong>:</p><pre tabindex=0><code>Use docx skill to create this week&#39;s work report:
+- Title: Week X Work Report
+- Completed work this week (list)
+- Next week&#39;s plans (list)
+- Encountered problems
+</code></pre><h4 id=scenario-2-data-processing>Scenario 2: Data Processing</h4><p><strong>Requirement</strong>: Process Excel data</p><p><strong>Using Skills</strong>:</p><pre tabindex=0><code>Use xlsx skill:
+1. Read sales.xlsx
+2. Filter records with amount greater than 1000
+3. Sort by date
+4. Export as new file
+</code></pre><h4 id=scenario-3-web-development>Scenario 3: Web Development</h4><p><strong>Requirement</strong>: Quickly create page prototypes</p><p><strong>Using Skills</strong>:</p><pre tabindex=0><code>Use frontend-design skill to create:
+- A product display page
+- Including image carousel
+- Product card grid
+- Responsive layout
+</code></pre><h4 id=scenario-4-database-management>Scenario 4: Database Management</h4><p><strong>Requirement</strong>: Regular database backups</p><p><strong>Using Skills</strong>:</p><pre tabindex=0><code>Use mysql-manager skill:
+1. Backup production database
+2. Save to /backups/ directory
+3. Filename includes date
+</code></pre><hr><h2 id=chapter-6-practical-case---mysql-database-management-skill>Chapter 6: Practical Case - MySQL Database Management Skill</h2><p>This chapter will teach you how to create a powerful MySQL database management Skill through a complete practical case.</p><h3 id=61-requirements-analysis>6.1 Requirements Analysis</h3><p><strong>Goal</strong>: Create a Skill to manage MySQL databases</p><p><strong>Functional Requirements</strong>:</p><ol><li>Database management (create, delete, list)</li><li>Table management (create, delete, view structure)</li><li>Data querying (SELECT, statistics)</li><li>Data operations (insert, update, delete)</li><li>Import/export (CSV, JSON, SQL)</li><li>Backup and recovery</li><li>User management</li><li>Performance analysis</li></ol><p><strong>Technology Selection</strong>:</p><ul><li>Node.js + mysql2 library</li><li>Configuration file stores connection information</li><li>Command-line tool implements various operations</li></ul><h3 id=62-creating-skill-structure>6.2 Creating Skill Structure</h3><p><strong>Step 1: Create Directory</strong></p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>mkdir -p ~/.claude/skills/mysql-manager
+</span></span><span style=display:flex><span>cd ~/.claude/skills/mysql-manager
+</span></span></code></pre></div><p><strong>Step 2: Initialize npm Project</strong></p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>npm init -y
+</span></span><span style=display:flex><span>npm install mysql2
+</span></span></code></pre></div><h3 id=63-creating-configuration-file>6.3 Creating Configuration File</h3><p><strong>config.json</strong>:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  <span style=color:#f92672>&#34;host&#34;</span>: <span style=color:#e6db74>&#34;localhost&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f92672>&#34;port&#34;</span>: <span style=color:#ae81ff>3306</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f92672>&#34;user&#34;</span>: <span style=color:#e6db74>&#34;root&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f92672>&#34;password&#34;</span>: <span style=color:#e6db74>&#34;root&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f92672>&#34;database&#34;</span>: <span style=color:#e6db74>&#34;&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f92672>&#34;charset&#34;</span>: <span style=color:#e6db74>&#34;utf8mb4&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f92672>&#34;connectionLimit&#34;</span>: <span style=color:#ae81ff>10</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f92672>&#34;connectTimeout&#34;</span>: <span style=color:#ae81ff>10000</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f92672>&#34;backupPath&#34;</span>: <span style=color:#e6db74>&#34;~/.claude/skills/mysql-manager/backups&#34;</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p><strong>Configuration Explanation</strong>:</p><ul><li><code>host</code>: Database server address</li><li><code>port</code>: Port number (default 3306)</li><li><code>user</code>: Database username</li><li><code>password</code>: Database password</li><li><code>database</code>: Default database (can be empty)</li><li><code>backupPath</code>: Backup file storage path</li></ul><p><strong>Security Note</strong>:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Set configuration file permissions (owner read/write only)</span>
+</span></span><span style=display:flex><span>chmod <span style=color:#ae81ff>600</span> config.json
+</span></span></code></pre></div><h3 id=64-creating-core-tool-script>6.4 Creating Core Tool Script</h3><p><strong>mysql-tool.js</strong> (Core functionality implementation):</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:#75715e>#!/usr/bin/env node
+</span></span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>const</span> <span style=color:#a6e22e>mysql</span> <span style=color:#f92672>=</span> <span style=color:#a6e22e>require</span>(<span style=color:#e6db74>&#39;mysql2/promise&#39;</span>);
+</span></span><span style=display:flex><span><span style=color:#66d9ef>const</span> <span style=color:#a6e22e>fs</span> <span style=color:#f92672>=</span> <span style=color:#a6e22e>require</span>(<span style=color:#e6db74>&#39;fs&#39;</span>).<span style=color:#a6e22e>promises</span>;
+</span></span><span style=display:flex><span><span style=color:#66d9ef>const</span> <span style=color:#a6e22e>path</span> <span style=color:#f92672>=</span> <span style=color:#a6e22e>require</span>(<span style=color:#e6db74>&#39;path&#39;</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Load configuration
+</span></span></span><span style=display:flex><span><span style=color:#66d9ef>async</span> <span style=color:#66d9ef>function</span> <span style=color:#a6e22e>loadConfig</span>() {
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>const</span> <span style=color:#a6e22e>configPath</span> <span style=color:#f92672>=</span> <span style=color:#a6e22e>path</span>.<span style=color:#a6e22e>join</span>(<span style=color:#a6e22e>__dirname</span>, <span style=color:#e6db74>&#39;config.json&#39;</span>);
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>const</span> <span style=color:#a6e22e>configData</span> <span style=color:#f92672>=</span> <span style=color:#66d9ef>await</span> <span style=color:#a6e22e>fs</span>.<span style=color:#a6e22e>readFile</span>(<span style=color:#a6e22e>configPath</span>, <span style=color:#e6db74>&#39;utf8&#39;</span>);
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>JSON</span>.<span style=color:#a6e22e>parse</span>(<span style=color:#a6e22e>configData</span>);
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Create database connection
+</span></span></span><span style=display:flex><span><span style=color:#66d9ef>async</span> <span style=color:#66d9ef>function</span> <span style=color:#a6e22e>createConnection</span>(<span style=color:#a6e22e>dbName</span> <span style=color:#f92672>=</span> <span style=color:#66d9ef>null</span>) {
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>const</span> <span style=color:#a6e22e>config</span> <span style=color:#f92672>=</span> <span style=color:#66d9ef>await</span> <span style=color:#a6e22e>loadConfig</span>();
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>if</span> (<span style=color:#a6e22e>dbName</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>config</span>.<span style=color:#a6e22e>database</span> <span style=color:#f92672>=</span> <span style=color:#a6e22e>dbName</span>;
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>await</span> <span style=color:#a6e22e>mysql</span>.<span style=color:#a6e22e>createConnection</span>(<span style=color:#a6e22e>config</span>);
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// List all databases
+</span></span></span><span style=display:flex><span><span style=color:#66d9ef>async</span> <span style=color:#66d9ef>function</span> <span style=color:#a6e22e>listDatabases</span>() {
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>const</span> <span style=color:#a6e22e>conn</span> <span style=color:#f92672>=</span> <span style=color:#66d9ef>await</span> <span style=color:#a6e22e>createConnection</span>();
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>const</span> [<span style=color:#a6e22e>rows</span>] <span style=color:#f92672>=</span> <span style=color:#66d9ef>await</span> <span style=color:#a6e22e>conn</span>.<span style=color:#a6e22e>execute</span>(<span style=color:#e6db74>&#39;SHOW DATABASES&#39;</span>);
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>await</span> <span style=color:#a6e22e>conn</span>.<span style=color:#a6e22e>end</span>();
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>rows</span>.<span style=color:#a6e22e>map</span>(<span style=color:#a6e22e>row</span> =&gt; <span style=color:#a6e22e>row</span>.<span style=color:#a6e22e>Database</span>);
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// List all tables
+</span></span></span><span style=display:flex><span><span style=color:#66d9ef>async</span> <span style=color:#66d9ef>function</span> <span style=color:#a6e22e>listTables</span>(<span style=color:#a6e22e>dbName</span>) {
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>const</span> <span style=color:#a6e22e>conn</span> <span style=color:#f92672>=</span> <span style=color:#66d9ef>await</span> <span style=color:#a6e22e>createConnection</span>(<span style=color:#a6e22e>dbName</span>);
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>const</span> [<span style=color:#a6e22e>rows</span>] <span style=color:#f92672>=</span> <span style=color:#66d9ef>await</span> <span style=color:#a6e22e>conn</span>.<span style=color:#a6e22e>execute</span>(<span style=color:#e6db74>&#39;SHOW TABLES&#39;</span>);
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>await</span> <span style=color:#a6e22e>conn</span>.<span style=color:#a6e22e>end</span>();
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>rows</span>.<span style=color:#a6e22e>map</span>(<span style=color:#a6e22e>row</span> =&gt; Object.<span style=color:#a6e22e>values</span>(<span style=color:#a6e22e>row</span>)[<span style=color:#ae81ff>0</span>]);
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Query data
+</span></span></span><span style=display:flex><span><span style=color:#66d9ef>async</span> <span style=color:#66d9ef>function</span> <span style=color:#a6e22e>selectAll</span>(<span style=color:#a6e22e>dbName</span>, <span style=color:#a6e22e>tableName</span>, <span style=color:#a6e22e>limit</span> <span style=color:#f92672>=</span> <span style=color:#ae81ff>100</span>) {
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>const</span> <span style=color:#a6e22e>conn</span> <span style=color:#f92672>=</span> <span style=color:#66d9ef>await</span> <span style=color:#a6e22e>createConnection</span>(<span style=color:#a6e22e>dbName</span>);
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>const</span> [<span style=color:#a6e22e>rows</span>] <span style=color:#f92672>=</span> <span style=color:#66d9ef>await</span> <span style=color:#a6e22e>conn</span>.<span style=color:#a6e22e>execute</span>(
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>`SELECT * FROM \`</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>tableName</span><span style=color:#e6db74>}</span><span style=color:#e6db74>\` LIMIT ?`</span>,
+</span></span><span style=display:flex><span>    [<span style=color:#a6e22e>limit</span>]
+</span></span><span style=display:flex><span>  );
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>await</span> <span style=color:#a6e22e>conn</span>.<span style=color:#a6e22e>end</span>();
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>rows</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Main function
+</span></span></span><span style=display:flex><span><span style=color:#66d9ef>async</span> <span style=color:#66d9ef>function</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>const</span> <span style=color:#a6e22e>args</span> <span style=color:#f92672>=</span> <span style=color:#a6e22e>process</span>.<span style=color:#a6e22e>argv</span>.<span style=color:#a6e22e>slice</span>(<span style=color:#ae81ff>2</span>);
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>const</span> <span style=color:#a6e22e>command</span> <span style=color:#f92672>=</span> <span style=color:#a6e22e>args</span>[<span style=color:#ae81ff>0</span>];
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>try</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> <span style=color:#a6e22e>result</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>switch</span> (<span style=color:#a6e22e>command</span>) {
+</span></span><span style=display:flex><span>      <span style=color:#66d9ef>case</span> <span style=color:#e6db74>&#39;list-databases&#39;</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>result</span> <span style=color:#f92672>=</span> <span style=color:#66d9ef>await</span> <span style=color:#a6e22e>listDatabases</span>();
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>break</span>;
+</span></span><span style=display:flex><span>      <span style=color:#66d9ef>case</span> <span style=color:#e6db74>&#39;list-tables&#39;</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>result</span> <span style=color:#f92672>=</span> <span style=color:#66d9ef>await</span> <span style=color:#a6e22e>listTables</span>(<span style=color:#a6e22e>args</span>[<span style=color:#ae81ff>1</span>]);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>break</span>;
+</span></span><span style=display:flex><span>      <span style=color:#66d9ef>case</span> <span style=color:#e6db74>&#39;select-all&#39;</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>result</span> <span style=color:#f92672>=</span> <span style=color:#66d9ef>await</span> <span style=color:#a6e22e>selectAll</span>(<span style=color:#a6e22e>args</span>[<span style=color:#ae81ff>1</span>], <span style=color:#a6e22e>args</span>[<span style=color:#ae81ff>2</span>], parseInt(<span style=color:#a6e22e>args</span>[<span style=color:#ae81ff>3</span>] <span style=color:#f92672>||</span> <span style=color:#ae81ff>100</span>));
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>break</span>;
+</span></span><span style=display:flex><span>      <span style=color:#66d9ef>default</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>console</span>.<span style=color:#a6e22e>error</span>(<span style=color:#e6db74>&#39;Unknown command:&#39;</span>, <span style=color:#a6e22e>command</span>);
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>process</span>.<span style=color:#a6e22e>exit</span>(<span style=color:#ae81ff>1</span>);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>console</span>.<span style=color:#a6e22e>log</span>(<span style=color:#a6e22e>JSON</span>.<span style=color:#a6e22e>stringify</span>(<span style=color:#a6e22e>result</span>, <span style=color:#66d9ef>null</span>, <span style=color:#ae81ff>2</span>));
+</span></span><span style=display:flex><span>  } <span style=color:#66d9ef>catch</span> (<span style=color:#a6e22e>error</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>console</span>.<span style=color:#a6e22e>error</span>(<span style=color:#e6db74>&#39;Error:&#39;</span>, <span style=color:#a6e22e>error</span>.<span style=color:#a6e22e>message</span>);
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>process</span>.<span style=color:#a6e22e>exit</span>(<span style=color:#ae81ff>1</span>);
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>if</span> (<span style=color:#a6e22e>require</span>.<span style=color:#a6e22e>main</span> <span style=color:#f92672>===</span> <span style=color:#a6e22e>module</span>) {
+</span></span><span style=display:flex><span>  <span style=color:#a6e22e>main</span>();
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p><strong>Set Execution Permissions</strong>:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>chmod +x mysql-tool.js
+</span></span></code></pre></div><h3 id=65-creating-skillmd>6.5 Creating SKILL.md</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-markdown data-lang=markdown><span style=display:flex><span>---
+</span></span><span style=display:flex><span>name: mysql-manager
+</span></span><span style=display:flex><span>description: Comprehensive MySQL database management tool. Supports connecting to databases, executing queries, data import/export, backup/restore, table structure management, etc. Requires configuration of database connection information before use.
+</span></span><span style=display:flex><span>---
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span># MySQL Database Management Skill
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>This skill provides comprehensive MySQL database operation functions.
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>## Configuration
+</span></span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Database connection information is stored in <span style=color:#e6db74>`~/.claude/skills/mysql-manager/config.json`</span>.
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Default configuration:
+</span></span><span style=display:flex><span>```json
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  &#34;host&#34;: &#34;localhost&#34;,
+</span></span><span style=display:flex><span>  &#34;port&#34;: 3306,
+</span></span><span style=display:flex><span>  &#34;user&#34;: &#34;root&#34;,
+</span></span><span style=display:flex><span>  &#34;password&#34;: &#34;root&#34;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=supported-operations>Supported Operations</h2><h3 id=database-management>Database Management</h3><ul><li>List all databases</li><li>Create database</li><li>Delete database</li><li>View database size</li></ul><h3 id=table-management>Table Management</h3><ul><li>List all tables</li><li>Create table</li><li>Delete table</li><li>View table structure</li></ul><h3 id=data-query>Data Query</h3><ul><li>SELECT queries</li><li>Conditional queries</li><li>Statistical queries</li></ul><h3 id=data-operations>Data Operations</h3><ul><li>Insert data</li><li>Update data</li><li>Delete data</li></ul><h3 id=importexport>Import/Export</h3><ul><li>Export to CSV</li><li>Export to JSON</li><li>Export to SQL</li><li>Import from SQL</li></ul><h3 id=backup-and-recovery>Backup and Recovery</h3><ul><li>Backup database</li><li>Restore database</li></ul><h2 id=usage-examples>Usage Examples</h2><pre tabindex=0><code>Use mysql-manager to list all databases
+Use mysql-manager to query data from users table
+Use mysql-manager to backup mydb database
+</code></pre><h2 id=security-considerations>Security Considerations</h2><ol><li>Configuration file contains sensitive information, ensure permissions are set correctly</li><li>Use read-only users for queries in production environments</li><li>Confirm before deletion operations</li><li>Regularly backup important data</li></ol><pre tabindex=0><code>
+### 6.6 Creating Usage Documentation
+
+**README.md**:
+
+```markdown
+# MySQL Manager Skill Usage Guide
+
+## Installation
+
+1. Create directory:
+```bash
+mkdir -p ~/.claude/skills/mysql-manager
+cd ~/.claude/skills/mysql-manager
+</code></pre><ol start=2><li>Install dependencies:</li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>npm install mysql2
+</span></span></code></pre></div><ol start=3><li>Configure database connection:
+Edit <code>config.json</code> file</li></ol><h2 id=command-reference>Command Reference</h2><h3 id=database-management-1>Database Management</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># List all databases</span>
+</span></span><span style=display:flex><span>node mysql-tool.js list-databases
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># List all tables</span>
+</span></span><span style=display:flex><span>node mysql-tool.js list-tables mydb
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Query data</span>
+</span></span><span style=display:flex><span>node mysql-tool.js <span style=color:#66d9ef>select</span>-all mydb users <span style=color:#ae81ff>10</span>
+</span></span></code></pre></div><h2 id=using-in-claude-code>Using in Claude Code</h2><pre tabindex=0><code>Use mysql-manager to list all databases
+Use mysql-manager to query data from users table in test database
+Use mysql-manager to backup mydb database
+</code></pre><h2 id=troubleshooting>Troubleshooting</h2><h3 id=connection-failed>Connection Failed</h3><p>Check:</p><ul><li>Whether MySQL service is running</li><li>Whether connection information in configuration file is correct</li><li>Whether firewall allows connections</li></ul><pre tabindex=0><code>
+### 6.7 Testing the Skill
+
+**Step 1: Test Connection**
+```bash
+cd ~/.claude/skills/mysql-manager
+node mysql-tool.js list-databases
+</code></pre><p><strong>Expected Output</strong>:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span style=display:flex><span>[
+</span></span><span style=display:flex><span>  <span style=color:#e6db74>&#34;information_schema&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#e6db74>&#34;mysql&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#e6db74>&#34;performance_schema&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#e6db74>&#34;test&#34;</span>
+</span></span><span style=display:flex><span>]
+</span></span></code></pre></div><p><strong>Step 2: Test in Claude Code</strong></p><p>Restart Claude Code, then:</p><pre tabindex=0><code>Use mysql-manager to list all databases
+</code></pre><p><strong>Step 3: Test Query Function</strong></p><pre tabindex=0><code>Use mysql-manager to query first 10 data from users table in test database
+</code></pre><h3 id=68-extending-functions>6.8 Extending Functions</h3><p><strong>Adding More Commands</strong>:</p><ol><li><strong>Create Database</strong>:</li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:#66d9ef>async</span> <span style=color:#66d9ef>function</span> <span style=color:#a6e22e>createDatabase</span>(<span style=color:#a6e22e>dbName</span>) {
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>const</span> <span style=color:#a6e22e>conn</span> <span style=color:#f92672>=</span> <span style=color:#66d9ef>await</span> <span style=color:#a6e22e>createConnection</span>();
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>await</span> <span style=color:#a6e22e>conn</span>.<span style=color:#a6e22e>execute</span>(<span style=color:#e6db74>`CREATE DATABASE IF NOT EXISTS \`</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>dbName</span><span style=color:#e6db74>}</span><span style=color:#e6db74>\``</span>);
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>await</span> <span style=color:#a6e22e>conn</span>.<span style=color:#a6e22e>end</span>();
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>return</span> <span style=color:#e6db74>`Database </span><span style=color:#e6db74>${</span><span style=color:#a6e22e>dbName</span><span style=color:#e6db74>}</span><span style=color:#e6db74> created successfully`</span>;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><ol start=2><li><strong>Export to CSV</strong>:</li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:#66d9ef>async</span> <span style=color:#66d9ef>function</span> <span style=color:#a6e22e>exportToCSV</span>(<span style=color:#a6e22e>dbName</span>, <span style=color:#a6e22e>tableName</span>, <span style=color:#a6e22e>outputPath</span>) {
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>const</span> <span style=color:#a6e22e>conn</span> <span style=color:#f92672>=</span> <span style=color:#66d9ef>await</span> <span style=color:#a6e22e>createConnection</span>(<span style=color:#a6e22e>dbName</span>);
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>const</span> [<span style=color:#a6e22e>rows</span>] <span style=color:#f92672>=</span> <span style=color:#66d9ef>await</span> <span style=color:#a6e22e>conn</span>.<span style=color:#a6e22e>execute</span>(<span style=color:#e6db74>`SELECT * FROM \`</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>tableName</span><span style=color:#e6db74>}</span><span style=color:#e6db74>\``</span>);
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>await</span> <span style=color:#a6e22e>conn</span>.<span style=color:#a6e22e>end</span>();
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>const</span> <span style=color:#a6e22e>headers</span> <span style=color:#f92672>=</span> Object.<span style=color:#a6e22e>keys</span>(<span style=color:#a6e22e>rows</span>[<span style=color:#ae81ff>0</span>]).<span style=color:#a6e22e>join</span>(<span style=color:#e6db74>&#39;,&#39;</span>);
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>const</span> <span style=color:#a6e22e>csvRows</span> <span style=color:#f92672>=</span> <span style=color:#a6e22e>rows</span>.<span style=color:#a6e22e>map</span>(<span style=color:#a6e22e>row</span> =&gt;
+</span></span><span style=display:flex><span>    Object.<span style=color:#a6e22e>values</span>(<span style=color:#a6e22e>row</span>).<span style=color:#a6e22e>map</span>(<span style=color:#a6e22e>val</span> =&gt;
+</span></span><span style=display:flex><span>      <span style=color:#66d9ef>typeof</span> <span style=color:#a6e22e>val</span> <span style=color:#f92672>===</span> <span style=color:#e6db74>&#39;string&#39;</span> <span style=color:#f92672>?</span> <span style=color:#e6db74>`&#34;</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>val</span><span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;`</span> <span style=color:#f92672>:</span> <span style=color:#a6e22e>val</span>
+</span></span><span style=display:flex><span>    ).<span style=color:#a6e22e>join</span>(<span style=color:#e6db74>&#39;,&#39;</span>)
+</span></span><span style=display:flex><span>  );
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>const</span> <span style=color:#a6e22e>csv</span> <span style=color:#f92672>=</span> [<span style=color:#a6e22e>headers</span>, ...<span style=color:#a6e22e>csvRows</span>].<span style=color:#a6e22e>join</span>(<span style=color:#e6db74>&#39;\n&#39;</span>);
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>await</span> <span style=color:#a6e22e>fs</span>.<span style=color:#a6e22e>writeFile</span>(<span style=color:#a6e22e>outputPath</span>, <span style=color:#a6e22e>csv</span>, <span style=color:#e6db74>&#39;utf8&#39;</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>return</span> <span style=color:#e6db74>`Export successful: </span><span style=color:#e6db74>${</span><span style=color:#a6e22e>outputPath</span><span style=color:#e6db74>}</span><span style=color:#e6db74>`</span>;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><ol start=3><li><strong>Backup Database</strong>:</li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:#66d9ef>async</span> <span style=color:#66d9ef>function</span> <span style=color:#a6e22e>backupDatabase</span>(<span style=color:#a6e22e>dbName</span>, <span style=color:#a6e22e>outputPath</span>) {
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>const</span> <span style=color:#a6e22e>cmd</span> <span style=color:#f92672>=</span> <span style=color:#e6db74>`mysqldump -u </span><span style=color:#e6db74>${</span><span style=color:#a6e22e>config</span>.<span style=color:#a6e22e>user</span><span style=color:#e6db74>}</span><span style=color:#e6db74> -p</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>config</span>.<span style=color:#a6e22e>password</span><span style=color:#e6db74>}</span><span style=color:#e6db74> </span><span style=color:#e6db74>${</span><span style=color:#a6e22e>dbName</span><span style=color:#e6db74>}</span><span style=color:#e6db74> &gt; &#34;</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>outputPath</span><span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;`</span>;
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>await</span> <span style=color:#a6e22e>execPromise</span>(<span style=color:#a6e22e>cmd</span>);
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>return</span> <span style=color:#e6db74>`Backup successful: </span><span style=color:#e6db74>${</span><span style=color:#a6e22e>outputPath</span><span style=color:#e6db74>}</span><span style=color:#e6db74>`</span>;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=69-practical-exercises>6.9 Practical Exercises</h3><p><strong>Task 1: View Database List</strong></p><pre tabindex=0><code>Use mysql-manager to list all databases
+</code></pre><p><strong>Task 2: Query Table Data</strong></p><pre tabindex=0><code>Use mysql-manager to query first 10 data from t_user table in test database
+</code></pre><p><strong>Task 3: Insert Test Data</strong></p><pre tabindex=0><code>Use mysql-manager to insert 10 test data records into t_user table in test database
+</code></pre><p><strong>Task 4: Export Data</strong></p><pre tabindex=0><code>Use mysql-manager to export t_user table as CSV file
+</code></pre><p><strong>Task 5: Backup Database</strong></p><pre tabindex=0><code>Use mysql-manager to backup test database
+</code></pre><h3 id=610-summary>6.10 Summary</h3><p>Through this practical case, you learned:</p><ol><li>✅ How to plan Skill functions</li><li>✅ How to create Skill directory structure</li><li>✅ How to write configuration files</li><li>✅ How to implement core functions</li><li>✅ How to write SKILL.md</li><li>✅ How to test Skills</li><li>✅ How to extend functions</li></ol><p><strong>Key Points</strong>:</p><ul><li>Separate sensitive information in configuration files</li><li>Error handling should be complete</li><li>Documentation should be detailed</li><li>Testing should be thorough</li></ul><hr><h2 id=chapter-7-common-problems-and-solutions>Chapter 7: Common Problems and Solutions</h2><h3 id=71-installation-issues>7.1 Installation Issues</h3><h4 id=problem-1-cannot-add-official-marketplace>Problem 1: Cannot Add Official Marketplace</h4><p><strong>Error Message</strong>:</p><pre tabindex=0><code>Failed to add marketplace
+</code></pre><p><strong>Possible Causes</strong>:</p><ul><li>Network connection issues</li><li>Cannot access GitHub</li><li>Proxy configuration issues</li></ul><p><strong>Solutions</strong>:</p><ol><li>Check network connection:</li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>ping github.com
+</span></span></code></pre></div><ol start=2><li>Configure Git proxy (if in China):</li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>git config --global http.proxy http://proxy.example.com:8080
+</span></span><span style=display:flex><span>git config --global https.proxy https://proxy.example.com:8080
+</span></span></code></pre></div><ol start=3><li>Use VPN or proxy</li></ol><h4 id=problem-2-skills-dont-show-after-installation>Problem 2: Skills Don&rsquo;t Show After Installation</h4><p><strong>Symptoms</strong>:</p><ul><li>Installation successful but Claude doesn&rsquo;t see skills</li><li>Asking &ldquo;What skills do you have?&rdquo; shows nothing</li></ul><p><strong>Solutions</strong>:</p><ol><li><strong>Restart Claude Code</strong> (most common cause):</li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Exit</span>
+</span></span><span style=display:flex><span>exit
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Restart</span>
+</span></span><span style=display:flex><span>claude-code
+</span></span></code></pre></div><ol start=2><li><strong>Check Installation Location</strong>:</li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>ls ~/.claude/plugins/cache/
+</span></span></code></pre></div><ol start=3><li><strong>Reinstall</strong>:</li></ol><pre tabindex=0><code>/plugin uninstall example-skills
+/plugin install example-skills@anthropic-agent-skills
+</code></pre><h4 id=problem-3-dependency-installation-failed>Problem 3: Dependency Installation Failed</h4><p><strong>Error Message</strong>:</p><pre tabindex=0><code>npm ERR! Cannot find module &#39;mysql2&#39;
+</code></pre><p><strong>Solutions</strong>:</p><ol><li>Enter skill directory:</li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>cd ~/.claude/skills/mysql-manager
+</span></span></code></pre></div><ol start=2><li>Install dependencies:</li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>npm install mysql2
+</span></span></code></pre></div><ol start=3><li>If still failing, clear cache:</li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>npm cache clean --force
+</span></span><span style=display:flex><span>npm install
+</span></span></code></pre></div><h3 id=72-usage-issues>7.2 Usage Issues</h3><h4 id=problem-4-skill-execution-failed>Problem 4: Skill Execution Failed</h4><p><strong>Error Message</strong>:</p><pre tabindex=0><code>Error: Command failed
+</code></pre><p><strong>Troubleshooting Steps</strong>:</p><ol><li><strong>Check if command is correct</strong>:</li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Manually test command</span>
+</span></span><span style=display:flex><span>cd ~/.claude/skills/mysql-manager
+</span></span><span style=display:flex><span>node mysql-tool.js list-databases
+</span></span></code></pre></div><ol start=2><li><p><strong>View error details</strong>:
+Claude usually shows detailed error information</p></li><li><p><strong>Check permissions</strong>:</p></li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Ensure script has execution permissions</span>
+</span></span><span style=display:flex><span>chmod +x mysql-tool.js
+</span></span></code></pre></div><ol start=4><li><strong>Check configuration file</strong>:</li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Validate JSON format</span>
+</span></span><span style=display:flex><span>cat config.json | python -m json.tool
+</span></span></code></pre></div><h4 id=problem-5-claude-chose-wrong-skill>Problem 5: Claude Chose Wrong Skill</h4><p><strong>Symptoms</strong>:</p><ul><li>You want to use skill A, but Claude used skill B</li></ul><p><strong>Solutions</strong>:</p><ol><li><strong>Explicitly specify skill</strong>:</li></ol><pre tabindex=0><code>Use docx skill to create document (instead of &#34;create document&#34;)
+</code></pre><ol start=2><li><strong>Provide more detailed description</strong>:</li></ol><pre tabindex=0><code>Use mysql-manager skill to query database
+</code></pre><ol start=3><li><strong>Check SKILL.md description</strong>:
+Ensure description is clear and won&rsquo;t confuse with other skills</li></ol><h4 id=problem-6-configuration-file-not-found>Problem 6: Configuration File Not Found</h4><p><strong>Error Message</strong>:</p><pre tabindex=0><code>Error: ENOENT: no such file or directory
+</code></pre><p><strong>Solutions</strong>:</p><ol><li><strong>Check if file exists</strong>:</li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>ls ~/.claude/skills/mysql-manager/config.json
+</span></span></code></pre></div><ol start=2><li><strong>Check path correctness</strong>:
+Use absolute path in script:</li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:#66d9ef>const</span> <span style=color:#a6e22e>configPath</span> <span style=color:#f92672>=</span> <span style=color:#a6e22e>path</span>.<span style=color:#a6e22e>join</span>(<span style=color:#a6e22e>__dirname</span>, <span style=color:#e6db74>&#39;config.json&#39;</span>);
+</span></span></code></pre></div><ol start=3><li><strong>Create configuration file</strong>:</li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>cd ~/.claude/skills/mysql-manager
+</span></span><span style=display:flex><span>cat &gt; config.json <span style=color:#e6db74>&lt;&lt; EOF
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>{
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  &#34;host&#34;: &#34;localhost&#34;,
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  &#34;port&#34;: 3306
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
+</span></span></code></pre></div><h3 id=73-database-issues>7.3 Database Issues</h3><h4 id=problem-7-cannot-connect-to-database>Problem 7: Cannot Connect to Database</h4><p><strong>Error Messages</strong>:</p><pre tabindex=0><code>Error: connect ECONNREFUSED
+Error: Access denied for user
+</code></pre><p><strong>Solutions</strong>:</p><ol><li><strong>Check if MySQL service is running</strong>:</li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Windows</span>
+</span></span><span style=display:flex><span>sc query MySQL
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Mac</span>
+</span></span><span style=display:flex><span>brew services list | grep mysql
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Linux</span>
+</span></span><span style=display:flex><span>systemctl status mysql
+</span></span></code></pre></div><ol start=2><li><strong>Check connection information</strong>:</li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Test connection</span>
+</span></span><span style=display:flex><span>mysql -h localhost -u root -p
+</span></span></code></pre></div><ol start=3><li><strong>Check firewall</strong>:</li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Linux</span>
+</span></span><span style=display:flex><span>sudo ufw status
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Windows</span>
+</span></span><span style=display:flex><span>netsh advfirewall show allprofiles
+</span></span></code></pre></div><ol start=4><li><strong>Check user permissions</strong>:</li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sql data-lang=sql><span style=display:flex><span><span style=color:#75715e>-- Execute in MySQL
+</span></span></span><span style=display:flex><span><span style=color:#66d9ef>SHOW</span> GRANTS <span style=color:#66d9ef>FOR</span> <span style=color:#e6db74>&#39;root&#39;</span><span style=color:#f92672>@</span><span style=color:#e6db74>&#39;localhost&#39;</span>;
+</span></span></code></pre></div><h4 id=problem-8-backup-failed>Problem 8: Backup Failed</h4><p><strong>Error Message</strong>:</p><pre tabindex=0><code>mysqldump: command not found
+</code></pre><p><strong>Solutions</strong>:</p><ol><li><strong>Install MySQL client tools</strong>:</li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Ubuntu/Debian</span>
+</span></span><span style=display:flex><span>sudo apt-get install mysql-client
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Mac</span>
+</span></span><span style=display:flex><span>brew install mysql-client
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Windows</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Download MySQL Installer</span>
+</span></span></code></pre></div><ol start=2><li><strong>Add to PATH</strong> (Windows):</li></ol><pre tabindex=0><code>Add C:\Program Files\MySQL\MySQL Server 8.0\bin to system PATH
+</code></pre><ol start=3><li><strong>Use full path</strong>:</li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:#66d9ef>const</span> <span style=color:#a6e22e>mysqldumpPath</span> <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysqldump.exe&#39;</span>;
+</span></span></code></pre></div><h3 id=74-performance-issues>7.4 Performance Issues</h3><h4 id=problem-9-queries-are-slow>Problem 9: Queries Are Slow</h4><p><strong>Symptoms</strong>:</p><ul><li>Querying large tables responds slowly</li><li>Claude takes long time to respond</li></ul><p><strong>Solutions</strong>:</p><ol><li><strong>Limit query count</strong>:</li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:#75715e>// Default limit 100 rows
+</span></span></span><span style=display:flex><span><span style=color:#66d9ef>async</span> <span style=color:#66d9ef>function</span> <span style=color:#a6e22e>selectAll</span>(<span style=color:#a6e22e>dbName</span>, <span style=color:#a6e22e>tableName</span>, <span style=color:#a6e22e>limit</span> <span style=color:#f92672>=</span> <span style=color:#ae81ff>100</span>) {
+</span></span><span style=display:flex><span>  <span style=color:#75715e>// ...
+</span></span></span><span style=display:flex><span>}
+</span></span></code></pre></div><ol start=2><li><strong>Add indexes</strong>:</li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sql data-lang=sql><span style=display:flex><span><span style=color:#66d9ef>CREATE</span> <span style=color:#66d9ef>INDEX</span> idx_name <span style=color:#66d9ef>ON</span> users(name);
+</span></span></code></pre></div><ol start=3><li><strong>Use pagination</strong>:</li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:#66d9ef>async</span> <span style=color:#66d9ef>function</span> <span style=color:#a6e22e>selectPage</span>(<span style=color:#a6e22e>dbName</span>, <span style=color:#a6e22e>tableName</span>, <span style=color:#a6e22e>page</span>, <span style=color:#a6e22e>pageSize</span>) {
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>const</span> <span style=color:#a6e22e>offset</span> <span style=color:#f92672>=</span> (<span style=color:#a6e22e>page</span> <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>) <span style=color:#f92672>*</span> <span style=color:#a6e22e>pageSize</span>;
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>const</span> [<span style=color:#a6e22e>rows</span>] <span style=color:#f92672>=</span> <span style=color:#66d9ef>await</span> <span style=color:#a6e22e>conn</span>.<span style=color:#a6e22e>execute</span>(
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>`SELECT * FROM \`</span><span style=color:#e6db74>${</span><span style=color:#a6e22e>tableName</span><span style=color:#e6db74>}</span><span style=color:#e6db74>\` LIMIT ? OFFSET ?`</span>,
+</span></span><span style=display:flex><span>    [<span style=color:#a6e22e>pageSize</span>, <span style=color:#a6e22e>offset</span>]
+</span></span><span style=display:flex><span>  );
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>rows</span>;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h4 id=problem-10-high-memory-usage>Problem 10: High Memory Usage</h4><p><strong>Symptoms</strong>:</p><ul><li>Node.js process occupies large memory</li><li>System becomes slow</li></ul><p><strong>Solutions</strong>:</p><ol><li><strong>Use streaming processing</strong>:</li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:#66d9ef>const</span> <span style=color:#a6e22e>stream</span> <span style=color:#f92672>=</span> <span style=color:#a6e22e>conn</span>.<span style=color:#a6e22e>query</span>(<span style=color:#e6db74>`SELECT * FROM large_table`</span>).<span style=color:#a6e22e>stream</span>();
+</span></span><span style=display:flex><span><span style=color:#a6e22e>stream</span>.<span style=color:#a6e22e>on</span>(<span style=color:#e6db74>&#39;data&#39;</span>, (<span style=color:#a6e22e>row</span>) =&gt; {
+</span></span><span style=display:flex><span>  <span style=color:#75715e>// Process each row
+</span></span></span><span style=display:flex><span>});
+</span></span></code></pre></div><ol start=2><li><strong>Close connections promptly</strong>:</li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:#66d9ef>try</span> {
+</span></span><span style=display:flex><span>  <span style=color:#75715e>// Operations
+</span></span></span><span style=display:flex><span>} <span style=color:#66d9ef>finally</span> {
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>await</span> <span style=color:#a6e22e>conn</span>.<span style=color:#a6e22e>end</span>();
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><ol start=3><li><strong>Limit connection pool size</strong>:</li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  <span style=color:#f92672>&#34;connectionLimit&#34;</span>: <span style=color:#ae81ff>5</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=75-document-issues>7.5 Document Issues</h3><h4 id=problem-11-word-document-creation-failed>Problem 11: Word Document Creation Failed</h4><p><strong>Error Message</strong>:</p><pre tabindex=0><code>Cannot find module &#39;docx&#39;
+</code></pre><p><strong>Solutions</strong>:</p><ol><li><strong>Install docx globally</strong>:</li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>npm install -g docx
+</span></span></code></pre></div><ol start=2><li><strong>Or install in project</strong>:</li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>cd /path/to/project
+</span></span><span style=display:flex><span>npm install docx
+</span></span></code></pre></div><h4 id=problem-12-pdf-processing-failed>Problem 12: PDF Processing Failed</h4><p><strong>Error Message</strong>:</p><pre tabindex=0><code>pdftoppm: command not found
+</code></pre><p><strong>Solutions</strong>:</p><ol><li><strong>Install Poppler</strong>:</li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Ubuntu/Debian</span>
+</span></span><span style=display:flex><span>sudo apt-get install poppler-utils
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Mac</span>
+</span></span><span style=display:flex><span>brew install poppler
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Windows</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Download Poppler for Windows</span>
+</span></span></code></pre></div><h3 id=76-debugging-tips>7.6 Debugging Tips</h3><h4 id=tip-1-enable-detailed-logging>Tip 1: Enable Detailed Logging</h4><p>Add logging in script:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:#a6e22e>console</span>.<span style=color:#a6e22e>log</span>(<span style=color:#e6db74>&#39;Starting execution:&#39;</span>, <span style=color:#a6e22e>command</span>);
+</span></span><span style=display:flex><span><span style=color:#a6e22e>console</span>.<span style=color:#a6e22e>log</span>(<span style=color:#e6db74>&#39;Parameters:&#39;</span>, <span style=color:#a6e22e>args</span>);
+</span></span><span style=display:flex><span><span style=color:#a6e22e>console</span>.<span style=color:#a6e22e>log</span>(<span style=color:#e6db74>&#39;Configuration:&#39;</span>, <span style=color:#a6e22e>config</span>);
+</span></span></code></pre></div><h4 id=tip-2-use-debug-mode>Tip 2: Use Debug Mode</h4><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Node.js debugging</span>
+</span></span><span style=display:flex><span>node --inspect mysql-tool.js list-databases
+</span></span></code></pre></div><h4 id=tip-3-test-individual-functions>Tip 3: Test Individual Functions</h4><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Test each function separately</span>
+</span></span><span style=display:flex><span>node -e <span style=color:#e6db74>&#34;require(&#39;./mysql-tool.js&#39;).listDatabases().then(console.log)&#34;</span>
+</span></span></code></pre></div><h4 id=tip-4-view-claude-code-logs>Tip 4: View Claude Code Logs</h4><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># View log directory</span>
+</span></span><span style=display:flex><span>ls ~/.claude/logs/
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># View latest logs</span>
+</span></span><span style=display:flex><span>tail -f ~/.claude/logs/latest.log
+</span></span></code></pre></div><h3 id=77-getting-help>7.7 Getting Help</h3><h4 id=official-resources>Official Resources</h4><ol><li><p><strong>Claude Code Documentation</strong>:</p><ul><li><a class=link href=https://docs.claude.com/ target=_blank rel=noopener>https://docs.claude.com/</a></li></ul></li><li><p><strong>Skills Repository</strong>:</p><ul><li><a class=link href=https://github.com/anthropics/skills target=_blank rel=noopener>https://github.com/anthropics/skills</a></li></ul></li><li><p><strong>Issue Feedback</strong>:</p><ul><li><a class=link href=https://github.com/anthropics/claude-code/issues target=_blank rel=noopener>https://github.com/anthropics/claude-code/issues</a></li></ul></li></ol><h4 id=community-resources>Community Resources</h4><ol><li><strong>Discord Community</strong></li><li><strong>Stack Overflow</strong> (tag: claude-code)</li><li><strong>GitHub Discussions</strong></li></ol><h4 id=tips-for-seeking-help>Tips for Seeking Help</h4><p><strong>Provide when asking</strong>:</p><ol><li>Complete error message</li><li>Your operation steps</li><li>System environment information</li><li>Relevant configuration files (remove sensitive information)</li></ol><p><strong>Good Question Example</strong>:</p><pre tabindex=0><code>Problem: mysql-manager skill cannot connect to database
+
+Environment:
+- OS: Windows 10
+- Node.js: v20.9.0
+- MySQL: 8.0.35
+
+Error Message:
+Error: connect ECONNREFUSED 127.0.0.1:3306
+
+Already Tried:
+1. Confirmed MySQL service is running
+2. Can connect with mysql command line
+3. Information in configuration file is correct
+
+Configuration file (password removed):
+{
+  &#34;host&#34;: &#34;localhost&#34;,
+  &#34;port&#34;: 3306,
+  &#34;user&#34;: &#34;root&#34;
+}
+</code></pre><hr><h2 id=appendix-complete-command-reference>Appendix: Complete Command Reference</h2><h3 id=a-claude-code-basic-commands>A. Claude Code Basic Commands</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Start Claude Code</span>
+</span></span><span style=display:flex><span>claude-code
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># View version</span>
+</span></span><span style=display:flex><span>claude --version
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># View help</span>
+</span></span><span style=display:flex><span>claude --help
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Exit</span>
+</span></span><span style=display:flex><span>exit
+</span></span></code></pre></div><h3 id=b-plugin-management-commands>B. Plugin Management Commands</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Add marketplace</span>
+</span></span><span style=display:flex><span>/plugin marketplace add anthropics/skills
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Browse plugins</span>
+</span></span><span style=display:flex><span>/plugin browse
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Install plugin</span>
+</span></span><span style=display:flex><span>/plugin install example-skills@anthropic-agent-skills
+</span></span><span style=display:flex><span>/plugin install document-skills@anthropic-agent-skills
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Uninstall plugin</span>
+</span></span><span style=display:flex><span>/plugin uninstall example-skills
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># List installed plugins</span>
+</span></span><span style=display:flex><span>/plugin list
+</span></span></code></pre></div><h3 id=c-file-operation-commands>C. File Operation Commands</h3><h4 id=windows>Windows</h4><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># View directory</span>
+</span></span><span style=display:flex><span>dir %USERPROFILE%<span style=color:#ae81ff>\.</span>claude
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Enter directory</span>
+</span></span><span style=display:flex><span>cd %USERPROFILE%<span style=color:#ae81ff>\.</span>claude<span style=color:#ae81ff>\s</span>kills
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Create directory</span>
+</span></span><span style=display:flex><span>mkdir my-skill
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Delete directory</span>
+</span></span><span style=display:flex><span>rmdir /s my-skill
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># View file content</span>
+</span></span><span style=display:flex><span>type config.json
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Edit file</span>
+</span></span><span style=display:flex><span>notepad config.json
+</span></span></code></pre></div><h4 id=maclinux>Mac/Linux</h4><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># View directory</span>
+</span></span><span style=display:flex><span>ls -la ~/.claude
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Enter directory</span>
+</span></span><span style=display:flex><span>cd ~/.claude/skills
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Create directory</span>
+</span></span><span style=display:flex><span>mkdir -p my-skill
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Delete directory</span>
+</span></span><span style=display:flex><span>rm -rf my-skill
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># View file content</span>
+</span></span><span style=display:flex><span>cat config.json
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Edit file</span>
+</span></span><span style=display:flex><span>nano config.json
+</span></span><span style=display:flex><span><span style=color:#75715e># or</span>
+</span></span><span style=display:flex><span>vim config.json
+</span></span></code></pre></div><h3 id=d-nodejs-commands>D. Node.js Commands</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Initialize project</span>
+</span></span><span style=display:flex><span>npm init -y
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Install dependencies</span>
+</span></span><span style=display:flex><span>npm install mysql2
+</span></span><span style=display:flex><span>npm install docx
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Global installation</span>
+</span></span><span style=display:flex><span>npm install -g docx
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># View installed packages</span>
+</span></span><span style=display:flex><span>npm list
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Run script</span>
+</span></span><span style=display:flex><span>node script.js
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Debug mode</span>
+</span></span><span style=display:flex><span>node --inspect script.js
+</span></span></code></pre></div><h3 id=e-git-commands>E. Git Commands</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Clone repository</span>
+</span></span><span style=display:flex><span>git clone https://github.com/anthropics/skills.git
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># View status</span>
+</span></span><span style=display:flex><span>git status
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Pull updates</span>
+</span></span><span style=display:flex><span>git pull
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># View logs</span>
+</span></span><span style=display:flex><span>git log --oneline -10
+</span></span></code></pre></div><h3 id=f-mysql-commands>F. MySQL Commands</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Connect to database</span>
+</span></span><span style=display:flex><span>mysql -h localhost -u root -p
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Export database</span>
+</span></span><span style=display:flex><span>mysqldump -u root -p mydb &gt; backup.sql
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Import database</span>
+</span></span><span style=display:flex><span>mysql -u root -p mydb &lt; backup.sql
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># View processes</span>
+</span></span><span style=display:flex><span>mysqladmin -u root -p processlist
+</span></span></code></pre></div><h3 id=g-common-skill-command-templates>G. Common Skill Command Templates</h3><h4 id=mysql-manager>MySQL Manager</h4><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># List databases</span>
+</span></span><span style=display:flex><span>node mysql-tool.js list-databases
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># List tables</span>
+</span></span><span style=display:flex><span>node mysql-tool.js list-tables mydb
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Query data</span>
+</span></span><span style=display:flex><span>node mysql-tool.js <span style=color:#66d9ef>select</span>-all mydb users <span style=color:#ae81ff>10</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Export CSV</span>
+</span></span><span style=display:flex><span>node mysql-tool.js export-csv mydb users output.csv
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Backup</span>
+</span></span><span style=display:flex><span>node mysql-tool.js backup mydb backup.sql
+</span></span></code></pre></div><h4 id=file-statistics>File Statistics</h4><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Statistics current directory</span>
+</span></span><span style=display:flex><span>node file-stats.js .
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Statistics specified directory</span>
+</span></span><span style=display:flex><span>node file-stats.js /path/to/directory
+</span></span></code></pre></div><hr><h2 id=appendix-b-configuration-file-templates>Appendix B: Configuration File Templates</h2><h3 id=1-skillmd-template>1. SKILL.md Template</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-markdown data-lang=markdown><span style=display:flex><span>---
+</span></span><span style=display:flex><span>name: skill-name
+</span></span><span style=display:flex><span>description: Detailed description of this skill&#39;s functions and usage scenarios
+</span></span><span style=display:flex><span>---
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span># Skill Name
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Brief introduction.
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>## Functions
+</span></span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>-</span> Function 1
+</span></span><span style=display:flex><span><span style=color:#66d9ef>-</span> Function 2
+</span></span><span style=display:flex><span><span style=color:#66d9ef>-</span> Function 3
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>## Usage
+</span></span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Detailed usage instructions...
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>## Examples
+</span></span></span></code></pre></div><p>Use skill-name to do something</p><pre tabindex=0><code>
+## Configuration
+
+If configuration is needed, explain here.
+
+## Dependencies
+
+List required dependencies.
+
+## Notes
+
+Important notes.
+</code></pre><h3 id=2-configjson-template>2. config.json Template</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  <span style=color:#f92672>&#34;host&#34;</span>: <span style=color:#e6db74>&#34;localhost&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f92672>&#34;port&#34;</span>: <span style=color:#ae81ff>3306</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f92672>&#34;user&#34;</span>: <span style=color:#e6db74>&#34;username&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f92672>&#34;password&#34;</span>: <span style=color:#e6db74>&#34;password&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f92672>&#34;database&#34;</span>: <span style=color:#e6db74>&#34;dbname&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f92672>&#34;options&#34;</span>: {
+</span></span><span style=display:flex><span>    <span style=color:#f92672>&#34;key&#34;</span>: <span style=color:#e6db74>&#34;value&#34;</span>
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=3-packagejson-template>3. package.json Template</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  <span style=color:#f92672>&#34;name&#34;</span>: <span style=color:#e6db74>&#34;skill-name&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f92672>&#34;version&#34;</span>: <span style=color:#e6db74>&#34;1.0.0&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f92672>&#34;description&#34;</span>: <span style=color:#e6db74>&#34;Skill description&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f92672>&#34;main&#34;</span>: <span style=color:#e6db74>&#34;index.js&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f92672>&#34;scripts&#34;</span>: {
+</span></span><span style=display:flex><span>    <span style=color:#f92672>&#34;test&#34;</span>: <span style=color:#e6db74>&#34;node test.js&#34;</span>
+</span></span><span style=display:flex><span>  },
+</span></span><span style=display:flex><span>  <span style=color:#f92672>&#34;dependencies&#34;</span>: {
+</span></span><span style=display:flex><span>    <span style=color:#f92672>&#34;mysql2&#34;</span>: <span style=color:#e6db74>&#34;^3.0.0&#34;</span>
+</span></span><span style=display:flex><span>  },
+</span></span><span style=display:flex><span>  <span style=color:#f92672>&#34;author&#34;</span>: <span style=color:#e6db74>&#34;Your Name&#34;</span>,
+</span></span><span style=display:flex><span>  <span style=color:#f92672>&#34;license&#34;</span>: <span style=color:#e6db74>&#34;MIT&#34;</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=4-readmemd-template>4. README.md Template</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-markdown data-lang=markdown><span style=display:flex><span># Skill Name
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Brief description.
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>## Installation
+</span></span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>```bash
+</span></span><span style=display:flex><span>cd ~/.claude/skills/skill-name
+</span></span><span style=display:flex><span>npm install
+</span></span></code></pre></div><h2 id=configuration>Configuration</h2><p>Edit <code>config.json</code>:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  <span style=color:#f92672>&#34;key&#34;</span>: <span style=color:#e6db74>&#34;value&#34;</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=usage>Usage</h2><h3 id=command-line>Command Line</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>node tool.js command
+</span></span></code></pre></div><h3 id=claude-code>Claude Code</h3><pre tabindex=0><code>Use skill-name to do something
+</code></pre><h2 id=command-reference-1>Command Reference</h2><div class=table-wrapper><table><thead><tr><th>Command</th><th>Description</th><th>Example</th></tr></thead><tbody><tr><td>command1</td><td>Description</td><td><code>node tool.js command1</code></td></tr><tr><td>command2</td><td>Description</td><td><code>node tool.js command2</code></td></tr></tbody></table></div><pre tabindex=0><code></code></pre></section><footer class=article-footer><section class=article-tags><a href=/en/tags/skills/>Skills</a></section></footer></article><script src=https://giscus.app/client.js data-repo=zg-dd/zg-dd.github.io data-repo-id=R_kgDOQwB7tw data-category=Announcements data-category-id=DIC_kwDOQwB7t84C0WGD data-mapping=pathname data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=preferred_color_scheme data-lang=zh-CN data-loading crossorigin=anonymous async></script><script>function setGiscusTheme(e){let t=document.querySelector("iframe.giscus-frame");t&&t.contentWindow.postMessage({giscus:{setConfig:{theme:e}}},"https://giscus.app")}(function(){addEventListener("message",t=>{if(event.origin!=="https://giscus.app")return;e()}),window.addEventListener("onColorSchemeChange",e);function e(){setGiscusTheme(document.documentElement.dataset.scheme==="light"?"preferred_color_scheme":"preferred_color_scheme")}})()</script><footer class=site-footer><section class=copyright>&copy;
+2026 小巷 Blog</section><section class=powerby>Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a><br>Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.33.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a></section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.c922af694cc257bf1ecc41c0dd7b0430f9114ec280ccf67cd2c6ad55f5316c4e.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>
