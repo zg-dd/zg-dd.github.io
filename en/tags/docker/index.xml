@@ -1,4 +1,147 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Docker on 小巷 Blog</title><link>https://zg-dd.github.io/en/tags/docker/</link><description>Recent content in Docker on 小巷 Blog</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Thu, 25 Sep 2025 11:57:50 +0800</lastBuildDate><atom:link href="https://zg-dd.github.io/en/tags/docker/index.xml" rel="self" type="application/rss+xml"/><item><title>Docker Common Commands Cheat Sheet</title><link>https://zg-dd.github.io/en/stu/docker-command/</link><pubDate>Thu, 25 Sep 2025 11:57:50 +0800</pubDate><guid>https://zg-dd.github.io/en/stu/docker-command/</guid><description>&lt;h1 id="common-docker--docker-compose-commands"&gt;Common Docker &amp;amp; Docker Compose Commands
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Docker on 小巷 Blog</title><link>https://zg-dd.github.io/en/tags/docker/</link><description>Recent content in Docker on 小巷 Blog</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Tue, 24 Feb 2026 19:07:58 +0800</lastBuildDate><atom:link href="https://zg-dd.github.io/en/tags/docker/index.xml" rel="self" type="application/rss+xml"/><item><title>Complete Guide to Installing Milvus Standalone Mode and Common Problem Solutions</title><link>https://zg-dd.github.io/en/stu/milvus-install-guide/</link><pubDate>Tue, 24 Feb 2026 19:07:58 +0800</pubDate><guid>https://zg-dd.github.io/en/stu/milvus-install-guide/</guid><description>&lt;h1 id="complete-guide-to-installing-milvus-standalone-mode-and-common-problem-solutions"&gt;Complete Guide to Installing Milvus Standalone Mode and Common Problem Solutions
+&lt;/h1&gt;&lt;h2 id="introduction"&gt;Introduction
+&lt;/h2&gt;&lt;p&gt;Milvus is an open-source vector database designed specifically for handling large-scale vector data, supporting vector similarity search, real-time queries, and other features. The Standalone mode is Milvus&amp;rsquo;s single-machine embedded deployment method, suitable for learning, testing, and small-scale applications. It runs using Docker containers with embedded etcd as metadata storage, requiring no external dependencies.&lt;/p&gt;
+&lt;p&gt;During the actual installation process, I encountered multiple issues including non-existent image tags, network connection refusals, container permission issues causing startup failures (Exited 134), and scripts getting stuck in waiting states. This article is based on real installation experience on a VMware Ubuntu virtual machine on February 24, 2026, providing complete steps and systematically summarizing problems and solutions. The host machine configuration is Intel Core i9-12900H + 16 GB RAM.&lt;/p&gt;
+&lt;h2 id="environment-preparation"&gt;Environment Preparation
+&lt;/h2&gt;&lt;h3 id="system-requirements"&gt;System Requirements
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;Ubuntu 20.04 or higher version (22.04 LTS recommended)&lt;/li&gt;
+&lt;li&gt;Docker 20.10 or higher version&lt;/li&gt;
+&lt;li&gt;Minimum VM configuration recommendation: 8-12 GB RAM, 4-8 vCPU (recommended 1 processor × 6-8 cores)&lt;/li&gt;
+&lt;li&gt;Network: Domestic mirror accelerator recommended&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="configure-docker-image-accelerator"&gt;Configure Docker Image Accelerator
+&lt;/h3&gt;&lt;p&gt;Edit &lt;code&gt;/etc/docker/daemon.json&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-json" data-lang="json"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;registry-mirrors&amp;#34;&lt;/span&gt;: [
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;https://docker.xuanyuan.me&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;https://mirror.ccs.tencentyun.com&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;https://hub-mirror.c.163.com&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;https://docker.mirrors.ustc.edu.cn&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; ]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Restart Docker:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo systemctl daemon-reload
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo systemctl restart docker
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Verify accelerator configuration:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo docker info | grep -A &lt;span style="color:#ae81ff"&gt;10&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;Registry Mirrors&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="installation-steps"&gt;Installation Steps
+&lt;/h2&gt;&lt;h3 id="1-download-official-standalone-embedded-startup-script"&gt;1. Download Official Standalone Embedded Startup Script
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;wget https://raw.githubusercontent.com/milvus-io/milvus/master/scripts/standalone_embed.sh
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;chmod +x standalone_embed.sh
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="2-modify-image-tag-v2611-not-pushed-use-latest-available-build-from-master-branch"&gt;2. Modify Image Tag (v2.6.11 Not Pushed, Use Latest Available Build from Master Branch)
+&lt;/h3&gt;&lt;p&gt;Edit &lt;code&gt;standalone_embed.sh&lt;/code&gt;, find the image line in the &lt;code&gt;docker run&lt;/code&gt; command, change:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;milvusdb/milvus:v2.6.11 &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;to:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;milvusdb/milvus:master-20260224-091b147e-amd64 &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;or a more stable previous day version:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;milvusdb/milvus:master-20260223-49bf0b63-amd64 &lt;span style="color:#ae81ff"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Save the file.&lt;/p&gt;
+&lt;h3 id="3-create-and-set-data-directory-permissions-most-critical-step-avoid-permission-denial"&gt;3. Create and Set Data Directory Permissions (Most Critical Step, Avoid Permission Denial)
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Delete old directory (prevent residual permission errors)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;rm -rf ./volumes/milvus
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Create new directory&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;mkdir -p ./volumes/milvus
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Set owner and permissions (ensure non-root user in container can write)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo chown -R $USER:$USER ./volumes/milvus
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;chmod -R &lt;span style="color:#ae81ff"&gt;775&lt;/span&gt; ./volumes/milvus
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Verify permissions (should show drwxrwxr-x ai-stu ai-stu)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;ls -ld ./volumes/milvus
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="4-start-milvus"&gt;4. Start Milvus
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;bash standalone_embed.sh start
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="5-verify-success"&gt;5. Verify Success
+&lt;/h3&gt;&lt;p&gt;Wait for script output &amp;ldquo;Start successfully.&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;Check container status:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo docker ps
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Should show &lt;code&gt;Up ... (healthy)&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;Test health endpoint:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;curl http://localhost:19530/healthz
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Should return &lt;code&gt;&amp;quot;ok&amp;quot;&lt;/code&gt;&lt;/p&gt;
+&lt;h2 id="common-problems-summary-and-solutions"&gt;Common Problems Summary and Solutions
+&lt;/h2&gt;&lt;h3 id="problem-1-image-pull-failure-not-found--connection-refused"&gt;Problem 1: Image Pull Failure (not found / connection refused)
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;Phenomenon:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Unable to find image ... not found&lt;/code&gt; or &lt;code&gt;dial tcp ... connection refused&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Cause:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;v2.6.11 tag not yet pushed to Docker Hub&lt;/li&gt;
+&lt;li&gt;Domestic network access to registry-1.docker.io is restricted&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Solutions:&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Use master branch dated build tags (such as &lt;code&gt;master-20260224-091b147e-amd64&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;Configure domestic accelerators (Xuanyuan, Alibaba Cloud, NetEase, etc.)&lt;/li&gt;
+&lt;li&gt;Offline transfer method: pull + save on accessible network machine:&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker pull milvusdb/milvus:master-20260224-091b147e-amd64
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker save -o milvus.tar milvusdb/milvus:master-20260224-091b147e-amd64
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;gzip milvus.tar
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Load after transferring to server:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;gunzip milvus.tar.gz
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo docker load -i milvus.tar
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="problem-2-container-exits-immediately-after-startup-exited-134"&gt;Problem 2: Container Exits Immediately After Startup (Exited 134)
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;Phenomenon:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;sudo docker ps -a&lt;/code&gt; shows &lt;code&gt;Exited (134)&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Cause:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;SIGABRT signal, internal process abort&lt;/li&gt;
+&lt;li&gt;Usually caused by permission denial, initialization failure, or insufficient memory&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Solutions:&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Check logs:
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo docker logs milvus-standalone --tail &lt;span style="color:#ae81ff"&gt;100&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;Increase VM memory to 8-12 GB&lt;/li&gt;
+&lt;li&gt;Clean and reset permissions (see step 3)&lt;/li&gt;
+&lt;li&gt;Try more stable tags (such as &lt;code&gt;master-20260223-49bf0b63-amd64&lt;/code&gt;)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id="problem-3-permission-denied-mkdir-varlibmilvusdata-permission-denied"&gt;Problem 3: Permission Denied (mkdir /var/lib/milvus/data/: permission denied)
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;Phenomenon:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Logs show &lt;code&gt;[FATAL] ... permission denied&lt;/code&gt; and panic&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Cause:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Host &lt;code&gt;./volumes/milvus&lt;/code&gt; directory lacks sufficient permissions&lt;/li&gt;
+&lt;li&gt;Non-root user in container cannot create subdirectories&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Solutions:&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Must delete old directory first:
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;rm -rf ./volumes/milvus
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;Recreate and set permissions (step 3)&lt;/li&gt;
+&lt;li&gt;Recommend using 775 permissions to ensure group writability&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id="problem-4-script-stuck-at-wait-for-milvus-starting"&gt;Problem 4: Script Stuck at &amp;ldquo;Wait for Milvus Starting&amp;hellip;&amp;rdquo;
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;Phenomenon:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Script shows no output for extended period&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Cause:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Container hasn&amp;rsquo;t reached healthy state (crashed or health check failed)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Solutions:&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Check status in new terminal:
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo docker ps -a
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;View real-time logs:
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo docker logs -f milvus-standalone
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;Manually test health endpoint:
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;curl http://localhost:19530/healthz
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;Clean data volumes and retry&lt;/li&gt;
+&lt;/ol&gt;</description></item><item><title>Docker Common Commands Cheat Sheet</title><link>https://zg-dd.github.io/en/stu/docker-command/</link><pubDate>Thu, 25 Sep 2025 11:57:50 +0800</pubDate><guid>https://zg-dd.github.io/en/stu/docker-command/</guid><description>&lt;h1 id="common-docker--docker-compose-commands"&gt;Common Docker &amp;amp; Docker Compose Commands
 &lt;/h1&gt;&lt;h2 id="1-image-management"&gt;1. Image management
 &lt;/h2&gt;&lt;p&gt;Images are like installation packages or templates.&lt;/p&gt;
 &lt;table&gt;
