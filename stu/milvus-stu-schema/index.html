@@ -1,0 +1,505 @@
+<!doctype html><html lang=zh-cn dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content='一、Schema 概念理解\r1.1 什么是 Schema？\rSchema 是集合（Collection）的元数据定义，类似于关系型数据库中的表结构定义。\nMilvus 概念 关系型数据库概念 说明 Schema Table Schema 定义数据结构的元数据 Field Column 字段/列定义 DataType Data Type 数据类型（VARCHAR, INT, FLOAT等） Primary Key Primary Key 主键字段 Vector Field - Milvus 特有的向量字段 Dynamic Field - 动态字段，类似 MongoDB 的灵活 Schema 1.2 创建 Schema\rfrom pymilvus import MilvusClient, DataType # 创建 Schema schema = client.create_schema( enable_dynamic_field=True # 启用动态字段 ) # 对比 MySQL # CREATE TABLE products ( # ... # ); 二、字段类型详解\r2.1 字段分类\r字段类型\r├── 标量字段（Scalar Fields）\r│ ├── 字符串（VARCHAR）\r│ ├── 数字（INT8/INT16/INT32/INT64/FLOAT/DOUBLE/BOOL）\r│ ├── JSON\r│ ├── 数组（ARRAY）\r│ ├── 时间戳（TIMESTAMPTZ）\r│ ├── 结构体数组（ARRAY of STRUCT）\r│ └── 几何字段（GEOMETRY）\r└── 向量字段（Vector Fields）\r├── 密集向量（FLOAT_VECTOR/FLOAT16_VECTOR/BFLOAT16_VECTOR/INT8_VECTOR）\r├── 稀疏向量（SPARSE_FLOAT_VECTOR）\r└── 二进制向量（BINARY_VECTOR） 三、主键字段\r3.1 主键类型对比\r数据类型 说明 对比 MySQL INT64 64位整数，推荐使用 类似 BIGINT AUTO_INCREMENT VARCHAR 可变长度字符串 类似 VARCHAR(n) PRIMARY KEY 3.2 自动 ID vs 手动 ID\r模式 说明 使用场景 对比 MySQL 自动 ID Milvus 自动生成唯一标识符 大多数情况 AUTO_INCREMENT 手动 ID 用户提供唯一 ID ID 需要与外部系统保持一致 手动插入主键值 3.3 主键字段示例\r# 自动 ID 主键 schema.add_field( field_name="product_id", datatype=DataType.INT64, is_primary=True, # 标记为主键 auto_id=True # 自动生成 ID ) # 对比 MySQL # product_id BIGINT AUTO_INCREMENT PRIMARY KEY # 手动 ID 主键（使用字符串） schema.add_field( field_name="sku_code", datatype=DataType.VARCHAR, max_length=50, is_primary=True, auto_id=False # 手动提供 ID ) # 对比 MySQL # sku_code VARCHAR(50) PRIMARY KEY 四、标量字段详解\r4.1 字符串字段（VARCHAR）\r属性 说明 取值范围 对比 MySQL datatype 数据类型 DataType.VARCHAR VARCHAR max_length 最大长度 1-65535 VARCHAR(n) 中的 n nullable 是否可为空 True/False NULL/NOT NULL default_value 默认值 字符串 DEFAULT &lsquo;value&rsquo; # 字符串字段示例 schema.add_field( field_name="product_name", datatype=DataType.VARCHAR, max_length=255, nullable=False, default_value="未命名商品" ) # 对比 MySQL # product_name VARCHAR(255) NOT NULL DEFAULT &#39;未命名商品&#39; 4.2 数字字段\rMilvus 类型 说明 取值范围 对比 MySQL BOOL 布尔值 True/False BOOLEAN INT8 8位整数 -128 ~ 127 TINYINT INT16 16位整数 -32768 ~ 32767 SMALLINT INT32 32位整数 -2^31 ~ 2^31-1 INT INT64 64位整数 -2^63 ~ 2^63-1 BIGINT FLOAT 32位浮点数 - FLOAT DOUBLE 64位浮点数 - DOUBLE # 整数字段 schema.add_field( field_name="stock_quantity", datatype=DataType.INT32, nullable=False, default_value=0 ) # 浮点数字段 schema.add_field( field_name="product_price", datatype=DataType.FLOAT, nullable=False ) # 布尔字段 schema.add_field( field_name="is_available", datatype=DataType.BOOL, default_value=True ) # 对比 MySQL # stock_quantity INT NOT NULL DEFAULT 0, # product_price FLOAT NOT NULL, # is_available BOOLEAN DEFAULT TRUE 4.3 JSON 字段\rJSON 字段 vs 动态字段对比\r特征 JSON 字段 动态字段 对比 MySQL Schema 定义 必须显式声明 隐藏字段 $meta JSON 列 vs 无对应概念 使用场景 结构化、已知的数据 灵活、半结构化数据 JSON 列 vs NoSQL 特性 控制 用户控制字段名和结构 系统自动管理 - 查询方式 metadata["key"] dynamic_key 或 $meta["key"] JSON_EXTRACT() # JSON 字段示例 schema.add_field( field_name="product_detail", datatype=DataType.JSON ) # 插入数据示例 data = { "product_id": 1, "product_detail": { "brand": "Apple", "model": "iPhone 15", "specs": { "cpu": "A17 Pro", "ram": "8GB" } } } # 对比 MySQL # product_detail JSON # 查询: SELECT JSON_EXTRACT(product_detail, &#39;$.brand&#39;) FROM products; JSON 索引\rJSON 索引适用场景：\n'><title>Milvus Schema模式详解 - 字段类型与数据建模指南</title><link rel=canonical href=https://zg-dd.github.io/stu/milvus-stu-schema/><link rel=stylesheet href=/scss/style.min.ff560f1cad7a040e336f2dd6880b9ee1ad344d6e3d8f5411e5a1aaa8b23bbdd0.css><meta property='og:title' content="Milvus Schema模式详解 - 字段类型与数据建模指南"><meta property='og:description' content='一、Schema 概念理解\r1.1 什么是 Schema？\rSchema 是集合（Collection）的元数据定义，类似于关系型数据库中的表结构定义。\nMilvus 概念 关系型数据库概念 说明 Schema Table Schema 定义数据结构的元数据 Field Column 字段/列定义 DataType Data Type 数据类型（VARCHAR, INT, FLOAT等） Primary Key Primary Key 主键字段 Vector Field - Milvus 特有的向量字段 Dynamic Field - 动态字段，类似 MongoDB 的灵活 Schema 1.2 创建 Schema\rfrom pymilvus import MilvusClient, DataType # 创建 Schema schema = client.create_schema( enable_dynamic_field=True # 启用动态字段 ) # 对比 MySQL # CREATE TABLE products ( # ... # ); 二、字段类型详解\r2.1 字段分类\r字段类型\r├── 标量字段（Scalar Fields）\r│ ├── 字符串（VARCHAR）\r│ ├── 数字（INT8/INT16/INT32/INT64/FLOAT/DOUBLE/BOOL）\r│ ├── JSON\r│ ├── 数组（ARRAY）\r│ ├── 时间戳（TIMESTAMPTZ）\r│ ├── 结构体数组（ARRAY of STRUCT）\r│ └── 几何字段（GEOMETRY）\r└── 向量字段（Vector Fields）\r├── 密集向量（FLOAT_VECTOR/FLOAT16_VECTOR/BFLOAT16_VECTOR/INT8_VECTOR）\r├── 稀疏向量（SPARSE_FLOAT_VECTOR）\r└── 二进制向量（BINARY_VECTOR） 三、主键字段\r3.1 主键类型对比\r数据类型 说明 对比 MySQL INT64 64位整数，推荐使用 类似 BIGINT AUTO_INCREMENT VARCHAR 可变长度字符串 类似 VARCHAR(n) PRIMARY KEY 3.2 自动 ID vs 手动 ID\r模式 说明 使用场景 对比 MySQL 自动 ID Milvus 自动生成唯一标识符 大多数情况 AUTO_INCREMENT 手动 ID 用户提供唯一 ID ID 需要与外部系统保持一致 手动插入主键值 3.3 主键字段示例\r# 自动 ID 主键 schema.add_field( field_name="product_id", datatype=DataType.INT64, is_primary=True, # 标记为主键 auto_id=True # 自动生成 ID ) # 对比 MySQL # product_id BIGINT AUTO_INCREMENT PRIMARY KEY # 手动 ID 主键（使用字符串） schema.add_field( field_name="sku_code", datatype=DataType.VARCHAR, max_length=50, is_primary=True, auto_id=False # 手动提供 ID ) # 对比 MySQL # sku_code VARCHAR(50) PRIMARY KEY 四、标量字段详解\r4.1 字符串字段（VARCHAR）\r属性 说明 取值范围 对比 MySQL datatype 数据类型 DataType.VARCHAR VARCHAR max_length 最大长度 1-65535 VARCHAR(n) 中的 n nullable 是否可为空 True/False NULL/NOT NULL default_value 默认值 字符串 DEFAULT &lsquo;value&rsquo; # 字符串字段示例 schema.add_field( field_name="product_name", datatype=DataType.VARCHAR, max_length=255, nullable=False, default_value="未命名商品" ) # 对比 MySQL # product_name VARCHAR(255) NOT NULL DEFAULT &#39;未命名商品&#39; 4.2 数字字段\rMilvus 类型 说明 取值范围 对比 MySQL BOOL 布尔值 True/False BOOLEAN INT8 8位整数 -128 ~ 127 TINYINT INT16 16位整数 -32768 ~ 32767 SMALLINT INT32 32位整数 -2^31 ~ 2^31-1 INT INT64 64位整数 -2^63 ~ 2^63-1 BIGINT FLOAT 32位浮点数 - FLOAT DOUBLE 64位浮点数 - DOUBLE # 整数字段 schema.add_field( field_name="stock_quantity", datatype=DataType.INT32, nullable=False, default_value=0 ) # 浮点数字段 schema.add_field( field_name="product_price", datatype=DataType.FLOAT, nullable=False ) # 布尔字段 schema.add_field( field_name="is_available", datatype=DataType.BOOL, default_value=True ) # 对比 MySQL # stock_quantity INT NOT NULL DEFAULT 0, # product_price FLOAT NOT NULL, # is_available BOOLEAN DEFAULT TRUE 4.3 JSON 字段\rJSON 字段 vs 动态字段对比\r特征 JSON 字段 动态字段 对比 MySQL Schema 定义 必须显式声明 隐藏字段 $meta JSON 列 vs 无对应概念 使用场景 结构化、已知的数据 灵活、半结构化数据 JSON 列 vs NoSQL 特性 控制 用户控制字段名和结构 系统自动管理 - 查询方式 metadata["key"] dynamic_key 或 $meta["key"] JSON_EXTRACT() # JSON 字段示例 schema.add_field( field_name="product_detail", datatype=DataType.JSON ) # 插入数据示例 data = { "product_id": 1, "product_detail": { "brand": "Apple", "model": "iPhone 15", "specs": { "cpu": "A17 Pro", "ram": "8GB" } } } # 对比 MySQL # product_detail JSON # 查询: SELECT JSON_EXTRACT(product_detail, &#39;$.brand&#39;) FROM products; JSON 索引\rJSON 索引适用场景：\n'><meta property='og:url' content='https://zg-dd.github.io/stu/milvus-stu-schema/'><meta property='og:site_name' content='小巷的随笔'><meta property='og:type' content='article'><meta property='article:section' content='Stu'><meta property='article:tag' content='Milvus'><meta property='article:tag' content='Schema'><meta property='article:published_time' content='2026-02-26T18:51:45+08:00'><meta property='article:modified_time' content='2026-02-26T18:51:45+08:00'><meta name=twitter:title content="Milvus Schema模式详解 - 字段类型与数据建模指南"><meta name=twitter:description content='一、Schema 概念理解\r1.1 什么是 Schema？\rSchema 是集合（Collection）的元数据定义，类似于关系型数据库中的表结构定义。\nMilvus 概念 关系型数据库概念 说明 Schema Table Schema 定义数据结构的元数据 Field Column 字段/列定义 DataType Data Type 数据类型（VARCHAR, INT, FLOAT等） Primary Key Primary Key 主键字段 Vector Field - Milvus 特有的向量字段 Dynamic Field - 动态字段，类似 MongoDB 的灵活 Schema 1.2 创建 Schema\rfrom pymilvus import MilvusClient, DataType # 创建 Schema schema = client.create_schema( enable_dynamic_field=True # 启用动态字段 ) # 对比 MySQL # CREATE TABLE products ( # ... # ); 二、字段类型详解\r2.1 字段分类\r字段类型\r├── 标量字段（Scalar Fields）\r│ ├── 字符串（VARCHAR）\r│ ├── 数字（INT8/INT16/INT32/INT64/FLOAT/DOUBLE/BOOL）\r│ ├── JSON\r│ ├── 数组（ARRAY）\r│ ├── 时间戳（TIMESTAMPTZ）\r│ ├── 结构体数组（ARRAY of STRUCT）\r│ └── 几何字段（GEOMETRY）\r└── 向量字段（Vector Fields）\r├── 密集向量（FLOAT_VECTOR/FLOAT16_VECTOR/BFLOAT16_VECTOR/INT8_VECTOR）\r├── 稀疏向量（SPARSE_FLOAT_VECTOR）\r└── 二进制向量（BINARY_VECTOR） 三、主键字段\r3.1 主键类型对比\r数据类型 说明 对比 MySQL INT64 64位整数，推荐使用 类似 BIGINT AUTO_INCREMENT VARCHAR 可变长度字符串 类似 VARCHAR(n) PRIMARY KEY 3.2 自动 ID vs 手动 ID\r模式 说明 使用场景 对比 MySQL 自动 ID Milvus 自动生成唯一标识符 大多数情况 AUTO_INCREMENT 手动 ID 用户提供唯一 ID ID 需要与外部系统保持一致 手动插入主键值 3.3 主键字段示例\r# 自动 ID 主键 schema.add_field( field_name="product_id", datatype=DataType.INT64, is_primary=True, # 标记为主键 auto_id=True # 自动生成 ID ) # 对比 MySQL # product_id BIGINT AUTO_INCREMENT PRIMARY KEY # 手动 ID 主键（使用字符串） schema.add_field( field_name="sku_code", datatype=DataType.VARCHAR, max_length=50, is_primary=True, auto_id=False # 手动提供 ID ) # 对比 MySQL # sku_code VARCHAR(50) PRIMARY KEY 四、标量字段详解\r4.1 字符串字段（VARCHAR）\r属性 说明 取值范围 对比 MySQL datatype 数据类型 DataType.VARCHAR VARCHAR max_length 最大长度 1-65535 VARCHAR(n) 中的 n nullable 是否可为空 True/False NULL/NOT NULL default_value 默认值 字符串 DEFAULT &lsquo;value&rsquo; # 字符串字段示例 schema.add_field( field_name="product_name", datatype=DataType.VARCHAR, max_length=255, nullable=False, default_value="未命名商品" ) # 对比 MySQL # product_name VARCHAR(255) NOT NULL DEFAULT &#39;未命名商品&#39; 4.2 数字字段\rMilvus 类型 说明 取值范围 对比 MySQL BOOL 布尔值 True/False BOOLEAN INT8 8位整数 -128 ~ 127 TINYINT INT16 16位整数 -32768 ~ 32767 SMALLINT INT32 32位整数 -2^31 ~ 2^31-1 INT INT64 64位整数 -2^63 ~ 2^63-1 BIGINT FLOAT 32位浮点数 - FLOAT DOUBLE 64位浮点数 - DOUBLE # 整数字段 schema.add_field( field_name="stock_quantity", datatype=DataType.INT32, nullable=False, default_value=0 ) # 浮点数字段 schema.add_field( field_name="product_price", datatype=DataType.FLOAT, nullable=False ) # 布尔字段 schema.add_field( field_name="is_available", datatype=DataType.BOOL, default_value=True ) # 对比 MySQL # stock_quantity INT NOT NULL DEFAULT 0, # product_price FLOAT NOT NULL, # is_available BOOLEAN DEFAULT TRUE 4.3 JSON 字段\rJSON 字段 vs 动态字段对比\r特征 JSON 字段 动态字段 对比 MySQL Schema 定义 必须显式声明 隐藏字段 $meta JSON 列 vs 无对应概念 使用场景 结构化、已知的数据 灵活、半结构化数据 JSON 列 vs NoSQL 特性 控制 用户控制字段名和结构 系统自动管理 - 查询方式 metadata["key"] dynamic_key 或 $meta["key"] JSON_EXTRACT() # JSON 字段示例 schema.add_field( field_name="product_detail", datatype=DataType.JSON ) # 插入数据示例 data = { "product_id": 1, "product_detail": { "brand": "Apple", "model": "iPhone 15", "specs": { "cpu": "A17 Pro", "ram": "8GB" } } } # 对比 MySQL # product_detail JSON # 查询: SELECT JSON_EXTRACT(product_detail, &#39;$.brand&#39;) FROM products; JSON 索引\rJSON 索引适用场景：\n'></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/avatar_hu_a0cc1cf57968b27d.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a><span class=emoji>🌱</span></figure><div class=site-meta><h1 class=site-name><a href=/>小巷的随笔</a></h1><h2 class=site-description>记录，不是为了证明自己；而是把“解决问题 → 思考 → 沉淀”形成习惯。</h2></div></header><ol class=menu id=main-menu><li class=current><a href=/stu/><span>学习笔记</span></a></li><li><a href=/blog/><span>随笔思考</span></a></li><li><a href=/life/><span>生活记录</span></a></li><li><a href=/categories/><span>分类</span></a></li><li><a href=/tags/><span>标签</span></a></li><li class=menu-bottom-section><ol class=menu><li id=i18n-switch><svg class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5h7"/><path d="M9 3v2c0 4.418-2.239 8-5 8"/><path d="M5 9c-.003 2.144 2.952 3.908 6.7 4"/><path d="M12 20l4-9 4 9"/><path d="M19.1 18h-6.2"/></svg>
+<select name=language title=language onchange="window.location.href=this.selectedOptions[0].value"><option value=https://zg-dd.github.io/ selected>简体中文</option><option value=https://zg-dd.github.io/en/>English</option></select></li><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav id=TableOfContents><ul><li><a href=#一schema-概念理解>一、Schema 概念理解</a><ul><li><a href=#11-什么是-schema>1.1 什么是 Schema？</a></li><li><a href=#12-创建-schema>1.2 创建 Schema</a></li></ul></li><li><a href=#二字段类型详解>二、字段类型详解</a><ul><li><a href=#21-字段分类>2.1 字段分类</a></li></ul></li><li><a href=#三主键字段>三、主键字段</a><ul><li><a href=#31-主键类型对比>3.1 主键类型对比</a></li><li><a href=#32-自动-id-vs-手动-id>3.2 自动 ID vs 手动 ID</a></li><li><a href=#33-主键字段示例>3.3 主键字段示例</a></li></ul></li><li><a href=#四标量字段详解>四、标量字段详解</a><ul><li><a href=#41-字符串字段varchar>4.1 字符串字段（VARCHAR）</a></li><li><a href=#42-数字字段>4.2 数字字段</a></li><li><a href=#43-json-字段>4.3 JSON 字段</a></li><li><a href=#44-数组字段array>4.4 数组字段（ARRAY）</a></li><li><a href=#45-时间戳字段timestamptz>4.5 时间戳字段（TIMESTAMPTZ）</a></li><li><a href=#46-结构体数组array-of-struct>4.6 结构体数组（ARRAY of STRUCT）</a></li><li><a href=#47-几何字段geometry>4.7 几何字段（GEOMETRY）</a></li></ul></li><li><a href=#五向量字段详解>五、向量字段详解</a><ul><li><a href=#51-向量类型对比>5.1 向量类型对比</a></li><li><a href=#52-密集向量示例>5.2 密集向量示例</a></li><li><a href=#53-稀疏向量示例>5.3 稀疏向量示例</a></li></ul></li></ul><ul><li><ul><li><a href=#62-动态字段支持的类型>6.2 动态字段支持的类型</a></li><li><a href=#63-查询动态字段>6.3 查询动态字段</a></li></ul></li><li><a href=#七完整-schema-示例>七、完整 Schema 示例</a></li><li><a href=#八schema-与-mysql-对比总结>八、Schema 与 MySQL 对比总结</a></li><li><a href=#九最佳实践>九、最佳实践</a><ul><li><a href=#91-字段命名规范>9.1 字段命名规范</a></li><li><a href=#92-向量维度选择>9.2 向量维度选择</a></li><li><a href=#93-索引策略>9.3 索引策略</a></li></ul></li><li><a href=#十关键要点总结>十、关键要点总结</a></li></ul></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93/>向量数据库</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/stu/milvus-stu-schema/>Milvus Schema模式详解 - 字段类型与数据建模指南</a></h2></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published datetime=2026-02-26T18:51:45+08:00>Feb 26, 2026</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>阅读时长: 7 分钟</time></div></footer><footer class=article-translations><svg class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5h7"/><path d="M9 3v2c0 4.418-2.239 8-5 8"/><path d="M5 9c-.003 2.144 2.952 3.908 6.7 4"/><path d="M12 20l4-9 4 9"/><path d="M19.1 18h-6.2"/></svg><div><a href=https://zg-dd.github.io/en/stu/milvus-stu-schema/ class=link>English</a></div></footer></div></header><section class=article-content><h2 id=一schema-概念理解>一、Schema 概念理解</h2><h3 id=11-什么是-schema>1.1 什么是 Schema？</h3><p>Schema 是集合（Collection）的元数据定义，类似于关系型数据库中的表结构定义。</p><div class=table-wrapper><table><thead><tr><th>Milvus 概念</th><th>关系型数据库概念</th><th>说明</th></tr></thead><tbody><tr><td>Schema</td><td>Table Schema</td><td>定义数据结构的元数据</td></tr><tr><td>Field</td><td>Column</td><td>字段/列定义</td></tr><tr><td>DataType</td><td>Data Type</td><td>数据类型（VARCHAR, INT, FLOAT等）</td></tr><tr><td>Primary Key</td><td>Primary Key</td><td>主键字段</td></tr><tr><td>Vector Field</td><td>-</td><td>Milvus 特有的向量字段</td></tr><tr><td>Dynamic Field</td><td>-</td><td>动态字段，类似 MongoDB 的灵活 Schema</td></tr></tbody></table></div><h3 id=12-创建-schema>1.2 创建 Schema</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#f92672>from</span> pymilvus <span style=color:#f92672>import</span> MilvusClient, DataType
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 创建 Schema</span>
+</span></span><span style=display:flex><span>schema <span style=color:#f92672>=</span> client<span style=color:#f92672>.</span>create_schema(
+</span></span><span style=display:flex><span>    enable_dynamic_field<span style=color:#f92672>=</span><span style=color:#66d9ef>True</span>  <span style=color:#75715e># 启用动态字段</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 对比 MySQL</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># CREATE TABLE products (</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>#     ...</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># );</span>
+</span></span></code></pre></div><h2 id=二字段类型详解>二、字段类型详解</h2><h3 id=21-字段分类>2.1 字段分类</h3><pre tabindex=0><code>字段类型
+├── 标量字段（Scalar Fields）
+│   ├── 字符串（VARCHAR）
+│   ├── 数字（INT8/INT16/INT32/INT64/FLOAT/DOUBLE/BOOL）
+│   ├── JSON
+│   ├── 数组（ARRAY）
+│   ├── 时间戳（TIMESTAMPTZ）
+│   ├── 结构体数组（ARRAY of STRUCT）
+│   └── 几何字段（GEOMETRY）
+└── 向量字段（Vector Fields）
+    ├── 密集向量（FLOAT_VECTOR/FLOAT16_VECTOR/BFLOAT16_VECTOR/INT8_VECTOR）
+    ├── 稀疏向量（SPARSE_FLOAT_VECTOR）
+    └── 二进制向量（BINARY_VECTOR）
+</code></pre><h2 id=三主键字段>三、主键字段</h2><h3 id=31-主键类型对比>3.1 主键类型对比</h3><div class=table-wrapper><table><thead><tr><th>数据类型</th><th>说明</th><th>对比 MySQL</th></tr></thead><tbody><tr><td>INT64</td><td>64位整数，推荐使用</td><td>类似 <code>BIGINT AUTO_INCREMENT</code></td></tr><tr><td>VARCHAR</td><td>可变长度字符串</td><td>类似 <code>VARCHAR(n) PRIMARY KEY</code></td></tr></tbody></table></div><h3 id=32-自动-id-vs-手动-id>3.2 自动 ID vs 手动 ID</h3><div class=table-wrapper><table><thead><tr><th>模式</th><th>说明</th><th>使用场景</th><th>对比 MySQL</th></tr></thead><tbody><tr><td>自动 ID</td><td>Milvus 自动生成唯一标识符</td><td>大多数情况</td><td><code>AUTO_INCREMENT</code></td></tr><tr><td>手动 ID</td><td>用户提供唯一 ID</td><td>ID 需要与外部系统保持一致</td><td>手动插入主键值</td></tr></tbody></table></div><h3 id=33-主键字段示例>3.3 主键字段示例</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># 自动 ID 主键</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;product_id&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>INT64,
+</span></span><span style=display:flex><span>    is_primary<span style=color:#f92672>=</span><span style=color:#66d9ef>True</span>,    <span style=color:#75715e># 标记为主键</span>
+</span></span><span style=display:flex><span>    auto_id<span style=color:#f92672>=</span><span style=color:#66d9ef>True</span>        <span style=color:#75715e># 自动生成 ID</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 对比 MySQL</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># product_id BIGINT AUTO_INCREMENT PRIMARY KEY</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 手动 ID 主键（使用字符串）</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;sku_code&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>VARCHAR,
+</span></span><span style=display:flex><span>    max_length<span style=color:#f92672>=</span><span style=color:#ae81ff>50</span>,
+</span></span><span style=display:flex><span>    is_primary<span style=color:#f92672>=</span><span style=color:#66d9ef>True</span>,
+</span></span><span style=display:flex><span>    auto_id<span style=color:#f92672>=</span><span style=color:#66d9ef>False</span>       <span style=color:#75715e># 手动提供 ID</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 对比 MySQL</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># sku_code VARCHAR(50) PRIMARY KEY</span>
+</span></span></code></pre></div><h2 id=四标量字段详解>四、标量字段详解</h2><h3 id=41-字符串字段varchar>4.1 字符串字段（VARCHAR）</h3><div class=table-wrapper><table><thead><tr><th>属性</th><th>说明</th><th>取值范围</th><th>对比 MySQL</th></tr></thead><tbody><tr><td>datatype</td><td>数据类型</td><td>DataType.VARCHAR</td><td>VARCHAR</td></tr><tr><td>max_length</td><td>最大长度</td><td>1-65535</td><td>VARCHAR(n) 中的 n</td></tr><tr><td>nullable</td><td>是否可为空</td><td>True/False</td><td>NULL/NOT NULL</td></tr><tr><td>default_value</td><td>默认值</td><td>字符串</td><td>DEFAULT &lsquo;value&rsquo;</td></tr></tbody></table></div><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># 字符串字段示例</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;product_name&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>VARCHAR,
+</span></span><span style=display:flex><span>    max_length<span style=color:#f92672>=</span><span style=color:#ae81ff>255</span>,
+</span></span><span style=display:flex><span>    nullable<span style=color:#f92672>=</span><span style=color:#66d9ef>False</span>,
+</span></span><span style=display:flex><span>    default_value<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;未命名商品&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 对比 MySQL</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># product_name VARCHAR(255) NOT NULL DEFAULT &#39;未命名商品&#39;</span>
+</span></span></code></pre></div><h3 id=42-数字字段>4.2 数字字段</h3><div class=table-wrapper><table><thead><tr><th>Milvus 类型</th><th>说明</th><th>取值范围</th><th>对比 MySQL</th></tr></thead><tbody><tr><td>BOOL</td><td>布尔值</td><td>True/False</td><td>BOOLEAN</td></tr><tr><td>INT8</td><td>8位整数</td><td>-128 ~ 127</td><td>TINYINT</td></tr><tr><td>INT16</td><td>16位整数</td><td>-32768 ~ 32767</td><td>SMALLINT</td></tr><tr><td>INT32</td><td>32位整数</td><td>-2^31 ~ 2^31-1</td><td>INT</td></tr><tr><td>INT64</td><td>64位整数</td><td>-2^63 ~ 2^63-1</td><td>BIGINT</td></tr><tr><td>FLOAT</td><td>32位浮点数</td><td>-</td><td>FLOAT</td></tr><tr><td>DOUBLE</td><td>64位浮点数</td><td>-</td><td>DOUBLE</td></tr></tbody></table></div><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># 整数字段</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;stock_quantity&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>INT32,
+</span></span><span style=display:flex><span>    nullable<span style=color:#f92672>=</span><span style=color:#66d9ef>False</span>,
+</span></span><span style=display:flex><span>    default_value<span style=color:#f92672>=</span><span style=color:#ae81ff>0</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 浮点数字段</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;product_price&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>FLOAT,
+</span></span><span style=display:flex><span>    nullable<span style=color:#f92672>=</span><span style=color:#66d9ef>False</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 布尔字段</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;is_available&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>BOOL,
+</span></span><span style=display:flex><span>    default_value<span style=color:#f92672>=</span><span style=color:#66d9ef>True</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 对比 MySQL</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># stock_quantity INT NOT NULL DEFAULT 0,</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># product_price FLOAT NOT NULL,</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># is_available BOOLEAN DEFAULT TRUE</span>
+</span></span></code></pre></div><h3 id=43-json-字段>4.3 JSON 字段</h3><h4 id=json-字段-vs-动态字段对比>JSON 字段 vs 动态字段对比</h4><div class=table-wrapper><table><thead><tr><th>特征</th><th>JSON 字段</th><th>动态字段</th><th>对比 MySQL</th></tr></thead><tbody><tr><td>Schema 定义</td><td>必须显式声明</td><td>隐藏字段 <code>$meta</code></td><td>JSON 列 vs 无对应概念</td></tr><tr><td>使用场景</td><td>结构化、已知的数据</td><td>灵活、半结构化数据</td><td>JSON 列 vs NoSQL 特性</td></tr><tr><td>控制</td><td>用户控制字段名和结构</td><td>系统自动管理</td><td>-</td></tr><tr><td>查询方式</td><td><code>metadata["key"]</code></td><td><code>dynamic_key</code> 或 <code>$meta["key"]</code></td><td><code>JSON_EXTRACT()</code></td></tr></tbody></table></div><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># JSON 字段示例</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;product_detail&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>JSON
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 插入数据示例</span>
+</span></span><span style=display:flex><span>data <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;product_id&#34;</span>: <span style=color:#ae81ff>1</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;product_detail&#34;</span>: {
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;brand&#34;</span>: <span style=color:#e6db74>&#34;Apple&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;model&#34;</span>: <span style=color:#e6db74>&#34;iPhone 15&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;specs&#34;</span>: {
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;cpu&#34;</span>: <span style=color:#e6db74>&#34;A17 Pro&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;ram&#34;</span>: <span style=color:#e6db74>&#34;8GB&#34;</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 对比 MySQL</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># product_detail JSON</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 查询: SELECT JSON_EXTRACT(product_detail, &#39;$.brand&#39;) FROM products;</span>
+</span></span></code></pre></div><h4 id=json-索引>JSON 索引</h4><p>JSON 索引适用场景：</p><ol><li>具有一致、已知键的结构化 Schema</li><li>特定 JSON 路径上的等价和范围查询</li><li>需要精确控制索引键的情况</li><li>对目标查询进行高效存储加速</li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># 创建 JSON 索引</span>
+</span></span><span style=display:flex><span>index_params <span style=color:#f92672>=</span> MilvusClient<span style=color:#f92672>.</span>prepare_index_params()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>index_params<span style=color:#f92672>.</span>add_index(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;product_detail&#34;</span>,        <span style=color:#75715e># JSON 字段名</span>
+</span></span><span style=display:flex><span>    index_type<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;AUTOINDEX&#34;</span>,             <span style=color:#75715e># 必须是 AUTOINDEX 或 INVERTED</span>
+</span></span><span style=display:flex><span>    index_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;idx_product_brand&#34;</span>,     <span style=color:#75715e># 索引名称</span>
+</span></span><span style=display:flex><span>    params<span style=color:#f92672>=</span>{
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;json_path&#34;</span>: <span style=color:#e6db74>&#39;product_detail[&#34;brand&#34;]&#39;</span>,  <span style=color:#75715e># 顶级键</span>
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;json_cast_type&#34;</span>: <span style=color:#e6db74>&#34;VARCHAR&#34;</span>              <span style=color:#75715e># 数据类型</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 嵌套键索引</span>
+</span></span><span style=display:flex><span>index_params<span style=color:#f92672>.</span>add_index(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;product_detail&#34;</span>,
+</span></span><span style=display:flex><span>    index_type<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;AUTOINDEX&#34;</span>,
+</span></span><span style=display:flex><span>    index_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;idx_product_cpu&#34;</span>,
+</span></span><span style=display:flex><span>    params<span style=color:#f92672>=</span>{
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;json_path&#34;</span>: <span style=color:#e6db74>&#39;product_detail[&#34;specs&#34;][&#34;cpu&#34;]&#39;</span>,  <span style=color:#75715e># 嵌套键</span>
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;json_cast_type&#34;</span>: <span style=color:#e6db74>&#34;VARCHAR&#34;</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 对比 MySQL 8.0+</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># CREATE INDEX idx_product_brand ON products((JSON_EXTRACT(product_detail, &#39;$.brand&#39;)));</span>
+</span></span></code></pre></div><h4 id=json-切碎shredding优化>JSON 切碎（Shredding）优化</h4><p>JSON 切碎通过将基于行的存储转换为列式存储来加速查询。</p><div class=table-wrapper><table><thead><tr><th>参数名称</th><th>说明</th><th>默认值</th><th>调整建议</th></tr></thead><tbody><tr><td><code>common.enabledJSONShredding</code></td><td>是否启用 JSON 切碎</td><td>false</td><td>设为 true 激活功能</td></tr><tr><td><code>common.usingJSONShreddingForQuery</code></td><td>是否使用切碎数据加速</td><td>true</td><td>查询失败时设为 false 恢复</td></tr><tr><td><code>queryNode.mmap.jsonShredding</code></td><td>加载时是否使用 mmap</td><td>true</td><td>特殊内存需求时调整</td></tr><tr><td><code>dataCoord.jsonShreddingMaxColumns</code></td><td>最大切碎列数</td><td>1024</td><td>频繁键超限时增加</td></tr><tr><td><code>dataCoord.jsonShreddingRatioThreshold</code></td><td>最小出现率阈值</td><td>0.3</td><td>调整切碎标准</td></tr></tbody></table></div><pre tabindex=0><code># milvus.yaml 配置示例
+common:
+  enabledJSONShredding: true
+  usingJSONShreddingForQuery: true
+
+queryNode:
+  mmap:
+    jsonShredding: true
+
+dataCoord:
+  jsonShreddingMaxColumns: 1024
+  jsonShreddingRatioThreshold: 0.3
+</code></pre><h3 id=44-数组字段array>4.4 数组字段（ARRAY）</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># 字符串数组</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;product_tags&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>ARRAY,
+</span></span><span style=display:flex><span>    element_type<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>VARCHAR,
+</span></span><span style=display:flex><span>    max_capacity<span style=color:#f92672>=</span><span style=color:#ae81ff>10</span>,           <span style=color:#75715e># 最多10个元素</span>
+</span></span><span style=display:flex><span>    max_length<span style=color:#f92672>=</span><span style=color:#ae81ff>50</span>              <span style=color:#75715e># 每个字符串最长50字符</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 整数数组</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;related_product_ids&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>ARRAY,
+</span></span><span style=display:flex><span>    element_type<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>INT64,
+</span></span><span style=display:flex><span>    max_capacity<span style=color:#f92672>=</span><span style=color:#ae81ff>20</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 插入数据示例</span>
+</span></span><span style=display:flex><span>data <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;product_id&#34;</span>: <span style=color:#ae81ff>1</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;product_tags&#34;</span>: [<span style=color:#e6db74>&#34;电子产品&#34;</span>, <span style=color:#e6db74>&#34;手机&#34;</span>, <span style=color:#e6db74>&#34;5G&#34;</span>, <span style=color:#e6db74>&#34;智能&#34;</span>],
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;related_product_ids&#34;</span>: [<span style=color:#ae81ff>101</span>, <span style=color:#ae81ff>102</span>, <span style=color:#ae81ff>103</span>]
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 对比 MySQL 8.0+</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># product_tags JSON  -- MySQL 用 JSON 数组实现</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 或使用关联表实现多对多关系</span>
+</span></span></code></pre></div><h3 id=45-时间戳字段timestamptz>4.5 时间戳字段（TIMESTAMPTZ）</h3><p>TIMESTAMPTZ 是时区感知的时间戳类型。</p><div class=table-wrapper><table><thead><tr><th>特性</th><th>说明</th><th>对比 MySQL</th></tr></thead><tbody><tr><td>输入格式</td><td>ISO 8601 字符串（带时区）</td><td>TIMESTAMP</td></tr><tr><td>内部存储</td><td>UTC 标准化存储</td><td>取决于 <code>time_zone</code> 设置</td></tr><tr><td>比较操作</td><td>统一使用 UTC</td><td>可能受时区影响</td></tr></tbody></table></div><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># 时间戳字段</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;created_at&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>TIMESTAMPTZ,
+</span></span><span style=display:flex><span>    nullable<span style=color:#f92672>=</span><span style=color:#66d9ef>False</span>,
+</span></span><span style=display:flex><span>    default_value<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;2025-01-01T00:00:00+00:00&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 插入数据示例</span>
+</span></span><span style=display:flex><span>data <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;product_id&#34;</span>: <span style=color:#ae81ff>1</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;created_at&#34;</span>: <span style=color:#e6db74>&#34;2025-05-01T23:59:59+08:00&#34;</span>  <span style=color:#75715e># 北京时间</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 对比 MySQL</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP</span>
+</span></span></code></pre></div><h4 id=时区管理级别>时区管理级别</h4><div class=table-wrapper><table><thead><tr><th>级别</th><th>参数</th><th>范围</th><th>优先级</th></tr></thead><tbody><tr><td>数据库</td><td>timezone</td><td>数据库中所有集合的默认值</td><td>最低</td></tr><tr><td>集合</td><td>timezone</td><td>覆盖该集合的数据库默认时区</td><td>中</td></tr><tr><td>查询/搜索</td><td>timezone</td><td>临时覆盖一个特定操作</td><td>最高</td></tr></tbody></table></div><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># 数据库级别设置时区</span>
+</span></span><span style=display:flex><span>client<span style=color:#f92672>.</span>alter_database_properties(
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;my_db&#34;</span>,
+</span></span><span style=display:flex><span>    {<span style=color:#e6db74>&#34;timezone&#34;</span>: <span style=color:#e6db74>&#34;Asia/Shanghai&#34;</span>}
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 集合级别设置时区（创建集合时）</span>
+</span></span><span style=display:flex><span>client<span style=color:#f92672>.</span>create_collection(
+</span></span><span style=display:flex><span>    collection_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;products&#34;</span>,
+</span></span><span style=display:flex><span>    schema<span style=color:#f92672>=</span>schema,
+</span></span><span style=display:flex><span>    properties<span style=color:#f92672>=</span>{<span style=color:#e6db74>&#34;timezone&#34;</span>: <span style=color:#e6db74>&#34;America/New_York&#34;</span>}
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 查询时临时指定时区</span>
+</span></span><span style=display:flex><span>client<span style=color:#f92672>.</span>query(
+</span></span><span style=display:flex><span>    collection_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;products&#34;</span>,
+</span></span><span style=display:flex><span>    filter<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;created_at &gt; &#39;2025-01-01T00:00:00+08:00&#39;&#34;</span>,
+</span></span><span style=display:flex><span>    timezone<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;Asia/Shanghai&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span></code></pre></div><h3 id=46-结构体数组array-of-struct>4.6 结构体数组（ARRAY of STRUCT）</h3><p>结构体数组用于存储复杂的嵌套数据。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># 商品评论数组示例</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;reviews&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>ARRAY,
+</span></span><span style=display:flex><span>    element_type<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>STRUCT,
+</span></span><span style=display:flex><span>    max_capacity<span style=color:#f92672>=</span><span style=color:#ae81ff>100</span>,
+</span></span><span style=display:flex><span>    element_schema<span style=color:#f92672>=</span>{
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;fields&#34;</span>: [
+</span></span><span style=display:flex><span>            {<span style=color:#e6db74>&#34;name&#34;</span>: <span style=color:#e6db74>&#34;user_id&#34;</span>, <span style=color:#e6db74>&#34;type&#34;</span>: DataType<span style=color:#f92672>.</span>INT64},
+</span></span><span style=display:flex><span>            {<span style=color:#e6db74>&#34;name&#34;</span>: <span style=color:#e6db74>&#34;rating&#34;</span>, <span style=color:#e6db74>&#34;type&#34;</span>: DataType<span style=color:#f92672>.</span>INT32},
+</span></span><span style=display:flex><span>            {<span style=color:#e6db74>&#34;name&#34;</span>: <span style=color:#e6db74>&#34;comment&#34;</span>, <span style=color:#e6db74>&#34;type&#34;</span>: DataType<span style=color:#f92672>.</span>VARCHAR, <span style=color:#e6db74>&#34;max_length&#34;</span>: <span style=color:#ae81ff>500</span>},
+</span></span><span style=display:flex><span>            {<span style=color:#e6db74>&#34;name&#34;</span>: <span style=color:#e6db74>&#34;review_vector&#34;</span>, <span style=color:#e6db74>&#34;type&#34;</span>: DataType<span style=color:#f92672>.</span>FLOAT_VECTOR, <span style=color:#e6db74>&#34;dim&#34;</span>: <span style=color:#ae81ff>64</span>},
+</span></span><span style=display:flex><span>            {<span style=color:#e6db74>&#34;name&#34;</span>: <span style=color:#e6db74>&#34;timestamp&#34;</span>, <span style=color:#e6db74>&#34;type&#34;</span>: DataType<span style=color:#f92672>.</span>TIMESTAMPTZ}
+</span></span><span style=display:flex><span>        ]
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 插入数据示例</span>
+</span></span><span style=display:flex><span>data <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;product_id&#34;</span>: <span style=color:#ae81ff>1</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;reviews&#34;</span>: [
+</span></span><span style=display:flex><span>        {
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;user_id&#34;</span>: <span style=color:#ae81ff>1001</span>,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;rating&#34;</span>: <span style=color:#ae81ff>5</span>,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;comment&#34;</span>: <span style=color:#e6db74>&#34;非常好用！&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;review_vector&#34;</span>: [<span style=color:#ae81ff>0.1</span>, <span style=color:#ae81ff>0.2</span>, <span style=color:#f92672>...</span>],  <span style=color:#75715e># 64维向量</span>
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;timestamp&#34;</span>: <span style=color:#e6db74>&#34;2025-05-01T10:00:00+08:00&#34;</span>
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>        {
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;user_id&#34;</span>: <span style=color:#ae81ff>1002</span>,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;rating&#34;</span>: <span style=color:#ae81ff>4</span>,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;comment&#34;</span>: <span style=color:#e6db74>&#34;还不错&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;review_vector&#34;</span>: [<span style=color:#ae81ff>0.3</span>, <span style=color:#ae81ff>0.4</span>, <span style=color:#f92672>...</span>],
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;timestamp&#34;</span>: <span style=color:#e6db74>&#34;2025-05-02T15:30:00+08:00&#34;</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    ]
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 对比 MySQL</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 需要创建关联表 reviews</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># CREATE TABLE reviews (</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>#     review_id BIGINT PRIMARY KEY,</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>#     product_id BIGINT,</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>#     user_id BIGINT,</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>#     rating INT,</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>#     comment VARCHAR(500),</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>#     timestamp TIMESTAMP,</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>#     FOREIGN KEY (product_id) REFERENCES products(product_id)</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># );</span>
+</span></span></code></pre></div><h3 id=47-几何字段geometry>4.7 几何字段（GEOMETRY）</h3><p>用于存储地理位置和坐标信息。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># 几何字段</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;store_location&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>GEOMETRY,
+</span></span><span style=display:flex><span>    default_value<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;POINT(0 0)&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 插入数据示例</span>
+</span></span><span style=display:flex><span>data <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;product_id&#34;</span>: <span style=color:#ae81ff>1</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;store_location&#34;</span>: <span style=color:#e6db74>&#34;POINT(116.4074 39.9042)&#34;</span>  <span style=color:#75715e># 北京天安门坐标</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 对比 MySQL</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># store_location POINT NOT NULL</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 或使用 PostGIS 扩展的 GEOMETRY 类型</span>
+</span></span></code></pre></div><h2 id=五向量字段详解>五、向量字段详解</h2><h3 id=51-向量类型对比>5.1 向量类型对比</h3><div class=table-wrapper><table><thead><tr><th>Milvus 类型</th><th>说明</th><th>使用场景</th><th>存储大小</th></tr></thead><tbody><tr><td>FLOAT_VECTOR</td><td>32位浮点向量</td><td>高精度语义搜索</td><td>4字节/维</td></tr><tr><td>FLOAT16_VECTOR</td><td>16位半精度浮点</td><td>深度学习、GPU计算</td><td>2字节/维</td></tr><tr><td>BFLOAT16_VECTOR</td><td>16位脑浮点</td><td>大规模图像检索</td><td>2字节/维</td></tr><tr><td>INT8_VECTOR</td><td>8位整数向量</td><td>量化模型、快速推理</td><td>1字节/维</td></tr><tr><td>SPARSE_FLOAT_VECTOR</td><td>稀疏浮点向量</td><td>全文搜索、词性匹配</td><td>变长</td></tr><tr><td>BINARY_VECTOR</td><td>二进制向量</td><td>资源受限场景</td><td>1位/维</td></tr></tbody></table></div><h3 id=52-密集向量示例>5.2 密集向量示例</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># FLOAT_VECTOR - 标准密集向量</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;product_embedding&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>FLOAT_VECTOR,
+</span></span><span style=display:flex><span>    dim<span style=color:#f92672>=</span><span style=color:#ae81ff>128</span>  <span style=color:#75715e># 128维向量</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># FLOAT16_VECTOR - 半精度向量</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;image_embedding&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>FLOAT16_VECTOR,
+</span></span><span style=display:flex><span>    dim<span style=color:#f92672>=</span><span style=color:#ae81ff>512</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># INT8_VECTOR - 量化向量</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;text_embedding_quantized&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>INT8_VECTOR,
+</span></span><span style=display:flex><span>    dim<span style=color:#f92672>=</span><span style=color:#ae81ff>256</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 插入数据示例</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> numpy <span style=color:#66d9ef>as</span> np
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>data <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;product_id&#34;</span>: <span style=color:#ae81ff>1</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;product_embedding&#34;</span>: np<span style=color:#f92672>.</span>random<span style=color:#f92672>.</span>rand(<span style=color:#ae81ff>128</span>)<span style=color:#f92672>.</span>tolist(),  <span style=color:#75715e># 128维浮点向量</span>
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;image_embedding&#34;</span>: np<span style=color:#f92672>.</span>random<span style=color:#f92672>.</span>rand(<span style=color:#ae81ff>512</span>)<span style=color:#f92672>.</span>astype(np<span style=color:#f92672>.</span>float16)<span style=color:#f92672>.</span>tolist(),
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;text_embedding_quantized&#34;</span>: np<span style=color:#f92672>.</span>random<span style=color:#f92672>.</span>randint(<span style=color:#f92672>-</span><span style=color:#ae81ff>128</span>, <span style=color:#ae81ff>127</span>, <span style=color:#ae81ff>256</span>)<span style=color:#f92672>.</span>tolist()
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># MySQL 无对应类型，需要存储为 BLOB 或 JSON</span>
+</span></span></code></pre></div><h3 id=53-稀疏向量示例>5.3 稀疏向量示例</h3><p>``python</p><h1 id=稀疏向量字段>稀疏向量字段</h1><p>schema.add_field(
+field_name=&ldquo;keyword_vector&rdquo;,
+datatype=DataType.SPARSE_FLOAT_VECTOR
+)</p><h1 id=插入数据示例稀疏向量格式>插入数据示例（稀疏向量格式）</h1><p>data = {
+&ldquo;product_id&rdquo;: 1,
+&ldquo;keyword_vector&rdquo;: {
+10: 0.5, # 索引10的值为0.5
+25: 0.8, # 索引25的值为0.8
+100: 0.3 # 索引100的值为0.3
+}
+}</p><pre tabindex=0><code>
+## 六、动态字段（Dynamic Field）
+
+### 6.1 动态字段概念
+
+动态字段允许插入 Schema 中未定义的字段，这些字段会自动存储在隐藏的 `$meta` JSON 字段中。
+
+```python
+# 启用动态字段
+schema = client.create_schema(
+    enable_dynamic_field=True  # 启用动态字段
+)
+
+# 定义基本字段
+schema.add_field(
+    field_name=&#34;product_id&#34;,
+    datatype=DataType.INT64,
+    is_primary=True,
+    auto_id=True
+)
+
+schema.add_field(
+    field_name=&#34;product_vector&#34;,
+    datatype=DataType.FLOAT_VECTOR,
+    dim=128
+)
+
+# 插入数据时可以包含未定义的字段
+data = {
+    &#34;product_id&#34;: 1,
+    &#34;product_vector&#34;: [0.1, 0.2, ...],
+    &#34;name&#34;: &#34;iPhone 15&#34;,           # 未在 Schema 中定义
+    &#34;category&#34;: &#34;Electronics&#34;,     # 未在 Schema 中定义
+    &#34;price&#34;: 999.99               # 未在 Schema 中定义
+}
+
+# Milvus 内部存储为：
+# {
+#   &#34;product_id&#34;: 1,
+#   &#34;product_vector&#34;: [0.1, 0.2, ...],
+#   &#34;$meta&#34;: {
+#     &#34;name&#34;: &#34;iPhone 15&#34;,
+#     &#34;category&#34;: &#34;Electronics&#34;,
+#     &#34;price&#34;: 999.99
+#   }
+# }
+</code></pre><h3 id=62-动态字段支持的类型>6.2 动态字段支持的类型</h3><div class=table-wrapper><table><thead><tr><th>类型</th><th>Milvus DataType</th><th>对比 MongoDB</th></tr></thead><tbody><tr><td>字符串</td><td>VARCHAR</td><td>String</td></tr><tr><td>整数</td><td>INT8, INT32, INT64</td><td>Int32, Int64</td></tr><tr><td>浮点</td><td>FLOAT, DOUBLE</td><td>Double</td></tr><tr><td>布尔</td><td>BOOL</td><td>Boolean</td></tr><tr><td>数组</td><td>ARRAY</td><td>Array</td></tr><tr><td>JSON对象</td><td>JSON</td><td>Object</td></tr></tbody></table></div><h3 id=63-查询动态字段>6.3 查询动态字段</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># 直接使用字段名查询</span>
+</span></span><span style=display:flex><span>results <span style=color:#f92672>=</span> client<span style=color:#f92672>.</span>query(
+</span></span><span style=display:flex><span>    collection_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;products&#34;</span>,
+</span></span><span style=display:flex><span>    filter<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;name == &#34;iPhone 15&#34;&#39;</span>,  <span style=color:#75715e># 直接使用动态字段名</span>
+</span></span><span style=display:flex><span>    output_fields<span style=color:#f92672>=</span>[<span style=color:#e6db74>&#34;product_id&#34;</span>, <span style=color:#e6db74>&#34;name&#34;</span>, <span style=color:#e6db74>&#34;category&#34;</span>, <span style=color:#e6db74>&#34;price&#34;</span>]
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 或通过 $meta 查询</span>
+</span></span><span style=display:flex><span>results <span style=color:#f92672>=</span> client<span style=color:#f92672>.</span>query(
+</span></span><span style=display:flex><span>    collection_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;products&#34;</span>,
+</span></span><span style=display:flex><span>    filter<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;$meta[&#34;category&#34;] == &#34;Electronics&#34;&#39;</span>,
+</span></span><span style=display:flex><span>    output_fields<span style=color:#f92672>=</span>[<span style=color:#e6db74>&#34;product_id&#34;</span>, <span style=color:#e6db74>&#34;$meta&#34;</span>]
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 对比 MongoDB</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># db.products.find({&#34;name&#34;: &#34;iPhone 15&#34;})</span>
+</span></span></code></pre></div><h2 id=七完整-schema-示例>七、完整 Schema 示例</h2><pre tabindex=0><code>from pymilvus import MilvusClient, DataType
+
+# 连接客户端
+client = MilvusClient(uri=&#34;http://localhost:19530&#34;, token=&#34;root:Milvus&#34;)
+
+# 创建 Schema
+schema = client.create_schema(
+    enable_dynamic_field=True  # 启用动态字段
+)
+
+# 1. 主键字段（自动ID）
+schema.add_field(
+    field_name=&#34;product_id&#34;,
+    datatype=DataType.INT64,
+    is_primary=True,
+    auto_id=True
+)
+
+# 2. 字符串字段
+schema.add_field(
+    field_name=&#34;product_name&#34;,
+    datatype=DataType.VARCHAR,
+    max_length=255
+)
+
+# 3. 数字字段
+schema.add_field(
+    field_name=&#34;product_price&#34;,
+    datatype=DataType.FLOAT
+)
+
+# 4. JSON 字段
+schema.add_field(
+    field_name=&#34;product_detail&#34;,
+    datatype=DataType.JSON
+)
+
+# 5. 数组字段
+schema.add_field(
+    field_name=&#34;product_tags&#34;,
+    datatype=DataType.ARRAY,
+    element_type=DataType.VARCHAR,
+    max_capacity=10,
+    max_length=50
+)
+
+# 6. 时间戳字段
+schema.add_field(
+    field_name=&#34;created_at&#34;,
+    datatype=DataType.TIMESTAMPTZ
+)
+
+# 7. 结构体数组
+schema.add_field(
+    field_name=&#34;reviews&#34;,
+    datatype=DataType.ARRAY,
+    element_type=DataType.STRUCT,
+    max_capacity=100,
+    element_schema={
+        &#34;fields&#34;: [
+            {&#34;name&#34;: &#34;user_id&#34;, &#34;type&#34;: DataType.INT64},
+            {&#34;name&#34;: &#34;rating&#34;, &#34;type&#34;: DataType.INT32},
+            {&#34;name&#34;: &#34;comment&#34;, &#34;type&#34;: DataType.VARCHAR, &#34;max_length&#34;: 500},
+            {&#34;name&#34;: &#34;review_vector&#34;, &#34;type&#34;: DataType.FLOAT_VECTOR, &#34;dim&#34;: 64}
+        ]
+    }
+)
+
+# 8. 几何字段
+schema.add_field(
+    field_name=&#34;store_location&#34;,
+    datatype=DataType.GEOMETRY,
+    default_value=&#34;POINT(0 0)&#34;
+)
+
+# 9. 密集向量字段
+schema.add_field(
+    field_name=&#34;product_embedding&#34;,
+    datatype=DataType.FLOAT_VECTOR,
+    dim=128
+)
+
+# 10. 稀疏向量字段
+schema.add_field(
+    field_name=&#34;keyword_vector&#34;,
+    datatype=DataType.SPARSE_FLOAT_VECTOR
+)
+
+print(&#34;✅ Schema 创建完成&#34;)
+</code></pre><h2 id=八schema-与-mysql-对比总结>八、Schema 与 MySQL 对比总结</h2><div class=table-wrapper><table><thead><tr><th>操作</th><th>Milvus</th><th>MySQL</th></tr></thead><tbody><tr><td>创建 Schema</td><td><code>client.create_schema()</code></td><td><code>CREATE TABLE</code></td></tr><tr><td>添加字段</td><td><code>schema.add_field()</code></td><td><code>ALTER TABLE ADD COLUMN</code></td></tr><tr><td>主键定义</td><td><code>is_primary=True</code></td><td><code>PRIMARY KEY</code></td></tr><tr><td>自动ID</td><td><code>auto_id=True</code></td><td><code>AUTO_INCREMENT</code></td></tr><tr><td>可空字段</td><td><code>nullable=True</code></td><td><code>NULL</code></td></tr><tr><td>默认值</td><td><code>default_value=value</code></td><td><code>DEFAULT value</code></td></tr><tr><td>向量字段</td><td><code>FLOAT_VECTOR</code> 等</td><td>无对应类型</td></tr><tr><td>动态字段</td><td><code>enable_dynamic_field=True</code></td><td>无（需用 JSON 或 NoSQL）</td></tr></tbody></table></div><h2 id=九最佳实践>九、最佳实践</h2><h3 id=91-字段命名规范>9.1 字段命名规范</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># ✅ 推荐</span>
+</span></span><span style=display:flex><span><span style=color:#e6db74>&#34;product_id&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#e6db74>&#34;user_name&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#e6db74>&#34;created_at&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># ❌ 避免</span>
+</span></span><span style=display:flex><span><span style=color:#e6db74>&#34;Product-ID&#34;</span>      <span style=color:#75715e># 避免连字符</span>
+</span></span><span style=display:flex><span><span style=color:#e6db74>&#34;用户名&#34;</span>          <span style=color:#75715e># 避免非ASCII</span>
+</span></span><span style=display:flex><span><span style=color:#e6db74>&#34;field name&#34;</span>     <span style=color:#75715e># 避免空格</span>
+</span></span></code></pre></div><h3 id=92-向量维度选择>9.2 向量维度选择</h3><div class=table-wrapper><table><thead><tr><th>场景</th><th>推荐维度</th><th>模型示例</th></tr></thead><tbody><tr><td>文本嵌入</td><td>384-768</td><td>sentence-transformers</td></tr><tr><td>图像嵌入</td><td>512-2048</td><td>ResNet, CLIP</td></tr><tr><td>多模态</td><td>512-1024</td><td>CLIP, ALIGN</td></tr></tbody></table></div><h3 id=93-索引策略>9.3 索引策略</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># 为向量字段创建索引</span>
+</span></span><span style=display:flex><span>index_params <span style=color:#f92672>=</span> MilvusClient<span style=color:#f92672>.</span>prepare_index_params()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># HNSW 索引（推荐用于高精度搜索）</span>
+</span></span><span style=display:flex><span>index_params<span style=color:#f92672>.</span>add_index(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;product_embedding&#34;</span>,
+</span></span><span style=display:flex><span>    index_type<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;HNSW&#34;</span>,
+</span></span><span style=display:flex><span>    metric_type<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;COSINE&#34;</span>,
+</span></span><span style=display:flex><span>    params<span style=color:#f92672>=</span>{<span style=color:#e6db74>&#34;M&#34;</span>: <span style=color:#ae81ff>16</span>, <span style=color:#e6db74>&#34;efConstruction&#34;</span>: <span style=color:#ae81ff>256</span>}
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># IVF_FLAT 索引（适合大规模数据）</span>
+</span></span><span style=display:flex><span>index_params<span style=color:#f92672>.</span>add_index(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;image_embedding&#34;</span>,
+</span></span><span style=display:flex><span>    index_type<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;IVF_FLAT&#34;</span>,
+</span></span><span style=display:flex><span>    metric_type<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;L2&#34;</span>,
+</span></span><span style=display:flex><span>    params<span style=color:#f92672>=</span>{<span style=color:#e6db74>&#34;nlist&#34;</span>: <span style=color:#ae81ff>1024</span>}
+</span></span><span style=display:flex><span>)
+</span></span></code></pre></div><h2 id=十关键要点总结>十、关键要点总结</h2><ol><li><strong>Schema 灵活性</strong>：Milvus 支持动态字段，比传统关系型数据库更灵活</li><li><strong>向量原生支持</strong>：向量字段是一等公民，无需额外转换</li><li><strong>类型丰富</strong>：支持 JSON、数组、结构体等复杂类型</li><li><strong>时区感知</strong>：TIMESTAMPTZ 提供原生时区支持</li><li><strong>索引优化</strong>：JSON 切碎、向量索引等优化手段</li><li><strong>与 NoSQL 结合</strong>：动态字段类似 MongoDB，但保留了 Schema 约束的优势</li></ol></section><footer class=article-footer><section class=article-tags><a href=/tags/milvus/>Milvus</a>
+<a href=/tags/schema/>Schema</a></section></footer></article><aside class=related-content--wrapper><h2 class=section-title>相关文章</h2><div class=related-content><div class="flex article-list--tile"><article><a href=/stu/milvus-stu-db/><div class=article-details><h2 class=article-title>Milvus数据库操作</h2></div></a></article><article><a href=/stu/milvus-install-guide/><div class=article-details><h2 class=article-title>Milvus Standalone 模式安装完整指南及常见问题解决</h2></div></a></article></div></div></aside><script src=https://giscus.app/client.js data-repo=zg-dd/zg-dd.github.io data-repo-id=R_kgDOQwB7tw data-category=Announcements data-category-id=DIC_kwDOQwB7t84C0WGD data-mapping=pathname data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=preferred_color_scheme data-lang=zh-CN data-loading crossorigin=anonymous async></script><script>function setGiscusTheme(e){let t=document.querySelector("iframe.giscus-frame");t&&t.contentWindow.postMessage({giscus:{setConfig:{theme:e}}},"https://giscus.app")}(function(){addEventListener("message",t=>{if(event.origin!=="https://giscus.app")return;e()}),window.addEventListener("onColorSchemeChange",e);function e(){setGiscusTheme(document.documentElement.dataset.scheme==="light"?"preferred_color_scheme":"preferred_color_scheme")}})()</script><footer class=site-footer><section class=copyright>&copy;
+2026 小巷的随笔</section><section class=powerby>使用 <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> 构建<br>主题 <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.33.0>Stack</a></b> 由 <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> 设计</section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.c922af694cc257bf1ecc41c0dd7b0430f9114ec280ccf67cd2c6ad55f5316c4e.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>

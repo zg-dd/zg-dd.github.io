@@ -1,0 +1,502 @@
+<!doctype html><html lang=en dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content='Milvus Schema Learning Document\r1. Understanding Schema Concept\r1.1 What is Schema?\rSchema is the metadata definition of a Collection, similar to table structure definition in relational databases.\nMilvus Concept Relational Database Concept Description Schema Table Schema Metadata defining data structure Field Column Field/column definition DataType Data Type Data types (VARCHAR, INT, FLOAT, etc.) Primary Key Primary Key Primary key field Vector Field - Milvus-specific vector field Dynamic Field - Dynamic field, similar to MongoDB&rsquo;s flexible Schema 1.2 Creating Schema\rfrom pymilvus import MilvusClient, DataType # Create Schema schema = client.create_schema( enable_dynamic_field=True # Enable dynamic fields ) # Compare with MySQL # CREATE TABLE products ( # ... # ); 2. Field Types Detailed\r2.1 Field Classification\rField Types ├── Scalar Fields │ ├── String (VARCHAR) │ ├── Numbers (INT8/INT16/INT32/INT64/FLOAT/DOUBLE/BOOL) │ ├── JSON │ ├── Arrays (ARRAY) │ ├── Timestamp (TIMESTAMPTZ) │ ├── Struct Arrays (ARRAY of STRUCT) │ └── Geometry Fields (GEOMETRY) └── Vector Fields ├── Dense Vectors (FLOAT_VECTOR/FLOAT16_VECTOR/BFLOAT16_VECTOR/INT8_VECTOR) ├── Sparse Vectors (SPARSE_FLOAT_VECTOR) └── Binary Vectors (BINARY_VECTOR) 3. Primary Key Fields\r3.1 Primary Key Type Comparison\rData Type Description Compare with MySQL INT64 64-bit integer, recommended Similar to BIGINT AUTO_INCREMENT VARCHAR Variable-length string Similar to VARCHAR(n) PRIMARY KEY 3.2 Auto ID vs Manual ID\rMode Description Use Cases Compare with MySQL Auto ID Milvus automatically generates unique identifiers Most situations AUTO_INCREMENT Manual ID User provides unique ID ID needs to be consistent with external systems Manually insert primary key values 3.3 Primary Key Field Examples\r# Auto ID Primary Key schema.add_field( field_name="product_id", datatype=DataType.INT64, is_primary=True, # Mark as primary key auto_id=True # Auto-generate ID ) # Compare with MySQL # product_id BIGINT AUTO_INCREMENT PRIMARY KEY # Manual ID Primary Key (using string) schema.add_field( field_name="sku_code", datatype=DataType.VARCHAR, max_length=50, is_primary=True, auto_id=False # Manual ID provision ) # Compare with MySQL # sku_code VARCHAR(50) PRIMARY KEY 4. Scalar Fields Detailed\r4.1 String Fields (VARCHAR)\rAttribute Description Range Compare with MySQL datatype Data type DataType.VARCHAR VARCHAR max_length Maximum length 1-65535 n in VARCHAR(n) nullable Nullable True/False NULL/NOT NULL default_value Default value String DEFAULT &lsquo;value&rsquo; # String field example schema.add_field( field_name="product_name", datatype=DataType.VARCHAR, max_length=255, nullable=False, default_value="Unnamed Product" ) # Compare with MySQL # product_name VARCHAR(255) NOT NULL DEFAULT &#39;Unnamed Product&#39; 4.2 Numeric Fields\rMilvus Type Description Range Compare with MySQL BOOL Boolean value True/False BOOLEAN INT8 8-bit integer -128 ~ 127 TINYINT INT16 16-bit integer -32768 ~ 32767 SMALLINT INT32 32-bit integer -2^31 ~ 2^31-1 INT INT64 64-bit integer -2^63 ~ 2^63-1 BIGINT FLOAT 32-bit float - FLOAT DOUBLE 64-bit double - DOUBLE # Integer field schema.add_field( field_name="stock_quantity", datatype=DataType.INT32, nullable=False, default_value=0 ) # Float field schema.add_field( field_name="product_price", datatype=DataType.FLOAT, nullable=False ) # Boolean field schema.add_field( field_name="is_available", datatype=DataType.BOOL, default_value=True ) # Compare with MySQL # stock_quantity INT NOT NULL DEFAULT 0, # product_price FLOAT NOT NULL, # is_available BOOLEAN DEFAULT TRUE 4.3 JSON Fields\rJSON Fields vs Dynamic Fields Comparison\rFeature JSON Fields Dynamic Fields Compare with MySQL Schema Definition Must be explicitly declared Hidden field $meta JSON column vs no equivalent concept Use Cases Structured, known data Flexible, semi-structured data JSON column vs NoSQL features Control User controls field names and structure System automatically managed - Query Method metadata["key"] dynamic_key or $meta["key"] JSON_EXTRACT() # JSON field example schema.add_field( field_name="product_detail", datatype=DataType.JSON ) # Insert data example data = { "product_id": 1, "product_detail": { "brand": "Apple", "model": "iPhone 15", "specs": { "cpu": "A17 Pro", "ram": "8GB" } } } # Compare with MySQL # product_detail JSON # Query: SELECT JSON_EXTRACT(product_detail, &#39;$.brand&#39;) FROM products; JSON Indexing\rJSON indexing suitable scenarios:\n'><title>Milvus Schema Detailed Guide - Field Types and Data Modeling</title><link rel=canonical href=https://zg-dd.github.io/en/stu/milvus-stu-schema/><link rel=stylesheet href=/scss/style.min.ff560f1cad7a040e336f2dd6880b9ee1ad344d6e3d8f5411e5a1aaa8b23bbdd0.css><meta property='og:title' content="Milvus Schema Detailed Guide - Field Types and Data Modeling"><meta property='og:description' content='Milvus Schema Learning Document\r1. Understanding Schema Concept\r1.1 What is Schema?\rSchema is the metadata definition of a Collection, similar to table structure definition in relational databases.\nMilvus Concept Relational Database Concept Description Schema Table Schema Metadata defining data structure Field Column Field/column definition DataType Data Type Data types (VARCHAR, INT, FLOAT, etc.) Primary Key Primary Key Primary key field Vector Field - Milvus-specific vector field Dynamic Field - Dynamic field, similar to MongoDB&rsquo;s flexible Schema 1.2 Creating Schema\rfrom pymilvus import MilvusClient, DataType # Create Schema schema = client.create_schema( enable_dynamic_field=True # Enable dynamic fields ) # Compare with MySQL # CREATE TABLE products ( # ... # ); 2. Field Types Detailed\r2.1 Field Classification\rField Types ├── Scalar Fields │ ├── String (VARCHAR) │ ├── Numbers (INT8/INT16/INT32/INT64/FLOAT/DOUBLE/BOOL) │ ├── JSON │ ├── Arrays (ARRAY) │ ├── Timestamp (TIMESTAMPTZ) │ ├── Struct Arrays (ARRAY of STRUCT) │ └── Geometry Fields (GEOMETRY) └── Vector Fields ├── Dense Vectors (FLOAT_VECTOR/FLOAT16_VECTOR/BFLOAT16_VECTOR/INT8_VECTOR) ├── Sparse Vectors (SPARSE_FLOAT_VECTOR) └── Binary Vectors (BINARY_VECTOR) 3. Primary Key Fields\r3.1 Primary Key Type Comparison\rData Type Description Compare with MySQL INT64 64-bit integer, recommended Similar to BIGINT AUTO_INCREMENT VARCHAR Variable-length string Similar to VARCHAR(n) PRIMARY KEY 3.2 Auto ID vs Manual ID\rMode Description Use Cases Compare with MySQL Auto ID Milvus automatically generates unique identifiers Most situations AUTO_INCREMENT Manual ID User provides unique ID ID needs to be consistent with external systems Manually insert primary key values 3.3 Primary Key Field Examples\r# Auto ID Primary Key schema.add_field( field_name="product_id", datatype=DataType.INT64, is_primary=True, # Mark as primary key auto_id=True # Auto-generate ID ) # Compare with MySQL # product_id BIGINT AUTO_INCREMENT PRIMARY KEY # Manual ID Primary Key (using string) schema.add_field( field_name="sku_code", datatype=DataType.VARCHAR, max_length=50, is_primary=True, auto_id=False # Manual ID provision ) # Compare with MySQL # sku_code VARCHAR(50) PRIMARY KEY 4. Scalar Fields Detailed\r4.1 String Fields (VARCHAR)\rAttribute Description Range Compare with MySQL datatype Data type DataType.VARCHAR VARCHAR max_length Maximum length 1-65535 n in VARCHAR(n) nullable Nullable True/False NULL/NOT NULL default_value Default value String DEFAULT &lsquo;value&rsquo; # String field example schema.add_field( field_name="product_name", datatype=DataType.VARCHAR, max_length=255, nullable=False, default_value="Unnamed Product" ) # Compare with MySQL # product_name VARCHAR(255) NOT NULL DEFAULT &#39;Unnamed Product&#39; 4.2 Numeric Fields\rMilvus Type Description Range Compare with MySQL BOOL Boolean value True/False BOOLEAN INT8 8-bit integer -128 ~ 127 TINYINT INT16 16-bit integer -32768 ~ 32767 SMALLINT INT32 32-bit integer -2^31 ~ 2^31-1 INT INT64 64-bit integer -2^63 ~ 2^63-1 BIGINT FLOAT 32-bit float - FLOAT DOUBLE 64-bit double - DOUBLE # Integer field schema.add_field( field_name="stock_quantity", datatype=DataType.INT32, nullable=False, default_value=0 ) # Float field schema.add_field( field_name="product_price", datatype=DataType.FLOAT, nullable=False ) # Boolean field schema.add_field( field_name="is_available", datatype=DataType.BOOL, default_value=True ) # Compare with MySQL # stock_quantity INT NOT NULL DEFAULT 0, # product_price FLOAT NOT NULL, # is_available BOOLEAN DEFAULT TRUE 4.3 JSON Fields\rJSON Fields vs Dynamic Fields Comparison\rFeature JSON Fields Dynamic Fields Compare with MySQL Schema Definition Must be explicitly declared Hidden field $meta JSON column vs no equivalent concept Use Cases Structured, known data Flexible, semi-structured data JSON column vs NoSQL features Control User controls field names and structure System automatically managed - Query Method metadata["key"] dynamic_key or $meta["key"] JSON_EXTRACT() # JSON field example schema.add_field( field_name="product_detail", datatype=DataType.JSON ) # Insert data example data = { "product_id": 1, "product_detail": { "brand": "Apple", "model": "iPhone 15", "specs": { "cpu": "A17 Pro", "ram": "8GB" } } } # Compare with MySQL # product_detail JSON # Query: SELECT JSON_EXTRACT(product_detail, &#39;$.brand&#39;) FROM products; JSON Indexing\rJSON indexing suitable scenarios:\n'><meta property='og:url' content='https://zg-dd.github.io/en/stu/milvus-stu-schema/'><meta property='og:site_name' content='小巷 Blog'><meta property='og:type' content='article'><meta property='article:section' content='Stu'><meta property='article:tag' content='Milvus'><meta property='article:tag' content='Schema'><meta property='article:published_time' content='2026-02-26T19:10:45+08:00'><meta property='article:modified_time' content='2026-02-26T19:10:45+08:00'><meta name=twitter:title content="Milvus Schema Detailed Guide - Field Types and Data Modeling"><meta name=twitter:description content='Milvus Schema Learning Document\r1. Understanding Schema Concept\r1.1 What is Schema?\rSchema is the metadata definition of a Collection, similar to table structure definition in relational databases.\nMilvus Concept Relational Database Concept Description Schema Table Schema Metadata defining data structure Field Column Field/column definition DataType Data Type Data types (VARCHAR, INT, FLOAT, etc.) Primary Key Primary Key Primary key field Vector Field - Milvus-specific vector field Dynamic Field - Dynamic field, similar to MongoDB&rsquo;s flexible Schema 1.2 Creating Schema\rfrom pymilvus import MilvusClient, DataType # Create Schema schema = client.create_schema( enable_dynamic_field=True # Enable dynamic fields ) # Compare with MySQL # CREATE TABLE products ( # ... # ); 2. Field Types Detailed\r2.1 Field Classification\rField Types ├── Scalar Fields │ ├── String (VARCHAR) │ ├── Numbers (INT8/INT16/INT32/INT64/FLOAT/DOUBLE/BOOL) │ ├── JSON │ ├── Arrays (ARRAY) │ ├── Timestamp (TIMESTAMPTZ) │ ├── Struct Arrays (ARRAY of STRUCT) │ └── Geometry Fields (GEOMETRY) └── Vector Fields ├── Dense Vectors (FLOAT_VECTOR/FLOAT16_VECTOR/BFLOAT16_VECTOR/INT8_VECTOR) ├── Sparse Vectors (SPARSE_FLOAT_VECTOR) └── Binary Vectors (BINARY_VECTOR) 3. Primary Key Fields\r3.1 Primary Key Type Comparison\rData Type Description Compare with MySQL INT64 64-bit integer, recommended Similar to BIGINT AUTO_INCREMENT VARCHAR Variable-length string Similar to VARCHAR(n) PRIMARY KEY 3.2 Auto ID vs Manual ID\rMode Description Use Cases Compare with MySQL Auto ID Milvus automatically generates unique identifiers Most situations AUTO_INCREMENT Manual ID User provides unique ID ID needs to be consistent with external systems Manually insert primary key values 3.3 Primary Key Field Examples\r# Auto ID Primary Key schema.add_field( field_name="product_id", datatype=DataType.INT64, is_primary=True, # Mark as primary key auto_id=True # Auto-generate ID ) # Compare with MySQL # product_id BIGINT AUTO_INCREMENT PRIMARY KEY # Manual ID Primary Key (using string) schema.add_field( field_name="sku_code", datatype=DataType.VARCHAR, max_length=50, is_primary=True, auto_id=False # Manual ID provision ) # Compare with MySQL # sku_code VARCHAR(50) PRIMARY KEY 4. Scalar Fields Detailed\r4.1 String Fields (VARCHAR)\rAttribute Description Range Compare with MySQL datatype Data type DataType.VARCHAR VARCHAR max_length Maximum length 1-65535 n in VARCHAR(n) nullable Nullable True/False NULL/NOT NULL default_value Default value String DEFAULT &lsquo;value&rsquo; # String field example schema.add_field( field_name="product_name", datatype=DataType.VARCHAR, max_length=255, nullable=False, default_value="Unnamed Product" ) # Compare with MySQL # product_name VARCHAR(255) NOT NULL DEFAULT &#39;Unnamed Product&#39; 4.2 Numeric Fields\rMilvus Type Description Range Compare with MySQL BOOL Boolean value True/False BOOLEAN INT8 8-bit integer -128 ~ 127 TINYINT INT16 16-bit integer -32768 ~ 32767 SMALLINT INT32 32-bit integer -2^31 ~ 2^31-1 INT INT64 64-bit integer -2^63 ~ 2^63-1 BIGINT FLOAT 32-bit float - FLOAT DOUBLE 64-bit double - DOUBLE # Integer field schema.add_field( field_name="stock_quantity", datatype=DataType.INT32, nullable=False, default_value=0 ) # Float field schema.add_field( field_name="product_price", datatype=DataType.FLOAT, nullable=False ) # Boolean field schema.add_field( field_name="is_available", datatype=DataType.BOOL, default_value=True ) # Compare with MySQL # stock_quantity INT NOT NULL DEFAULT 0, # product_price FLOAT NOT NULL, # is_available BOOLEAN DEFAULT TRUE 4.3 JSON Fields\rJSON Fields vs Dynamic Fields Comparison\rFeature JSON Fields Dynamic Fields Compare with MySQL Schema Definition Must be explicitly declared Hidden field $meta JSON column vs no equivalent concept Use Cases Structured, known data Flexible, semi-structured data JSON column vs NoSQL features Control User controls field names and structure System automatically managed - Query Method metadata["key"] dynamic_key or $meta["key"] JSON_EXTRACT() # JSON field example schema.add_field( field_name="product_detail", datatype=DataType.JSON ) # Insert data example data = { "product_id": 1, "product_detail": { "brand": "Apple", "model": "iPhone 15", "specs": { "cpu": "A17 Pro", "ram": "8GB" } } } # Compare with MySQL # product_detail JSON # Query: SELECT JSON_EXTRACT(product_detail, &#39;$.brand&#39;) FROM products; JSON Indexing\rJSON indexing suitable scenarios:\n'></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label="Toggle Menu">
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/en/><img src=/img/avatar_hu_a0cc1cf57968b27d.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a><span class=emoji>🌱</span></figure><div class=site-meta><h1 class=site-name><a href=/en>小巷 Blog</a></h1><h2 class=site-description>Recording is not to prove myself; rather, to make a habit of 'solving problems → thinking → sedimentation'.</h2></div></header><ol class=menu id=main-menu><li class=current><a href=/en/stu/><span>Study Notes</span></a></li><li><a href=/en/blog/><span>Essays</span></a></li><li><a href=/en/life/><span>Life</span></a></li><li><a href=/categories/><span>Categories</span></a></li><li><a href=/tags/><span>Tags</span></a></li><li class=menu-bottom-section><ol class=menu><li id=i18n-switch><svg class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5h7"/><path d="M9 3v2c0 4.418-2.239 8-5 8"/><path d="M5 9c-.003 2.144 2.952 3.908 6.7 4"/><path d="M12 20l4-9 4 9"/><path d="M19.1 18h-6.2"/></svg>
+<select name=language title=language onchange="window.location.href=this.selectedOptions[0].value"><option value=https://zg-dd.github.io/>简体中文</option><option value=https://zg-dd.github.io/en/ selected>English</option></select></li><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>Dark Mode</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">Table of contents</h2><div class=widget--toc><nav id=TableOfContents><ul><li><a href=#1-understanding-schema-concept>1. Understanding Schema Concept</a><ul><li><a href=#11-what-is-schema>1.1 What is Schema?</a></li><li><a href=#12-creating-schema>1.2 Creating Schema</a></li></ul></li><li><a href=#2-field-types-detailed>2. Field Types Detailed</a><ul><li><a href=#21-field-classification>2.1 Field Classification</a></li></ul></li><li><a href=#3-primary-key-fields>3. Primary Key Fields</a><ul><li><a href=#31-primary-key-type-comparison>3.1 Primary Key Type Comparison</a></li><li><a href=#32-auto-id-vs-manual-id>3.2 Auto ID vs Manual ID</a></li><li><a href=#33-primary-key-field-examples>3.3 Primary Key Field Examples</a></li></ul></li><li><a href=#4-scalar-fields-detailed>4. Scalar Fields Detailed</a><ul><li><a href=#41-string-fields-varchar>4.1 String Fields (VARCHAR)</a></li><li><a href=#42-numeric-fields>4.2 Numeric Fields</a></li><li><a href=#43-json-fields>4.3 JSON Fields</a></li><li><a href=#44-array-fields-array>4.4 Array Fields (ARRAY)</a></li><li><a href=#45-timestamp-fields-timestamptz>4.5 Timestamp Fields (TIMESTAMPTZ)</a></li><li><a href=#46-struct-arrays-array-of-struct>4.6 Struct Arrays (ARRAY of STRUCT)</a></li><li><a href=#47-geometry-fields-geometry>4.7 Geometry Fields (GEOMETRY)</a></li></ul></li><li><a href=#5-vector-fields-detailed>5. Vector Fields Detailed</a><ul><li><a href=#51-vector-type-comparison>5.1 Vector Type Comparison</a></li><li><a href=#52-dense-vector-examples>5.2 Dense Vector Examples</a></li><li><a href=#53-sparse-vector-examples>5.3 Sparse Vector Examples</a></li></ul></li><li><a href=#6-dynamic-fields>6. Dynamic Fields</a><ul><li><a href=#61-dynamic-field-concept>6.1 Dynamic Field Concept</a></li><li><a href=#62-supported-types-for-dynamic-fields>6.2 Supported Types for Dynamic Fields</a></li><li><a href=#63-querying-dynamic-fields>6.3 Querying Dynamic Fields</a></li></ul></li><li><a href=#7-complete-schema-example>7. Complete Schema Example</a></li><li><a href=#8-schema-vs-mysql-comparison-summary>8. Schema vs MySQL Comparison Summary</a></li><li><a href=#9-best-practices>9. Best Practices</a><ul><li><a href=#91-field-naming-conventions>9.1 Field Naming Conventions</a></li><li><a href=#92-vector-dimension-selection>9.2 Vector Dimension Selection</a></li><li><a href=#93-index-strategy>9.3 Index Strategy</a></li></ul></li><li><a href=#10-key-points-summary>10. Key Points Summary</a></li></ul></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/en/categories/vector-database/>Vector Database</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/en/stu/milvus-stu-schema/>Milvus Schema Detailed Guide - Field Types and Data Modeling</a></h2></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published datetime=2026-02-26T19:10:45+08:00>Feb 26, 2026</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>5 minute read</time></div></footer><footer class=article-translations><svg class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5h7"/><path d="M9 3v2c0 4.418-2.239 8-5 8"/><path d="M5 9c-.003 2.144 2.952 3.908 6.7 4"/><path d="M12 20l4-9 4 9"/><path d="M19.1 18h-6.2"/></svg><div><a href=https://zg-dd.github.io/stu/milvus-stu-schema/ class=link>简体中文</a></div></footer></div></header><section class=article-content><h1 id=milvus-schema-learning-document>Milvus Schema Learning Document</h1><h2 id=1-understanding-schema-concept>1. Understanding Schema Concept</h2><h3 id=11-what-is-schema>1.1 What is Schema?</h3><p>Schema is the metadata definition of a Collection, similar to table structure definition in relational databases.</p><div class=table-wrapper><table><thead><tr><th>Milvus Concept</th><th>Relational Database Concept</th><th>Description</th></tr></thead><tbody><tr><td>Schema</td><td>Table Schema</td><td>Metadata defining data structure</td></tr><tr><td>Field</td><td>Column</td><td>Field/column definition</td></tr><tr><td>DataType</td><td>Data Type</td><td>Data types (VARCHAR, INT, FLOAT, etc.)</td></tr><tr><td>Primary Key</td><td>Primary Key</td><td>Primary key field</td></tr><tr><td>Vector Field</td><td>-</td><td>Milvus-specific vector field</td></tr><tr><td>Dynamic Field</td><td>-</td><td>Dynamic field, similar to MongoDB&rsquo;s flexible Schema</td></tr></tbody></table></div><h3 id=12-creating-schema>1.2 Creating Schema</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#f92672>from</span> pymilvus <span style=color:#f92672>import</span> MilvusClient, DataType
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Create Schema</span>
+</span></span><span style=display:flex><span>schema <span style=color:#f92672>=</span> client<span style=color:#f92672>.</span>create_schema(
+</span></span><span style=display:flex><span>    enable_dynamic_field<span style=color:#f92672>=</span><span style=color:#66d9ef>True</span>  <span style=color:#75715e># Enable dynamic fields</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Compare with MySQL</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># CREATE TABLE products (</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>#     ...</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># );</span>
+</span></span></code></pre></div><h2 id=2-field-types-detailed>2. Field Types Detailed</h2><h3 id=21-field-classification>2.1 Field Classification</h3><pre tabindex=0><code>Field Types
+├── Scalar Fields
+│   ├── String (VARCHAR)
+│   ├── Numbers (INT8/INT16/INT32/INT64/FLOAT/DOUBLE/BOOL)
+│   ├── JSON
+│   ├── Arrays (ARRAY)
+│   ├── Timestamp (TIMESTAMPTZ)
+│   ├── Struct Arrays (ARRAY of STRUCT)
+│   └── Geometry Fields (GEOMETRY)
+└── Vector Fields
+    ├── Dense Vectors (FLOAT_VECTOR/FLOAT16_VECTOR/BFLOAT16_VECTOR/INT8_VECTOR)
+    ├── Sparse Vectors (SPARSE_FLOAT_VECTOR)
+    └── Binary Vectors (BINARY_VECTOR)
+</code></pre><h2 id=3-primary-key-fields>3. Primary Key Fields</h2><h3 id=31-primary-key-type-comparison>3.1 Primary Key Type Comparison</h3><div class=table-wrapper><table><thead><tr><th>Data Type</th><th>Description</th><th>Compare with MySQL</th></tr></thead><tbody><tr><td>INT64</td><td>64-bit integer, recommended</td><td>Similar to <code>BIGINT AUTO_INCREMENT</code></td></tr><tr><td>VARCHAR</td><td>Variable-length string</td><td>Similar to <code>VARCHAR(n) PRIMARY KEY</code></td></tr></tbody></table></div><h3 id=32-auto-id-vs-manual-id>3.2 Auto ID vs Manual ID</h3><div class=table-wrapper><table><thead><tr><th>Mode</th><th>Description</th><th>Use Cases</th><th>Compare with MySQL</th></tr></thead><tbody><tr><td>Auto ID</td><td>Milvus automatically generates unique identifiers</td><td>Most situations</td><td><code>AUTO_INCREMENT</code></td></tr><tr><td>Manual ID</td><td>User provides unique ID</td><td>ID needs to be consistent with external systems</td><td>Manually insert primary key values</td></tr></tbody></table></div><h3 id=33-primary-key-field-examples>3.3 Primary Key Field Examples</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># Auto ID Primary Key</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;product_id&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>INT64,
+</span></span><span style=display:flex><span>    is_primary<span style=color:#f92672>=</span><span style=color:#66d9ef>True</span>,    <span style=color:#75715e># Mark as primary key</span>
+</span></span><span style=display:flex><span>    auto_id<span style=color:#f92672>=</span><span style=color:#66d9ef>True</span>        <span style=color:#75715e># Auto-generate ID</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Compare with MySQL</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># product_id BIGINT AUTO_INCREMENT PRIMARY KEY</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Manual ID Primary Key (using string)</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;sku_code&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>VARCHAR,
+</span></span><span style=display:flex><span>    max_length<span style=color:#f92672>=</span><span style=color:#ae81ff>50</span>,
+</span></span><span style=display:flex><span>    is_primary<span style=color:#f92672>=</span><span style=color:#66d9ef>True</span>,
+</span></span><span style=display:flex><span>    auto_id<span style=color:#f92672>=</span><span style=color:#66d9ef>False</span>       <span style=color:#75715e># Manual ID provision</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Compare with MySQL</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># sku_code VARCHAR(50) PRIMARY KEY</span>
+</span></span></code></pre></div><h2 id=4-scalar-fields-detailed>4. Scalar Fields Detailed</h2><h3 id=41-string-fields-varchar>4.1 String Fields (VARCHAR)</h3><div class=table-wrapper><table><thead><tr><th>Attribute</th><th>Description</th><th>Range</th><th>Compare with MySQL</th></tr></thead><tbody><tr><td>datatype</td><td>Data type</td><td>DataType.VARCHAR</td><td>VARCHAR</td></tr><tr><td>max_length</td><td>Maximum length</td><td>1-65535</td><td>n in VARCHAR(n)</td></tr><tr><td>nullable</td><td>Nullable</td><td>True/False</td><td>NULL/NOT NULL</td></tr><tr><td>default_value</td><td>Default value</td><td>String</td><td>DEFAULT &lsquo;value&rsquo;</td></tr></tbody></table></div><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># String field example</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;product_name&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>VARCHAR,
+</span></span><span style=display:flex><span>    max_length<span style=color:#f92672>=</span><span style=color:#ae81ff>255</span>,
+</span></span><span style=display:flex><span>    nullable<span style=color:#f92672>=</span><span style=color:#66d9ef>False</span>,
+</span></span><span style=display:flex><span>    default_value<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;Unnamed Product&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Compare with MySQL</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># product_name VARCHAR(255) NOT NULL DEFAULT &#39;Unnamed Product&#39;</span>
+</span></span></code></pre></div><h3 id=42-numeric-fields>4.2 Numeric Fields</h3><div class=table-wrapper><table><thead><tr><th>Milvus Type</th><th>Description</th><th>Range</th><th>Compare with MySQL</th></tr></thead><tbody><tr><td>BOOL</td><td>Boolean value</td><td>True/False</td><td>BOOLEAN</td></tr><tr><td>INT8</td><td>8-bit integer</td><td>-128 ~ 127</td><td>TINYINT</td></tr><tr><td>INT16</td><td>16-bit integer</td><td>-32768 ~ 32767</td><td>SMALLINT</td></tr><tr><td>INT32</td><td>32-bit integer</td><td>-2^31 ~ 2^31-1</td><td>INT</td></tr><tr><td>INT64</td><td>64-bit integer</td><td>-2^63 ~ 2^63-1</td><td>BIGINT</td></tr><tr><td>FLOAT</td><td>32-bit float</td><td>-</td><td>FLOAT</td></tr><tr><td>DOUBLE</td><td>64-bit double</td><td>-</td><td>DOUBLE</td></tr></tbody></table></div><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># Integer field</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;stock_quantity&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>INT32,
+</span></span><span style=display:flex><span>    nullable<span style=color:#f92672>=</span><span style=color:#66d9ef>False</span>,
+</span></span><span style=display:flex><span>    default_value<span style=color:#f92672>=</span><span style=color:#ae81ff>0</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Float field</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;product_price&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>FLOAT,
+</span></span><span style=display:flex><span>    nullable<span style=color:#f92672>=</span><span style=color:#66d9ef>False</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Boolean field</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;is_available&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>BOOL,
+</span></span><span style=display:flex><span>    default_value<span style=color:#f92672>=</span><span style=color:#66d9ef>True</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Compare with MySQL</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># stock_quantity INT NOT NULL DEFAULT 0,</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># product_price FLOAT NOT NULL,</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># is_available BOOLEAN DEFAULT TRUE</span>
+</span></span></code></pre></div><h3 id=43-json-fields>4.3 JSON Fields</h3><h4 id=json-fields-vs-dynamic-fields-comparison>JSON Fields vs Dynamic Fields Comparison</h4><div class=table-wrapper><table><thead><tr><th>Feature</th><th>JSON Fields</th><th>Dynamic Fields</th><th>Compare with MySQL</th></tr></thead><tbody><tr><td>Schema Definition</td><td>Must be explicitly declared</td><td>Hidden field <code>$meta</code></td><td>JSON column vs no equivalent concept</td></tr><tr><td>Use Cases</td><td>Structured, known data</td><td>Flexible, semi-structured data</td><td>JSON column vs NoSQL features</td></tr><tr><td>Control</td><td>User controls field names and structure</td><td>System automatically managed</td><td>-</td></tr><tr><td>Query Method</td><td><code>metadata["key"]</code></td><td><code>dynamic_key</code> or <code>$meta["key"]</code></td><td><code>JSON_EXTRACT()</code></td></tr></tbody></table></div><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># JSON field example</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;product_detail&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>JSON
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Insert data example</span>
+</span></span><span style=display:flex><span>data <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;product_id&#34;</span>: <span style=color:#ae81ff>1</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;product_detail&#34;</span>: {
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;brand&#34;</span>: <span style=color:#e6db74>&#34;Apple&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;model&#34;</span>: <span style=color:#e6db74>&#34;iPhone 15&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;specs&#34;</span>: {
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;cpu&#34;</span>: <span style=color:#e6db74>&#34;A17 Pro&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;ram&#34;</span>: <span style=color:#e6db74>&#34;8GB&#34;</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Compare with MySQL</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># product_detail JSON</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Query: SELECT JSON_EXTRACT(product_detail, &#39;$.brand&#39;) FROM products;</span>
+</span></span></code></pre></div><h4 id=json-indexing>JSON Indexing</h4><p>JSON indexing suitable scenarios:</p><ol><li>Structured Schema with consistent, known keys</li><li>Equality and range queries on specific JSON paths</li><li>Need for precise control over indexed keys</li><li>Efficient storage acceleration for target queries</li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># Create JSON index</span>
+</span></span><span style=display:flex><span>index_params <span style=color:#f92672>=</span> MilvusClient<span style=color:#f92672>.</span>prepare_index_params()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>index_params<span style=color:#f92672>.</span>add_index(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;product_detail&#34;</span>,        <span style=color:#75715e># JSON field name</span>
+</span></span><span style=display:flex><span>    index_type<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;AUTOINDEX&#34;</span>,             <span style=color:#75715e># Must be AUTOINDEX or INVERTED</span>
+</span></span><span style=display:flex><span>    index_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;idx_product_brand&#34;</span>,     <span style=color:#75715e># Index name</span>
+</span></span><span style=display:flex><span>    params<span style=color:#f92672>=</span>{
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;json_path&#34;</span>: <span style=color:#e6db74>&#39;product_detail[&#34;brand&#34;]&#39;</span>,  <span style=color:#75715e># Top-level key</span>
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;json_cast_type&#34;</span>: <span style=color:#e6db74>&#34;VARCHAR&#34;</span>              <span style=color:#75715e># Data type</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Nested key indexing</span>
+</span></span><span style=display:flex><span>index_params<span style=color:#f92672>.</span>add_index(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;product_detail&#34;</span>,
+</span></span><span style=display:flex><span>    index_type<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;AUTOINDEX&#34;</span>,
+</span></span><span style=display:flex><span>    index_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;idx_product_cpu&#34;</span>,
+</span></span><span style=display:flex><span>    params<span style=color:#f92672>=</span>{
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;json_path&#34;</span>: <span style=color:#e6db74>&#39;product_detail[&#34;specs&#34;][&#34;cpu&#34;]&#39;</span>,  <span style=color:#75715e># Nested key</span>
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;json_cast_type&#34;</span>: <span style=color:#e6db74>&#34;VARCHAR&#34;</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Compare with MySQL 8.0+</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># CREATE INDEX idx_product_brand ON products((JSON_EXTRACT(product_detail, &#39;$.brand&#39;)));</span>
+</span></span></code></pre></div><h4 id=json-shredding-optimization>JSON Shredding Optimization</h4><p>JSON shredding accelerates queries by converting row-based storage to columnar storage.</p><div class=table-wrapper><table><thead><tr><th>Parameter Name</th><th>Description</th><th>Default</th><th>Adjustment Suggestions</th></tr></thead><tbody><tr><td><code>common.enabledJSONShredding</code></td><td>Whether to enable JSON shredding</td><td>false</td><td>Set to true to activate feature</td></tr><tr><td><code>common.usingJSONShreddingForQuery</code></td><td>Whether to use shredded data for acceleration</td><td>true</td><td>Set to false to restore when queries fail</td></tr><tr><td><code>queryNode.mmap.jsonShredding</code></td><td>Whether to use mmap when loading</td><td>true</td><td>Adjust for special memory requirements</td></tr><tr><td><code>dataCoord.jsonShreddingMaxColumns</code></td><td>Maximum shredded columns</td><td>1024</td><td>Increase when frequent keys exceed limit</td></tr><tr><td><code>dataCoord.jsonShreddingRatioThreshold</code></td><td>Minimum occurrence rate threshold</td><td>0.3</td><td>Adjust shredding criteria</td></tr></tbody></table></div><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=display:flex><span><span style=color:#75715e># milvus.yaml configuration example</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>common</span>:
+</span></span><span style=display:flex><span>  <span style=color:#f92672>enabledJSONShredding</span>: <span style=color:#66d9ef>true</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>usingJSONShreddingForQuery</span>: <span style=color:#66d9ef>true</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>queryNode</span>:
+</span></span><span style=display:flex><span>  <span style=color:#f92672>mmap</span>:
+</span></span><span style=display:flex><span>    <span style=color:#f92672>jsonShredding</span>: <span style=color:#66d9ef>true</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>dataCoord</span>:
+</span></span><span style=display:flex><span>  <span style=color:#f92672>jsonShreddingMaxColumns</span>: <span style=color:#ae81ff>1024</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>jsonShreddingRatioThreshold</span>: <span style=color:#ae81ff>0.3</span>
+</span></span></code></pre></div><h3 id=44-array-fields-array>4.4 Array Fields (ARRAY)</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># String array</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;product_tags&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>ARRAY,
+</span></span><span style=display:flex><span>    element_type<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>VARCHAR,
+</span></span><span style=display:flex><span>    max_capacity<span style=color:#f92672>=</span><span style=color:#ae81ff>10</span>,           <span style=color:#75715e># Up to 10 elements</span>
+</span></span><span style=display:flex><span>    max_length<span style=color:#f92672>=</span><span style=color:#ae81ff>50</span>              <span style=color:#75715e># Each string up to 50 characters</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Integer array</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;related_product_ids&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>ARRAY,
+</span></span><span style=display:flex><span>    element_type<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>INT64,
+</span></span><span style=display:flex><span>    max_capacity<span style=color:#f92672>=</span><span style=color:#ae81ff>20</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Insert data example</span>
+</span></span><span style=display:flex><span>data <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;product_id&#34;</span>: <span style=color:#ae81ff>1</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;product_tags&#34;</span>: [<span style=color:#e6db74>&#34;Electronics&#34;</span>, <span style=color:#e6db74>&#34;Phone&#34;</span>, <span style=color:#e6db74>&#34;5G&#34;</span>, <span style=color:#e6db74>&#34;Smart&#34;</span>],
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;related_product_ids&#34;</span>: [<span style=color:#ae81ff>101</span>, <span style=color:#ae81ff>102</span>, <span style=color:#ae81ff>103</span>]
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Compare with MySQL 8.0+</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># product_tags JSON  -- MySQL implements with JSON arrays</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Or use association tables for many-to-many relationships</span>
+</span></span></code></pre></div><h3 id=45-timestamp-fields-timestamptz>4.5 Timestamp Fields (TIMESTAMPTZ)</h3><p>TIMESTAMPTZ is timezone-aware timestamp type.</p><div class=table-wrapper><table><thead><tr><th>Feature</th><th>Description</th><th>Compare with MySQL</th></tr></thead><tbody><tr><td>Input Format</td><td>ISO 8601 strings (with timezone)</td><td>TIMESTAMP</td></tr><tr><td>Internal Storage</td><td>UTC normalized storage</td><td>Depends on <code>time_zone</code> setting</td></tr><tr><td>Comparison Operations</td><td>Unified UTC usage</td><td>May be affected by timezone</td></tr></tbody></table></div><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># Timestamp field</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;created_at&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>TIMESTAMPTZ,
+</span></span><span style=display:flex><span>    nullable<span style=color:#f92672>=</span><span style=color:#66d9ef>False</span>,
+</span></span><span style=display:flex><span>    default_value<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;2025-01-01T00:00:00+00:00&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Insert data example</span>
+</span></span><span style=display:flex><span>data <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;product_id&#34;</span>: <span style=color:#ae81ff>1</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;created_at&#34;</span>: <span style=color:#e6db74>&#34;2025-05-01T23:59:59+08:00&#34;</span>  <span style=color:#75715e># Beijing time</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Compare with MySQL</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP</span>
+</span></span></code></pre></div><h4 id=timezone-management-levels>Timezone Management Levels</h4><div class=table-wrapper><table><thead><tr><th>Level</th><th>Parameter</th><th>Scope</th><th>Priority</th></tr></thead><tbody><tr><td>Database</td><td>timezone</td><td>Default for all collections in database</td><td>Lowest</td></tr><tr><td>Collection</td><td>timezone</td><td>Override database default timezone</td><td>Medium</td></tr><tr><td>Query/Search</td><td>timezone</td><td>Temporary override for specific operation</td><td>Highest</td></tr></tbody></table></div><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># Database level timezone setting</span>
+</span></span><span style=display:flex><span>client<span style=color:#f92672>.</span>alter_database_properties(
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;my_db&#34;</span>,
+</span></span><span style=display:flex><span>    {<span style=color:#e6db74>&#34;timezone&#34;</span>: <span style=color:#e6db74>&#34;Asia/Shanghai&#34;</span>}
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Collection level timezone setting (when creating collection)</span>
+</span></span><span style=display:flex><span>client<span style=color:#f92672>.</span>create_collection(
+</span></span><span style=display:flex><span>    collection_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;products&#34;</span>,
+</span></span><span style=display:flex><span>    schema<span style=color:#f92672>=</span>schema,
+</span></span><span style=display:flex><span>    properties<span style=color:#f92672>=</span>{<span style=color:#e6db74>&#34;timezone&#34;</span>: <span style=color:#e6db74>&#34;America/New_York&#34;</span>}
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Specify timezone temporarily during query</span>
+</span></span><span style=display:flex><span>client<span style=color:#f92672>.</span>query(
+</span></span><span style=display:flex><span>    collection_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;products&#34;</span>,
+</span></span><span style=display:flex><span>    filter<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;created_at &gt; &#39;2025-01-01T00:00:00+08:00&#39;&#34;</span>,
+</span></span><span style=display:flex><span>    timezone<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;Asia/Shanghai&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span></code></pre></div><h3 id=46-struct-arrays-array-of-struct>4.6 Struct Arrays (ARRAY of STRUCT)</h3><p>Struct arrays are used to store complex nested data.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># Product reviews array example</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;reviews&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>ARRAY,
+</span></span><span style=display:flex><span>    element_type<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>STRUCT,
+</span></span><span style=display:flex><span>    max_capacity<span style=color:#f92672>=</span><span style=color:#ae81ff>100</span>,
+</span></span><span style=display:flex><span>    element_schema<span style=color:#f92672>=</span>{
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;fields&#34;</span>: [
+</span></span><span style=display:flex><span>            {<span style=color:#e6db74>&#34;name&#34;</span>: <span style=color:#e6db74>&#34;user_id&#34;</span>, <span style=color:#e6db74>&#34;type&#34;</span>: DataType<span style=color:#f92672>.</span>INT64},
+</span></span><span style=display:flex><span>            {<span style=color:#e6db74>&#34;name&#34;</span>: <span style=color:#e6db74>&#34;rating&#34;</span>, <span style=color:#e6db74>&#34;type&#34;</span>: DataType<span style=color:#f92672>.</span>INT32},
+</span></span><span style=display:flex><span>            {<span style=color:#e6db74>&#34;name&#34;</span>: <span style=color:#e6db74>&#34;comment&#34;</span>, <span style=color:#e6db74>&#34;type&#34;</span>: DataType<span style=color:#f92672>.</span>VARCHAR, <span style=color:#e6db74>&#34;max_length&#34;</span>: <span style=color:#ae81ff>500</span>},
+</span></span><span style=display:flex><span>            {<span style=color:#e6db74>&#34;name&#34;</span>: <span style=color:#e6db74>&#34;review_vector&#34;</span>, <span style=color:#e6db74>&#34;type&#34;</span>: DataType<span style=color:#f92672>.</span>FLOAT_VECTOR, <span style=color:#e6db74>&#34;dim&#34;</span>: <span style=color:#ae81ff>64</span>},
+</span></span><span style=display:flex><span>            {<span style=color:#e6db74>&#34;name&#34;</span>: <span style=color:#e6db74>&#34;timestamp&#34;</span>, <span style=color:#e6db74>&#34;type&#34;</span>: DataType<span style=color:#f92672>.</span>TIMESTAMPTZ}
+</span></span><span style=display:flex><span>        ]
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Insert data example</span>
+</span></span><span style=display:flex><span>data <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;product_id&#34;</span>: <span style=color:#ae81ff>1</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;reviews&#34;</span>: [
+</span></span><span style=display:flex><span>        {
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;user_id&#34;</span>: <span style=color:#ae81ff>1001</span>,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;rating&#34;</span>: <span style=color:#ae81ff>5</span>,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;comment&#34;</span>: <span style=color:#e6db74>&#34;Very good!&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;review_vector&#34;</span>: [<span style=color:#ae81ff>0.1</span>, <span style=color:#ae81ff>0.2</span>, <span style=color:#f92672>...</span>],  <span style=color:#75715e># 64-dimensional vector</span>
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;timestamp&#34;</span>: <span style=color:#e6db74>&#34;2025-05-01T10:00:00+08:00&#34;</span>
+</span></span><span style=display:flex><span>        },
+</span></span><span style=display:flex><span>        {
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;user_id&#34;</span>: <span style=color:#ae81ff>1002</span>,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;rating&#34;</span>: <span style=color:#ae81ff>4</span>,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;comment&#34;</span>: <span style=color:#e6db74>&#34;Pretty good&#34;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;review_vector&#34;</span>: [<span style=color:#ae81ff>0.3</span>, <span style=color:#ae81ff>0.4</span>, <span style=color:#f92672>...</span>],
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;timestamp&#34;</span>: <span style=color:#e6db74>&#34;2025-05-02T15:30:00+08:00&#34;</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    ]
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Compare with MySQL</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Need to create association table reviews</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># CREATE TABLE reviews (</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>#     review_id BIGINT PRIMARY KEY,</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>#     product_id BIGINT,</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>#     user_id BIGINT,</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>#     rating INT,</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>#     comment VARCHAR(500),</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>#     timestamp TIMESTAMP,</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>#     FOREIGN KEY (product_id) REFERENCES products(product_id)</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># );</span>
+</span></span></code></pre></div><h3 id=47-geometry-fields-geometry>4.7 Geometry Fields (GEOMETRY)</h3><p>Used to store geographic location and coordinate information.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># Geometry field</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;store_location&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>GEOMETRY,
+</span></span><span style=display:flex><span>    default_value<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;POINT(0 0)&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Insert data example</span>
+</span></span><span style=display:flex><span>data <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;product_id&#34;</span>: <span style=color:#ae81ff>1</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;store_location&#34;</span>: <span style=color:#e6db74>&#34;POINT(116.4074 39.9042)&#34;</span>  <span style=color:#75715e># Tiananmen Square coordinates, Beijing</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Compare with MySQL</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># store_location POINT NOT NULL</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Or use PostGIS extension GEOMETRY type</span>
+</span></span></code></pre></div><h2 id=5-vector-fields-detailed>5. Vector Fields Detailed</h2><h3 id=51-vector-type-comparison>5.1 Vector Type Comparison</h3><div class=table-wrapper><table><thead><tr><th>Milvus Type</th><th>Description</th><th>Use Cases</th><th>Storage Size</th></tr></thead><tbody><tr><td>FLOAT_VECTOR</td><td>32-bit float vector</td><td>High-precision semantic search</td><td>4 bytes/dim</td></tr><tr><td>FLOAT16_VECTOR</td><td>16-bit half-precision float</td><td>Deep learning, GPU computing</td><td>2 bytes/dim</td></tr><tr><td>BFLOAT16_VECTOR</td><td>16-bit brain float</td><td>Large-scale image retrieval</td><td>2 bytes/dim</td></tr><tr><td>INT8_VECTOR</td><td>8-bit integer vector</td><td>Quantized models, fast inference</td><td>1 byte/dim</td></tr><tr><td>SPARSE_FLOAT_VECTOR</td><td>Sparse float vector</td><td>Full-text search, term matching</td><td>Variable</td></tr><tr><td>BINARY_VECTOR</td><td>Binary vector</td><td>Resource-constrained scenarios</td><td>1 bit/dim</td></tr></tbody></table></div><h3 id=52-dense-vector-examples>5.2 Dense Vector Examples</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># FLOAT_VECTOR - Standard dense vector</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;product_embedding&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>FLOAT_VECTOR,
+</span></span><span style=display:flex><span>    dim<span style=color:#f92672>=</span><span style=color:#ae81ff>128</span>  <span style=color:#75715e># 128-dimensional vector</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># FLOAT16_VECTOR - Half-precision vector</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;image_embedding&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>FLOAT16_VECTOR,
+</span></span><span style=display:flex><span>    dim<span style=color:#f92672>=</span><span style=color:#ae81ff>512</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># INT8_VECTOR - Quantized vector</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;text_embedding_quantized&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>INT8_VECTOR,
+</span></span><span style=display:flex><span>    dim<span style=color:#f92672>=</span><span style=color:#ae81ff>256</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Insert data example</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> numpy <span style=color:#66d9ef>as</span> np
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>data <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;product_id&#34;</span>: <span style=color:#ae81ff>1</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;product_embedding&#34;</span>: np<span style=color:#f92672>.</span>random<span style=color:#f92672>.</span>rand(<span style=color:#ae81ff>128</span>)<span style=color:#f92672>.</span>tolist(),  <span style=color:#75715e># 128-dim float vector</span>
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;image_embedding&#34;</span>: np<span style=color:#f92672>.</span>random<span style=color:#f92672>.</span>rand(<span style=color:#ae81ff>512</span>)<span style=color:#f92672>.</span>astype(np<span style=color:#f92672>.</span>float16)<span style=color:#f92672>.</span>tolist(),
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;text_embedding_quantized&#34;</span>: np<span style=color:#f92672>.</span>random<span style=color:#f92672>.</span>randint(<span style=color:#f92672>-</span><span style=color:#ae81ff>128</span>, <span style=color:#ae81ff>127</span>, <span style=color:#ae81ff>256</span>)<span style=color:#f92672>.</span>tolist()
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># MySQL has no equivalent type, needs to be stored as BLOB or JSON</span>
+</span></span></code></pre></div><h3 id=53-sparse-vector-examples>5.3 Sparse Vector Examples</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># Sparse vector field</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;keyword_vector&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>SPARSE_FLOAT_VECTOR
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Insert data example (sparse vector format)</span>
+</span></span><span style=display:flex><span>data <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;product_id&#34;</span>: <span style=color:#ae81ff>1</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;keyword_vector&#34;</span>: {
+</span></span><span style=display:flex><span>        <span style=color:#ae81ff>10</span>: <span style=color:#ae81ff>0.5</span>,    <span style=color:#75715e># Index 10 value is 0.5</span>
+</span></span><span style=display:flex><span>        <span style=color:#ae81ff>25</span>: <span style=color:#ae81ff>0.8</span>,    <span style=color:#75715e># Index 25 value is 0.8</span>
+</span></span><span style=display:flex><span>        <span style=color:#ae81ff>100</span>: <span style=color:#ae81ff>0.3</span>    <span style=color:#75715e># Index 100 value is 0.3</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=6-dynamic-fields>6. Dynamic Fields</h2><h3 id=61-dynamic-field-concept>6.1 Dynamic Field Concept</h3><p>Dynamic fields allow inserting fields not defined in Schema, which are automatically stored in the hidden <code>$meta</code> JSON field.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># Enable dynamic fields</span>
+</span></span><span style=display:flex><span>schema <span style=color:#f92672>=</span> client<span style=color:#f92672>.</span>create_schema(
+</span></span><span style=display:flex><span>    enable_dynamic_field<span style=color:#f92672>=</span><span style=color:#66d9ef>True</span>  <span style=color:#75715e># Enable dynamic fields</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Define basic fields</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;product_id&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>INT64,
+</span></span><span style=display:flex><span>    is_primary<span style=color:#f92672>=</span><span style=color:#66d9ef>True</span>,
+</span></span><span style=display:flex><span>    auto_id<span style=color:#f92672>=</span><span style=color:#66d9ef>True</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;product_vector&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>FLOAT_VECTOR,
+</span></span><span style=display:flex><span>    dim<span style=color:#f92672>=</span><span style=color:#ae81ff>128</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Can include undefined fields when inserting data</span>
+</span></span><span style=display:flex><span>data <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;product_id&#34;</span>: <span style=color:#ae81ff>1</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;product_vector&#34;</span>: [<span style=color:#ae81ff>0.1</span>, <span style=color:#ae81ff>0.2</span>, <span style=color:#f92672>...</span>],
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;name&#34;</span>: <span style=color:#e6db74>&#34;iPhone 15&#34;</span>,           <span style=color:#75715e># Not defined in Schema</span>
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;category&#34;</span>: <span style=color:#e6db74>&#34;Electronics&#34;</span>,     <span style=color:#75715e># Not defined in Schema</span>
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;price&#34;</span>: <span style=color:#ae81ff>999.99</span>               <span style=color:#75715e># Not defined in Schema</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Milvus internally stores as:</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># {</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>#   &#34;product_id&#34;: 1,</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>#   &#34;product_vector&#34;: [0.1, 0.2, ...],</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>#   &#34;$meta&#34;: {</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>#     &#34;name&#34;: &#34;iPhone 15&#34;,</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>#     &#34;category&#34;: &#34;Electronics&#34;,</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>#     &#34;price&#34;: 999.99</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>#   }</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># }</span>
+</span></span></code></pre></div><h3 id=62-supported-types-for-dynamic-fields>6.2 Supported Types for Dynamic Fields</h3><div class=table-wrapper><table><thead><tr><th>Type</th><th>Milvus DataType</th><th>Compare with MongoDB</th></tr></thead><tbody><tr><td>String</td><td>VARCHAR</td><td>String</td></tr><tr><td>Integer</td><td>INT8, INT32, INT64</td><td>Int32, Int64</td></tr><tr><td>Float</td><td>FLOAT, DOUBLE</td><td>Double</td></tr><tr><td>Boolean</td><td>BOOL</td><td>Boolean</td></tr><tr><td>Array</td><td>ARRAY</td><td>Array</td></tr><tr><td>JSON Object</td><td>JSON</td><td>Object</td></tr></tbody></table></div><h3 id=63-querying-dynamic-fields>6.3 Querying Dynamic Fields</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># Direct field name query</span>
+</span></span><span style=display:flex><span>results <span style=color:#f92672>=</span> client<span style=color:#f92672>.</span>query(
+</span></span><span style=display:flex><span>    collection_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;products&#34;</span>,
+</span></span><span style=display:flex><span>    filter<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;name == &#34;iPhone 15&#34;&#39;</span>,  <span style=color:#75715e># Directly use dynamic field name</span>
+</span></span><span style=display:flex><span>    output_fields<span style=color:#f92672>=</span>[<span style=color:#e6db74>&#34;product_id&#34;</span>, <span style=color:#e6db74>&#34;name&#34;</span>, <span style=color:#e6db74>&#34;category&#34;</span>, <span style=color:#e6db74>&#34;price&#34;</span>]
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Or query through $meta</span>
+</span></span><span style=display:flex><span>results <span style=color:#f92672>=</span> client<span style=color:#f92672>.</span>query(
+</span></span><span style=display:flex><span>    collection_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;products&#34;</span>,
+</span></span><span style=display:flex><span>    filter<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;$meta[&#34;category&#34;] == &#34;Electronics&#34;&#39;</span>,
+</span></span><span style=display:flex><span>    output_fields<span style=color:#f92672>=</span>[<span style=color:#e6db74>&#34;product_id&#34;</span>, <span style=color:#e6db74>&#34;$meta&#34;</span>]
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Compare with MongoDB</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># db.products.find({&#34;name&#34;: &#34;iPhone 15&#34;})</span>
+</span></span></code></pre></div><h2 id=7-complete-schema-example>7. Complete Schema Example</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#f92672>from</span> pymilvus <span style=color:#f92672>import</span> MilvusClient, DataType
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Connect client</span>
+</span></span><span style=display:flex><span>client <span style=color:#f92672>=</span> MilvusClient(uri<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;http://localhost:19530&#34;</span>, token<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;root:Milvus&#34;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Create Schema</span>
+</span></span><span style=display:flex><span>schema <span style=color:#f92672>=</span> client<span style=color:#f92672>.</span>create_schema(
+</span></span><span style=display:flex><span>    enable_dynamic_field<span style=color:#f92672>=</span><span style=color:#66d9ef>True</span>  <span style=color:#75715e># Enable dynamic fields</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 1. Primary key field (Auto ID)</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;product_id&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>INT64,
+</span></span><span style=display:flex><span>    is_primary<span style=color:#f92672>=</span><span style=color:#66d9ef>True</span>,
+</span></span><span style=display:flex><span>    auto_id<span style=color:#f92672>=</span><span style=color:#66d9ef>True</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 2. String field</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;product_name&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>VARCHAR,
+</span></span><span style=display:flex><span>    max_length<span style=color:#f92672>=</span><span style=color:#ae81ff>255</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 3. Numeric field</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;product_price&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>FLOAT
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 4. JSON field</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;product_detail&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>JSON
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 5. Array field</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;product_tags&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>ARRAY,
+</span></span><span style=display:flex><span>    element_type<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>VARCHAR,
+</span></span><span style=display:flex><span>    max_capacity<span style=color:#f92672>=</span><span style=color:#ae81ff>10</span>,
+</span></span><span style=display:flex><span>    max_length<span style=color:#f92672>=</span><span style=color:#ae81ff>50</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 6. Timestamp field</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;created_at&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>TIMESTAMPTZ
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 7. Struct array</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;reviews&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>ARRAY,
+</span></span><span style=display:flex><span>    element_type<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>STRUCT,
+</span></span><span style=display:flex><span>    max_capacity<span style=color:#f92672>=</span><span style=color:#ae81ff>100</span>,
+</span></span><span style=display:flex><span>    element_schema<span style=color:#f92672>=</span>{
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;fields&#34;</span>: [
+</span></span><span style=display:flex><span>            {<span style=color:#e6db74>&#34;name&#34;</span>: <span style=color:#e6db74>&#34;user_id&#34;</span>, <span style=color:#e6db74>&#34;type&#34;</span>: DataType<span style=color:#f92672>.</span>INT64},
+</span></span><span style=display:flex><span>            {<span style=color:#e6db74>&#34;name&#34;</span>: <span style=color:#e6db74>&#34;rating&#34;</span>, <span style=color:#e6db74>&#34;type&#34;</span>: DataType<span style=color:#f92672>.</span>INT32},
+</span></span><span style=display:flex><span>            {<span style=color:#e6db74>&#34;name&#34;</span>: <span style=color:#e6db74>&#34;comment&#34;</span>, <span style=color:#e6db74>&#34;type&#34;</span>: DataType<span style=color:#f92672>.</span>VARCHAR, <span style=color:#e6db74>&#34;max_length&#34;</span>: <span style=color:#ae81ff>500</span>},
+</span></span><span style=display:flex><span>            {<span style=color:#e6db74>&#34;name&#34;</span>: <span style=color:#e6db74>&#34;review_vector&#34;</span>, <span style=color:#e6db74>&#34;type&#34;</span>: DataType<span style=color:#f92672>.</span>FLOAT_VECTOR, <span style=color:#e6db74>&#34;dim&#34;</span>: <span style=color:#ae81ff>64</span>}
+</span></span><span style=display:flex><span>        ]
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 8. Geometry field</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;store_location&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>GEOMETRY,
+</span></span><span style=display:flex><span>    default_value<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;POINT(0 0)&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 9. Dense vector field</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;product_embedding&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>FLOAT_VECTOR,
+</span></span><span style=display:flex><span>    dim<span style=color:#f92672>=</span><span style=color:#ae81ff>128</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 10. Sparse vector field</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;keyword_vector&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>SPARSE_FLOAT_VECTOR
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>print(<span style=color:#e6db74>&#34;✅ Schema creation completed&#34;</span>)
+</span></span></code></pre></div><h2 id=8-schema-vs-mysql-comparison-summary>8. Schema vs MySQL Comparison Summary</h2><div class=table-wrapper><table><thead><tr><th>Operation</th><th>Milvus</th><th>MySQL</th></tr></thead><tbody><tr><td>Create Schema</td><td><code>client.create_schema()</code></td><td><code>CREATE TABLE</code></td></tr><tr><td>Add Field</td><td><code>schema.add_field()</code></td><td><code>ALTER TABLE ADD COLUMN</code></td></tr><tr><td>Primary Key Definition</td><td><code>is_primary=True</code></td><td><code>PRIMARY KEY</code></td></tr><tr><td>Auto ID</td><td><code>auto_id=True</code></td><td><code>AUTO_INCREMENT</code></td></tr><tr><td>Nullable Field</td><td><code>nullable=True</code></td><td><code>NULL</code></td></tr><tr><td>Default Value</td><td><code>default_value=value</code></td><td><code>DEFAULT value</code></td></tr><tr><td>Vector Fields</td><td><code>FLOAT_VECTOR</code> etc.</td><td>No equivalent type</td></tr><tr><td>Dynamic Fields</td><td><code>enable_dynamic_field=True</code></td><td>None (need JSON or NoSQL)</td></tr></tbody></table></div><h2 id=9-best-practices>9. Best Practices</h2><h3 id=91-field-naming-conventions>9.1 Field Naming Conventions</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># ✅ Recommended</span>
+</span></span><span style=display:flex><span><span style=color:#e6db74>&#34;product_id&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#e6db74>&#34;user_name&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#e6db74>&#34;created_at&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># ❌ Avoid</span>
+</span></span><span style=display:flex><span><span style=color:#e6db74>&#34;Product-ID&#34;</span>      <span style=color:#75715e># Avoid hyphens</span>
+</span></span><span style=display:flex><span><span style=color:#e6db74>&#34;用户名&#34;</span>          <span style=color:#75715e># Avoid non-ASCII</span>
+</span></span><span style=display:flex><span><span style=color:#e6db74>&#34;field name&#34;</span>     <span style=color:#75715e># Avoid spaces</span>
+</span></span></code></pre></div><h3 id=92-vector-dimension-selection>9.2 Vector Dimension Selection</h3><div class=table-wrapper><table><thead><tr><th>Scenario</th><th>Recommended Dimensions</th><th>Model Examples</th></tr></thead><tbody><tr><td>Text Embedding</td><td>384-768</td><td>sentence-transformers</td></tr><tr><td>Image Embedding</td><td>512-2048</td><td>ResNet, CLIP</td></tr><tr><td>Multimodal</td><td>512-1024</td><td>CLIP, ALIGN</td></tr></tbody></table></div><h3 id=93-index-strategy>9.3 Index Strategy</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># Create index for vector fields</span>
+</span></span><span style=display:flex><span>index_params <span style=color:#f92672>=</span> MilvusClient<span style=color:#f92672>.</span>prepare_index_params()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># HNSW index (recommended for high-precision search)</span>
+</span></span><span style=display:flex><span>index_params<span style=color:#f92672>.</span>add_index(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;product_embedding&#34;</span>,
+</span></span><span style=display:flex><span>    index_type<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;HNSW&#34;</span>,
+</span></span><span style=display:flex><span>    metric_type<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;COSINE&#34;</span>,
+</span></span><span style=display:flex><span>    params<span style=color:#f92672>=</span>{<span style=color:#e6db74>&#34;M&#34;</span>: <span style=color:#ae81ff>16</span>, <span style=color:#e6db74>&#34;efConstruction&#34;</span>: <span style=color:#ae81ff>256</span>}
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># IVF_FLAT index (suitable for large-scale data)</span>
+</span></span><span style=display:flex><span>index_params<span style=color:#f92672>.</span>add_index(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;image_embedding&#34;</span>,
+</span></span><span style=display:flex><span>    index_type<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;IVF_FLAT&#34;</span>,
+</span></span><span style=display:flex><span>    metric_type<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;L2&#34;</span>,
+</span></span><span style=display:flex><span>    params<span style=color:#f92672>=</span>{<span style=color:#e6db74>&#34;nlist&#34;</span>: <span style=color:#ae81ff>1024</span>}
+</span></span><span style=display:flex><span>)
+</span></span></code></pre></div><h2 id=10-key-points-summary>10. Key Points Summary</h2><ol><li><strong>Schema Flexibility</strong>: Milvus supports dynamic fields, more flexible than traditional relational databases</li><li><strong>Native Vector Support</strong>: Vector fields are first-class citizens, no extra conversion needed</li><li><strong>Rich Types</strong>: Supports JSON, arrays, structs and other complex types</li><li><strong>Timezone Awareness</strong>: TIMESTAMPTZ provides native timezone support</li><li><strong>Index Optimization</strong>: JSON shredding, vector indexing and other optimization techniques</li><li><strong>NoSQL Integration</strong>: Dynamic fields similar to MongoDB, but retain Schema constraint advantages</li></ol></section><footer class=article-footer><section class=article-tags><a href=/en/tags/milvus/>Milvus</a>
+<a href=/en/tags/schema/>Schema</a></section></footer></article><aside class=related-content--wrapper><h2 class=section-title>Related content</h2><div class=related-content><div class="flex article-list--tile"><article><a href=/en/stu/milvus-install-guide/><div class=article-details><h2 class=article-title>Complete Guide to Installing Milvus Standalone Mode and Common Problem Solutions</h2></div></a></article></div></div></aside><script src=https://giscus.app/client.js data-repo=zg-dd/zg-dd.github.io data-repo-id=R_kgDOQwB7tw data-category=Announcements data-category-id=DIC_kwDOQwB7t84C0WGD data-mapping=pathname data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=preferred_color_scheme data-lang=zh-CN data-loading crossorigin=anonymous async></script><script>function setGiscusTheme(e){let t=document.querySelector("iframe.giscus-frame");t&&t.contentWindow.postMessage({giscus:{setConfig:{theme:e}}},"https://giscus.app")}(function(){addEventListener("message",t=>{if(event.origin!=="https://giscus.app")return;e()}),window.addEventListener("onColorSchemeChange",e);function e(){setGiscusTheme(document.documentElement.dataset.scheme==="light"?"preferred_color_scheme":"preferred_color_scheme")}})()</script><footer class=site-footer><section class=copyright>&copy;
+2026 小巷 Blog</section><section class=powerby>Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a><br>Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.33.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a></section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.c922af694cc257bf1ecc41c0dd7b0430f9114ec280ccf67cd2c6ad55f5316c4e.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>
