@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>小巷的随笔</title><link>https://zg-dd.github.io/</link><description>Recent content on 小巷的随笔</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Thu, 26 Feb 2026 18:51:45 +0800</lastBuildDate><atom:link href="https://zg-dd.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>Milvus Schema模式详解 - 字段类型与数据建模指南</title><link>https://zg-dd.github.io/stu/milvus-stu-schema/</link><pubDate>Thu, 26 Feb 2026 18:51:45 +0800</pubDate><guid>https://zg-dd.github.io/stu/milvus-stu-schema/</guid><description>&lt;h2 id="一schema-概念理解"&gt;一、Schema 概念理解
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>小巷的随笔</title><link>https://zg-dd.github.io/</link><description>Recent content on 小巷的随笔</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Thu, 26 Feb 2026 19:10:45 +0800</lastBuildDate><atom:link href="https://zg-dd.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>Milvus Schema模式详解 - 字段类型与数据建模指南</title><link>https://zg-dd.github.io/stu/milvus-stu-schema/</link><pubDate>Thu, 26 Feb 2026 19:10:45 +0800</pubDate><guid>https://zg-dd.github.io/stu/milvus-stu-schema/</guid><description>&lt;h2 id="一schema-概念理解"&gt;一、Schema 概念理解
 &lt;/h2&gt;&lt;h3 id="11-什么是-schema"&gt;1.1 什么是 Schema？
 &lt;/h3&gt;&lt;p&gt;Schema 是集合（Collection）的元数据定义，类似于关系型数据库中的表结构定义。&lt;/p&gt;
 &lt;table&gt;
@@ -543,20 +543,19 @@ jsonShreddingRatioThreshold: 0.3
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="46-结构体数组array-of-struct"&gt;4.6 结构体数组（ARRAY of STRUCT）
 &lt;/h3&gt;&lt;p&gt;结构体数组用于存储复杂的嵌套数据。&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 商品评论数组示例&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 示例：商品评论数组，每个评论都是一个 Struct&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;struct_schema &lt;span style="color:#f92672"&gt;=&lt;/span&gt; client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;create_struct_field_schema()
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;struct_schema&lt;span style="color:#f92672"&gt;.&lt;/span&gt;add_field(field_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;user_id&amp;#34;&lt;/span&gt;,datatype&lt;span style="color:#f92672"&gt;=&lt;/span&gt;DataType&lt;span style="color:#f92672"&gt;.&lt;/span&gt;INT64)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;struct_schema&lt;span style="color:#f92672"&gt;.&lt;/span&gt;add_field(field_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;rating&amp;#34;&lt;/span&gt;,datatype&lt;span style="color:#f92672"&gt;=&lt;/span&gt;DataType&lt;span style="color:#f92672"&gt;.&lt;/span&gt;INT32)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;struct_schema&lt;span style="color:#f92672"&gt;.&lt;/span&gt;add_field(field_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;comment&amp;#34;&lt;/span&gt;,datatype&lt;span style="color:#f92672"&gt;=&lt;/span&gt;DataType&lt;span style="color:#f92672"&gt;.&lt;/span&gt;VARCHAR,max_length&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;500&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;struct_schema&lt;span style="color:#f92672"&gt;.&lt;/span&gt;add_field(field_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;review_vector&amp;#34;&lt;/span&gt;,datatype&lt;span style="color:#f92672"&gt;=&lt;/span&gt;DataType&lt;span style="color:#f92672"&gt;.&lt;/span&gt;FLOAT_VECTOR,dim&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;64&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;struct_schema&lt;span style="color:#f92672"&gt;.&lt;/span&gt;add_field(field_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;timestamp&amp;#34;&lt;/span&gt;,datatype&lt;span style="color:#f92672"&gt;=&lt;/span&gt;DataType&lt;span style="color:#f92672"&gt;.&lt;/span&gt;TIMESTAMPTZ)
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;schema&lt;span style="color:#f92672"&gt;.&lt;/span&gt;add_field(
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; field_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;reviews&amp;#34;&lt;/span&gt;,
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; datatype&lt;span style="color:#f92672"&gt;=&lt;/span&gt;DataType&lt;span style="color:#f92672"&gt;.&lt;/span&gt;ARRAY,
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; element_type&lt;span style="color:#f92672"&gt;=&lt;/span&gt;DataType&lt;span style="color:#f92672"&gt;.&lt;/span&gt;STRUCT,
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; max_capacity&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;100&lt;/span&gt;,
-&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; element_schema&lt;span style="color:#f92672"&gt;=&lt;/span&gt;{
-&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;fields&amp;#34;&lt;/span&gt;: [
-&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {&lt;span style="color:#e6db74"&gt;&amp;#34;name&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;user_id&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;type&amp;#34;&lt;/span&gt;: DataType&lt;span style="color:#f92672"&gt;.&lt;/span&gt;INT64},
-&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {&lt;span style="color:#e6db74"&gt;&amp;#34;name&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;rating&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;type&amp;#34;&lt;/span&gt;: DataType&lt;span style="color:#f92672"&gt;.&lt;/span&gt;INT32},
-&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {&lt;span style="color:#e6db74"&gt;&amp;#34;name&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;comment&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;type&amp;#34;&lt;/span&gt;: DataType&lt;span style="color:#f92672"&gt;.&lt;/span&gt;VARCHAR, &lt;span style="color:#e6db74"&gt;&amp;#34;max_length&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;500&lt;/span&gt;},
-&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {&lt;span style="color:#e6db74"&gt;&amp;#34;name&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;review_vector&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;type&amp;#34;&lt;/span&gt;: DataType&lt;span style="color:#f92672"&gt;.&lt;/span&gt;FLOAT_VECTOR, &lt;span style="color:#e6db74"&gt;&amp;#34;dim&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;64&lt;/span&gt;},
-&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {&lt;span style="color:#e6db74"&gt;&amp;#34;name&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;timestamp&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;type&amp;#34;&lt;/span&gt;: DataType&lt;span style="color:#f92672"&gt;.&lt;/span&gt;TIMESTAMPTZ}
-&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; ]
-&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; element_schema&lt;span style="color:#f92672"&gt;=&lt;/span&gt;struct_schema
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;)
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 插入数据示例&lt;/span&gt;
@@ -851,19 +850,18 @@ field_name=&amp;#34;created_at&amp;#34;,
 datatype=DataType.TIMESTAMPTZ
 )
 # 7. 结构体数组
+struct_schema = client.create_struct_field_schema()
+struct_schema.add_field(field_name=&amp;#34;user_id&amp;#34;,datatype=DataType.INT64)
+struct_schema.add_field(field_name=&amp;#34;rating&amp;#34;,datatype=DataType.INT32)
+struct_schema.add_field(field_name=&amp;#34;comment&amp;#34;,datatype=DataType.VARCHAR,max_length=500)
+struct_schema.add_field(field_name=&amp;#34;review_vector&amp;#34;,datatype=DataType.FLOAT_VECTOR,dim=64)
+struct_schema.add_field(field_name=&amp;#34;timestamp&amp;#34;,datatype=DataType.TIMESTAMPTZ)
 schema.add_field(
 field_name=&amp;#34;reviews&amp;#34;,
 datatype=DataType.ARRAY,
 element_type=DataType.STRUCT,
 max_capacity=100,
-element_schema={
-&amp;#34;fields&amp;#34;: [
-{&amp;#34;name&amp;#34;: &amp;#34;user_id&amp;#34;, &amp;#34;type&amp;#34;: DataType.INT64},
-{&amp;#34;name&amp;#34;: &amp;#34;rating&amp;#34;, &amp;#34;type&amp;#34;: DataType.INT32},
-{&amp;#34;name&amp;#34;: &amp;#34;comment&amp;#34;, &amp;#34;type&amp;#34;: DataType.VARCHAR, &amp;#34;max_length&amp;#34;: 500},
-{&amp;#34;name&amp;#34;: &amp;#34;review_vector&amp;#34;, &amp;#34;type&amp;#34;: DataType.FLOAT_VECTOR, &amp;#34;dim&amp;#34;: 64}
-]
-}
+element_schema=struct_schema
 )
 # 8. 几何字段
 schema.add_field(
