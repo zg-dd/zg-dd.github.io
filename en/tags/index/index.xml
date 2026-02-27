@@ -1,0 +1,770 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Index on 小巷 Blog</title><link>https://zg-dd.github.io/en/tags/index/</link><description>Recent content in Index on 小巷 Blog</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Fri, 27 Feb 2026 19:11:18 +0800</lastBuildDate><atom:link href="https://zg-dd.github.io/en/tags/index/index.xml" rel="self" type="application/rss+xml"/><item><title>Milvus Index Detailed Guide - Vector Search Performance Optimization</title><link>https://zg-dd.github.io/en/stu/milvus-index-explained/</link><pubDate>Fri, 27 Feb 2026 19:11:18 +0800</pubDate><guid>https://zg-dd.github.io/en/stu/milvus-index-explained/</guid><description>&lt;h2 id="core-concepts-explained-simply"&gt;Core Concepts Explained Simply
+&lt;/h2&gt;&lt;h3 id="what-is-topk"&gt;What is topK?
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;topK&lt;/strong&gt; means &amp;ldquo;the top K most similar results&amp;rdquo;.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Example: topK=5 means return the 5 most similar data entries&lt;/li&gt;
+&lt;li&gt;Example: topK=100 means return the 100 most similar data entries&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Analogy&lt;/strong&gt;: Like searching for &amp;ldquo;phones&amp;rdquo; on Taobao, you only look at the top 10 products - that 10 is the topK&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="what-is-recall-rate"&gt;What is Recall Rate?
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;Recall rate&lt;/strong&gt; is a metric measuring search accuracy, indicating &amp;ldquo;how many truly similar results were found&amp;rdquo;.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Formula&lt;/strong&gt;: Recall rate = Actual similar results found / Theoretically should find similar results&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Example&lt;/strong&gt;: If among the truly 10 most similar results, your search found 9, the recall rate is 90%&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Analogy&lt;/strong&gt;: Like an exam, full score 100 you got 95, recall rate is 95%&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Importance&lt;/strong&gt;: Higher recall rate means more accurate search results, but potentially slower speed&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="what-is-filter-ratio"&gt;What is Filter Ratio?
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;Filter ratio&lt;/strong&gt; refers to the proportion of remaining data after conditional filtering compared to total data.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Formula&lt;/strong&gt;: Filter ratio = (Total data - Remaining data after filtering) / Total data&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Example&lt;/strong&gt;: 1 million data entries, filtering condition is &amp;ldquo;price &amp;gt; 1000&amp;rdquo;, 50 thousand remain, filter ratio = (1M-50K)/1M = 95%&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Analogy&lt;/strong&gt;: Like finding books in a library, first filter by &amp;ldquo;Computer Science&amp;rdquo; to eliminate 90% of books, filter ratio is 90%&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Impact&lt;/strong&gt;: Higher filter ratio means less remaining data, brute force search might be faster&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="what-is-capacity"&gt;What is Capacity?
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;Capacity&lt;/strong&gt; refers to your hardware resources (mainly memory) that can store how much data.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Memory capacity&lt;/strong&gt;: How much RAM your server has available to store vector data&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Example&lt;/strong&gt;: You have 16GB memory, vector data needs 64GB, so only 1/4 data can fit in memory&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Analogy&lt;/strong&gt;: Like your phone storage space, too many photos need deletion or cloud storage&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Strategies&lt;/strong&gt;:
+&lt;ul&gt;
+&lt;li&gt;All data fits in memory → Use in-memory index (fast)&lt;/li&gt;
+&lt;li&gt;Only part of data fits in memory → Use disk index (slower but handles big data)&lt;/li&gt;
+&lt;li&gt;Severe memory shortage → Use compressed index (trade precision for space)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="what-is-autoindex"&gt;What is AutoIndex?
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;AutoIndex&lt;/strong&gt; is Milvus&amp;rsquo;s intelligent index selection feature, automatically choosing the most suitable index type based on your data characteristics.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Working principle&lt;/strong&gt;:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Analyze data scale, dimensions, distribution characteristics&lt;/li&gt;
+&lt;li&gt;Evaluate hardware resources (memory, CPU, GPU)&lt;/li&gt;
+&lt;li&gt;Automatically select optimal index type and parameters&lt;/li&gt;
+&lt;li&gt;Automatically build and optimize index&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;Applicable scenarios&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Beginners unsure what index to choose&lt;/li&gt;
+&lt;li&gt;Complex data characteristics difficult to manually select&lt;/li&gt;
+&lt;li&gt;Rapid prototyping, don&amp;rsquo;t want to spend time tuning&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Usage&lt;/strong&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Vector field uses AutoIndex&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;index_params&lt;span style="color:#f92672"&gt;.&lt;/span&gt;add_index(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; field_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;embedding&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; index_type&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;AUTOINDEX&amp;#34;&lt;/span&gt;, &lt;span style="color:#75715e"&gt;# Automatically select index type&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; metric_type&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;L2&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Scalar fields can also use automatic indexing&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Milvus will automatically choose INVERTED, BITMAP, or STL_SORT based on field type&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;Notes&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;AutoIndex suits most scenarios, but manual tuning recommended for extreme performance requirements&lt;/li&gt;
+&lt;li&gt;Different Milvus versions may have different AutoIndex strategies&lt;/li&gt;
+&lt;li&gt;Zilliz Cloud (managed service) uses AutoIndex by default&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="why-indexing-is-needed"&gt;Why Indexing is Needed
+&lt;/h2&gt;&lt;p&gt;Indexes are additional structures built on data, whose internal organization depends on the &lt;strong&gt;Approximate Nearest Neighbor Search algorithm&lt;/strong&gt; (ANNS). The main purpose of indexes is to accelerate the search process, but comes with these costs:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Additional preprocessing (building) time&lt;/li&gt;
+&lt;li&gt;Occupies more storage space&lt;/li&gt;
+&lt;li&gt;Consumes more RAM during queries&lt;/li&gt;
+&lt;li&gt;Usually slightly reduces &lt;strong&gt;recall rate&lt;/strong&gt;, though impact is typically controllable&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Analogy understanding&lt;/strong&gt;: Indexes are like book tables of contents - though they take up a few pages, they let you quickly find desired chapters instead of flipping from beginning to end.&lt;/p&gt;
+&lt;p&gt;Therefore, choosing the right index requires balancing acceleration benefits against the above costs.&lt;/p&gt;
+&lt;h2 id="supported-index-types"&gt;Supported Index Types
+&lt;/h2&gt;&lt;p&gt;Indexes in Milvus are defined for specific fields, with different field data types corresponding to different applicable indexes. Here&amp;rsquo;s the officially supported mapping relationship (focus on vector indexes):&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Field Data Type&lt;/th&gt;
+&lt;th&gt;Applicable Index Types&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;FLOAT_VECTOR / FLOAT16_VECTOR / BFLOAT16_VECTOR / INT8_VECTOR&lt;/td&gt;
+&lt;td&gt;FLAT, IVF_FLAT, IVF_SQ8, IVF_PQ, IVF_RABITQ, HNSW, HNSW_SQ, HNSW_PQ, HNSW_PRQ, DISKANN, SCANN, AISAQ, GPU_CAGRA, GPU_IVF_FLAT, GPU_IVF_PQ, GPU_BRUTE_FORCE&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;BINARY_VECTOR&lt;/td&gt;
+&lt;td&gt;BIN_FLAT, BIN_IVF_FLAT, MINHASH_LSH&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;SPARSE_FLOAT_VECTOR&lt;/td&gt;
+&lt;td&gt;SPARSE_INVERTED_INDEX&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;VARCHAR&lt;/td&gt;
+&lt;td&gt;INVERTED (recommended), BITMAP, Trie&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;BOOL&lt;/td&gt;
+&lt;td&gt;BITMAP (recommended), INVERTED&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;INT8 / INT16 / INT32 / INT64&lt;/td&gt;
+&lt;td&gt;INVERTED, STL_SORT&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;FLOAT / DOUBLE&lt;/td&gt;
+&lt;td&gt;INVERTED&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;ARRAY (elements BOOL / INT8/16/32/64 / VARCHAR)&lt;/td&gt;
+&lt;td&gt;BITMAP (recommended)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;ARRAY (elements BOOL / INT8/16/32/64 / FLOAT / DOUBLE / VARCHAR)&lt;/td&gt;
+&lt;td&gt;INVERTED&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;JSON&lt;/td&gt;
+&lt;td&gt;INVERTED&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;Scalar field recommendation&lt;/strong&gt;: Prioritize index types marked &amp;ldquo;recommended&amp;rdquo; in the table. This article focuses on vector index selection.&lt;/p&gt;
+&lt;h2 id="vector-index-internal-structure"&gt;Vector Index Internal Structure
+&lt;/h2&gt;&lt;p&gt;Milvus vector indexes typically consist of three core components:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Data Structure&lt;/strong&gt; - For coarse-grained filtering&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Quantization&lt;/strong&gt; (optional) - Compressed representation, reducing memory and computational overhead&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Refiner&lt;/strong&gt; (optional) - Recalculate distances with higher precision for quantized candidate results, improving recall rate&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;During index building, Milvus automatically determines an appropriate &lt;strong&gt;expansion rate&lt;/strong&gt; based on selected data structure and quantization method. During queries, first retrieve &lt;code&gt;topK × expansion rate&lt;/code&gt; candidate vectors, then refine through the refiner to return the most precise topK results.&lt;/p&gt;
+&lt;h3 id="common-data-structures"&gt;Common Data Structures
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Inverted File (IVF)&lt;/strong&gt;&lt;br&gt;
+Clusters vectors into multiple buckets through centroids. During queries, only scan centroid-proximate buckets, dramatically reducing computation.&lt;br&gt;
+&lt;strong&gt;Applicable scenarios&lt;/strong&gt;: Large-scale datasets, high throughput requirements.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Graph-based structures&lt;/strong&gt;&lt;br&gt;
+Represented by HNSW (Hierarchical Navigable Small World), builds hierarchical graph structure with each vector connecting to nearest neighbors. Querying descends from coarse upper layers gradually, achieving logarithmic time complexity.&lt;br&gt;
+&lt;strong&gt;Applicable scenarios&lt;/strong&gt;: High-dimensional data, low-latency queries.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="quantization-methods"&gt;Quantization Methods
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Scalar Quantization (SQ)&lt;/strong&gt; like SQ8: Compresses each dimension to 1 byte, memory reduced by ~75%, acceptable accuracy loss.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Product Quantization (PQ)&lt;/strong&gt;: Slices vectors into sub-vectors and encodes, can achieve 4-32x compression, slight recall rate decrease, suitable for memory-constrained environments.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="refiner"&gt;Refiner
+&lt;/h3&gt;&lt;p&gt;Quantization is lossy. To ensure recall rate, the system generates more candidates; the refiner recalculates distances for these candidates using original precision (like FP32). This is crucial for distance-sensitive applications like semantic search and recommendation systems.&lt;/p&gt;
+&lt;h2 id="performance-trade-offs-and-recommended-usage-scenarios"&gt;Performance Trade-offs and Recommended Usage Scenarios
+&lt;/h2&gt;&lt;p&gt;Choosing indexes requires comprehensive consideration of &lt;strong&gt;build time&lt;/strong&gt;, &lt;strong&gt;query throughput (QPS)&lt;/strong&gt;, &lt;strong&gt;recall rate&lt;/strong&gt;, &lt;strong&gt;memory/disk usage&lt;/strong&gt;.&lt;/p&gt;
+&lt;h3 id="capacity-recommendations"&gt;Capacity Recommendations
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;Simple explanation&lt;/strong&gt;: Based on your memory size, choose appropriate indexing strategy.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Memory situation&lt;/th&gt;
+&lt;th&gt;Recommended strategy&lt;/th&gt;
+&lt;th&gt;Explanation&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;1/4 raw data fits in memory&lt;/td&gt;
+&lt;td&gt;DiskANN&lt;/td&gt;
+&lt;td&gt;Part data in memory, part on disk, stable latency&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;All data fits in memory&lt;/td&gt;
+&lt;td&gt;In-memory index (HNSW/IVF) + mmap&lt;/td&gt;
+&lt;td&gt;Fastest speed, recommended&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Extremely memory constrained&lt;/td&gt;
+&lt;td&gt;Quantized index (IVF_PQ/IVF_SQ8) + mmap&lt;/td&gt;
+&lt;td&gt;Compress data, trade precision for space&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Most data on disk&lt;/td&gt;
+&lt;td&gt;DiskANN&lt;/td&gt;
+&lt;td&gt;Disk-optimized, good latency performance&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;Real examples&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;You have 1 million 128-dimensional vectors, raw data ~500MB&lt;/li&gt;
+&lt;li&gt;If your server has 8GB memory → Use HNSW (all data in memory)&lt;/li&gt;
+&lt;li&gt;If your server has only 2GB memory → Use IVF_PQ (compress to under 100MB)&lt;/li&gt;
+&lt;li&gt;If you have 1 billion vectors (500GB) → Use DiskANN (disk index)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="recall-rate-vs-filter-ratio"&gt;Recall Rate vs Filter Ratio
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;Simple explanation&lt;/strong&gt;: Based on strictness of your filtering conditions, choose appropriate index.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Filter ratio&lt;/th&gt;
+&lt;th&gt;Remaining data proportion&lt;/th&gt;
+&lt;th&gt;Recommended index&lt;/th&gt;
+&lt;th&gt;Reason&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&amp;lt; 85%&lt;/td&gt;
+&lt;td&gt;Remaining &amp;gt; 15%&lt;/td&gt;
+&lt;td&gt;HNSW (graph index)&lt;/td&gt;
+&lt;td&gt;Data volume still large, need efficient indexing&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;85%-95%&lt;/td&gt;
+&lt;td&gt;Remaining 5%-15%&lt;/td&gt;
+&lt;td&gt;IVF series&lt;/td&gt;
+&lt;td&gt;Medium data volume, clustering index works well&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&amp;gt; 98%&lt;/td&gt;
+&lt;td&gt;Remaining &amp;lt; 2%&lt;/td&gt;
+&lt;td&gt;FLAT (brute force)&lt;/td&gt;
+&lt;td&gt;Very little data, direct calculation faster&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;Real examples&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;1 million data, filtering &amp;ldquo;price &amp;gt; 1000&amp;rdquo; leaves 500K (filter ratio 50%) → Use HNSW&lt;/li&gt;
+&lt;li&gt;1 million data, filtering &amp;ldquo;VIP users&amp;rdquo; leaves 100K (filter ratio 90%) → Use IVF_FLAT&lt;/li&gt;
+&lt;li&gt;1 million data, filtering &amp;ldquo;registered today&amp;rdquo; leaves 100 (filter ratio 99.99%) → Use FLAT&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="performance-decision-matrix-recommended-scenarios"&gt;Performance Decision Matrix (Recommended Scenarios)
+&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Scenario Description&lt;/th&gt;
+&lt;th&gt;Recommended Index Type&lt;/th&gt;
+&lt;th&gt;Notes&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Raw data all fits in memory&lt;/td&gt;
+&lt;td&gt;HNSW, IVF + Refinement&lt;/td&gt;
+&lt;td&gt;HNSW suitable for small k / high recall&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Raw data on SSD disk&lt;/td&gt;
+&lt;td&gt;DiskANN&lt;/td&gt;
+&lt;td&gt;Preferred for latency-sensitive queries&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Raw data on disk, limited RAM&lt;/td&gt;
+&lt;td&gt;IVF_PQ / SQ + mmap&lt;/td&gt;
+&lt;td&gt;Balance memory and disk access&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;High filter ratio (&amp;gt;95%)&lt;/td&gt;
+&lt;td&gt;Brute-Force (FLAT)&lt;/td&gt;
+&lt;td&gt;Avoid index overhead&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Large k (≥1% of dataset)&lt;/td&gt;
+&lt;td&gt;IVF&lt;/td&gt;
+&lt;td&gt;Clustering pruning reduces computation&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Very high recall rate (&amp;gt;99%)&lt;/td&gt;
+&lt;td&gt;Brute-Force (FLAT) + GPU&lt;/td&gt;
+&lt;td&gt;—&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;General patterns&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Graph indexes (HNSW etc.) usually have higher QPS than IVF variants.&lt;/li&gt;
+&lt;li&gt;IVF variants better suited for large topK (e.g. &amp;gt;2000).&lt;/li&gt;
+&lt;li&gt;PQ has better recall rate than SQ at same compression ratio, but SQ is faster.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="practical-application-scenarios"&gt;Practical Application Scenarios
+&lt;/h2&gt;&lt;h3 id="scenario-1-e-commerce-product-recommendation-system"&gt;Scenario 1: E-commerce Product Recommendation System
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;Data scale&lt;/strong&gt;: 1 million products, each product 512-dimensional vector
+&lt;strong&gt;Memory&lt;/strong&gt;: 16GB
+&lt;strong&gt;Requirements&lt;/strong&gt;: Fast response (&amp;lt; 50ms), recall rate &amp;gt; 95%
+&lt;strong&gt;Recommended index&lt;/strong&gt;: HNSW
+&lt;strong&gt;Reason&lt;/strong&gt;: Data can all fit in memory, HNSW provides optimal speed and recall balance&lt;/p&gt;
+&lt;h3 id="scenario-2-large-scale-image-search"&gt;Scenario 2: Large-scale Image Search
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;Data scale&lt;/strong&gt;: 100 million images, each 2048-dimensional vector
+&lt;strong&gt;Memory&lt;/strong&gt;: 64GB
+&lt;strong&gt;Requirements&lt;/strong&gt;: Support high concurrency, acceptable 100ms latency
+&lt;strong&gt;Recommended index&lt;/strong&gt;: DiskANN
+&lt;strong&gt;Reason&lt;/strong&gt;: Data volume too large for all-in-memory, DiskANN optimized for disk&lt;/p&gt;
+&lt;h3 id="scenario-3-real-time-chatbot-semantic-search"&gt;Scenario 3: Real-time Chatbot (Semantic Search)
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;Data scale&lt;/strong&gt;: 100K knowledge base entries, each 768-dimensional vector
+&lt;strong&gt;Memory&lt;/strong&gt;: 8GB
+&lt;strong&gt;Requirements&lt;/strong&gt;: Very high recall rate (&amp;gt; 99%), latency &amp;lt; 20ms
+&lt;strong&gt;Recommended index&lt;/strong&gt;: FLAT (brute force)
+&lt;strong&gt;Reason&lt;/strong&gt;: Small data volume, brute force search fast with 100% recall rate&lt;/p&gt;
+&lt;h3 id="scenario-4-video-content-moderation"&gt;Scenario 4: Video Content Moderation
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;Data scale&lt;/strong&gt;: 50 million video frames, each 256-dimensional vector
+&lt;strong&gt;Memory&lt;/strong&gt;: 32GB (constrained)
+&lt;strong&gt;Requirements&lt;/strong&gt;: Cost priority, acceptable 90% recall rate
+&lt;strong&gt;Recommended index&lt;/strong&gt;: IVF_PQ
+&lt;strong&gt;Reason&lt;/strong&gt;: Memory constrained, PQ compression saves 90% memory&lt;/p&gt;
+&lt;h3 id="scenario-5-user-profile-matching-with-filter-conditions"&gt;Scenario 5: User Profile Matching (with filter conditions)
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;Data scale&lt;/strong&gt;: 5 million users, each user 128-dimensional vector
+&lt;strong&gt;Memory&lt;/strong&gt;: 16GB
+&lt;strong&gt;Requirements&lt;/strong&gt;: Frequently need to filter by &amp;ldquo;age, gender, region&amp;rdquo; then search
+&lt;strong&gt;Recommended index&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Vector field: HNSW&lt;/li&gt;
+&lt;li&gt;Scalar fields (age, gender, region): INVERTED or BITMAP
+&lt;strong&gt;Reason&lt;/strong&gt;: Scalar indexes accelerate filtering, vector indexes accelerate similarity search&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="scenario-6-beginner-rapid-prototyping"&gt;Scenario 6: Beginner Rapid Prototyping
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;Data scale&lt;/strong&gt;: Uncertain
+&lt;strong&gt;Memory&lt;/strong&gt;: Uncertain
+&lt;strong&gt;Requirements&lt;/strong&gt;: Quick launch, optimize later
+&lt;strong&gt;Recommended index&lt;/strong&gt;: AUTOINDEX
+&lt;strong&gt;Reason&lt;/strong&gt;: Let system auto-select, reduce decision cost&lt;/p&gt;
+&lt;h2 id="memory-usage-estimation-examples-1-million-128-dimensional-vectors"&gt;Memory Usage Estimation Examples (1 million 128-dimensional vectors)
+&lt;/h2&gt;&lt;h3 id="ivf-series"&gt;IVF Series
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;IVF_PQ (no refinement): ~11 MB&lt;/li&gt;
+&lt;li&gt;IVF_PQ + 10% raw refinement: ~62 MB&lt;/li&gt;
+&lt;li&gt;IVF_SQ8 (no refinement): ~131 MB&lt;/li&gt;
+&lt;li&gt;IVF_FLAT (all raw vectors): ~515 MB&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="hnsw-series"&gt;HNSW Series
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;HNSW (raw vectors): ~640 MB&lt;/li&gt;
+&lt;li&gt;HNSW_PQ (8 bytes/vector): ~136 MB&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Refinement overhead is typically small (e.g. topK=10, expansion rate=5 about 25 KB).&lt;/p&gt;
+&lt;h2 id="metric-types-detailed-explanation"&gt;Metric Types Detailed Explanation
+&lt;/h2&gt;&lt;h3 id="what-are-metric-types"&gt;What are Metric Types?
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;Metric types&lt;/strong&gt; are mathematical methods used to measure similarity between vectors. Choosing appropriate metric types significantly impacts classification and clustering performance.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Analogy understanding&lt;/strong&gt;: Like measuring distance can use &amp;ldquo;straight-line distance&amp;rdquo;, &amp;ldquo;walking distance&amp;rdquo;, &amp;ldquo;driving distance&amp;rdquo;, vector similarity also has different calculation methods, different methods suit different scenarios.&lt;/p&gt;
+&lt;h3 id="supported-metric-types-mapping-table"&gt;Supported Metric Types Mapping Table
+&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Field Type&lt;/th&gt;
+&lt;th&gt;Dimension Range&lt;/th&gt;
+&lt;th&gt;Supported Metric Types&lt;/th&gt;
+&lt;th&gt;Default Metric Type&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;FLOAT_VECTOR&lt;/td&gt;
+&lt;td&gt;2-32,768&lt;/td&gt;
+&lt;td&gt;COSINE, L2, IP&lt;/td&gt;
+&lt;td&gt;COSINE&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;FLOAT16_VECTOR&lt;/td&gt;
+&lt;td&gt;2-32,768&lt;/td&gt;
+&lt;td&gt;COSINE, L2, IP&lt;/td&gt;
+&lt;td&gt;COSINE&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;BFLOAT16_VECTOR&lt;/td&gt;
+&lt;td&gt;2-32,768&lt;/td&gt;
+&lt;td&gt;COSINE, L2, IP&lt;/td&gt;
+&lt;td&gt;COSINE&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;INT8_VECTOR&lt;/td&gt;
+&lt;td&gt;2-32,768&lt;/td&gt;
+&lt;td&gt;COSINE, L2, IP&lt;/td&gt;
+&lt;td&gt;COSINE&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;SPARSE_FLOAT_VECTOR&lt;/td&gt;
+&lt;td&gt;No dimension specified&lt;/td&gt;
+&lt;td&gt;IP, BM25 (text search only)&lt;/td&gt;
+&lt;td&gt;IP&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;BINARY_VECTOR&lt;/td&gt;
+&lt;td&gt;8-32,768*8&lt;/td&gt;
+&lt;td&gt;HAMMING, JACCARD, MHJACCARD&lt;/td&gt;
+&lt;td&gt;HAMMING&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;Notes&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;BINARY_VECTOR dimensions must be multiples of 8&lt;/li&gt;
+&lt;li&gt;BM25 only for SPARSE_FLOAT_VECTOR full-text search scenarios&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="metric-types-feature-comparison"&gt;Metric Types Feature Comparison
+&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Metric Type&lt;/th&gt;
+&lt;th&gt;Similarity Characteristic&lt;/th&gt;
+&lt;th&gt;Value Range&lt;/th&gt;
+&lt;th&gt;Description&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;L2&lt;/td&gt;
+&lt;td&gt;Smaller values more similar&lt;/td&gt;
+&lt;td&gt;[0, ∞)&lt;/td&gt;
+&lt;td&gt;Euclidean distance&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;IP&lt;/td&gt;
+&lt;td&gt;Larger values more similar&lt;/td&gt;
+&lt;td&gt;[-1, 1]&lt;/td&gt;
+&lt;td&gt;Inner product&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;COSINE&lt;/td&gt;
+&lt;td&gt;Larger values more similar&lt;/td&gt;
+&lt;td&gt;[-1, 1]&lt;/td&gt;
+&lt;td&gt;Cosine similarity&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;JACCARD&lt;/td&gt;
+&lt;td&gt;Smaller values more similar&lt;/td&gt;
+&lt;td&gt;[0, 1]&lt;/td&gt;
+&lt;td&gt;Jaccard distance&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;MHJACCARD&lt;/td&gt;
+&lt;td&gt;Smaller values more similar&lt;/td&gt;
+&lt;td&gt;[0, 1]&lt;/td&gt;
+&lt;td&gt;MinHash Jaccard estimate&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;HAMMING&lt;/td&gt;
+&lt;td&gt;Smaller values more similar&lt;/td&gt;
+&lt;td&gt;[0, dim(vector)]&lt;/td&gt;
+&lt;td&gt;Hamming distance&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;BM25&lt;/td&gt;
+&lt;td&gt;Higher scores more relevant&lt;/td&gt;
+&lt;td&gt;[0, ∞)&lt;/td&gt;
+&lt;td&gt;Text relevance scoring&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="1-euclidean-distance-l2"&gt;1. Euclidean Distance (L2)
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;Definition&lt;/strong&gt;: Measures straight-line distance between two points.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Formula&lt;/strong&gt;:&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;d(a, b) = √(Σ(ai - bi)²)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Where a = (a0, a1, &amp;hellip;, an-1) and b = (b0, b1, &amp;hellip;, bn-1) are two points in n-dimensional space.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Characteristics&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Most commonly used distance metric&lt;/li&gt;
+&lt;li&gt;Suitable for continuous data&lt;/li&gt;
+&lt;li&gt;Milvus doesn&amp;rsquo;t calculate square root in actual computation (performance boost)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Applicable scenarios&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Image similarity search (face recognition)&lt;/li&gt;
+&lt;li&gt;General vector search&lt;/li&gt;
+&lt;li&gt;Scenarios with uniform data distribution&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Real examples&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Two face photos&amp;rsquo; feature vectors, smaller L2 distance means more similar people&lt;/li&gt;
+&lt;li&gt;Product feature vectors, smaller L2 distance means closer attributes&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="2-inner-product-ip"&gt;2. Inner Product (IP)
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;Definition&lt;/strong&gt;: Inner product value of two vectors.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Formula&lt;/strong&gt;:&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;IP(a, b) = Σ(ai × bi)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Characteristics&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Larger values indicate more similarity&lt;/li&gt;
+&lt;li&gt;Considers both magnitude and angle of vectors&lt;/li&gt;
+&lt;li&gt;Suitable for non-normalized data&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Important note&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;If using IP to calculate similarity, &lt;strong&gt;must normalize vectors first&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;After normalization, IP equals cosine similarity&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Applicable scenarios&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Recommendation systems (user-item rating prediction)&lt;/li&gt;
+&lt;li&gt;Scenarios where vector magnitude matters&lt;/li&gt;
+&lt;li&gt;Already normalized vector data&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Real examples&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Movie rating prediction, larger IP values mean user likes the movie more&lt;/li&gt;
+&lt;li&gt;Document relevance ranking&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="3-cosine-similarity"&gt;3. Cosine Similarity
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;Definition&lt;/strong&gt;: Uses cosine of angle between two vectors to measure similarity.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Formula&lt;/strong&gt;:&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;cosine(a, b) = (Σ(ai × bi)) / (√(Σai²) × √(Σbi²))
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Characteristics&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Value range [-1, 1]&lt;/li&gt;
+&lt;li&gt;Focuses only on direction, not magnitude&lt;/li&gt;
+&lt;li&gt;1 means identical direction, 0 means orthogonal, -1 means completely opposite&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Applicable scenarios&lt;/strong&gt; (most common):&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Text similarity (NLP)&lt;/li&gt;
+&lt;li&gt;Semantic search&lt;/li&gt;
+&lt;li&gt;Recommendation systems&lt;/li&gt;
+&lt;li&gt;Any scenario ignoring vector magnitude&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Real examples&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Two articles&amp;rsquo; semantic similarity, larger COSINE values mean closer topics&lt;/li&gt;
+&lt;li&gt;User interest vector matching, high COSINE values mean similar interests&lt;/li&gt;
+&lt;li&gt;OpenAI/Cohere models&amp;rsquo; embedding defaults to COSINE&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="4-jaccard-distance"&gt;4. Jaccard Distance
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;Definition&lt;/strong&gt;: Measures similarity between two sets, equal to intersection size divided by union size.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Formula&lt;/strong&gt;:&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;JACCARD similarity = |A ∩ B| / |A ∪ B|
+JACCARD distance = 1 - JACCARD similarity
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Characteristics&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Only suitable for finite sample sets&lt;/li&gt;
+&lt;li&gt;Value range [0, 1]&lt;/li&gt;
+&lt;li&gt;For binary variables, equivalent to Tanimoto coefficient&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Applicable scenarios&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Binary vectors (BINARY_VECTOR)&lt;/li&gt;
+&lt;li&gt;Set similarity comparison&lt;/li&gt;
+&lt;li&gt;Label matching&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Real examples&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;User label matching: User A labels {tech, music, travel}, User B labels {tech, movie, travel}, intersection 2, union 4, JACCARD similarity = 2/4 = 0.5&lt;/li&gt;
+&lt;li&gt;Document keyword overlap&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="5-minhash-jaccard-mhjaccard"&gt;5. MinHash Jaccard (MHJACCARD)
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;Definition&lt;/strong&gt;: Method using MinHash signatures to quickly estimate Jaccard similarity.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Characteristics&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Much faster than exact JACCARD calculation&lt;/li&gt;
+&lt;li&gt;Suitable for large-scale or high-dimensional scenarios&lt;/li&gt;
+&lt;li&gt;Distance = 1 - estimated similarity&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Applicable scenarios&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Large document collection similarity&lt;/li&gt;
+&lt;li&gt;Large-scale user group similarity analysis&lt;/li&gt;
+&lt;li&gt;Genome k-mer set comparison&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Real examples&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Massive webpage deduplication&lt;/li&gt;
+&lt;li&gt;Large-scale user population similarity analysis&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="6-hamming-distance"&gt;6. Hamming Distance
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;Definition&lt;/strong&gt;: Number of different bits in two equal-length binary strings.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Formula&lt;/strong&gt;:&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;Example: 11011001 ⊕ 10011101 = 01000100
+Contains 2 ones, so HAMMING distance = 2
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Characteristics&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Only suitable for binary data&lt;/li&gt;
+&lt;li&gt;Value range [0, dim(vector)]&lt;/li&gt;
+&lt;li&gt;Extremely fast computation&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Applicable scenarios&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Binary feature vectors (BINARY_VECTOR)&lt;/li&gt;
+&lt;li&gt;Image hash matching&lt;/li&gt;
+&lt;li&gt;Error detection and correction&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Real examples&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Image perceptual hash (pHash) similarity comparison&lt;/li&gt;
+&lt;li&gt;Binary fingerprint matching&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="7-bm25-similarity"&gt;7. BM25 Similarity
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;Definition&lt;/strong&gt;: Text relevance scoring method specifically designed for full-text search.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Core factors&lt;/strong&gt;:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Term Frequency (TF)&lt;/strong&gt;: Frequency of term in document&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Inverse Document Frequency (IDF)&lt;/strong&gt;: Term importance across corpus&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Document length normalization&lt;/strong&gt;: Avoid long documents getting higher scores&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;Formula&lt;/strong&gt;:&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;score(D, Q) = Σ IDF(qi) × [TF(qi, D) × (k1 + 1)] / [TF(qi, D) + k1 × (1 - b + b × |D|/avgdl)]
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Parameter explanation&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;k1&lt;/strong&gt;: Controls TF influence, typical range [1.2, 2.0], Milvus allows [0, 3]&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;b&lt;/strong&gt;: Controls length normalization degree, range [0, 1]
+&lt;ul&gt;
+&lt;li&gt;b=0: No normalization&lt;/li&gt;
+&lt;li&gt;b=1: Full normalization&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;avgdl&lt;/strong&gt;: Average document length in corpus&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Applicable scenarios&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Full-text search (SPARSE_FLOAT_VECTOR)&lt;/li&gt;
+&lt;li&gt;Document retrieval&lt;/li&gt;
+&lt;li&gt;Question-answering systems&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Real examples&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Search engine keyword matching&lt;/li&gt;
+&lt;li&gt;Knowledge base QA relevance ranking&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="how-to-choose-metric-types"&gt;How to Choose Metric Types?
+&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Application Scenario&lt;/th&gt;
+&lt;th&gt;Recommended Metric Type&lt;/th&gt;
+&lt;th&gt;Reason&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Semantic search, NLP&lt;/td&gt;
+&lt;td&gt;COSINE&lt;/td&gt;
+&lt;td&gt;Only focuses on direction, unaffected by vector magnitude&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Image search, face recognition&lt;/td&gt;
+&lt;td&gt;L2&lt;/td&gt;
+&lt;td&gt;Intuitive distance metric, suitable for continuous features&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Recommendation systems (normalized vectors)&lt;/td&gt;
+&lt;td&gt;COSINE or IP&lt;/td&gt;
+&lt;td&gt;Equivalent after normalization&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Recommendation systems (non-normalized)&lt;/td&gt;
+&lt;td&gt;IP&lt;/td&gt;
+&lt;td&gt;Considers rating magnitude&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Binary feature matching&lt;/td&gt;
+&lt;td&gt;HAMMING&lt;/td&gt;
+&lt;td&gt;Fast speed, suitable for binary data&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Set similarity&lt;/td&gt;
+&lt;td&gt;JACCARD&lt;/td&gt;
+&lt;td&gt;Suitable for labels, keyword matching&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Full-text search&lt;/td&gt;
+&lt;td&gt;BM25&lt;/td&gt;
+&lt;td&gt;Specifically designed for text retrieval&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Large-scale set matching&lt;/td&gt;
+&lt;td&gt;MHJACCARD&lt;/td&gt;
+&lt;td&gt;Fast estimation, suitable for massive data&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="usage-examples"&gt;Usage Examples
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Vector field using different metric types&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;index_params&lt;span style="color:#f92672"&gt;.&lt;/span&gt;add_index(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; field_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;embedding&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; index_type&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;HNSW&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; metric_type&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;COSINE&amp;#34;&lt;/span&gt; &lt;span style="color:#75715e"&gt;# Recommended for semantic search&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;index_params&lt;span style="color:#f92672"&gt;.&lt;/span&gt;add_index(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; field_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;image_vector&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; index_type&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;IVF_FLAT&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; metric_type&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;L2&amp;#34;&lt;/span&gt; &lt;span style="color:#75715e"&gt;# Recommended for image search&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;index_params&lt;span style="color:#f92672"&gt;.&lt;/span&gt;add_index(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; field_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;binary_features&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; index_type&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;BIN_FLAT&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; metric_type&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;HAMMING&amp;#34;&lt;/span&gt; &lt;span style="color:#75715e"&gt;# Recommended for binary features&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;index_params&lt;span style="color:#f92672"&gt;.&lt;/span&gt;add_index(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; field_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;sparse_vector&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; index_type&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;SPARSE_INVERTED_INDEX&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; metric_type&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;BM25&amp;#34;&lt;/span&gt; &lt;span style="color:#75715e"&gt;# Recommended for full-text search&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="performance-comparison"&gt;Performance Comparison
+&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Metric Type&lt;/th&gt;
+&lt;th&gt;Calculation Speed&lt;/th&gt;
+&lt;th&gt;Memory Usage&lt;/th&gt;
+&lt;th&gt;Precision&lt;/th&gt;
+&lt;th&gt;Applicable Data Types&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;HAMMING&lt;/td&gt;
+&lt;td&gt;Extremely fast&lt;/td&gt;
+&lt;td&gt;Very low&lt;/td&gt;
+&lt;td&gt;Exact&lt;/td&gt;
+&lt;td&gt;Binary&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;L2&lt;/td&gt;
+&lt;td&gt;Fast&lt;/td&gt;
+&lt;td&gt;Medium&lt;/td&gt;
+&lt;td&gt;Exact&lt;/td&gt;
+&lt;td&gt;Float&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;IP&lt;/td&gt;
+&lt;td&gt;Fast&lt;/td&gt;
+&lt;td&gt;Medium&lt;/td&gt;
+&lt;td&gt;Exact&lt;/td&gt;
+&lt;td&gt;Float&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;COSINE&lt;/td&gt;
+&lt;td&gt;Medium&lt;/td&gt;
+&lt;td&gt;Medium&lt;/td&gt;
+&lt;td&gt;Exact&lt;/td&gt;
+&lt;td&gt;Float&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;JACCARD&lt;/td&gt;
+&lt;td&gt;Medium&lt;/td&gt;
+&lt;td&gt;Low&lt;/td&gt;
+&lt;td&gt;Exact&lt;/td&gt;
+&lt;td&gt;Binary/Sets&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;MHJACCARD&lt;/td&gt;
+&lt;td&gt;Fast&lt;/td&gt;
+&lt;td&gt;Low&lt;/td&gt;
+&lt;td&gt;Approximate&lt;/td&gt;
+&lt;td&gt;Binary/Sets&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;BM25&lt;/td&gt;
+&lt;td&gt;Medium&lt;/td&gt;
+&lt;td&gt;Medium&lt;/td&gt;
+&lt;td&gt;Exact&lt;/td&gt;
+&lt;td&gt;Sparse vectors&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id="summary"&gt;Summary
+&lt;/h2&gt;&lt;p&gt;Milvus vector indexes adopt a layered architecture (coarse filtering → quantization compression → refinement for precision improvement), adaptively optimizing the trade-off between accuracy and performance. For practical selection, recommend combining &lt;strong&gt;data scale&lt;/strong&gt;, &lt;strong&gt;hardware environment&lt;/strong&gt; (memory/disk/GPU), &lt;strong&gt;query patterns&lt;/strong&gt; (topK size, filter ratio) and &lt;strong&gt;business recall rate requirements&lt;/strong&gt; for experimental tuning rather than one-size-fits-all approach.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Key decision points&lt;/strong&gt;:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Choose index type&lt;/strong&gt;: Based on capacity, recall rate, filter ratio (HNSW/IVF/DiskANN/FLAT)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Choose metric type&lt;/strong&gt;: Based on data characteristics and application scenarios (COSINE/L2/IP/HAMMING/BM25)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Tune parameters&lt;/strong&gt;: Fine-tune index parameters and search parameters based on actual test results&lt;/li&gt;
+&lt;/ol&gt;</description></item></channel></rss>

@@ -1,0 +1,770 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Index on 小巷的随笔</title><link>https://zg-dd.github.io/tags/index/</link><description>Recent content in Index on 小巷的随笔</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Fri, 27 Feb 2026 19:11:18 +0800</lastBuildDate><atom:link href="https://zg-dd.github.io/tags/index/index.xml" rel="self" type="application/rss+xml"/><item><title>Milvus 索引详解 - 向量搜索性能优化指南</title><link>https://zg-dd.github.io/stu/milvus-index-explained/</link><pubDate>Fri, 27 Feb 2026 19:11:18 +0800</pubDate><guid>https://zg-dd.github.io/stu/milvus-index-explained/</guid><description>&lt;h2 id="核心概念通俗解释"&gt;核心概念通俗解释
+&lt;/h2&gt;&lt;h3 id="什么是-topk"&gt;什么是 topK？
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;topK&lt;/strong&gt; 就是&amp;quot;前 K 个最相似的结果&amp;quot;。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;例如：topK=5 表示返回最相似的 5 条数据&lt;/li&gt;
+&lt;li&gt;例如：topK=100 表示返回最相似的 100 条数据&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;类比&lt;/strong&gt;：就像在淘宝搜索&amp;quot;手机&amp;quot;，你只看前 10 个商品，这个 10 就是 topK&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="什么是召回率recall"&gt;什么是召回率（Recall）？
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;召回率&lt;/strong&gt; 是衡量搜索准确性的指标，表示&amp;quot;找到了多少个真正相似的结果&amp;quot;。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;公式&lt;/strong&gt;：召回率 = 实际找到的相似结果数 / 理论上应该找到的相似结果数&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;例子&lt;/strong&gt;：假设真正最相似的 10 个结果中，你的搜索找到了 9 个，召回率就是 90%&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;类比&lt;/strong&gt;：就像考试，满分 100 分你考了 95 分，召回率就是 95%&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;重要性&lt;/strong&gt;：召回率越高，搜索结果越准确，但速度可能越慢&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="什么是过滤率filter-ratio"&gt;什么是过滤率（Filter Ratio）？
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;过滤率&lt;/strong&gt; 是指通过条件筛选后，剩余数据占总数据的比例。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;公式&lt;/strong&gt;：过滤率 = (总数据量 - 筛选后剩余数据量) / 总数据量&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;例子&lt;/strong&gt;：100 万条数据，筛选条件是&amp;quot;价格 &amp;gt; 1000&amp;quot;，剩下 5 万条，过滤率 = (100万-5万)/100万 = 95%&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;类比&lt;/strong&gt;：就像在图书馆找书，先按&amp;quot;计算机类&amp;quot;筛选掉 90% 的书，过滤率就是 90%&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;影响&lt;/strong&gt;：过滤率越高，剩余数据越少，暴力搜索可能更快&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="什么是容量capacity"&gt;什么是容量（Capacity）？
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;容量&lt;/strong&gt; 是指你的硬件资源（主要是内存）能存放多少数据。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;内存容量&lt;/strong&gt;：你的服务器有多少 RAM 可以用来存放向量数据&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;例子&lt;/strong&gt;：你有 16GB 内存，向量数据需要 64GB，那么只有 1/4 数据能放入内存&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;类比&lt;/strong&gt;：就像你的手机存储空间，照片太多就要删一些或放到云盘&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;策略&lt;/strong&gt;：
+&lt;ul&gt;
+&lt;li&gt;数据全部能放入内存 → 用内存索引（快）&lt;/li&gt;
+&lt;li&gt;数据只有一部分能放入内存 → 用磁盘索引（慢但能处理大数据）&lt;/li&gt;
+&lt;li&gt;内存严重不足 → 用压缩索引（牺牲精度换空间）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="什么是-autoindex自动索引"&gt;什么是 AutoIndex（自动索引）？
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;AutoIndex&lt;/strong&gt; 是 Milvus 提供的智能索引选择功能，系统会根据你的数据特征自动选择最合适的索引类型。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;工作原理&lt;/strong&gt;：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;分析数据规模、维度、分布特征&lt;/li&gt;
+&lt;li&gt;评估硬件资源（内存、CPU、GPU）&lt;/li&gt;
+&lt;li&gt;自动选择最优索引类型和参数&lt;/li&gt;
+&lt;li&gt;自动构建和优化索引&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;适用场景&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;新手不知道选什么索引&lt;/li&gt;
+&lt;li&gt;数据特征复杂，难以手动选择&lt;/li&gt;
+&lt;li&gt;快速原型开发，不想花时间调优&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;使用方式&lt;/strong&gt;：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 向量字段使用 AutoIndex&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;index_params&lt;span style="color:#f92672"&gt;.&lt;/span&gt;add_index(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; field_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;embedding&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; index_type&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;AUTOINDEX&amp;#34;&lt;/span&gt;, &lt;span style="color:#75715e"&gt;# 自动选择索引类型&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; metric_type&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;L2&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 标量字段也可以使用自动索引&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Milvus 会根据字段类型自动选择 INVERTED、BITMAP 或 STL_SORT&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;注意事项&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;AutoIndex 适合大多数场景，但极端性能要求下建议手动调优&lt;/li&gt;
+&lt;li&gt;不同 Milvus 版本的 AutoIndex 策略可能不同&lt;/li&gt;
+&lt;li&gt;Zilliz Cloud（托管服务）默认使用 AutoIndex&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="为什么需要索引"&gt;为什么需要索引
+&lt;/h2&gt;&lt;p&gt;索引是建立在数据之上的附加结构，其内部组织方式取决于所采用的&lt;strong&gt;近似最近邻搜索算法&lt;/strong&gt;（Approximate Nearest Neighbor Search, ANNS）。索引的主要作用是加速搜索过程，但会带来以下代价：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;额外的预处理（构建）时间&lt;/li&gt;
+&lt;li&gt;占用更多存储空间&lt;/li&gt;
+&lt;li&gt;查询期间消耗更多 RAM&lt;/li&gt;
+&lt;li&gt;通常会略微降低&lt;strong&gt;召回率&lt;/strong&gt;（recall rate），尽管影响通常可控&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;类比理解&lt;/strong&gt;：索引就像书的目录，虽然占用了几页纸，但能让你快速找到想看的章节，而不用从头翻到尾。&lt;/p&gt;
+&lt;p&gt;因此，选择合适的索引需要在加速收益与上述成本之间找到平衡。&lt;/p&gt;
+&lt;h2 id="支持的索引类型supported-index-types"&gt;支持的索引类型（Supported Index Types）
+&lt;/h2&gt;&lt;p&gt;Milvus 中的索引针对具体字段（field）定义，不同字段数据类型对应不同的适用索引。以下是官方支持的映射关系（重点关注向量索引）：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;字段数据类型&lt;/th&gt;
+&lt;th&gt;适用索引类型&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;FLOAT_VECTOR / FLOAT16_VECTOR / BFLOAT16_VECTOR / INT8_VECTOR&lt;/td&gt;
+&lt;td&gt;FLAT, IVF_FLAT, IVF_SQ8, IVF_PQ, IVF_RABITQ, HNSW, HNSW_SQ, HNSW_PQ, HNSW_PRQ, DISKANN, SCANN, AISAQ, GPU_CAGRA, GPU_IVF_FLAT, GPU_IVF_PQ, GPU_BRUTE_FORCE&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;BINARY_VECTOR&lt;/td&gt;
+&lt;td&gt;BIN_FLAT, BIN_IVF_FLAT, MINHASH_LSH&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;SPARSE_FLOAT_VECTOR&lt;/td&gt;
+&lt;td&gt;SPARSE_INVERTED_INDEX&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;VARCHAR&lt;/td&gt;
+&lt;td&gt;INVERTED（推荐）, BITMAP, Trie&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;BOOL&lt;/td&gt;
+&lt;td&gt;BITMAP（推荐）, INVERTED&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;INT8 / INT16 / INT32 / INT64&lt;/td&gt;
+&lt;td&gt;INVERTED, STL_SORT&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;FLOAT / DOUBLE&lt;/td&gt;
+&lt;td&gt;INVERTED&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;ARRAY（元素为 BOOL / INT8/16/32/64 / VARCHAR）&lt;/td&gt;
+&lt;td&gt;BITMAP（推荐）&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;ARRAY（元素为 BOOL / INT8/16/32/64 / FLOAT / DOUBLE / VARCHAR）&lt;/td&gt;
+&lt;td&gt;INVERTED&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;JSON&lt;/td&gt;
+&lt;td&gt;INVERTED&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;标量字段建议&lt;/strong&gt;：优先使用表格中标注“推荐”的索引类型。本文重点讨论向量索引的选择。&lt;/p&gt;
+&lt;h2 id="向量索引的内部结构vector-index-anatomy"&gt;向量索引的内部结构（Vector Index Anatomy）
+&lt;/h2&gt;&lt;p&gt;Milvus 的向量索引通常由三个核心组件构成：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;数据结构&lt;/strong&gt;（Data Structure）——用于粗粒度过滤&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;量化&lt;/strong&gt;（Quantization，可选）——压缩表示，减少内存和计算开销&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;精炼器&lt;/strong&gt;（Refiner，可选）——对量化后的候选结果使用更高精度重新计算距离，提升召回率&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;索引构建时，Milvus 根据所选数据结构与量化方法自动确定一个合适的&lt;strong&gt;扩展率&lt;/strong&gt;（expansion rate）。查询时，先检索 &lt;code&gt;topK × 扩展率&lt;/code&gt; 个候选向量，再通过精炼器精排，最终返回最精确的 topK 结果。&lt;/p&gt;
+&lt;h3 id="常见数据结构"&gt;常见数据结构
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;倒排文件（Inverted File, IVF）&lt;/strong&gt;&lt;br&gt;
+通过质心（centroid）将向量聚类成多个桶。查询时仅扫描质心相近的桶，大幅减少计算量。&lt;br&gt;
+&lt;strong&gt;适用场景&lt;/strong&gt;：大规模数据集、高吞吐量需求。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;基于图的结构（Graph-based）&lt;/strong&gt;&lt;br&gt;
+以 HNSW（Hierarchical Navigable Small World）为代表，构建分层图结构，每个向量连接最近邻。查询从上层粗粒度逐步下沉，实现对数级时间复杂度。&lt;br&gt;
+&lt;strong&gt;适用场景&lt;/strong&gt;：高维数据、低延迟查询。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="量化方法"&gt;量化方法
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;标量量化（Scalar Quantization, SQ）&lt;/strong&gt; 如 SQ8：每个维度压缩为 1 字节，内存减少约 75%，准确性损失可接受。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;乘积量化（Product Quantization, PQ）&lt;/strong&gt;：将向量切分为子向量并编码，可实现 4–32 倍压缩，召回率略有下降，适合内存受限环境。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="精炼器refiner"&gt;精炼器（Refiner）
+&lt;/h3&gt;&lt;p&gt;量化是有损的，为保证召回率，系统会产生更多候选；精炼器使用原始精度（如 FP32）对这些候选重新计算距离。这对语义搜索、推荐系统等距离敏感的应用至关重要。&lt;/p&gt;
+&lt;h2 id="性能权衡与推荐使用场景"&gt;性能权衡与推荐使用场景
+&lt;/h2&gt;&lt;p&gt;选择索引时需综合考虑&lt;strong&gt;构建时间&lt;/strong&gt;、&lt;strong&gt;查询吞吐（QPS）&lt;/strong&gt;、&lt;strong&gt;召回率&lt;/strong&gt;、&lt;strong&gt;内存/磁盘使用&lt;/strong&gt;。&lt;/p&gt;
+&lt;h3 id="容量capacity建议"&gt;容量（Capacity）建议
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;通俗解释&lt;/strong&gt;：根据你的内存大小，选择合适的索引策略。&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;内存情况&lt;/th&gt;
+&lt;th&gt;推荐策略&lt;/th&gt;
+&lt;th&gt;说明&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;原始数据 1/4 可放入内存&lt;/td&gt;
+&lt;td&gt;DiskANN&lt;/td&gt;
+&lt;td&gt;部分数据在内存，部分在磁盘，延迟稳定&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;全部数据可放入内存&lt;/td&gt;
+&lt;td&gt;内存索引 (HNSW/IVF) + mmap&lt;/td&gt;
+&lt;td&gt;速度最快，推荐使用&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;内存极度受限&lt;/td&gt;
+&lt;td&gt;量化索引 (IVF_PQ/IVF_SQ8) + mmap&lt;/td&gt;
+&lt;td&gt;压缩数据，牺牲精度换空间&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;大部分数据在磁盘&lt;/td&gt;
+&lt;td&gt;DiskANN&lt;/td&gt;
+&lt;td&gt;专为磁盘优化，延迟表现好&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;实际例子&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;你有 100 万条 128 维向量，原始数据约 500MB&lt;/li&gt;
+&lt;li&gt;如果你的服务器有 8GB 内存 → 用 HNSW（数据全部放内存）&lt;/li&gt;
+&lt;li&gt;如果你的服务器只有 2GB 内存 → 用 IVF_PQ（压缩到 100MB 以内）&lt;/li&gt;
+&lt;li&gt;如果你有 10 亿条向量（500GB）→ 用 DiskANN（磁盘索引）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="召回率recall与过滤率filter-ratio"&gt;召回率（Recall）与过滤率（Filter Ratio）
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;通俗解释&lt;/strong&gt;：根据你的筛选条件严格程度，选择合适的索引。&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;过滤率&lt;/th&gt;
+&lt;th&gt;剩余数据比例&lt;/th&gt;
+&lt;th&gt;推荐索引&lt;/th&gt;
+&lt;th&gt;原因&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&amp;lt; 85%&lt;/td&gt;
+&lt;td&gt;剩余 &amp;gt; 15%&lt;/td&gt;
+&lt;td&gt;HNSW（图索引）&lt;/td&gt;
+&lt;td&gt;数据量还很大，需要高效索引&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;85%-95%&lt;/td&gt;
+&lt;td&gt;剩余 5%-15%&lt;/td&gt;
+&lt;td&gt;IVF 系列&lt;/td&gt;
+&lt;td&gt;中等数据量，聚类索引效果好&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&amp;gt; 98%&lt;/td&gt;
+&lt;td&gt;剩余 &amp;lt; 2%&lt;/td&gt;
+&lt;td&gt;FLAT（暴力搜索）&lt;/td&gt;
+&lt;td&gt;数据量很小，直接算更快&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;实际例子&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;100 万条数据，筛选&amp;quot;价格 &amp;gt; 1000&amp;quot;后剩 50 万条（过滤率 50%）→ 用 HNSW&lt;/li&gt;
+&lt;li&gt;100 万条数据，筛选&amp;quot;VIP 用户&amp;quot;后剩 10 万条（过滤率 90%）→ 用 IVF_FLAT&lt;/li&gt;
+&lt;li&gt;100 万条数据，筛选&amp;quot;今天注册的用户&amp;quot;后剩 100 条（过滤率 99.99%）→ 用 FLAT&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="性能决策矩阵推荐场景"&gt;性能决策矩阵（推荐场景）
+&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;场景描述&lt;/th&gt;
+&lt;th&gt;推荐索引类型&lt;/th&gt;
+&lt;th&gt;说明备注&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;原始数据全部可放入内存&lt;/td&gt;
+&lt;td&gt;HNSW, IVF + Refinement&lt;/td&gt;
+&lt;td&gt;HNSW 适合小 k / 高召回&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;原始数据在 SSD 磁盘&lt;/td&gt;
+&lt;td&gt;DiskANN&lt;/td&gt;
+&lt;td&gt;延迟敏感查询首选&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;原始数据在磁盘，RAM 有限&lt;/td&gt;
+&lt;td&gt;IVF_PQ / SQ + mmap&lt;/td&gt;
+&lt;td&gt;平衡内存与磁盘访问&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;高过滤率（&amp;gt;95%）&lt;/td&gt;
+&lt;td&gt;Brute-Force (FLAT)&lt;/td&gt;
+&lt;td&gt;避免索引开销&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;大 k（≥数据集 1%）&lt;/td&gt;
+&lt;td&gt;IVF&lt;/td&gt;
+&lt;td&gt;聚类剪枝减少计算量&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;极高召回率（&amp;gt;99%）&lt;/td&gt;
+&lt;td&gt;Brute-Force (FLAT) + GPU&lt;/td&gt;
+&lt;td&gt;—&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;一般规律&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;图索引（HNSW 等）QPS 通常高于 IVF 变体。&lt;/li&gt;
+&lt;li&gt;IVF 变体更适合大 topK（例如 &amp;gt;2000）。&lt;/li&gt;
+&lt;li&gt;PQ 在相同压缩率下召回率优于 SQ，但 SQ 速度更快。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="实际应用场景推荐"&gt;实际应用场景推荐
+&lt;/h2&gt;&lt;h3 id="场景-1电商商品推荐系统"&gt;场景 1：电商商品推荐系统
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;数据规模&lt;/strong&gt;：100 万商品，每个商品 512 维向量
+&lt;strong&gt;内存&lt;/strong&gt;：16GB
+&lt;strong&gt;需求&lt;/strong&gt;：快速响应（&amp;lt; 50ms），召回率 &amp;gt; 95%
+&lt;strong&gt;推荐索引&lt;/strong&gt;：HNSW
+&lt;strong&gt;理由&lt;/strong&gt;：数据能全部放入内存，HNSW 提供最佳的速度和召回率平衡&lt;/p&gt;
+&lt;h3 id="场景-2大规模图片搜索"&gt;场景 2：大规模图片搜索
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;数据规模&lt;/strong&gt;：1 亿张图片，每张 2048 维向量
+&lt;strong&gt;内存&lt;/strong&gt;：64GB
+&lt;strong&gt;需求&lt;/strong&gt;：支持高并发，可接受 100ms 延迟
+&lt;strong&gt;推荐索引&lt;/strong&gt;：DiskANN
+&lt;strong&gt;理由&lt;/strong&gt;：数据量太大无法全部放入内存，DiskANN 专为磁盘优化&lt;/p&gt;
+&lt;h3 id="场景-3实时聊天机器人语义搜索"&gt;场景 3：实时聊天机器人（语义搜索）
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;数据规模&lt;/strong&gt;：10 万条知识库，每条 768 维向量
+&lt;strong&gt;内存&lt;/strong&gt;：8GB
+&lt;strong&gt;需求&lt;/strong&gt;：极高召回率（&amp;gt; 99%），延迟 &amp;lt; 20ms
+&lt;strong&gt;推荐索引&lt;/strong&gt;：FLAT（暴力搜索）
+&lt;strong&gt;理由&lt;/strong&gt;：数据量小，暴力搜索速度快且召回率 100%&lt;/p&gt;
+&lt;h3 id="场景-4视频内容审核"&gt;场景 4：视频内容审核
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;数据规模&lt;/strong&gt;：5000 万视频帧，每帧 256 维向量
+&lt;strong&gt;内存&lt;/strong&gt;：32GB（受限）
+&lt;strong&gt;需求&lt;/strong&gt;：成本优先，可接受 90% 召回率
+&lt;strong&gt;推荐索引&lt;/strong&gt;：IVF_PQ
+&lt;strong&gt;理由&lt;/strong&gt;：内存受限，PQ 压缩可节省 90% 内存&lt;/p&gt;
+&lt;h3 id="场景-5用户画像匹配带过滤条件"&gt;场景 5：用户画像匹配（带过滤条件）
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;数据规模&lt;/strong&gt;：500 万用户，每个用户 128 维向量
+&lt;strong&gt;内存&lt;/strong&gt;：16GB
+&lt;strong&gt;需求&lt;/strong&gt;：经常需要按”年龄、性别、地区”筛选后再搜索
+&lt;strong&gt;推荐索引&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;向量字段：HNSW&lt;/li&gt;
+&lt;li&gt;标量字段（年龄、性别、地区）：INVERTED 或 BITMAP
+&lt;strong&gt;理由&lt;/strong&gt;：标量索引加速过滤，向量索引加速相似度搜索&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="场景-6新手快速开发原型"&gt;场景 6：新手快速开发原型
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;数据规模&lt;/strong&gt;：不确定
+&lt;strong&gt;内存&lt;/strong&gt;：不确定
+&lt;strong&gt;需求&lt;/strong&gt;：快速上线，后续再优化
+&lt;strong&gt;推荐索引&lt;/strong&gt;：AUTOINDEX
+&lt;strong&gt;理由&lt;/strong&gt;：让系统自动选择，减少决策成本&lt;/p&gt;
+&lt;h2 id="内存使用估算示例以-100-万个-128-维向量为例"&gt;内存使用估算示例（以 100 万个 128 维向量为例）
+&lt;/h2&gt;&lt;h3 id="ivf-系列"&gt;IVF 系列
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;IVF_PQ（无精炼）：约 11 MB&lt;/li&gt;
+&lt;li&gt;IVF_PQ + 10% 原始精炼：约 62 MB&lt;/li&gt;
+&lt;li&gt;IVF_SQ8（无精炼）：约 131 MB&lt;/li&gt;
+&lt;li&gt;IVF_FLAT（全原始向量）：约 515 MB&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="hnsw-系列"&gt;HNSW 系列
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;HNSW（原始向量）：约 640 MB&lt;/li&gt;
+&lt;li&gt;HNSW_PQ（8 字节/向量）：约 136 MB&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;精炼开销通常很小（例如 topK=10、扩展率=5 时约 25 KB）。&lt;/p&gt;
+&lt;h2 id="度量类型详解metric-types"&gt;度量类型详解（Metric Types）
+&lt;/h2&gt;&lt;h3 id="什么是度量类型"&gt;什么是度量类型？
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;度量类型&lt;/strong&gt;（Metric Type）是用来衡量向量之间相似度的数学方法。选择合适的度量类型对分类和聚类性能有显著影响。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;类比理解&lt;/strong&gt;：就像测量距离可以用&amp;quot;直线距离&amp;quot;、&amp;ldquo;步行距离&amp;rdquo;、&amp;ldquo;开车距离&amp;rdquo;，向量相似度也有不同的计算方法，不同方法适用于不同场景。&lt;/p&gt;
+&lt;h3 id="支持的度量类型映射表"&gt;支持的度量类型映射表
+&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;字段类型&lt;/th&gt;
+&lt;th&gt;维度范围&lt;/th&gt;
+&lt;th&gt;支持的度量类型&lt;/th&gt;
+&lt;th&gt;默认度量类型&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;FLOAT_VECTOR&lt;/td&gt;
+&lt;td&gt;2-32,768&lt;/td&gt;
+&lt;td&gt;COSINE, L2, IP&lt;/td&gt;
+&lt;td&gt;COSINE&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;FLOAT16_VECTOR&lt;/td&gt;
+&lt;td&gt;2-32,768&lt;/td&gt;
+&lt;td&gt;COSINE, L2, IP&lt;/td&gt;
+&lt;td&gt;COSINE&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;BFLOAT16_VECTOR&lt;/td&gt;
+&lt;td&gt;2-32,768&lt;/td&gt;
+&lt;td&gt;COSINE, L2, IP&lt;/td&gt;
+&lt;td&gt;COSINE&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;INT8_VECTOR&lt;/td&gt;
+&lt;td&gt;2-32,768&lt;/td&gt;
+&lt;td&gt;COSINE, L2, IP&lt;/td&gt;
+&lt;td&gt;COSINE&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;SPARSE_FLOAT_VECTOR&lt;/td&gt;
+&lt;td&gt;无需指定维度&lt;/td&gt;
+&lt;td&gt;IP, BM25（仅用于全文搜索）&lt;/td&gt;
+&lt;td&gt;IP&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;BINARY_VECTOR&lt;/td&gt;
+&lt;td&gt;8-32,768*8&lt;/td&gt;
+&lt;td&gt;HAMMING, JACCARD, MHJACCARD&lt;/td&gt;
+&lt;td&gt;HAMMING&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;注意事项&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;BINARY_VECTOR 的维度必须是 8 的倍数&lt;/li&gt;
+&lt;li&gt;BM25 仅用于 SPARSE_FLOAT_VECTOR 的全文搜索场景&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="度量类型特征对比"&gt;度量类型特征对比
+&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;度量类型&lt;/th&gt;
+&lt;th&gt;相似度特征&lt;/th&gt;
+&lt;th&gt;取值范围&lt;/th&gt;
+&lt;th&gt;说明&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;L2&lt;/td&gt;
+&lt;td&gt;值越小越相似&lt;/td&gt;
+&lt;td&gt;[0, ∞)&lt;/td&gt;
+&lt;td&gt;欧氏距离&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;IP&lt;/td&gt;
+&lt;td&gt;值越大越相似&lt;/td&gt;
+&lt;td&gt;[-1, 1]&lt;/td&gt;
+&lt;td&gt;内积&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;COSINE&lt;/td&gt;
+&lt;td&gt;值越大越相似&lt;/td&gt;
+&lt;td&gt;[-1, 1]&lt;/td&gt;
+&lt;td&gt;余弦相似度&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;JACCARD&lt;/td&gt;
+&lt;td&gt;值越小越相似&lt;/td&gt;
+&lt;td&gt;[0, 1]&lt;/td&gt;
+&lt;td&gt;杰卡德距离&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;MHJACCARD&lt;/td&gt;
+&lt;td&gt;值越小越相似&lt;/td&gt;
+&lt;td&gt;[0, 1]&lt;/td&gt;
+&lt;td&gt;MinHash 杰卡德估计&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;HAMMING&lt;/td&gt;
+&lt;td&gt;值越小越相似&lt;/td&gt;
+&lt;td&gt;[0, dim(vector)]&lt;/td&gt;
+&lt;td&gt;汉明距离&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;BM25&lt;/td&gt;
+&lt;td&gt;分数越高越相关&lt;/td&gt;
+&lt;td&gt;[0, ∞)&lt;/td&gt;
+&lt;td&gt;文本相关性评分&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="1-欧氏距离l2"&gt;1. 欧氏距离（L2）
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;定义&lt;/strong&gt;：测量两点之间的直线距离。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;公式&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;d(a, b) = √(Σ(ai - bi)²)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;其中 a = (a0, a1, &amp;hellip;, an-1) 和 b = (b0, b1, &amp;hellip;, bn-1) 是 n 维空间中的两个点。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;特点&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;最常用的距离度量&lt;/li&gt;
+&lt;li&gt;适用于连续数据&lt;/li&gt;
+&lt;li&gt;Milvus 实际计算时不开平方根（提升性能）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;适用场景&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;图像相似度搜索（如人脸识别）&lt;/li&gt;
+&lt;li&gt;通用向量搜索&lt;/li&gt;
+&lt;li&gt;数据分布均匀的场景&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;实际例子&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;两张人脸照片的特征向量，L2 距离越小表示越像同一个人&lt;/li&gt;
+&lt;li&gt;商品特征向量，L2 距离小的商品属性更接近&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="2-内积ip-inner-product"&gt;2. 内积（IP, Inner Product）
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;定义&lt;/strong&gt;：两个向量的内积值。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;公式&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;IP(a, b) = Σ(ai × bi)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;特点&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;值越大表示越相似&lt;/li&gt;
+&lt;li&gt;考虑向量的大小（magnitude）和角度&lt;/li&gt;
+&lt;li&gt;适用于非归一化数据&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;重要提示&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;如果使用 IP 计算相似度，&lt;strong&gt;必须先归一化向量&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;归一化后，IP 等价于余弦相似度&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;适用场景&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;推荐系统（用户-物品评分预测）&lt;/li&gt;
+&lt;li&gt;需要考虑向量大小的场景&lt;/li&gt;
+&lt;li&gt;已归一化的向量数据&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;实际例子&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;用户对电影的评分预测，IP 值越大表示用户越喜欢该电影&lt;/li&gt;
+&lt;li&gt;文档相关性排序&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="3-余弦相似度cosine"&gt;3. 余弦相似度（COSINE）
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;定义&lt;/strong&gt;：使用两个向量之间的夹角余弦值来衡量相似度。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;公式&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;cosine(a, b) = (Σ(ai × bi)) / (√(Σai²) × √(Σbi²))
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;特点&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;取值范围 [-1, 1]&lt;/li&gt;
+&lt;li&gt;只关注方向，不关注大小&lt;/li&gt;
+&lt;li&gt;1 表示完全相同方向，0 表示正交，-1 表示完全相反&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;适用场景&lt;/strong&gt;（最常用）：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;文本相似度（NLP）&lt;/li&gt;
+&lt;li&gt;语义搜索&lt;/li&gt;
+&lt;li&gt;推荐系统&lt;/li&gt;
+&lt;li&gt;任何需要忽略向量大小的场景&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;实际例子&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;两篇文章的语义相似度，COSINE 值越大表示主题越相近&lt;/li&gt;
+&lt;li&gt;用户兴趣向量匹配，COSINE 值高表示兴趣相似&lt;/li&gt;
+&lt;li&gt;OpenAI/Cohere 等模型的 embedding 默认使用 COSINE&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="4-杰卡德距离jaccard"&gt;4. 杰卡德距离（JACCARD）
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;定义&lt;/strong&gt;：衡量两个集合的相似度，等于交集大小除以并集大小。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;公式&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;JACCARD 相似度 = |A ∩ B| / |A ∪ B|
+JACCARD 距离 = 1 - JACCARD 相似度
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;特点&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;仅适用于有限样本集&lt;/li&gt;
+&lt;li&gt;取值范围 [0, 1]&lt;/li&gt;
+&lt;li&gt;对于二进制变量，等价于 Tanimoto 系数&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;适用场景&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;二进制向量（BINARY_VECTOR）&lt;/li&gt;
+&lt;li&gt;集合相似度比较&lt;/li&gt;
+&lt;li&gt;标签匹配&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;实际例子&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;用户标签匹配：用户 A 标签 {科技, 音乐, 旅游}，用户 B 标签 {科技, 电影, 旅游}，交集 2 个，并集 4 个，JACCARD 相似度 = 2/4 = 0.5&lt;/li&gt;
+&lt;li&gt;文档关键词重叠度&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="5-minhash-杰卡德mhjaccard"&gt;5. MinHash 杰卡德（MHJACCARD）
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;定义&lt;/strong&gt;：使用 MinHash 签名快速估计杰卡德相似度的方法。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;特点&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;比精确计算 JACCARD 快得多&lt;/li&gt;
+&lt;li&gt;适用于大规模或高维场景&lt;/li&gt;
+&lt;li&gt;距离 = 1 - 估计相似度&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;适用场景&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;大规模文档集合相似度&lt;/li&gt;
+&lt;li&gt;用户标签集合匹配&lt;/li&gt;
+&lt;li&gt;基因组 k-mer 集合比较&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;实际例子&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;海量网页去重&lt;/li&gt;
+&lt;li&gt;大规模用户群体相似度分析&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="6-汉明距离hamming"&gt;6. 汉明距离（HAMMING）
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;定义&lt;/strong&gt;：两个等长二进制串中不同位的数量。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;公式&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;例如：11011001 ⊕ 10011101 = 01000100
+包含 2 个 1，所以 HAMMING 距离 = 2
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;特点&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;仅适用于二进制数据&lt;/li&gt;
+&lt;li&gt;取值范围 [0, dim(vector)]&lt;/li&gt;
+&lt;li&gt;计算速度极快&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;适用场景&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;二进制特征向量（BINARY_VECTOR）&lt;/li&gt;
+&lt;li&gt;图像哈希匹配&lt;/li&gt;
+&lt;li&gt;错误检测与纠正&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;实际例子&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;图像感知哈希（pHash）相似度比较&lt;/li&gt;
+&lt;li&gt;二进制指纹匹配&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="7-bm25-相似度"&gt;7. BM25 相似度
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;定义&lt;/strong&gt;：专为全文搜索设计的文本相关性评分方法。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;核心因素&lt;/strong&gt;：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;词频（TF）&lt;/strong&gt;：词在文档中出现的频率&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;逆文档频率（IDF）&lt;/strong&gt;：词在整个语料库中的重要性&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;文档长度归一化&lt;/strong&gt;：避免长文档得分偏高&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;公式&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;score(D, Q) = Σ IDF(qi) × [TF(qi, D) × (k1 + 1)] / [TF(qi, D) + k1 × (1 - b + b × |D|/avgdl)]
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;参数说明&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;k1&lt;/strong&gt;：控制词频影响，典型范围 [1.2, 2.0]，Milvus 允许 [0, 3]&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;b&lt;/strong&gt;：控制长度归一化程度，范围 [0, 1]
+&lt;ul&gt;
+&lt;li&gt;b=0：不归一化&lt;/li&gt;
+&lt;li&gt;b=1：完全归一化&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;avgdl&lt;/strong&gt;：语料库中文档的平均长度&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;适用场景&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;全文搜索（SPARSE_FLOAT_VECTOR）&lt;/li&gt;
+&lt;li&gt;文档检索&lt;/li&gt;
+&lt;li&gt;问答系统&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;实际例子&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;搜索引擎关键词匹配&lt;/li&gt;
+&lt;li&gt;知识库问答相关性排序&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="如何选择度量类型"&gt;如何选择度量类型？
+&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;应用场景&lt;/th&gt;
+&lt;th&gt;推荐度量类型&lt;/th&gt;
+&lt;th&gt;理由&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;语义搜索、NLP&lt;/td&gt;
+&lt;td&gt;COSINE&lt;/td&gt;
+&lt;td&gt;只关注方向，不受向量大小影响&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;图像搜索、人脸识别&lt;/td&gt;
+&lt;td&gt;L2&lt;/td&gt;
+&lt;td&gt;直观的距离度量，适合连续特征&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;推荐系统（归一化向量）&lt;/td&gt;
+&lt;td&gt;COSINE 或 IP&lt;/td&gt;
+&lt;td&gt;归一化后两者等价&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;推荐系统（非归一化）&lt;/td&gt;
+&lt;td&gt;IP&lt;/td&gt;
+&lt;td&gt;考虑评分大小&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;二进制特征匹配&lt;/td&gt;
+&lt;td&gt;HAMMING&lt;/td&gt;
+&lt;td&gt;速度快，适合二进制数据&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;集合相似度&lt;/td&gt;
+&lt;td&gt;JACCARD&lt;/td&gt;
+&lt;td&gt;适合标签、关键词匹配&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;全文搜索&lt;/td&gt;
+&lt;td&gt;BM25&lt;/td&gt;
+&lt;td&gt;专为文本检索设计&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;大规模集合匹配&lt;/td&gt;
+&lt;td&gt;MHJACCARD&lt;/td&gt;
+&lt;td&gt;快速估计，适合海量数据&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="使用示例"&gt;使用示例
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 向量字段使用不同度量类型&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;index_params&lt;span style="color:#f92672"&gt;.&lt;/span&gt;add_index(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; field_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;embedding&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; index_type&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;HNSW&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; metric_type&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;COSINE&amp;#34;&lt;/span&gt; &lt;span style="color:#75715e"&gt;# 语义搜索推荐&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;index_params&lt;span style="color:#f92672"&gt;.&lt;/span&gt;add_index(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; field_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;image_vector&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; index_type&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;IVF_FLAT&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; metric_type&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;L2&amp;#34;&lt;/span&gt; &lt;span style="color:#75715e"&gt;# 图像搜索推荐&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;index_params&lt;span style="color:#f92672"&gt;.&lt;/span&gt;add_index(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; field_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;binary_features&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; index_type&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;BIN_FLAT&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; metric_type&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;HAMMING&amp;#34;&lt;/span&gt; &lt;span style="color:#75715e"&gt;# 二进制特征推荐&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;index_params&lt;span style="color:#f92672"&gt;.&lt;/span&gt;add_index(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; field_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;sparse_vector&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; index_type&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;SPARSE_INVERTED_INDEX&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; metric_type&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;BM25&amp;#34;&lt;/span&gt; &lt;span style="color:#75715e"&gt;# 全文搜索推荐&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="性能对比"&gt;性能对比
+&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;度量类型&lt;/th&gt;
+&lt;th&gt;计算速度&lt;/th&gt;
+&lt;th&gt;内存占用&lt;/th&gt;
+&lt;th&gt;精度&lt;/th&gt;
+&lt;th&gt;适用数据类型&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;HAMMING&lt;/td&gt;
+&lt;td&gt;极快&lt;/td&gt;
+&lt;td&gt;极低&lt;/td&gt;
+&lt;td&gt;精确&lt;/td&gt;
+&lt;td&gt;二进制&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;L2&lt;/td&gt;
+&lt;td&gt;快&lt;/td&gt;
+&lt;td&gt;中等&lt;/td&gt;
+&lt;td&gt;精确&lt;/td&gt;
+&lt;td&gt;浮点数&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;IP&lt;/td&gt;
+&lt;td&gt;快&lt;/td&gt;
+&lt;td&gt;中等&lt;/td&gt;
+&lt;td&gt;精确&lt;/td&gt;
+&lt;td&gt;浮点数&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;COSINE&lt;/td&gt;
+&lt;td&gt;中等&lt;/td&gt;
+&lt;td&gt;中等&lt;/td&gt;
+&lt;td&gt;精确&lt;/td&gt;
+&lt;td&gt;浮点数&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;JACCARD&lt;/td&gt;
+&lt;td&gt;中等&lt;/td&gt;
+&lt;td&gt;低&lt;/td&gt;
+&lt;td&gt;精确&lt;/td&gt;
+&lt;td&gt;二进制/集合&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;MHJACCARD&lt;/td&gt;
+&lt;td&gt;快&lt;/td&gt;
+&lt;td&gt;低&lt;/td&gt;
+&lt;td&gt;近似&lt;/td&gt;
+&lt;td&gt;二进制/集合&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;BM25&lt;/td&gt;
+&lt;td&gt;中等&lt;/td&gt;
+&lt;td&gt;中等&lt;/td&gt;
+&lt;td&gt;精确&lt;/td&gt;
+&lt;td&gt;稀疏向量&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id="总结"&gt;总结
+&lt;/h2&gt;&lt;p&gt;Milvus 的向量索引采用分层架构（粗过滤 → 量化压缩 → 精炼提升精度），能够自适应地优化准确性与性能的权衡。实际选择时，建议结合&lt;strong&gt;数据规模&lt;/strong&gt;、&lt;strong&gt;硬件环境&lt;/strong&gt;（内存/磁盘/GPU）、&lt;strong&gt;查询模式&lt;/strong&gt;（topK 大小、过滤率）和&lt;strong&gt;业务对召回率的要求&lt;/strong&gt;进行实验调优，而非一刀切。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;关键决策点&lt;/strong&gt;：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;选择索引类型&lt;/strong&gt;：根据容量、召回率、过滤率选择（HNSW/IVF/DiskANN/FLAT）&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;选择度量类型&lt;/strong&gt;：根据数据特征和应用场景选择（COSINE/L2/IP/HAMMING/BM25）&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;调优参数&lt;/strong&gt;：根据实际测试结果微调索引参数和搜索参数&lt;/li&gt;
+&lt;/ol&gt;</description></item></channel></rss>

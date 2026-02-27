@@ -1,0 +1,826 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Collection on 小巷的随笔</title><link>https://zg-dd.github.io/tags/collection/</link><description>Recent content in Collection on 小巷的随笔</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Fri, 27 Feb 2026 16:00:55 +0800</lastBuildDate><atom:link href="https://zg-dd.github.io/tags/collection/index.xml" rel="self" type="application/rss+xml"/><item><title>Milvus 集合操作详解</title><link>https://zg-dd.github.io/stu/milvus-collection-operations/</link><pubDate>Fri, 27 Feb 2026 16:00:55 +0800</pubDate><guid>https://zg-dd.github.io/stu/milvus-collection-operations/</guid><description>&lt;h2 id="一什么是集合collection"&gt;一、什么是集合(Collection)
+&lt;/h2&gt;&lt;h3 id="11-概念理解"&gt;1.1 概念理解
+&lt;/h3&gt;&lt;p&gt;集合(Collection)是 Milvus 中的核心概念，类似于关系型数据库中的表(Table)。集合用于存储具有相同结构的向量数据和元数据。&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Milvus 概念&lt;/th&gt;
+&lt;th&gt;关系型数据库概念&lt;/th&gt;
+&lt;th&gt;说明&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Collection&lt;/td&gt;
+&lt;td&gt;Table&lt;/td&gt;
+&lt;td&gt;存储结构化数据的容器&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Field&lt;/td&gt;
+&lt;td&gt;Column&lt;/td&gt;
+&lt;td&gt;数据的属性字段&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Entity&lt;/td&gt;
+&lt;td&gt;Row&lt;/td&gt;
+&lt;td&gt;一条完整的数据记录&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Schema&lt;/td&gt;
+&lt;td&gt;Table Schema&lt;/td&gt;
+&lt;td&gt;定义数据结构和约束&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Vector Field&lt;/td&gt;
+&lt;td&gt;-&lt;/td&gt;
+&lt;td&gt;Milvus 特有的向量字段&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="12-集合的特点"&gt;1.2 集合的特点
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Schema 定义&lt;/strong&gt;：集合必须有明确的 Schema，定义所有字段的类型和属性&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;向量存储&lt;/strong&gt;：至少包含一个向量字段(密集向量或稀疏向量)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;索引支持&lt;/strong&gt;：支持向量索引和标量索引，加速查询&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;分片机制&lt;/strong&gt;：支持水平分片，提高并发处理能力&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="二schema-设计"&gt;二、Schema 设计
+&lt;/h2&gt;&lt;h3 id="21-创建-schema-的辅助函数"&gt;2.1 创建 Schema 的辅助函数
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;from&lt;/span&gt; pymilvus &lt;span style="color:#f92672"&gt;import&lt;/span&gt; MilvusClient, DataType, CollectionSchema
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;def&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;initialize_schema&lt;/span&gt;(field_definitions: list[dict]) &lt;span style="color:#f92672"&gt;-&amp;gt;&lt;/span&gt; CollectionSchema:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;&amp;#34;&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e6db74"&gt; 批量创建 Schema
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e6db74"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e6db74"&gt; Args:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e6db74"&gt; field_definitions: 字段定义列表，每个元素为字段配置字典
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e6db74"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e6db74"&gt; Returns:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e6db74"&gt; CollectionSchema: 创建的 Schema 对象
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e6db74"&gt; &amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; schema_obj &lt;span style="color:#f92672"&gt;=&lt;/span&gt; client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;create_schema()
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;for&lt;/span&gt; field_config &lt;span style="color:#f92672"&gt;in&lt;/span&gt; field_definitions:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; schema_obj&lt;span style="color:#f92672"&gt;.&lt;/span&gt;add_field(&lt;span style="color:#f92672"&gt;**&lt;/span&gt;field_config)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;return&lt;/span&gt; schema_obj
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="22-支持的数据类型"&gt;2.2 支持的数据类型
+&lt;/h3&gt;&lt;h4 id="221-主键类型"&gt;2.2.1 主键类型
+&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;INT64&lt;/strong&gt;：64位整数，支持自动递增&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;VARCHAR&lt;/strong&gt;：字符串类型，需指定 &lt;code&gt;max_length&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id="222-标量类型"&gt;2.2.2 标量类型
+&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;BOOL&lt;/strong&gt;：布尔值&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;INT8, INT16, INT32, INT64&lt;/strong&gt;：整数类型&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;FLOAT, DOUBLE&lt;/strong&gt;：浮点数类型&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;VARCHAR&lt;/strong&gt;：字符串类型&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id="223-复杂类型"&gt;2.2.3 复杂类型
+&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;JSON&lt;/strong&gt;：存储 JSON 格式数据&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;ARRAY&lt;/strong&gt;：数组类型，需指定 &lt;code&gt;element_type&lt;/code&gt; 和 &lt;code&gt;max_capacity&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;STRUCT&lt;/strong&gt;：结构体类型，用于嵌套数据&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;TIMESTAMPTZ&lt;/strong&gt;：带时区的时间戳&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;GEOMETRY&lt;/strong&gt;：几何类型(如坐标点)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id="224-向量类型"&gt;2.2.4 向量类型
+&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;FLOAT_VECTOR&lt;/strong&gt;：密集浮点向量(最常用)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;FLOAT16_VECTOR&lt;/strong&gt;：半精度浮点向量&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;BFLOAT16_VECTOR&lt;/strong&gt;：Brain Float16 向量&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;INT8_VECTOR&lt;/strong&gt;：8位整数向量&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;BINARY_VECTOR&lt;/strong&gt;：二进制向量&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;SPARSE_FLOAT_VECTOR&lt;/strong&gt;：稀疏浮点向量&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="23-实战示例智能图书馆管理系统"&gt;2.3 实战示例：智能图书馆管理系统
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;from&lt;/span&gt; pymilvus &lt;span style="color:#f92672"&gt;import&lt;/span&gt; MilvusClient, DataType
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 定义 Schema&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;schemas_list &lt;span style="color:#f92672"&gt;=&lt;/span&gt; [
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;field_name&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;book_id&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;datatype&amp;#34;&lt;/span&gt;: DataType&lt;span style="color:#f92672"&gt;.&lt;/span&gt;INT64,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;is_primary&amp;#34;&lt;/span&gt;: &lt;span style="color:#66d9ef"&gt;True&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;auto_id&amp;#34;&lt;/span&gt;: &lt;span style="color:#66d9ef"&gt;True&lt;/span&gt;, &lt;span style="color:#75715e"&gt;# 自动递增主键&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;mmap_enabled&amp;#34;&lt;/span&gt;: &lt;span style="color:#66d9ef"&gt;True&lt;/span&gt;, &lt;span style="color:#75715e"&gt;# 启用内存映射&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;description&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;图书ID,自动递增&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; },
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;field_name&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;title&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;datatype&amp;#34;&lt;/span&gt;: DataType&lt;span style="color:#f92672"&gt;.&lt;/span&gt;VARCHAR,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;max_length&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;500&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;description&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;图书标题&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; },
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;field_name&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;isbn&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;datatype&amp;#34;&lt;/span&gt;: DataType&lt;span style="color:#f92672"&gt;.&lt;/span&gt;VARCHAR,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;max_length&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;20&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;description&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;图书ISBN编号&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; },
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;field_name&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;is_available&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;datatype&amp;#34;&lt;/span&gt;: DataType&lt;span style="color:#f92672"&gt;.&lt;/span&gt;BOOL,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;description&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;是否在馆&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; },
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;field_name&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;page_count&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;datatype&amp;#34;&lt;/span&gt;: DataType&lt;span style="color:#f92672"&gt;.&lt;/span&gt;INT32,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;description&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;页数&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; },
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;field_name&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;rating&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;datatype&amp;#34;&lt;/span&gt;: DataType&lt;span style="color:#f92672"&gt;.&lt;/span&gt;FLOAT,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;description&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;评分&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; },
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;field_name&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;price&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;datatype&amp;#34;&lt;/span&gt;: DataType&lt;span style="color:#f92672"&gt;.&lt;/span&gt;DOUBLE,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;description&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;价格&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; },
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;field_name&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;details&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;datatype&amp;#34;&lt;/span&gt;: DataType&lt;span style="color:#f92672"&gt;.&lt;/span&gt;JSON,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;description&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;图书详细信息，包含作者、出版社等&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; },
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;field_name&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;tags&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;datatype&amp;#34;&lt;/span&gt;: DataType&lt;span style="color:#f92672"&gt;.&lt;/span&gt;ARRAY,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;element_type&amp;#34;&lt;/span&gt;: DataType&lt;span style="color:#f92672"&gt;.&lt;/span&gt;VARCHAR,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;max_length&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;255&lt;/span&gt;, &lt;span style="color:#75715e"&gt;# 数组元素的最大长度&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;max_capacity&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;20&lt;/span&gt;, &lt;span style="color:#75715e"&gt;# 数组最大容量&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;description&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;标签列表&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; },
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;field_name&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;borrow_history&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;datatype&amp;#34;&lt;/span&gt;: DataType&lt;span style="color:#f92672"&gt;.&lt;/span&gt;ARRAY,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;element_type&amp;#34;&lt;/span&gt;: DataType&lt;span style="color:#f92672"&gt;.&lt;/span&gt;STRUCT,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;max_capacity&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;2000&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;struct_schema&amp;#34;&lt;/span&gt;: initialize_struct_field([
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;field_name&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;borrower_id&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;datatype&amp;#34;&lt;/span&gt;: DataType&lt;span style="color:#f92672"&gt;.&lt;/span&gt;INT64,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;description&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;借阅者ID&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; },
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;field_name&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;borrower_name&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;datatype&amp;#34;&lt;/span&gt;: DataType&lt;span style="color:#f92672"&gt;.&lt;/span&gt;VARCHAR,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;max_length&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;50&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;description&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;借阅者姓名&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; },
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;field_name&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;borrow_time&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;datatype&amp;#34;&lt;/span&gt;: DataType&lt;span style="color:#f92672"&gt;.&lt;/span&gt;VARCHAR,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;max_length&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;100&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;description&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;借阅时间&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; },
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;field_name&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;return_time&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;datatype&amp;#34;&lt;/span&gt;: DataType&lt;span style="color:#f92672"&gt;.&lt;/span&gt;VARCHAR,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;max_length&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;100&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;description&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;还书时间&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; ]),
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;description&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;借阅历史记录&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; },
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;field_name&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;publish_date&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;datatype&amp;#34;&lt;/span&gt;: DataType&lt;span style="color:#f92672"&gt;.&lt;/span&gt;TIMESTAMPTZ,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;description&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;出版日期&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; },
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;field_name&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;added_time&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;datatype&amp;#34;&lt;/span&gt;: DataType&lt;span style="color:#f92672"&gt;.&lt;/span&gt;TIMESTAMPTZ,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;description&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;入库时间&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; },
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;field_name&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;location&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;datatype&amp;#34;&lt;/span&gt;: DataType&lt;span style="color:#f92672"&gt;.&lt;/span&gt;GEOMETRY,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;description&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;图书位置&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; },
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;field_name&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;content_vector&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;datatype&amp;#34;&lt;/span&gt;: DataType&lt;span style="color:#f92672"&gt;.&lt;/span&gt;FLOAT_VECTOR,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;dim&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;256&lt;/span&gt;, &lt;span style="color:#75715e"&gt;# 向量维度&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;description&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;内容特征向量，密集向量&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; },
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;field_name&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;keyword_vector&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;datatype&amp;#34;&lt;/span&gt;: DataType&lt;span style="color:#f92672"&gt;.&lt;/span&gt;SPARSE_FLOAT_VECTOR,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;description&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;稀疏向量 - 关键词向量&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 创建 Schema&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;schemas &lt;span style="color:#f92672"&gt;=&lt;/span&gt; initialize_schema(schemas_list)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="24-创建-structfield"&gt;2.4 创建 StructField
+&lt;/h3&gt;&lt;p&gt;对于嵌套的结构体数据，需要使用 &lt;code&gt;StructFieldSchema&lt;/code&gt;：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;def&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;initialize_struct_field&lt;/span&gt;(field_definitions: list[dict]) &lt;span style="color:#f92672"&gt;-&amp;gt;&lt;/span&gt; StructFieldSchema:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;&amp;#34;&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e6db74"&gt; 创建 StructFieldSchema 对象
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e6db74"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e6db74"&gt; Args:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e6db74"&gt; field_definitions: 字段定义列表
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e6db74"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e6db74"&gt; Returns:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e6db74"&gt; StructFieldSchema: 创建的 StructFieldSchema 对象
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e6db74"&gt; &amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; struct_field_obj &lt;span style="color:#f92672"&gt;=&lt;/span&gt; client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;create_struct_field_schema()
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;for&lt;/span&gt; field_config &lt;span style="color:#f92672"&gt;in&lt;/span&gt; field_definitions:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; struct_field_obj&lt;span style="color:#f92672"&gt;.&lt;/span&gt;add_field(&lt;span style="color:#f92672"&gt;**&lt;/span&gt;field_config)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;return&lt;/span&gt; struct_field_obj
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="三索引配置"&gt;三、索引配置
+&lt;/h2&gt;&lt;p&gt;在创建集合之前，需要为向量字段和主键字段配置索引。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 准备索引参数&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;index_params &lt;span style="color:#f92672"&gt;=&lt;/span&gt; client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;prepare_index_params()
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 主键索引&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;index_params&lt;span style="color:#f92672"&gt;.&lt;/span&gt;add_index(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; field_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;book_id&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; index_type&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;AUTOINDEX&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 密集向量索引&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;index_params&lt;span style="color:#f92672"&gt;.&lt;/span&gt;add_index(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; field_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;content_vector&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; index_type&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;AUTOINDEX&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; metric_type&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;COSINE&amp;#34;&lt;/span&gt; &lt;span style="color:#75715e"&gt;# 余弦相似度&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 稀疏向量索引&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;index_params&lt;span style="color:#f92672"&gt;.&lt;/span&gt;add_index(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; field_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;keyword_vector&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; index_type&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;AUTOINDEX&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; metric_type&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;IP&amp;#34;&lt;/span&gt; &lt;span style="color:#75715e"&gt;# 内积&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;度量类型说明：&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;COSINE&lt;/strong&gt;：余弦相似度，适用于文本向量&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;IP&lt;/strong&gt;：内积，适用于稀疏向量&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;L2&lt;/strong&gt;：欧氏距离，适用于图像向量&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="四集合基础操作"&gt;四、集合基础操作
+&lt;/h2&gt;&lt;h3 id="41-创建集合"&gt;4.1 创建集合
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;collection_name &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;book_collection&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 检查集合是否存在&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;if&lt;/span&gt; &lt;span style="color:#f92672"&gt;not&lt;/span&gt; client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;has_collection(collection_name):
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;create_collection(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; collection_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;collection_name,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; schema&lt;span style="color:#f92672"&gt;=&lt;/span&gt;schemas,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; index_params&lt;span style="color:#f92672"&gt;=&lt;/span&gt;index_params
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; )
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; print(&lt;span style="color:#e6db74"&gt;f&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;📚 集合 &amp;#39;&lt;/span&gt;&lt;span style="color:#e6db74"&gt;{&lt;/span&gt;collection_name&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#39; 创建成功&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id="411-创建集合的可选参数"&gt;4.1.1 创建集合的可选参数
+&lt;/h4&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;参数名&lt;/th&gt;
+&lt;th&gt;说明&lt;/th&gt;
+&lt;th&gt;默认值&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;collection_name&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;集合名称&lt;/td&gt;
+&lt;td&gt;必填&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;schema&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;集合的数据结构&lt;/td&gt;
+&lt;td&gt;必填&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;index_params&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;索引参数&lt;/td&gt;
+&lt;td&gt;可选&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;num_shards&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;分片数量&lt;/td&gt;
+&lt;td&gt;1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;enable_mmap&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;启用内存映射&lt;/td&gt;
+&lt;td&gt;True&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;consistency_level&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;一致性级别&lt;/td&gt;
+&lt;td&gt;Session&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h4 id="412-分片shards说明"&gt;4.1.2 分片(Shards)说明
+&lt;/h4&gt;&lt;p&gt;分片是集合的水平切片，每个分片对应一个数据输入通道。合理设置分片数可以提高并发写入性能。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;create_collection(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; collection_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;large_collection&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; schema&lt;span style="color:#f92672"&gt;=&lt;/span&gt;schemas,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; index_params&lt;span style="color:#f92672"&gt;=&lt;/span&gt;index_params,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; num_shards&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;4&lt;/span&gt; &lt;span style="color:#75715e"&gt;# 4个分片，适合高并发写入&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;分片数量建议：&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;小规模数据(&amp;lt; 100万)：1-2 个分片&lt;/li&gt;
+&lt;li&gt;中等规模数据(100万-1000万)：2-4 个分片&lt;/li&gt;
+&lt;li&gt;大规模数据(&amp;gt; 1000万)：4-8 个分片&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id="413-内存映射mmap"&gt;4.1.3 内存映射(mmap)
+&lt;/h4&gt;&lt;p&gt;内存映射允许 Milvus 将原始字段数据映射到内存中，而不是完全加载，从而减少内存占用。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 在字段级别启用 mmap&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;field_name&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;book_id&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;datatype&amp;#34;&lt;/span&gt;: DataType&lt;span style="color:#f92672"&gt;.&lt;/span&gt;INT64,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;is_primary&amp;#34;&lt;/span&gt;: &lt;span style="color:#66d9ef"&gt;True&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;mmap_enabled&amp;#34;&lt;/span&gt;: &lt;span style="color:#66d9ef"&gt;True&lt;/span&gt; &lt;span style="color:#75715e"&gt;# 字段级别的 mmap&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 在集合级别启用 mmap&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;create_collection(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; collection_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;collection_name,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; schema&lt;span style="color:#f92672"&gt;=&lt;/span&gt;schemas,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; enable_mmap&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#66d9ef"&gt;True&lt;/span&gt; &lt;span style="color:#75715e"&gt;# 集合级别的 mmap&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id="414-一致性级别consistency-level"&gt;4.1.4 一致性级别(Consistency Level)
+&lt;/h4&gt;&lt;p&gt;Milvus 支持四种一致性级别：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;级别&lt;/th&gt;
+&lt;th&gt;说明&lt;/th&gt;
+&lt;th&gt;适用场景&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Strong&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;强一致性，读取最新写入的数据&lt;/td&gt;
+&lt;td&gt;金融/交易系统&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Bounded&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;有界一致性，在时间窗口内一致&lt;/td&gt;
+&lt;td&gt;实时推荐系统&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Session&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;会话一致性，同一会话内一致(默认)&lt;/td&gt;
+&lt;td&gt;生产环境(推荐)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Eventually&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;最终一致性，可接受短暂不一致&lt;/td&gt;
+&lt;td&gt;大数据分析&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;create_collection(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; collection_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;collection_name,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; schema&lt;span style="color:#f92672"&gt;=&lt;/span&gt;schemas,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; index_params&lt;span style="color:#f92672"&gt;=&lt;/span&gt;index_params,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; consistency_level&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;Session&amp;#34;&lt;/span&gt; &lt;span style="color:#75715e"&gt;# 推荐使用&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id="415-集合-ttltime-to-live"&gt;4.1.5 集合 TTL(Time-To-Live)
+&lt;/h4&gt;&lt;p&gt;可以设置集合的数据过期时间，Milvus 会自动删除过期数据。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 创建时设置 TTL&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;create_collection(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; collection_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;collection_name,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; schema&lt;span style="color:#f92672"&gt;=&lt;/span&gt;schemas,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; properties&lt;span style="color:#f92672"&gt;=&lt;/span&gt;{&lt;span style="color:#e6db74"&gt;&amp;#34;collection.ttl.seconds&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;86400&lt;/span&gt;} &lt;span style="color:#75715e"&gt;# 24小时后过期&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 或者创建后修改 TTL&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;alter_collection_properties(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; collection_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;collection_name,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; properties&lt;span style="color:#f92672"&gt;=&lt;/span&gt;{&lt;span style="color:#e6db74"&gt;&amp;#34;collection.ttl.seconds&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;60&lt;/span&gt;} &lt;span style="color:#75715e"&gt;# 60秒后过期&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="42-查看集合列表"&gt;4.2 查看集合列表
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 列出当前数据库的所有集合&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;collections &lt;span style="color:#f92672"&gt;=&lt;/span&gt; client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;list_collections()
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;print(&lt;span style="color:#e6db74"&gt;f&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;📚 当前数据库中的集合列表：&lt;/span&gt;&lt;span style="color:#e6db74"&gt;{&lt;/span&gt;collections&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 对比 MySQL&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# SHOW TABLES;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="43-检查集合是否存在"&gt;4.3 检查集合是否存在
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 判断集合是否存在&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;exists &lt;span style="color:#f92672"&gt;=&lt;/span&gt; client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;has_collection(collection_name)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;print(&lt;span style="color:#e6db74"&gt;f&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;📚 集合 &amp;#39;&lt;/span&gt;&lt;span style="color:#e6db74"&gt;{&lt;/span&gt;collection_name&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#39; 是否存在：&lt;/span&gt;&lt;span style="color:#e6db74"&gt;{&lt;/span&gt;exists&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="44-查看集合详情"&gt;4.4 查看集合详情
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 描述集合的详细信息&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;collection_info &lt;span style="color:#f92672"&gt;=&lt;/span&gt; client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;describe_collection(collection_name)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;print(&lt;span style="color:#e6db74"&gt;f&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;📚 集合 &amp;#39;&lt;/span&gt;&lt;span style="color:#e6db74"&gt;{&lt;/span&gt;collection_name&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#39; 的描述：&lt;/span&gt;&lt;span style="color:#e6db74"&gt;{&lt;/span&gt;collection_info&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;输出示例：&lt;/strong&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#39;collection_name&amp;#39;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#39;book_collection&amp;#39;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#39;auto_id&amp;#39;&lt;/span&gt;: &lt;span style="color:#66d9ef"&gt;True&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#39;num_shards&amp;#39;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#39;description&amp;#39;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#39;&amp;#39;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#39;fields&amp;#39;&lt;/span&gt;: [
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {&lt;span style="color:#e6db74"&gt;&amp;#39;field_id&amp;#39;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;100&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#39;name&amp;#39;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#39;book_id&amp;#39;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#39;type&amp;#39;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;5&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#39;is_primary&amp;#39;&lt;/span&gt;: &lt;span style="color:#66d9ef"&gt;True&lt;/span&gt;},
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {&lt;span style="color:#e6db74"&gt;&amp;#39;field_id&amp;#39;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;101&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#39;name&amp;#39;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#39;title&amp;#39;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#39;type&amp;#39;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;21&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#39;max_length&amp;#39;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;500&lt;/span&gt;},
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#75715e"&gt;# ... 其他字段&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; ],
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#39;consistency_level&amp;#39;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#39;Session&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="45-重命名集合"&gt;4.5 重命名集合
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 修改集合名称&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;new_collection_name &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;new_book_collection&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;rename_collection(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; old_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;collection_name,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; new_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;new_collection_name
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;print(&lt;span style="color:#e6db74"&gt;f&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;📚 集合 &amp;#39;&lt;/span&gt;&lt;span style="color:#e6db74"&gt;{&lt;/span&gt;collection_name&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#39; 修改成功，新名称为：&lt;/span&gt;&lt;span style="color:#e6db74"&gt;{&lt;/span&gt;new_collection_name&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 对比 MySQL&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# RENAME TABLE old_name TO new_name;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="46-修改集合属性"&gt;4.6 修改集合属性
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 设置集合属性&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;alter_collection_properties(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; collection_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;collection_name,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; properties&lt;span style="color:#f92672"&gt;=&lt;/span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;collection.ttl.seconds&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;86400&lt;/span&gt;, &lt;span style="color:#75715e"&gt;# 设置 TTL&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;mmap.enabled&amp;#34;&lt;/span&gt;: &lt;span style="color:#66d9ef"&gt;True&lt;/span&gt;, &lt;span style="color:#75715e"&gt;# 启用 mmap&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;partitionkey.isolation&amp;#34;&lt;/span&gt;: &lt;span style="color:#66d9ef"&gt;True&lt;/span&gt;, &lt;span style="color:#75715e"&gt;# 启用分区键隔离&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;dynamicfield.enabled&amp;#34;&lt;/span&gt;: &lt;span style="color:#66d9ef"&gt;True&lt;/span&gt;, &lt;span style="color:#75715e"&gt;# 启用动态字段&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;allow_insert_auto_id&amp;#34;&lt;/span&gt;: &lt;span style="color:#66d9ef"&gt;False&lt;/span&gt;, &lt;span style="color:#75715e"&gt;# 不允许用户提供主键&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;timezone&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;Asia/Shanghai&amp;#34;&lt;/span&gt; &lt;span style="color:#75715e"&gt;# 设置时区&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id="461-支持修改的属性"&gt;4.6.1 支持修改的属性
+&lt;/h4&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;属性&lt;/th&gt;
+&lt;th&gt;说明&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;collection.ttl.seconds&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;数据过期时间(秒)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;mmap.enabled&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;启用内存映射&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;partitionkey.isolation&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;启用分区键隔离，提高搜索性能&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;dynamicfield.enabled&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;启用动态字段，允许插入未定义的字段&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;allow_insert_auto_id&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;是否允许用户提供自动生成的主键值&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;timezone&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;集合的默认时区&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="47-删除集合"&gt;4.7 删除集合
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 删除集合&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;drop_collection(collection_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;collection_name)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;print(&lt;span style="color:#e6db74"&gt;f&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;📚 集合 &amp;#39;&lt;/span&gt;&lt;span style="color:#e6db74"&gt;{&lt;/span&gt;collection_name&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#39; 已删除&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 对比 MySQL&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# DROP TABLE table_name;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="五集合加载与释放"&gt;五、集合加载与释放
+&lt;/h2&gt;&lt;h3 id="51-为什么需要加载集合"&gt;5.1 为什么需要加载集合？
+&lt;/h3&gt;&lt;p&gt;在 Milvus 中，集合创建后默认是未加载状态。只有加载到内存后，才能进行搜索和查询操作。加载集合时，Milvus 会将索引文件和原始数据加载到内存中。&lt;/p&gt;
+&lt;h3 id="52-加载整个集合"&gt;5.2 加载整个集合
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 加载集合(必须先创建索引)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;load_collection(collection_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;collection_name)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 检查加载状态&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;res &lt;span style="color:#f92672"&gt;=&lt;/span&gt; client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;get_load_state(collection_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;collection_name)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;print(&lt;span style="color:#e6db74"&gt;f&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;📚 集合 &amp;#39;&lt;/span&gt;&lt;span style="color:#e6db74"&gt;{&lt;/span&gt;collection_name&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#39; 的加载状态：&lt;/span&gt;&lt;span style="color:#e6db74"&gt;{&lt;/span&gt;res&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;加载状态说明：&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;LoadStateNotLoad&lt;/code&gt;：未加载&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;LoadStateLoading&lt;/code&gt;：加载中&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;LoadStateLoaded&lt;/code&gt;：已加载&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="53-加载特定字段v26x-测试功能"&gt;5.3 加载特定字段(v2.6.x 测试功能)
+&lt;/h3&gt;&lt;p&gt;为了节省内存，可以只加载需要的字段：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 只加载指定字段&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;load_collection(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; collection_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;collection_name,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; load_fields&lt;span style="color:#f92672"&gt;=&lt;/span&gt;[&lt;span style="color:#e6db74"&gt;&amp;#34;book_id&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;content_vector&amp;#34;&lt;/span&gt;], &lt;span style="color:#75715e"&gt;# 必须包含主键和至少一个向量字段&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; skip_load_dynamic_field&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#66d9ef"&gt;True&lt;/span&gt; &lt;span style="color:#75715e"&gt;# 跳过动态字段&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;res &lt;span style="color:#f92672"&gt;=&lt;/span&gt; client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;get_load_state(collection_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;collection_name)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;print(&lt;span style="color:#e6db74"&gt;f&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;📚 集合 &amp;#39;&lt;/span&gt;&lt;span style="color:#e6db74"&gt;{&lt;/span&gt;collection_name&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#39; 的加载状态：&lt;/span&gt;&lt;span style="color:#e6db74"&gt;{&lt;/span&gt;res&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;注意事项：&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;load_fields&lt;/code&gt; 中必须包含主键字段&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;load_fields&lt;/code&gt; 中必须包含至少一个向量字段&lt;/li&gt;
+&lt;li&gt;只有 &lt;code&gt;load_fields&lt;/code&gt; 中的字段才能用作搜索和查询的过滤器和输出字段&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="54-释放集合"&gt;5.4 释放集合
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 释放集合，从内存中卸载&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;release_collection(collection_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;collection_name)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;res &lt;span style="color:#f92672"&gt;=&lt;/span&gt; client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;get_load_state(collection_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;collection_name)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;print(&lt;span style="color:#e6db74"&gt;f&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;📚 集合 &amp;#39;&lt;/span&gt;&lt;span style="color:#e6db74"&gt;{&lt;/span&gt;collection_name&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#39; 的加载状态：&lt;/span&gt;&lt;span style="color:#e6db74"&gt;{&lt;/span&gt;res&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;释放集合的场景：&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;长时间不使用的集合，释放以节省内存&lt;/li&gt;
+&lt;li&gt;需要重建索引时，先释放再重建&lt;/li&gt;
+&lt;li&gt;系统内存不足时，释放不常用的集合&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="六集合别名alias"&gt;六、集合别名(Alias)
+&lt;/h2&gt;&lt;h3 id="61-别名的作用"&gt;6.1 别名的作用
+&lt;/h3&gt;&lt;p&gt;别名允许将客户端应用程序与特定的物理集合名称解耦，实现无缝更新和蓝绿部署。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;使用场景：&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;蓝绿部署&lt;/strong&gt;：创建新集合 → 准备数据 → 切换别名 → 删除旧集合&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;A/B 测试&lt;/strong&gt;：同时维护两个集合，通过别名切换&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;版本管理&lt;/strong&gt;：&lt;code&gt;prod_data_v1&lt;/code&gt;, &lt;code&gt;prod_data_v2&lt;/code&gt;，别名始终指向最新版本&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id="62-别名的关键属性"&gt;6.2 别名的关键属性
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;一个集合可以有多个别名&lt;/li&gt;
+&lt;li&gt;一个别名一次只能指向一个集合&lt;/li&gt;
+&lt;li&gt;Milvus 会先检查集合名称，如果不存在则检查别名&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="63-创建别名"&gt;6.3 创建别名
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 为集合创建别名&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;create_alias(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; collection_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;collection_name,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; alias&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;book&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 查看集合的所有别名&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;aliases &lt;span style="color:#f92672"&gt;=&lt;/span&gt; client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;list_aliases(collection_name)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;print(&lt;span style="color:#e6db74"&gt;f&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;📚 集合 &amp;#39;&lt;/span&gt;&lt;span style="color:#e6db74"&gt;{&lt;/span&gt;collection_name&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#39; 的别名：&lt;/span&gt;&lt;span style="color:#e6db74"&gt;{&lt;/span&gt;aliases&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="64-查看别名详情"&gt;6.4 查看别名详情
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 描述别名&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;alias_info &lt;span style="color:#f92672"&gt;=&lt;/span&gt; client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;describe_alias(alias&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#39;book&amp;#39;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;print(&lt;span style="color:#e6db74"&gt;f&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;📚 别名 &amp;#39;book&amp;#39; 的描述：&lt;/span&gt;&lt;span style="color:#e6db74"&gt;{&lt;/span&gt;alias_info&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="65-更改别名指向"&gt;6.5 更改别名指向
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 创建新版本的集合&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;if&lt;/span&gt; &lt;span style="color:#f92672"&gt;not&lt;/span&gt; client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;has_collection(&lt;span style="color:#e6db74"&gt;&amp;#34;book_v2&amp;#34;&lt;/span&gt;):
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;create_collection(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; collection_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;book_v2&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; schema&lt;span style="color:#f92672"&gt;=&lt;/span&gt;schemas,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; index_params&lt;span style="color:#f92672"&gt;=&lt;/span&gt;index_params
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; )
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 将别名指向新集合&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;alter_alias(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; alias&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;book&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; collection_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;book_v2&amp;#34;&lt;/span&gt; &lt;span style="color:#75715e"&gt;# 新的集合名称&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;print(&lt;span style="color:#e6db74"&gt;f&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;📚 别名 &amp;#39;book&amp;#39; 现在指向 &amp;#39;book_v2&amp;#39;&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="66-删除别名"&gt;6.6 删除别名
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 删除别名&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;drop_alias(alias&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;book&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;print(&lt;span style="color:#e6db74"&gt;f&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;📚 别名 &amp;#39;book&amp;#39; 已删除&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="67-蓝绿部署完整示例"&gt;6.7 蓝绿部署完整示例
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;def&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;blue_green_deployment&lt;/span&gt;():
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;&amp;#34;&amp;#34;蓝绿部署示例&amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#75715e"&gt;# 1. 当前生产环境使用 prod_data_v1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;create_alias(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; collection_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;prod_data_v1&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; alias&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;prod_data&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; )
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#75715e"&gt;# 2. 创建新版本集合&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;create_collection(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; collection_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;prod_data_v2&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; schema&lt;span style="color:#f92672"&gt;=&lt;/span&gt;schemas,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; index_params&lt;span style="color:#f92672"&gt;=&lt;/span&gt;index_params
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; )
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#75715e"&gt;# 3. 在新集合中准备数据&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#75715e"&gt;# ... 插入数据、创建索引、测试 ...&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#75715e"&gt;# 4. 切换别名(零停机)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;alter_alias(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; alias&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;prod_data&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; collection_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;prod_data_v2&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; )
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#75715e"&gt;# 5. 应用程序继续使用 &amp;#34;prod_data&amp;#34; 别名，无需修改代码&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#75715e"&gt;# 6. 确认无问题后，删除旧集合&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;drop_collection(&lt;span style="color:#e6db74"&gt;&amp;#34;prod_data_v1&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="七最佳实践"&gt;七、最佳实践
+&lt;/h2&gt;&lt;h3 id="71-集合命名规范"&gt;7.1 集合命名规范
+&lt;/h3&gt;&lt;pre tabindex="0"&gt;&lt;code&gt;✅ 推荐的命名方式
+&amp;#34;user_vectors&amp;#34;
+&amp;#34;product_embeddings&amp;#34;
+&amp;#34;image_search_collection&amp;#34;
+❌ 避免的命名方式
+&amp;#34;Collection-1&amp;#34; # 避免使用连字符
+&amp;#34;集合1&amp;#34; # 避免使用非ASCII字符
+&amp;#34;my collection&amp;#34; # 避免使用空格
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id="72-schema-设计建议"&gt;7.2 Schema 设计建议
+&lt;/h3&gt;&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;主键选择&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;使用 &lt;code&gt;INT64&lt;/code&gt; + &lt;code&gt;auto_id=True&lt;/code&gt; 最简单&lt;/li&gt;
+&lt;li&gt;使用 &lt;code&gt;VARCHAR&lt;/code&gt; 主键时，确保唯一性&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;向量维度&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;常见维度：128, 256, 512, 768, 1024, 1536&lt;/li&gt;
+&lt;li&gt;维度越高，精度越高，但性能越低&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;字段数量&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;避免过多字段(建议 &amp;lt; 50 个)&lt;/li&gt;
+&lt;li&gt;复杂数据使用 JSON 或 STRUCT&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;数组容量&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;合理设置 &lt;code&gt;max_capacity&lt;/code&gt;，避免过大&lt;/li&gt;
+&lt;li&gt;示例中的 &lt;code&gt;borrow_history&lt;/code&gt; 设置为 2000 是合理的&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id="73-索引配置建议"&gt;7.3 索引配置建议
+&lt;/h3&gt;&lt;pre tabindex="0"&gt;&lt;code&gt;# 推荐使用 AUTOINDEX，Milvus 会自动选择最优索引
+index_params.add_index(
+field_name=&amp;#34;content_vector&amp;#34;,
+index_type=&amp;#34;AUTOINDEX&amp;#34;,
+metric_type=&amp;#34;COSINE&amp;#34;
+)
+# 对于大规模数据，可以手动指定索引类型
+index_params.add_index(
+field_name=&amp;#34;content_vector&amp;#34;,
+index_type=&amp;#34;HNSW&amp;#34;,
+metric_type=&amp;#34;COSINE&amp;#34;,
+params={&amp;#34;M&amp;#34;: 16, &amp;#34;efConstruction&amp;#34;: 200}
+)
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id="74-内存优化"&gt;7.4 内存优化
+&lt;/h3&gt;&lt;pre tabindex="0"&gt;&lt;code&gt;# 1. 启用 mmap 减少内存占用
+client.alter_collection_properties(
+collection_name=collection_name,
+properties={&amp;#34;mmap.enabled&amp;#34;: True}
+)
+# 2. 只加载必要的字段
+client.load_collection(
+collection_name=collection_name,
+load_fields=[&amp;#34;book_id&amp;#34;, &amp;#34;content_vector&amp;#34;]
+)
+# 3. 设置合理的 TTL
+client.alter_collection_properties(
+collection_name=collection_name,
+properties={&amp;#34;collection.ttl.seconds&amp;#34;: 604800} # 7天
+)
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id="75-性能优化"&gt;7.5 性能优化
+&lt;/h3&gt;&lt;pre tabindex="0"&gt;&lt;code&gt;# 1. 合理设置分片数
+client.create_collection(
+collection_name=collection_name,
+schema=schemas,
+num_shards=4 # 根据并发写入量调整
+)
+# 2. 选择合适的一致性级别
+client.create_collection(
+collection_name=collection_name,
+schema=schemas,
+consistency_level=&amp;#34;Session&amp;#34; # 平衡性能和一致性
+)
+# 3. 启用分区键隔离
+client.alter_collection_properties(
+collection_name=collection_name,
+properties={&amp;#34;partitionkey.isolation&amp;#34;: True}
+)
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id="八常见问题"&gt;八、常见问题
+&lt;/h2&gt;&lt;h3 id="81-为什么创建集合时必须指定索引"&gt;8.1 为什么创建集合时必须指定索引？
+&lt;/h3&gt;&lt;p&gt;Milvus 要求在创建集合时至少为向量字段创建索引，否则无法加载集合。如果不确定使用哪种索引，推荐使用 &lt;code&gt;AUTOINDEX&lt;/code&gt;。&lt;/p&gt;
+&lt;h3 id="82-如何选择一致性级别"&gt;8.2 如何选择一致性级别？
+&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;场景&lt;/th&gt;
+&lt;th&gt;推荐级别&lt;/th&gt;
+&lt;th&gt;原因&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;金融交易&lt;/td&gt;
+&lt;td&gt;Strong&lt;/td&gt;
+&lt;td&gt;需要强一致性&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;实时推荐&lt;/td&gt;
+&lt;td&gt;Bounded&lt;/td&gt;
+&lt;td&gt;平衡性能和一致性&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;生产环境&lt;/td&gt;
+&lt;td&gt;Session&lt;/td&gt;
+&lt;td&gt;默认推荐&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;大数据分析&lt;/td&gt;
+&lt;td&gt;Eventually&lt;/td&gt;
+&lt;td&gt;可接受短暂不一致&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="83-mmap-什么时候启用"&gt;8.3 mmap 什么时候启用？
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;启用 mmap&lt;/strong&gt;：数据量大，内存有限&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;不启用 mmap&lt;/strong&gt;：数据量小，追求极致性能&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="84-如何处理动态字段"&gt;8.4 如何处理动态字段？
+&lt;/h3&gt;&lt;pre tabindex="0"&gt;&lt;code&gt;# 启用动态字段
+client.alter_collection_properties(
+collection_name=collection_name,
+properties={&amp;#34;dynamicfield.enabled&amp;#34;: True}
+)
+# 插入时可以包含未定义的字段
+client.insert(
+collection_name=collection_name,
+data=[{
+&amp;#34;book_id&amp;#34;: 1,
+&amp;#34;title&amp;#34;: &amp;#34;Python 编程&amp;#34;,
+&amp;#34;content_vector&amp;#34;: [0.1] * 256,
+&amp;#34;extra_field&amp;#34;: &amp;#34;这是一个动态字段&amp;#34; # 未在 Schema 中定义
+}]
+)
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id="九与-mysql-操作对比"&gt;九、与 MySQL 操作对比
+&lt;/h2&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;操作&lt;/th&gt;
+&lt;th&gt;Milvus&lt;/th&gt;
+&lt;th&gt;MySQL&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;创建表/集合&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;client.create_collection()&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;CREATE TABLE&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;查看表/集合&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;client.list_collections()&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;SHOW TABLES&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;检查存在&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;client.has_collection()&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;SHOW TABLES LIKE 'name'&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;查看结构&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;client.describe_collection()&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;DESCRIBE table_name&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;重命名&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;client.rename_collection()&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;RENAME TABLE&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;删除&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;client.drop_collection()&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;DROP TABLE&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;修改属性&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;client.alter_collection_properties()&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;ALTER TABLE&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id="十关键要点总结"&gt;十、关键要点总结
+&lt;/h2&gt;&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Schema 必须明确&lt;/strong&gt;：创建集合前必须定义完整的 Schema&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;索引是必需的&lt;/strong&gt;：至少为向量字段创建索引，推荐使用 AUTOINDEX&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;加载后才能查询&lt;/strong&gt;：集合创建后需要加载到内存才能搜索&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;别名实现解耦&lt;/strong&gt;：使用别名可以实现无缝更新和蓝绿部署&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;mmap 节省内存&lt;/strong&gt;：对于大规模数据，启用 mmap 可以显著减少内存占用&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;一致性级别可调&lt;/strong&gt;：根据业务需求选择合适的一致性级别&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;TTL 自动清理&lt;/strong&gt;：设置 TTL 可以自动删除过期数据&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;分片提高并发&lt;/strong&gt;：合理设置分片数可以提高并发写入性能&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id="十一参考资料"&gt;十一、参考资料
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a class="link" href="https://milvus.io/docs/manage-collections.md" target="_blank" rel="noopener"
+&gt;Milvus 官方文档 - Manage Collections&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="link" href="https://milvus.io/docs/schema.md" target="_blank" rel="noopener"
+&gt;Milvus 官方文档 - Schema&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="link" href="https://milvus.io/docs/index.md" target="_blank" rel="noopener"
+&gt;Milvus 官方文档 - Index&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</description></item></channel></rss>
