@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>数据操作 on 小巷的随笔</title><link>https://zg-dd.github.io/tags/%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9C/</link><description>Recent content in 数据操作 on 小巷的随笔</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sat, 28 Feb 2026 18:56:55 +0800</lastBuildDate><atom:link href="https://zg-dd.github.io/tags/%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9C/index.xml" rel="self" type="application/rss+xml"/><item><title>Milvus 数据操作详解 - 实体增删改实战指南</title><link>https://zg-dd.github.io/stu/milvus-entity-operations/</link><pubDate>Sat, 28 Feb 2026 18:56:55 +0800</pubDate><guid>https://zg-dd.github.io/stu/milvus-entity-operations/</guid><description>&lt;h2 id="一基础概念"&gt;一、基础概念
+&lt;/h2&gt;&lt;p&gt;在 Milvus 中，&lt;strong&gt;实体（Entity）&lt;/strong&gt; 是 Collection 中共享相同 Schema 的数据记录，每行字段的数据构成一个实体。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;同一 Collection 中的实体具有相同的属性（字段名、数据类型、约束）&lt;/li&gt;
+&lt;li&gt;插入实体时，必须包含 Schema 中定义的所有字段&lt;/li&gt;
+&lt;li&gt;实体默认进入 &lt;code&gt;_default&lt;/code&gt; 分区，也可指定分区名称&lt;/li&gt;
+&lt;li&gt;启用动态字段后，Schema 外的字段会存入 &lt;code&gt;$meta&lt;/code&gt; 保留字段&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id="二与关系型数据库对比"&gt;二、与关系型数据库对比
+&lt;/h2&gt;&lt;p&gt;Milvus 的 CRUD 操作与传统关系型数据库（MySQL / PostgreSQL）在概念上相似，但有重要差异：&lt;/p&gt;
+&lt;h3 id="21-概念映射"&gt;2.1 概念映射
+&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;关系型数据库&lt;/th&gt;
+&lt;th&gt;Milvus&lt;/th&gt;
+&lt;th&gt;说明&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Database&lt;/td&gt;
+&lt;td&gt;Database&lt;/td&gt;
+&lt;td&gt;数据库&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Table&lt;/td&gt;
+&lt;td&gt;Collection&lt;/td&gt;
+&lt;td&gt;数据表/集合&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Row&lt;/td&gt;
+&lt;td&gt;Entity&lt;/td&gt;
+&lt;td&gt;行/实体&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Column&lt;/td&gt;
+&lt;td&gt;Field&lt;/td&gt;
+&lt;td&gt;列/字段&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Primary Key&lt;/td&gt;
+&lt;td&gt;Primary Key&lt;/td&gt;
+&lt;td&gt;主键，Milvus 中必须为整数或字符串&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Index&lt;/td&gt;
+&lt;td&gt;Index&lt;/td&gt;
+&lt;td&gt;索引，Milvus 索引专为向量搜索优化&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;INSERT&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;insert()&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;新增记录&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;UPDATE&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;upsert(partial_update=True)&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;更新记录，Milvus 无独立 UPDATE&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;INSERT ... ON DUPLICATE KEY UPDATE&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;upsert()&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;存在则更新，不存在则插入&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;DELETE FROM ... WHERE&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;delete(filter=...)&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;条件删除&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="22-关键差异"&gt;2.2 关键差异
+&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;维度&lt;/th&gt;
+&lt;th&gt;关系型数据库&lt;/th&gt;
+&lt;th&gt;Milvus&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;更新方式&lt;/td&gt;
+&lt;td&gt;有独立 &lt;code&gt;UPDATE&lt;/code&gt; 语句，可精确修改任意字段&lt;/td&gt;
+&lt;td&gt;无独立 UPDATE，只能通过 &lt;code&gt;upsert&lt;/code&gt; 实现&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;删除方式&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;DELETE&lt;/code&gt; 立即生效，可回滚&lt;/td&gt;
+&lt;td&gt;删除标记后异步清理，不可回滚&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;事务支持&lt;/td&gt;
+&lt;td&gt;支持 ACID 事务&lt;/td&gt;
+&lt;td&gt;不支持跨实体事务&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;主键自增&lt;/td&gt;
+&lt;td&gt;支持自增主键&lt;/td&gt;
+&lt;td&gt;支持自动生成 INT64 主键（AutoID）&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;过滤语法&lt;/td&gt;
+&lt;td&gt;标准 SQL WHERE 子句&lt;/td&gt;
+&lt;td&gt;类 SQL 表达式，语法略有差异&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;数据类型&lt;/td&gt;
+&lt;td&gt;丰富的类型系统&lt;/td&gt;
+&lt;td&gt;额外支持向量类型（FloatVector、SparseVector 等）&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="23-过滤语法对比"&gt;2.3 过滤语法对比
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;-- MySQL
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;SELECT&lt;/span&gt; &lt;span style="color:#f92672"&gt;*&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;FROM&lt;/span&gt; books &lt;span style="color:#66d9ef"&gt;WHERE&lt;/span&gt; score &lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;.&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;AND&lt;/span&gt; is_active &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;DELETE&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;FROM&lt;/span&gt; books &lt;span style="color:#66d9ef"&gt;WHERE&lt;/span&gt; id &lt;span style="color:#66d9ef"&gt;IN&lt;/span&gt; (&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;UPDATE&lt;/span&gt; books &lt;span style="color:#66d9ef"&gt;SET&lt;/span&gt; score &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;5&lt;/span&gt;.&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;WHERE&lt;/span&gt; id &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Milvus&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;query(collection_name, filter&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;score &amp;lt; 3.0 and is_active == false&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;delete(collection_name, filter&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;id in [1, 2, 3]&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;upsert(collection_name, data&lt;span style="color:#f92672"&gt;=&lt;/span&gt;[{&lt;span style="color:#e6db74"&gt;&amp;#34;id&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;score&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;5.0&lt;/span&gt;}], partial_update&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#66d9ef"&gt;True&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
+&lt;h2 id="三新增实体-insert"&gt;三、新增实体 Insert
+&lt;/h2&gt;&lt;h3 id="31-基本语法"&gt;3.1 基本语法
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;result &lt;span style="color:#f92672"&gt;=&lt;/span&gt; client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;insert(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; collection_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;your_collection&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; data&lt;span style="color:#f92672"&gt;=&lt;/span&gt;data &lt;span style="color:#75715e"&gt;# list[dict]，每个 dict 为一条记录&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="32-返回值说明"&gt;3.2 返回值说明
+&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;字段&lt;/th&gt;
+&lt;th&gt;说明&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;insert_count&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;成功插入的记录数&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;ids&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;插入记录的主键 ID 列表&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="33-示例"&gt;3.3 示例
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;def&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;insert_data&lt;/span&gt;(collection_name, data):
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; result &lt;span style="color:#f92672"&gt;=&lt;/span&gt; client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;insert(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; collection_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;collection_name,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; data&lt;span style="color:#f92672"&gt;=&lt;/span&gt;data
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; )
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; print(&lt;span style="color:#e6db74"&gt;f&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;插入记录数: &lt;/span&gt;&lt;span style="color:#e6db74"&gt;{&lt;/span&gt;result[&lt;span style="color:#e6db74"&gt;&amp;#39;insert_count&amp;#39;&lt;/span&gt;]&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; print(&lt;span style="color:#e6db74"&gt;f&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;插入ID范围: &lt;/span&gt;&lt;span style="color:#e6db74"&gt;{&lt;/span&gt;result[&lt;span style="color:#e6db74"&gt;&amp;#39;ids&amp;#39;&lt;/span&gt;][&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;]&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt; - &lt;/span&gt;&lt;span style="color:#e6db74"&gt;{&lt;/span&gt;result[&lt;span style="color:#e6db74"&gt;&amp;#39;ids&amp;#39;&lt;/span&gt;][&lt;span style="color:#f92672"&gt;-&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;]&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;return&lt;/span&gt; result
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="34-数据结构示例"&gt;3.4 数据结构示例
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;record &lt;span style="color:#f92672"&gt;=&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;title&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;Python编程从入门到实践&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;isbn&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;978-123-45678-123-0&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;is_available&amp;#34;&lt;/span&gt;: &lt;span style="color:#66d9ef"&gt;True&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;page_count&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;500&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;rating&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;4.8&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;price&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;89.9&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;tags&amp;#34;&lt;/span&gt;: [&lt;span style="color:#e6db74"&gt;&amp;#34;编程&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;入门&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;实战&amp;#34;&lt;/span&gt;],
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;content_vector&amp;#34;&lt;/span&gt;: [&lt;span style="color:#ae81ff"&gt;0.1&lt;/span&gt;, &lt;span style="color:#f92672"&gt;-&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;0.3&lt;/span&gt;, &lt;span style="color:#f92672"&gt;...&lt;/span&gt;] &lt;span style="color:#75715e"&gt;# 向量字段，维度需与 Schema 一致&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="35-注意事项"&gt;3.5 注意事项
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;插入数据必须包含 Schema 中所有非可选字段&lt;/li&gt;
+&lt;li&gt;向量字段的维度必须与 Schema 定义一致&lt;/li&gt;
+&lt;li&gt;稀疏向量（Sparse Vector）使用字典格式 &lt;code&gt;{index: value}&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;时间字段推荐使用 ISO 格式字符串或 Unix 时间戳&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id="四修改实体-upsert"&gt;四、修改实体 Upsert
+&lt;/h2&gt;&lt;p&gt;Upsert 是 &lt;strong&gt;Update + Insert&lt;/strong&gt; 的组合操作，也是 Milvus 中唯一的更新手段：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;主键存在&lt;/strong&gt; → 执行更新&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;主键不存在&lt;/strong&gt; → 执行插入&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="41-两种模式"&gt;4.1 两种模式
+&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;模式&lt;/th&gt;
+&lt;th&gt;参数&lt;/th&gt;
+&lt;th&gt;行为&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;覆盖模式&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;partial_update=False&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;完全替换整条记录（默认）&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;合并模式&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;partial_update=True&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;只更新指定字段，其余字段保持不变&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h3 id="42-覆盖模式partial_updatefalse"&gt;4.2 覆盖模式（partial_update=False）
+&lt;/h3&gt;&lt;p&gt;适合需要完整替换记录的场景，必须提供所有字段。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;new_record &lt;span style="color:#f92672"&gt;=&lt;/span&gt; [{
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;id&amp;#34;&lt;/span&gt;: record_id,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;title&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;新标题&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;category&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;新分类&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;score&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;4.5&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;is_active&amp;#34;&lt;/span&gt;: &lt;span style="color:#66d9ef"&gt;True&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;tags&amp;#34;&lt;/span&gt;: [&lt;span style="color:#e6db74"&gt;&amp;#34;更新&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;测试&amp;#34;&lt;/span&gt;],
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;embedding&amp;#34;&lt;/span&gt;: [random&lt;span style="color:#f92672"&gt;.&lt;/span&gt;uniform(&lt;span style="color:#f92672"&gt;-&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;) &lt;span style="color:#66d9ef"&gt;for&lt;/span&gt; _ &lt;span style="color:#f92672"&gt;in&lt;/span&gt; range(&lt;span style="color:#ae81ff"&gt;128&lt;/span&gt;)] &lt;span style="color:#75715e"&gt;# 向量字段必须提供&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;result &lt;span style="color:#f92672"&gt;=&lt;/span&gt; client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;upsert(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; collection_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;collection_name,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; data&lt;span style="color:#f92672"&gt;=&lt;/span&gt;new_record,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; partial_update&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#66d9ef"&gt;False&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
+&lt;h3 id="43-合并模式partial_updatetrue"&gt;4.3 合并模式（partial_update=True）
+&lt;/h3&gt;&lt;p&gt;只更新指定字段，未提供的字段保持原值。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 只更新评分和活跃状态，其他字段不变&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;update_data &lt;span style="color:#f92672"&gt;=&lt;/span&gt; [{
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;id&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#75715e"&gt;# 主键必须提供&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;score&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;2.0&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;is_active&amp;#34;&lt;/span&gt;: &lt;span style="color:#66d9ef"&gt;False&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;tags&amp;#34;&lt;/span&gt;: [&lt;span style="color:#e6db74"&gt;&amp;#34;合并&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;更新&amp;#34;&lt;/span&gt;]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;result &lt;span style="color:#f92672"&gt;=&lt;/span&gt; client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;upsert(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; collection_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;collection_name,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; data&lt;span style="color:#f92672"&gt;=&lt;/span&gt;update_data,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; partial_update&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#66d9ef"&gt;True&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
+&lt;h3 id="44-upsert-常见错误与注意事项"&gt;4.4 Upsert 常见错误与注意事项
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;1. 主键必须提供&lt;/strong&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# ❌ 错误：忘记主键，无法定位目标记录&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;update_data &lt;span style="color:#f92672"&gt;=&lt;/span&gt; [{&lt;span style="color:#e6db74"&gt;&amp;#34;score&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;5.0&lt;/span&gt;}]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# ✅ 正确：主键 + 要更新的字段&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;update_data &lt;span style="color:#f92672"&gt;=&lt;/span&gt; [{&lt;span style="color:#e6db74"&gt;&amp;#34;id&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;score&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;5.0&lt;/span&gt;}]
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;2. 主键类型必须与 Schema 一致&lt;/strong&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Schema 定义主键为 INT64&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# ❌ 错误：传入字符串类型&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;update_data &lt;span style="color:#f92672"&gt;=&lt;/span&gt; [{&lt;span style="color:#e6db74"&gt;&amp;#34;id&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;1&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;score&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;5.0&lt;/span&gt;}]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# ✅ 正确：传入整数类型&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;update_data &lt;span style="color:#f92672"&gt;=&lt;/span&gt; [{&lt;span style="color:#e6db74"&gt;&amp;#34;id&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;score&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;5.0&lt;/span&gt;}]
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;3. 合并模式不支持 STRUCT 类型字段&lt;/strong&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# ❌ 合并模式下更新 STRUCT 字段会失败&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;update_data &lt;span style="color:#f92672"&gt;=&lt;/span&gt; [{&lt;span style="color:#e6db74"&gt;&amp;#34;id&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;details&amp;#34;&lt;/span&gt;: {&lt;span style="color:#e6db74"&gt;&amp;#34;author&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;新作者&amp;#34;&lt;/span&gt;}}] &lt;span style="color:#75715e"&gt;# details 为 STRUCT 类型&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;upsert(collection_name, data&lt;span style="color:#f92672"&gt;=&lt;/span&gt;update_data, partial_update&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#66d9ef"&gt;True&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# ✅ 改用覆盖模式处理含 STRUCT 字段的更新&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;upsert(collection_name, data&lt;span style="color:#f92672"&gt;=&lt;/span&gt;full_record, partial_update&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#66d9ef"&gt;False&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;4. 数据必须是行格式（list of dict）&lt;/strong&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# ❌ 错误：列格式数据在合并模式下会失败&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;update_data &lt;span style="color:#f92672"&gt;=&lt;/span&gt; {&lt;span style="color:#e6db74"&gt;&amp;#34;id&amp;#34;&lt;/span&gt;: [&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;], &lt;span style="color:#e6db74"&gt;&amp;#34;score&amp;#34;&lt;/span&gt;: [&lt;span style="color:#ae81ff"&gt;4.0&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;5.0&lt;/span&gt;]}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# ✅ 正确：行格式&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;update_data &lt;span style="color:#f92672"&gt;=&lt;/span&gt; [{&lt;span style="color:#e6db74"&gt;&amp;#34;id&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;score&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;4.0&lt;/span&gt;}, {&lt;span style="color:#e6db74"&gt;&amp;#34;id&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;score&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;5.0&lt;/span&gt;}]
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;5. 操作前后建议验证结果&lt;/strong&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 更新前查询原始值&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;before &lt;span style="color:#f92672"&gt;=&lt;/span&gt; client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;query(collection_name, filter&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;id == 1&amp;#34;&lt;/span&gt;, output_fields&lt;span style="color:#f92672"&gt;=&lt;/span&gt;[&lt;span style="color:#e6db74"&gt;&amp;#34;score&amp;#34;&lt;/span&gt;])
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;upsert(collection_name, data&lt;span style="color:#f92672"&gt;=&lt;/span&gt;[{&lt;span style="color:#e6db74"&gt;&amp;#34;id&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;score&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;5.0&lt;/span&gt;}], partial_update&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#66d9ef"&gt;True&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 更新后查询确认&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;after &lt;span style="color:#f92672"&gt;=&lt;/span&gt; client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;query(collection_name, filter&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;id == 1&amp;#34;&lt;/span&gt;, output_fields&lt;span style="color:#f92672"&gt;=&lt;/span&gt;[&lt;span style="color:#e6db74"&gt;&amp;#34;score&amp;#34;&lt;/span&gt;])
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;print(&lt;span style="color:#e6db74"&gt;f&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;score: &lt;/span&gt;&lt;span style="color:#e6db74"&gt;{&lt;/span&gt;before[&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;][&lt;span style="color:#e6db74"&gt;&amp;#39;score&amp;#39;&lt;/span&gt;]&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt; → &lt;/span&gt;&lt;span style="color:#e6db74"&gt;{&lt;/span&gt;after[&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;][&lt;span style="color:#e6db74"&gt;&amp;#39;score&amp;#39;&lt;/span&gt;]&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="45-upsert-模式选择指南"&gt;4.5 Upsert 模式选择指南
+&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;操作场景&lt;/th&gt;
+&lt;th&gt;推荐模式&lt;/th&gt;
+&lt;th&gt;注意事项&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;完整记录更新&lt;/td&gt;
+&lt;td&gt;覆盖模式&lt;/td&gt;
+&lt;td&gt;必须提供所有字段，包括向量&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;部分字段修改&lt;/td&gt;
+&lt;td&gt;合并模式&lt;/td&gt;
+&lt;td&gt;避免更新 STRUCT 类型字段&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;新记录创建&lt;/td&gt;
+&lt;td&gt;覆盖模式&lt;/td&gt;
+&lt;td&gt;使用新主键值即可自动插入&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;复杂嵌套结构&lt;/td&gt;
+&lt;td&gt;覆盖模式&lt;/td&gt;
+&lt;td&gt;复杂结构不适合合并模式&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h2 id="五删除实体-delete"&gt;五、删除实体 Delete
+&lt;/h2&gt;&lt;h3 id="51-基本语法"&gt;5.1 基本语法
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;result &lt;span style="color:#f92672"&gt;=&lt;/span&gt; client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;delete(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; collection_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;your_collection&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; filter&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;过滤表达式&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;print(&lt;span style="color:#e6db74"&gt;f&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;删除记录数: &lt;/span&gt;&lt;span style="color:#e6db74"&gt;{&lt;/span&gt;result&lt;span style="color:#f92672"&gt;.&lt;/span&gt;get(&lt;span style="color:#e6db74"&gt;&amp;#39;delete_count&amp;#39;&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;)&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="52-三种删除方式"&gt;5.2 三种删除方式
+&lt;/h3&gt;&lt;h4 id="521-单条删除"&gt;5.2.1 单条删除
+&lt;/h4&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;delete(collection_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;collection_name, filter&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;id == 1&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id="522-批量删除"&gt;5.2.2 批量删除
+&lt;/h4&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;delete(collection_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;collection_name, filter&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;id in [2, 3, 4]&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id="523-条件删除"&gt;5.2.3 条件删除
+&lt;/h4&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 删除评分低于 3.0 的记录&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;delete(collection_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;collection_name, filter&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;score &amp;lt; 3.0&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 组合条件&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;delete(collection_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;collection_name, filter&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;score &amp;lt; 3.0 and is_active == false&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="53-常用过滤表达式"&gt;5.3 常用过滤表达式
+&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;场景&lt;/th&gt;
+&lt;th&gt;表达式示例&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;精确匹配单个 ID&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;&amp;quot;id == 1&amp;quot;&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;匹配多个 ID&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;&amp;quot;id in [1, 2, 3]&amp;quot;&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;数值比较&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;&amp;quot;score &amp;lt; 3.0&amp;quot;&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;字符串匹配&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;&amp;quot;category == '技术'&amp;quot;&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;布尔字段&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;&amp;quot;is_active == false&amp;quot;&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;组合条件&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;&amp;quot;score &amp;lt; 3.0 and is_active == false&amp;quot;&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="54-注意事项"&gt;5.4 注意事项
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;删除操作不可回滚，生产环境建议先 &lt;code&gt;query&lt;/code&gt; 确认影响范围再执行&lt;/li&gt;
+&lt;li&gt;大批量删除建议分批执行，避免影响集群性能&lt;/li&gt;
+&lt;li&gt;删除后数据异步清理，&lt;code&gt;get_collection_stats&lt;/code&gt; 的统计数字可能有短暂延迟&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id="六操作对比总结"&gt;六、操作对比总结
+&lt;/h2&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;操作&lt;/th&gt;
+&lt;th&gt;方法&lt;/th&gt;
+&lt;th&gt;主键存在时&lt;/th&gt;
+&lt;th&gt;主键不存在时&lt;/th&gt;
+&lt;th&gt;必须提供所有字段&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;insert&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;client.insert()&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;报错/重复&lt;/td&gt;
+&lt;td&gt;插入新记录&lt;/td&gt;
+&lt;td&gt;✅ 是&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;upsert&lt;/code&gt;（覆盖）&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;client.upsert(partial_update=False)&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;完全覆盖&lt;/td&gt;
+&lt;td&gt;插入新记录&lt;/td&gt;
+&lt;td&gt;✅ 是&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;upsert&lt;/code&gt;（合并）&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;client.upsert(partial_update=True)&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;部分更新&lt;/td&gt;
+&lt;td&gt;插入新记录&lt;/td&gt;
+&lt;td&gt;❌ 只需提供要改的字段&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;delete&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;client.delete()&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;删除记录&lt;/td&gt;
+&lt;td&gt;无操作&lt;/td&gt;
+&lt;td&gt;—&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;</description></item></channel></rss>

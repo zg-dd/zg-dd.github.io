@@ -1,4 +1,415 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>小巷 Blog</title><link>https://zg-dd.github.io/en/</link><description>Recent content on 小巷 Blog</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Fri, 27 Feb 2026 19:11:18 +0800</lastBuildDate><atom:link href="https://zg-dd.github.io/en/index.xml" rel="self" type="application/rss+xml"/><item><title>Milvus Index Detailed Guide - Vector Search Performance Optimization</title><link>https://zg-dd.github.io/en/stu/milvus-index-explained/</link><pubDate>Fri, 27 Feb 2026 19:11:18 +0800</pubDate><guid>https://zg-dd.github.io/en/stu/milvus-index-explained/</guid><description>&lt;h2 id="core-concepts-explained-simply"&gt;Core Concepts Explained Simply
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>小巷 Blog</title><link>https://zg-dd.github.io/en/</link><description>Recent content on 小巷 Blog</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Sat, 28 Feb 2026 18:56:55 +0800</lastBuildDate><atom:link href="https://zg-dd.github.io/en/index.xml" rel="self" type="application/rss+xml"/><item><title>Milvus Data Operations Guide - Entity CRUD Practical Tutorial</title><link>https://zg-dd.github.io/en/stu/milvus-entity-operations/</link><pubDate>Sat, 28 Feb 2026 18:56:55 +0800</pubDate><guid>https://zg-dd.github.io/en/stu/milvus-entity-operations/</guid><description>&lt;h2 id="一basic-concepts"&gt;一、Basic Concepts
+&lt;/h2&gt;&lt;p&gt;In Milvus, an &lt;strong&gt;Entity&lt;/strong&gt; is a data record in a Collection that shares the same Schema, where data from each row of fields constitutes an entity.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Entities in the same Collection have the same attributes (field names, data types, constraints)&lt;/li&gt;
+&lt;li&gt;When inserting entities, all fields defined in the Schema must be included&lt;/li&gt;
+&lt;li&gt;Entities enter the &lt;code&gt;_default&lt;/code&gt; partition by default, but partition names can also be specified&lt;/li&gt;
+&lt;li&gt;When dynamic fields are enabled, fields outside the Schema are stored in the &lt;code&gt;$meta&lt;/code&gt; reserved field&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id="二comparison-with-relational-databases"&gt;二、Comparison with Relational Databases
+&lt;/h2&gt;&lt;p&gt;Milvus CRUD operations are conceptually similar to traditional relational databases (MySQL / PostgreSQL), but there are important differences:&lt;/p&gt;
+&lt;h3 id="21-concept-mapping"&gt;2.1 Concept Mapping
+&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Relational Database&lt;/th&gt;
+&lt;th&gt;Milvus&lt;/th&gt;
+&lt;th&gt;Description&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Database&lt;/td&gt;
+&lt;td&gt;Database&lt;/td&gt;
+&lt;td&gt;Database&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Table&lt;/td&gt;
+&lt;td&gt;Collection&lt;/td&gt;
+&lt;td&gt;Data table/collection&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Row&lt;/td&gt;
+&lt;td&gt;Entity&lt;/td&gt;
+&lt;td&gt;Row/entity&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Column&lt;/td&gt;
+&lt;td&gt;Field&lt;/td&gt;
+&lt;td&gt;Column/field&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Primary Key&lt;/td&gt;
+&lt;td&gt;Primary Key&lt;/td&gt;
+&lt;td&gt;Primary key, must be integer or string in Milvus&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Index&lt;/td&gt;
+&lt;td&gt;Index&lt;/td&gt;
+&lt;td&gt;Index, Milvus indexes are optimized for vector search&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;INSERT&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;insert()&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Add records&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;UPDATE&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;upsert(partial_update=True)&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Update records, Milvus has no independent UPDATE&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;INSERT ... ON DUPLICATE KEY UPDATE&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;upsert()&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Update if exists, insert if not&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;DELETE FROM ... WHERE&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;delete(filter=...)&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Conditional deletion&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="22-key-differences"&gt;2.2 Key Differences
+&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Dimension&lt;/th&gt;
+&lt;th&gt;Relational Database&lt;/th&gt;
+&lt;th&gt;Milvus&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Update Method&lt;/td&gt;
+&lt;td&gt;Has independent &lt;code&gt;UPDATE&lt;/code&gt; statement, can precisely modify any field&lt;/td&gt;
+&lt;td&gt;No independent UPDATE, can only be achieved through &lt;code&gt;upsert&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Deletion Method&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;DELETE&lt;/code&gt; takes effect immediately, can be rolled back&lt;/td&gt;
+&lt;td&gt;Marked for deletion then cleaned asynchronously, cannot be rolled back&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Transaction Support&lt;/td&gt;
+&lt;td&gt;Supports ACID transactions&lt;/td&gt;
+&lt;td&gt;Does not support cross-entity transactions&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Auto-increment Primary Key&lt;/td&gt;
+&lt;td&gt;Supports auto-increment primary key&lt;/td&gt;
+&lt;td&gt;Supports automatic generation of INT64 primary key (AutoID)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Filter Syntax&lt;/td&gt;
+&lt;td&gt;Standard SQL WHERE clause&lt;/td&gt;
+&lt;td&gt;SQL-like expressions, syntax slightly different&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Data Types&lt;/td&gt;
+&lt;td&gt;Rich type system&lt;/td&gt;
+&lt;td&gt;Additional support for vector types (FloatVector, SparseVector, etc.)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="23-filter-syntax-comparison"&gt;2.3 Filter Syntax Comparison
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;-- MySQL
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;SELECT&lt;/span&gt; &lt;span style="color:#f92672"&gt;*&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;FROM&lt;/span&gt; books &lt;span style="color:#66d9ef"&gt;WHERE&lt;/span&gt; score &lt;span style="color:#f92672"&gt;&amp;lt;&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;.&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;AND&lt;/span&gt; is_active &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;DELETE&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;FROM&lt;/span&gt; books &lt;span style="color:#66d9ef"&gt;WHERE&lt;/span&gt; id &lt;span style="color:#66d9ef"&gt;IN&lt;/span&gt; (&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;UPDATE&lt;/span&gt; books &lt;span style="color:#66d9ef"&gt;SET&lt;/span&gt; score &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;5&lt;/span&gt;.&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;WHERE&lt;/span&gt; id &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Milvus&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;query(collection_name, filter&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;score &amp;lt; 3.0 and is_active == false&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;delete(collection_name, filter&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;id in [1, 2, 3]&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;upsert(collection_name, data&lt;span style="color:#f92672"&gt;=&lt;/span&gt;[{&lt;span style="color:#e6db74"&gt;&amp;#34;id&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;score&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;5.0&lt;/span&gt;}], partial_update&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#66d9ef"&gt;True&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
+&lt;h2 id="三insert-entities"&gt;三、Insert Entities
+&lt;/h2&gt;&lt;h3 id="31-basic-syntax"&gt;3.1 Basic Syntax
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;result &lt;span style="color:#f92672"&gt;=&lt;/span&gt; client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;insert(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; collection_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;your_collection&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; data&lt;span style="color:#f92672"&gt;=&lt;/span&gt;data &lt;span style="color:#75715e"&gt;# list[dict], each dict is a record&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="32-return-value-explanation"&gt;3.2 Return Value Explanation
+&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Field&lt;/th&gt;
+&lt;th&gt;Description&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;insert_count&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Number of successfully inserted records&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;ids&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;List of primary key IDs of inserted records&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="33-example"&gt;3.3 Example
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;def&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;insert_data&lt;/span&gt;(collection_name, data):
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; result &lt;span style="color:#f92672"&gt;=&lt;/span&gt; client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;insert(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; collection_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;collection_name,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; data&lt;span style="color:#f92672"&gt;=&lt;/span&gt;data
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; )
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; print(&lt;span style="color:#e6db74"&gt;f&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;Inserted records: &lt;/span&gt;&lt;span style="color:#e6db74"&gt;{&lt;/span&gt;result[&lt;span style="color:#e6db74"&gt;&amp;#39;insert_count&amp;#39;&lt;/span&gt;]&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; print(&lt;span style="color:#e6db74"&gt;f&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;ID range: &lt;/span&gt;&lt;span style="color:#e6db74"&gt;{&lt;/span&gt;result[&lt;span style="color:#e6db74"&gt;&amp;#39;ids&amp;#39;&lt;/span&gt;][&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;]&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt; - &lt;/span&gt;&lt;span style="color:#e6db74"&gt;{&lt;/span&gt;result[&lt;span style="color:#e6db74"&gt;&amp;#39;ids&amp;#39;&lt;/span&gt;][&lt;span style="color:#f92672"&gt;-&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;]&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;return&lt;/span&gt; result
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="34-data-structure-example"&gt;3.4 Data Structure Example
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;record &lt;span style="color:#f92672"&gt;=&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;title&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;Python Programming from入门to Practice&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;isbn&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;978-123-45678-123-0&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;is_available&amp;#34;&lt;/span&gt;: &lt;span style="color:#66d9ef"&gt;True&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;page_count&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;500&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;rating&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;4.8&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;price&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;89.9&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;tags&amp;#34;&lt;/span&gt;: [&lt;span style="color:#e6db74"&gt;&amp;#34;Programming&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;Beginner&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;Practice&amp;#34;&lt;/span&gt;],
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;content_vector&amp;#34;&lt;/span&gt;: [&lt;span style="color:#ae81ff"&gt;0.1&lt;/span&gt;, &lt;span style="color:#f92672"&gt;-&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;0.3&lt;/span&gt;, &lt;span style="color:#f92672"&gt;...&lt;/span&gt;] &lt;span style="color:#75715e"&gt;# Vector field, dimension must match Schema&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="35-important-notes"&gt;3.5 Important Notes
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;Inserted data must contain all non-optional fields in the Schema&lt;/li&gt;
+&lt;li&gt;Vector field dimensions must match the Schema definition&lt;/li&gt;
+&lt;li&gt;Sparse vectors use dictionary format &lt;code&gt;{index: value}&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Time fields recommend using ISO format strings or Unix timestamps&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id="四upsert-entities"&gt;四、Upsert Entities
+&lt;/h2&gt;&lt;p&gt;Upsert is a combination of &lt;strong&gt;Update + Insert&lt;/strong&gt; operations, and is also Milvus&amp;rsquo;s only update method:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Primary key exists&lt;/strong&gt; → Execute update&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Primary key doesn&amp;rsquo;t exist&lt;/strong&gt; → Execute insertion&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="41-two-modes"&gt;4.1 Two Modes
+&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Mode&lt;/th&gt;
+&lt;th&gt;Parameter&lt;/th&gt;
+&lt;th&gt;Behavior&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Overwrite Mode&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;partial_update=False&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Completely replace the entire record (default)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Merge Mode&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;partial_update=True&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Only update specified fields, other fields remain unchanged&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h3 id="42-overwrite-mode-partial_updatefalse"&gt;4.2 Overwrite Mode (partial_update=False)
+&lt;/h3&gt;&lt;p&gt;Suitable for scenarios requiring complete record replacement, all fields must be provided.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;new_record &lt;span style="color:#f92672"&gt;=&lt;/span&gt; [{
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;id&amp;#34;&lt;/span&gt;: record_id,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;title&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;New Title&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;category&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;New Category&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;score&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;4.5&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;is_active&amp;#34;&lt;/span&gt;: &lt;span style="color:#66d9ef"&gt;True&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;tags&amp;#34;&lt;/span&gt;: [&lt;span style="color:#e6db74"&gt;&amp;#34;Update&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;Test&amp;#34;&lt;/span&gt;],
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;embedding&amp;#34;&lt;/span&gt;: [random&lt;span style="color:#f92672"&gt;.&lt;/span&gt;uniform(&lt;span style="color:#f92672"&gt;-&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;) &lt;span style="color:#66d9ef"&gt;for&lt;/span&gt; _ &lt;span style="color:#f92672"&gt;in&lt;/span&gt; range(&lt;span style="color:#ae81ff"&gt;128&lt;/span&gt;)] &lt;span style="color:#75715e"&gt;# Vector field must be provided&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;result &lt;span style="color:#f92672"&gt;=&lt;/span&gt; client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;upsert(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; collection_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;collection_name,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; data&lt;span style="color:#f92672"&gt;=&lt;/span&gt;new_record,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; partial_update&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#66d9ef"&gt;False&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
+&lt;h3 id="43-merge-mode-partial_updatetrue"&gt;4.3 Merge Mode (partial_update=True)
+&lt;/h3&gt;&lt;p&gt;Only update specified fields, unprovided fields remain unchanged.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Only update rating and active status, other fields remain unchanged&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;update_data &lt;span style="color:#f92672"&gt;=&lt;/span&gt; [{
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;id&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#75715e"&gt;# Primary key must be provided&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;score&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;2.0&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;is_active&amp;#34;&lt;/span&gt;: &lt;span style="color:#66d9ef"&gt;False&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;tags&amp;#34;&lt;/span&gt;: [&lt;span style="color:#e6db74"&gt;&amp;#34;Merge&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;Update&amp;#34;&lt;/span&gt;]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;result &lt;span style="color:#f92672"&gt;=&lt;/span&gt; client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;upsert(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; collection_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;collection_name,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; data&lt;span style="color:#f92672"&gt;=&lt;/span&gt;update_data,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; partial_update&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#66d9ef"&gt;True&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
+&lt;h3 id="44-common-upsert-errors-and-precautions"&gt;4.4 Common Upsert Errors and Precautions
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;1. Primary key must be provided&lt;/strong&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# ❌ Error: Forgot primary key, cannot locate target record&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;update_data &lt;span style="color:#f92672"&gt;=&lt;/span&gt; [{&lt;span style="color:#e6db74"&gt;&amp;#34;score&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;5.0&lt;/span&gt;}]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# ✅ Correct: Primary key + fields to update&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;update_data &lt;span style="color:#f92672"&gt;=&lt;/span&gt; [{&lt;span style="color:#e6db74"&gt;&amp;#34;id&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;score&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;5.0&lt;/span&gt;}]
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;2. Primary key type must match Schema&lt;/strong&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Schema defines primary key as INT64&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# ❌ Error: Passing string type&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;update_data &lt;span style="color:#f92672"&gt;=&lt;/span&gt; [{&lt;span style="color:#e6db74"&gt;&amp;#34;id&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;1&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;score&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;5.0&lt;/span&gt;}]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# ✅ Correct: Passing integer type&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;update_data &lt;span style="color:#f92672"&gt;=&lt;/span&gt; [{&lt;span style="color:#e6db74"&gt;&amp;#34;id&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;score&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;5.0&lt;/span&gt;}]
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;3. Merge mode doesn&amp;rsquo;t support STRUCT type fields&lt;/strong&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# ❌ Updating STRUCT fields in merge mode will fail&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;update_data &lt;span style="color:#f92672"&gt;=&lt;/span&gt; [{&lt;span style="color:#e6db74"&gt;&amp;#34;id&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;details&amp;#34;&lt;/span&gt;: {&lt;span style="color:#e6db74"&gt;&amp;#34;author&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;New Author&amp;#34;&lt;/span&gt;}}] &lt;span style="color:#75715e"&gt;# details is STRUCT type&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;upsert(collection_name, data&lt;span style="color:#f92672"&gt;=&lt;/span&gt;update_data, partial_update&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#66d9ef"&gt;True&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# ✅ Use overwrite mode for updates containing STRUCT fields&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;upsert(collection_name, data&lt;span style="color:#f92672"&gt;=&lt;/span&gt;full_record, partial_update&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#66d9ef"&gt;False&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;4. Data must be row format (list of dict)&lt;/strong&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# ❌ Error: Column format data fails in merge mode&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;update_data &lt;span style="color:#f92672"&gt;=&lt;/span&gt; {&lt;span style="color:#e6db74"&gt;&amp;#34;id&amp;#34;&lt;/span&gt;: [&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;], &lt;span style="color:#e6db74"&gt;&amp;#34;score&amp;#34;&lt;/span&gt;: [&lt;span style="color:#ae81ff"&gt;4.0&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;5.0&lt;/span&gt;]}
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# ✅ Correct: Row format&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;update_data &lt;span style="color:#f92672"&gt;=&lt;/span&gt; [{&lt;span style="color:#e6db74"&gt;&amp;#34;id&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;score&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;4.0&lt;/span&gt;}, {&lt;span style="color:#e6db74"&gt;&amp;#34;id&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;score&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;5.0&lt;/span&gt;}]
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;5. Verify results before and after operation&lt;/strong&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Query original values before update&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;before &lt;span style="color:#f92672"&gt;=&lt;/span&gt; client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;query(collection_name, filter&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;id == 1&amp;#34;&lt;/span&gt;, output_fields&lt;span style="color:#f92672"&gt;=&lt;/span&gt;[&lt;span style="color:#e6db74"&gt;&amp;#34;score&amp;#34;&lt;/span&gt;])
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;upsert(collection_name, data&lt;span style="color:#f92672"&gt;=&lt;/span&gt;[{&lt;span style="color:#e6db74"&gt;&amp;#34;id&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;score&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;5.0&lt;/span&gt;}], partial_update&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#66d9ef"&gt;True&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Query to confirm after update&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;after &lt;span style="color:#f92672"&gt;=&lt;/span&gt; client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;query(collection_name, filter&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;id == 1&amp;#34;&lt;/span&gt;, output_fields&lt;span style="color:#f92672"&gt;=&lt;/span&gt;[&lt;span style="color:#e6db74"&gt;&amp;#34;score&amp;#34;&lt;/span&gt;])
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;print(&lt;span style="color:#e6db74"&gt;f&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;score: &lt;/span&gt;&lt;span style="color:#e6db74"&gt;{&lt;/span&gt;before[&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;][&lt;span style="color:#e6db74"&gt;&amp;#39;score&amp;#39;&lt;/span&gt;]&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt; → &lt;/span&gt;&lt;span style="color:#e6db74"&gt;{&lt;/span&gt;after[&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;][&lt;span style="color:#e6db74"&gt;&amp;#39;score&amp;#39;&lt;/span&gt;]&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="45-upsert-mode-selection-guide"&gt;4.5 Upsert Mode Selection Guide
+&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Operation Scenario&lt;/th&gt;
+&lt;th&gt;Recommended Mode&lt;/th&gt;
+&lt;th&gt;Notes&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Complete record update&lt;/td&gt;
+&lt;td&gt;Overwrite mode&lt;/td&gt;
+&lt;td&gt;Must provide all fields, including vectors&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Partial field modification&lt;/td&gt;
+&lt;td&gt;Merge mode&lt;/td&gt;
+&lt;td&gt;Avoid updating STRUCT type fields&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;New record creation&lt;/td&gt;
+&lt;td&gt;Overwrite mode&lt;/td&gt;
+&lt;td&gt;Use new primary key value for automatic insertion&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Complex nested structures&lt;/td&gt;
+&lt;td&gt;Overwrite mode&lt;/td&gt;
+&lt;td&gt;Complex structures not suitable for merge mode&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h2 id="五delete-entities"&gt;五、Delete Entities
+&lt;/h2&gt;&lt;h3 id="51-basic-syntax"&gt;5.1 Basic Syntax
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;result &lt;span style="color:#f92672"&gt;=&lt;/span&gt; client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;delete(
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; collection_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;your_collection&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; filter&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;filter expression&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;print(&lt;span style="color:#e6db74"&gt;f&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;Deleted records: &lt;/span&gt;&lt;span style="color:#e6db74"&gt;{&lt;/span&gt;result&lt;span style="color:#f92672"&gt;.&lt;/span&gt;get(&lt;span style="color:#e6db74"&gt;&amp;#39;delete_count&amp;#39;&lt;/span&gt;, &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;)&lt;span style="color:#e6db74"&gt;}&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="52-three-deletion-methods"&gt;5.2 Three Deletion Methods
+&lt;/h3&gt;&lt;h4 id="521-single-deletion"&gt;5.2.1 Single Deletion
+&lt;/h4&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;delete(collection_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;collection_name, filter&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;id == 1&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id="522-batch-deletion"&gt;5.2.2 Batch Deletion
+&lt;/h4&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;delete(collection_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;collection_name, filter&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;id in [2, 3, 4]&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id="523-conditional-deletion"&gt;5.2.3 Conditional Deletion
+&lt;/h4&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Delete records with rating below 3.0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;delete(collection_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;collection_name, filter&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;score &amp;lt; 3.0&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Combined conditions&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;client&lt;span style="color:#f92672"&gt;.&lt;/span&gt;delete(collection_name&lt;span style="color:#f92672"&gt;=&lt;/span&gt;collection_name, filter&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;score &amp;lt; 3.0 and is_active == false&amp;#34;&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="53-common-filter-expressions"&gt;5.3 Common Filter Expressions
+&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Scenario&lt;/th&gt;
+&lt;th&gt;Expression Example&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Exact match single ID&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;&amp;quot;id == 1&amp;quot;&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Match multiple IDs&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;&amp;quot;id in [1, 2, 3]&amp;quot;&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Numeric comparison&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;&amp;quot;score &amp;lt; 3.0&amp;quot;&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;String matching&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;&amp;quot;category == 'Technology'&amp;quot;&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Boolean field&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;&amp;quot;is_active == false&amp;quot;&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Combined conditions&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;&amp;quot;score &amp;lt; 3.0 and is_active == false&amp;quot;&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="54-important-notes"&gt;5.4 Important Notes
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;Deletion operations cannot be rolled back, production environments should query first to confirm scope before execution&lt;/li&gt;
+&lt;li&gt;Large batch deletions should be executed in batches to avoid affecting cluster performance&lt;/li&gt;
+&lt;li&gt;Data is cleaned asynchronously after deletion, statistics from &lt;code&gt;get_collection_stats&lt;/code&gt; may have temporary delays&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id="六operation-comparison-summary"&gt;六、Operation Comparison Summary
+&lt;/h2&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Operation&lt;/th&gt;
+&lt;th&gt;Method&lt;/th&gt;
+&lt;th&gt;When Primary Key Exists&lt;/th&gt;
+&lt;th&gt;When Primary Key Doesn&amp;rsquo;t Exist&lt;/th&gt;
+&lt;th&gt;Must Provide All Fields&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;insert&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;client.insert()&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Error/duplicate&lt;/td&gt;
+&lt;td&gt;Insert new record&lt;/td&gt;
+&lt;td&gt;✅ Yes&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;upsert&lt;/code&gt; (overwrite)&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;client.upsert(partial_update=False)&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Complete overwrite&lt;/td&gt;
+&lt;td&gt;Insert new record&lt;/td&gt;
+&lt;td&gt;✅ Yes&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;upsert&lt;/code&gt; (merge)&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;client.upsert(partial_update=True)&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Partial update&lt;/td&gt;
+&lt;td&gt;Insert new record&lt;/td&gt;
+&lt;td&gt;❌ Only need to provide fields to change&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;delete&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;client.delete()&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Delete record&lt;/td&gt;
+&lt;td&gt;No operation&lt;/td&gt;
+&lt;td&gt;—&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;</description></item><item><title>Milvus Index Detailed Guide - Vector Search Performance Optimization</title><link>https://zg-dd.github.io/en/stu/milvus-index-explained/</link><pubDate>Fri, 27 Feb 2026 19:11:18 +0800</pubDate><guid>https://zg-dd.github.io/en/stu/milvus-index-explained/</guid><description>&lt;h2 id="core-concepts-explained-simply"&gt;Core Concepts Explained Simply
 &lt;/h2&gt;&lt;h3 id="what-is-topk"&gt;What is topK?
 &lt;/h3&gt;&lt;p&gt;&lt;strong&gt;topK&lt;/strong&gt; means &amp;ldquo;the top K most similar results&amp;rdquo;.&lt;/p&gt;
 &lt;ul&gt;

@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="I. Overview of Milvus Data Operations\rAs a vector database, Milvus provides comprehensive data manipulation capabilities, including core functions such as data insertion, deletion, and updating. This article will detail the usage methods and best practices of these operations.\n1.1 Core Concept Comparison\rOperation Type Milvus Method Relational Database Equivalent Description Insert insert() INSERT Add new data to collection Update upsert() UPDATE/UPSERT Update existing data or insert new data Delete delete() DELETE Delete data based on conditions Query query()/search() SELECT Query and vector search II. Data Insertion Operations (Insert)\r2.1 Basic Syntax\rfrom pymilvus import MilvusClient client = MilvusClient(uri=&#34;http://localhost:19530&#34;) # Prepare data data = [ { &#34;id&#34;: 1, &#34;title&#34;: &#34;Machine Learning Basics Tutorial&#34;, &#34;content&#34;: &#34;This is an introductory article about machine learning...&#34;, &#34;embedding&#34;: [0.1, 0.2, 0.3, ...] # Vector data }, { &#34;id&#34;: 2, &#34;title&#34;: &#34;Deep Learning Practice&#34;, &#34;content&#34;: &#34;In-depth discussion of various deep learning applications...&#34;, &#34;embedding&#34;: [0.4, 0.5, 0.6, ...] } ] # Execute insertion result = client.insert( collection_name=&#34;articles&#34;, data=data ) print(f&#34;Successfully inserted {result.insert_count} records&#34;) print(f&#34;Inserted IDs: {result.ids}&#34;) 2.2 Data Format Requirements\rRequired Fields\rPrimary Key Field: Must include the primary key field defined in the collection Vector Field: Must provide vector data with dimensions consistent with Schema All Non-Optional Fields: All required fields defined in Schema must be provided Data Type Examples\rsample_data = { &#34;id&#34;: 1, # INT64 primary key &#34;name&#34;: &#34;Product Name&#34;, # VARCHAR string &#34;price&#34;: 99.9, # FLOAT floating point &#34;is_active&#34;: True, # BOOL boolean &#34;tags&#34;: [&#34;AI&#34;, &#34;ML&#34;], # ARRAY array &#34;metadata&#34;: {&#34;key&#34;: &#34;value&#34;}, # JSON object &#34;vector&#34;: [0.1, 0.2, ...] # FloatVector vector } 2.3 Batch Insertion Optimization\r# Batch insert large amounts of data def batch_insert(client, collection_name, all_data, batch_size=1000): &#34;&#34;&#34;Batch insert data&#34;&#34;&#34; total_count = len(all_data) inserted_count = 0 for i in range(0, total_count, batch_size): batch_data = all_data[i:i + batch_size] result = client.insert( collection_name=collection_name, data=batch_data ) inserted_count += result.insert_count print(f&#34;Inserted {inserted_count}/{total_count} records&#34;) return inserted_count III. Data Update Operations (Upsert)\r3.1 Upsert Basic Concepts\rUpsert is a combination of Update and Insert operations:\n">
+<title>Milvus Data Operations Guide - CRUD Operations Tutorial</title>
+
+<link rel='canonical' href='http://localhost:1313/en/stu/milvus-data-operations/'>
+
+<link rel="stylesheet" href="/scss/style.min.ff560f1cad7a040e336f2dd6880b9ee1ad344d6e3d8f5411e5a1aaa8b23bbdd0.css"><meta property='og:title' content="Milvus Data Operations Guide - CRUD Operations Tutorial">
+<meta property='og:description' content="I. Overview of Milvus Data Operations\rAs a vector database, Milvus provides comprehensive data manipulation capabilities, including core functions such as data insertion, deletion, and updating. This article will detail the usage methods and best practices of these operations.\n1.1 Core Concept Comparison\rOperation Type Milvus Method Relational Database Equivalent Description Insert insert() INSERT Add new data to collection Update upsert() UPDATE/UPSERT Update existing data or insert new data Delete delete() DELETE Delete data based on conditions Query query()/search() SELECT Query and vector search II. Data Insertion Operations (Insert)\r2.1 Basic Syntax\rfrom pymilvus import MilvusClient client = MilvusClient(uri=&#34;http://localhost:19530&#34;) # Prepare data data = [ { &#34;id&#34;: 1, &#34;title&#34;: &#34;Machine Learning Basics Tutorial&#34;, &#34;content&#34;: &#34;This is an introductory article about machine learning...&#34;, &#34;embedding&#34;: [0.1, 0.2, 0.3, ...] # Vector data }, { &#34;id&#34;: 2, &#34;title&#34;: &#34;Deep Learning Practice&#34;, &#34;content&#34;: &#34;In-depth discussion of various deep learning applications...&#34;, &#34;embedding&#34;: [0.4, 0.5, 0.6, ...] } ] # Execute insertion result = client.insert( collection_name=&#34;articles&#34;, data=data ) print(f&#34;Successfully inserted {result.insert_count} records&#34;) print(f&#34;Inserted IDs: {result.ids}&#34;) 2.2 Data Format Requirements\rRequired Fields\rPrimary Key Field: Must include the primary key field defined in the collection Vector Field: Must provide vector data with dimensions consistent with Schema All Non-Optional Fields: All required fields defined in Schema must be provided Data Type Examples\rsample_data = { &#34;id&#34;: 1, # INT64 primary key &#34;name&#34;: &#34;Product Name&#34;, # VARCHAR string &#34;price&#34;: 99.9, # FLOAT floating point &#34;is_active&#34;: True, # BOOL boolean &#34;tags&#34;: [&#34;AI&#34;, &#34;ML&#34;], # ARRAY array &#34;metadata&#34;: {&#34;key&#34;: &#34;value&#34;}, # JSON object &#34;vector&#34;: [0.1, 0.2, ...] # FloatVector vector } 2.3 Batch Insertion Optimization\r# Batch insert large amounts of data def batch_insert(client, collection_name, all_data, batch_size=1000): &#34;&#34;&#34;Batch insert data&#34;&#34;&#34; total_count = len(all_data) inserted_count = 0 for i in range(0, total_count, batch_size): batch_data = all_data[i:i + batch_size] result = client.insert( collection_name=collection_name, data=batch_data ) inserted_count += result.insert_count print(f&#34;Inserted {inserted_count}/{total_count} records&#34;) return inserted_count III. Data Update Operations (Upsert)\r3.1 Upsert Basic Concepts\rUpsert is a combination of Update and Insert operations:\n">
+<meta property='og:url' content='http://localhost:1313/en/stu/milvus-data-operations/'>
+<meta property='og:site_name' content='小巷 Blog'>
+<meta property='og:type' content='article'><meta property='article:section' content='Stu' /><meta property='article:tag' content='Milvus' /><meta property='article:tag' content='CRUD' /><meta property='article:tag' content='Data Operations' /><meta property='article:published_time' content='2026-02-28T19:00:00&#43;08:00'/><meta property='article:modified_time' content='2026-02-28T19:00:00&#43;08:00'/>
+<meta name="twitter:title" content="Milvus Data Operations Guide - CRUD Operations Tutorial">
+<meta name="twitter:description" content="I. Overview of Milvus Data Operations\rAs a vector database, Milvus provides comprehensive data manipulation capabilities, including core functions such as data insertion, deletion, and updating. This article will detail the usage methods and best practices of these operations.\n1.1 Core Concept Comparison\rOperation Type Milvus Method Relational Database Equivalent Description Insert insert() INSERT Add new data to collection Update upsert() UPDATE/UPSERT Update existing data or insert new data Delete delete() DELETE Delete data based on conditions Query query()/search() SELECT Query and vector search II. Data Insertion Operations (Insert)\r2.1 Basic Syntax\rfrom pymilvus import MilvusClient client = MilvusClient(uri=&#34;http://localhost:19530&#34;) # Prepare data data = [ { &#34;id&#34;: 1, &#34;title&#34;: &#34;Machine Learning Basics Tutorial&#34;, &#34;content&#34;: &#34;This is an introductory article about machine learning...&#34;, &#34;embedding&#34;: [0.1, 0.2, 0.3, ...] # Vector data }, { &#34;id&#34;: 2, &#34;title&#34;: &#34;Deep Learning Practice&#34;, &#34;content&#34;: &#34;In-depth discussion of various deep learning applications...&#34;, &#34;embedding&#34;: [0.4, 0.5, 0.6, ...] } ] # Execute insertion result = client.insert( collection_name=&#34;articles&#34;, data=data ) print(f&#34;Successfully inserted {result.insert_count} records&#34;) print(f&#34;Inserted IDs: {result.ids}&#34;) 2.2 Data Format Requirements\rRequired Fields\rPrimary Key Field: Must include the primary key field defined in the collection Vector Field: Must provide vector data with dimensions consistent with Schema All Non-Optional Fields: All required fields defined in Schema must be provided Data Type Examples\rsample_data = { &#34;id&#34;: 1, # INT64 primary key &#34;name&#34;: &#34;Product Name&#34;, # VARCHAR string &#34;price&#34;: 99.9, # FLOAT floating point &#34;is_active&#34;: True, # BOOL boolean &#34;tags&#34;: [&#34;AI&#34;, &#34;ML&#34;], # ARRAY array &#34;metadata&#34;: {&#34;key&#34;: &#34;value&#34;}, # JSON object &#34;vector&#34;: [0.1, 0.2, ...] # FloatVector vector } 2.3 Batch Insertion Optimization\r# Batch insert large amounts of data def batch_insert(client, collection_name, all_data, batch_size=1000): &#34;&#34;&#34;Batch insert data&#34;&#34;&#34; total_count = len(all_data) inserted_count = 0 for i in range(0, total_count, batch_size): batch_data = all_data[i:i + batch_size] result = client.insert( collection_name=collection_name, data=batch_data ) inserted_count += result.insert_count print(f&#34;Inserted {inserted_count}/{total_count} records&#34;) return inserted_count III. Data Update Operations (Upsert)\r3.1 Upsert Basic Concepts\rUpsert is a combination of Update and Insert operations:\n">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/en/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_a0cc1cf57968b27d.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🌱</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/en">小巷 Blog</a></h1>
+            <h2 class="site-description">Recording is not to prove myself; rather, to make a habit of &#39;solving problems → thinking → sedimentation&#39;.</h2>
+        </div>
+    </header><ol class="menu" id="main-menu">
+        
+        
+        
+        <li  class='current' >
+            <a href='/en/stu/' >
+                
+                
+                
+                <span>Study Notes</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/en/blog/' >
+                
+                
+                
+                <span>Essays</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/en/life/' >
+                
+                
+                
+                <span>Life</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/categories/' >
+                
+                
+                
+                <span>Categories</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/tags/' >
+                
+                
+                
+                <span>Tags</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+                    
+                        <li id="i18n-switch">  
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                            <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
+                                
+                                    <option value="http://localhost:1313/" >简体中文</option>
+                                
+                                    <option value="http://localhost:1313/en/" selected>English</option>
+                                
+                            </select>
+                        </li>
+                    
+                
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>Dark Mode</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">Table of contents</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ul>
+    <li><a href="#i-overview-of-milvus-data-operations">I. Overview of Milvus Data Operations</a>
+      <ul>
+        <li><a href="#11-core-concept-comparison">1.1 Core Concept Comparison</a></li>
+      </ul>
+    </li>
+    <li><a href="#ii-data-insertion-operations-insert">II. Data Insertion Operations (Insert)</a>
+      <ul>
+        <li><a href="#21-basic-syntax">2.1 Basic Syntax</a></li>
+        <li><a href="#22-data-format-requirements">2.2 Data Format Requirements</a></li>
+        <li><a href="#23-batch-insertion-optimization">2.3 Batch Insertion Optimization</a></li>
+      </ul>
+    </li>
+    <li><a href="#iii-data-update-operations-upsert">III. Data Update Operations (Upsert)</a>
+      <ul>
+        <li><a href="#31-upsert-basic-concepts">3.1 Upsert Basic Concepts</a></li>
+        <li><a href="#32-overwrite-mode-default">3.2 Overwrite Mode (Default)</a></li>
+        <li><a href="#33-merge-mode-partial-update">3.3 Merge Mode (Partial Update)</a></li>
+        <li><a href="#34-upsert-best-practices">3.4 Upsert Best Practices</a></li>
+      </ul>
+    </li>
+    <li><a href="#iv-data-deletion-operations-delete">IV. Data Deletion Operations (Delete)</a>
+      <ul>
+        <li><a href="#41-basic-deletion-syntax">4.1 Basic Deletion Syntax</a></li>
+        <li><a href="#42-conditional-deletion">4.2 Conditional Deletion</a></li>
+        <li><a href="#43-deletion-expression-syntax">4.3 Deletion Expression Syntax</a></li>
+        <li><a href="#44-deletion-operation-considerations">4.4 Deletion Operation Considerations</a></li>
+      </ul>
+    </li>
+    <li><a href="#v-operation-comparison-summary">V. Operation Comparison Summary</a>
+      <ul>
+        <li><a href="#51-core-method-comparison">5.1 Core Method Comparison</a></li>
+        <li><a href="#52-usage-scenario-recommendations">5.2 Usage Scenario Recommendations</a></li>
+      </ul>
+    </li>
+    <li><a href="#vi-complete-example-article-management-system">VI. Complete Example: Article Management System</a></li>
+    <li><a href="#vii-frequently-asked-questions">VII. Frequently Asked Questions</a>
+      <ul>
+        <li><a href="#q1-whats-the-difference-between-upsert-and-insert">Q1: What&rsquo;s the difference between Upsert and Insert?</a></li>
+        <li><a href="#q2-are-deletion-operations-effective-immediately">Q2: Are deletion operations effective immediately?</a></li>
+        <li><a href="#q3-how-to-handle-large-scale-data-operations">Q3: How to handle large-scale data operations?</a></li>
+        <li><a href="#q4-what-are-the-limitations-of-partial-update-mode">Q4: What are the limitations of Partial Update mode?</a></li>
+        <li><a href="#q5-how-to-ensure-atomicity-of-data-operations">Q5: How to ensure atomicity of data operations?</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/en/categories/vector-database/" >
+                Vector Database
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/en/stu/milvus-data-operations/">Milvus Data Operations Guide - CRUD Operations Tutorial</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published" datetime='2026-02-28T19:00:00&#43;08:00'>Feb 28, 2026</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    6 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+        <footer class="article-translations">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+            <div>
+                
+                    <a href="http://localhost:1313/stu/milvus-data-operations/" class="link">简体中文</a>
+                
+            </div>
+        </footer>
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="i-overview-of-milvus-data-operations">I. Overview of Milvus Data Operations
+</h2><p>As a vector database, Milvus provides comprehensive data manipulation capabilities, including core functions such as data insertion, deletion, and updating. This article will detail the usage methods and best practices of these operations.</p>
+<h3 id="11-core-concept-comparison">1.1 Core Concept Comparison
+</h3><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>Operation Type</th>
+          <th>Milvus Method</th>
+          <th>Relational Database Equivalent</th>
+          <th>Description</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Insert</td>
+          <td><code>insert()</code></td>
+          <td><code>INSERT</code></td>
+          <td>Add new data to collection</td>
+      </tr>
+      <tr>
+          <td>Update</td>
+          <td><code>upsert()</code></td>
+          <td><code>UPDATE/UPSERT</code></td>
+          <td>Update existing data or insert new data</td>
+      </tr>
+      <tr>
+          <td>Delete</td>
+          <td><code>delete()</code></td>
+          <td><code>DELETE</code></td>
+          <td>Delete data based on conditions</td>
+      </tr>
+      <tr>
+          <td>Query</td>
+          <td><code>query()/search()</code></td>
+          <td><code>SELECT</code></td>
+          <td>Query and vector search</td>
+      </tr>
+  </tbody>
+</table></div>
+<h2 id="ii-data-insertion-operations-insert">II. Data Insertion Operations (Insert)
+</h2><h3 id="21-basic-syntax">2.1 Basic Syntax
+</h3><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> pymilvus <span style="color:#f92672">import</span> MilvusClient
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>client <span style="color:#f92672">=</span> MilvusClient(uri<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;http://localhost:19530&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Prepare data</span>
+</span></span><span style="display:flex;"><span>data <span style="color:#f92672">=</span> [
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;id&#34;</span>: <span style="color:#ae81ff">1</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;title&#34;</span>: <span style="color:#e6db74">&#34;Machine Learning Basics Tutorial&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;content&#34;</span>: <span style="color:#e6db74">&#34;This is an introductory article about machine learning...&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;embedding&#34;</span>: [<span style="color:#ae81ff">0.1</span>, <span style="color:#ae81ff">0.2</span>, <span style="color:#ae81ff">0.3</span>, <span style="color:#f92672">...</span>]  <span style="color:#75715e"># Vector data</span>
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;id&#34;</span>: <span style="color:#ae81ff">2</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;title&#34;</span>: <span style="color:#e6db74">&#34;Deep Learning Practice&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;content&#34;</span>: <span style="color:#e6db74">&#34;In-depth discussion of various deep learning applications...&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;embedding&#34;</span>: [<span style="color:#ae81ff">0.4</span>, <span style="color:#ae81ff">0.5</span>, <span style="color:#ae81ff">0.6</span>, <span style="color:#f92672">...</span>]
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Execute insertion</span>
+</span></span><span style="display:flex;"><span>result <span style="color:#f92672">=</span> client<span style="color:#f92672">.</span>insert(
+</span></span><span style="display:flex;"><span>    collection_name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;articles&#34;</span>,
+</span></span><span style="display:flex;"><span>    data<span style="color:#f92672">=</span>data
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Successfully inserted </span><span style="color:#e6db74">{</span>result<span style="color:#f92672">.</span>insert_count<span style="color:#e6db74">}</span><span style="color:#e6db74"> records&#34;</span>)
+</span></span><span style="display:flex;"><span>print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Inserted IDs: </span><span style="color:#e6db74">{</span>result<span style="color:#f92672">.</span>ids<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span></code></pre></div><h3 id="22-data-format-requirements">2.2 Data Format Requirements
+</h3><h4 id="required-fields">Required Fields
+</h4><ul>
+<li><strong>Primary Key Field</strong>: Must include the primary key field defined in the collection</li>
+<li><strong>Vector Field</strong>: Must provide vector data with dimensions consistent with Schema</li>
+<li><strong>All Non-Optional Fields</strong>: All required fields defined in Schema must be provided</li>
+</ul>
+<h4 id="data-type-examples">Data Type Examples
+</h4><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>sample_data <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;id&#34;</span>: <span style="color:#ae81ff">1</span>,                    <span style="color:#75715e"># INT64 primary key</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;Product Name&#34;</span>,     <span style="color:#75715e"># VARCHAR string</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;price&#34;</span>: <span style="color:#ae81ff">99.9</span>,              <span style="color:#75715e"># FLOAT floating point</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;is_active&#34;</span>: <span style="color:#66d9ef">True</span>,          <span style="color:#75715e"># BOOL boolean</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;tags&#34;</span>: [<span style="color:#e6db74">&#34;AI&#34;</span>, <span style="color:#e6db74">&#34;ML&#34;</span>],       <span style="color:#75715e"># ARRAY array</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;metadata&#34;</span>: {<span style="color:#e6db74">&#34;key&#34;</span>: <span style="color:#e6db74">&#34;value&#34;</span>}, <span style="color:#75715e"># JSON object</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;vector&#34;</span>: [<span style="color:#ae81ff">0.1</span>, <span style="color:#ae81ff">0.2</span>, <span style="color:#f92672">...</span>]   <span style="color:#75715e"># FloatVector vector</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="23-batch-insertion-optimization">2.3 Batch Insertion Optimization
+</h3><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># Batch insert large amounts of data</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">batch_insert</span>(client, collection_name, all_data, batch_size<span style="color:#f92672">=</span><span style="color:#ae81ff">1000</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;&#34;&#34;Batch insert data&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    total_count <span style="color:#f92672">=</span> len(all_data)
+</span></span><span style="display:flex;"><span>    inserted_count <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">0</span>, total_count, batch_size):
+</span></span><span style="display:flex;"><span>        batch_data <span style="color:#f92672">=</span> all_data[i:i <span style="color:#f92672">+</span> batch_size]
+</span></span><span style="display:flex;"><span>        result <span style="color:#f92672">=</span> client<span style="color:#f92672">.</span>insert(
+</span></span><span style="display:flex;"><span>            collection_name<span style="color:#f92672">=</span>collection_name,
+</span></span><span style="display:flex;"><span>            data<span style="color:#f92672">=</span>batch_data
+</span></span><span style="display:flex;"><span>        )
+</span></span><span style="display:flex;"><span>        inserted_count <span style="color:#f92672">+=</span> result<span style="color:#f92672">.</span>insert_count
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Inserted </span><span style="color:#e6db74">{</span>inserted_count<span style="color:#e6db74">}</span><span style="color:#e6db74">/</span><span style="color:#e6db74">{</span>total_count<span style="color:#e6db74">}</span><span style="color:#e6db74"> records&#34;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> inserted_count
+</span></span></code></pre></div><h2 id="iii-data-update-operations-upsert">III. Data Update Operations (Upsert)
+</h2><h3 id="31-upsert-basic-concepts">3.1 Upsert Basic Concepts
+</h3><p>Upsert is a combination of Update and Insert operations:</p>
+<ul>
+<li><strong>Primary key exists</strong>: Update existing record</li>
+<li><strong>Primary key doesn&rsquo;t exist</strong>: Insert new record</li>
+</ul>
+<h3 id="32-overwrite-mode-default">3.2 Overwrite Mode (Default)
+</h3><p>Completely replace the entire record, all fields must be provided:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># Overwrite mode update</span>
+</span></span><span style="display:flex;"><span>update_data <span style="color:#f92672">=</span> [{
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;id&#34;</span>: <span style="color:#ae81ff">1</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;title&#34;</span>: <span style="color:#e6db74">&#34;Updated Title&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;content&#34;</span>: <span style="color:#e6db74">&#34;Updated content...&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;embedding&#34;</span>: [<span style="color:#ae81ff">0.7</span>, <span style="color:#ae81ff">0.8</span>, <span style="color:#ae81ff">0.9</span>, <span style="color:#f92672">...</span>]  <span style="color:#75715e"># Vector field must be provided</span>
+</span></span><span style="display:flex;"><span>}]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>result <span style="color:#f92672">=</span> client<span style="color:#f92672">.</span>upsert(
+</span></span><span style="display:flex;"><span>    collection_name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;articles&#34;</span>,
+</span></span><span style="display:flex;"><span>    data<span style="color:#f92672">=</span>update_data,
+</span></span><span style="display:flex;"><span>    partition_name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;_default&#34;</span>  <span style="color:#75715e"># Optional: specify partition</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Updated records: </span><span style="color:#e6db74">{</span>result<span style="color:#f92672">.</span>upsert_count<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span></code></pre></div><h3 id="33-merge-mode-partial-update">3.3 Merge Mode (Partial Update)
+</h3><p>Only update specified fields, other fields remain unchanged:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># Merge mode update (partial fields)</span>
+</span></span><span style="display:flex;"><span>partial_data <span style="color:#f92672">=</span> [{
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;id&#34;</span>: <span style="color:#ae81ff">1</span>,           <span style="color:#75715e"># Primary key must be provided</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;title&#34;</span>: <span style="color:#e6db74">&#34;New Title&#34;</span>,  <span style="color:#75715e"># Only update title field</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;price&#34;</span>: <span style="color:#ae81ff">199.9</span>     <span style="color:#75715e"># Only update price field</span>
+</span></span><span style="display:flex;"><span>}]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>result <span style="color:#f92672">=</span> client<span style="color:#f92672">.</span>upsert(
+</span></span><span style="display:flex;"><span>    collection_name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;articles&#34;</span>,
+</span></span><span style="display:flex;"><span>    data<span style="color:#f92672">=</span>partial_data,
+</span></span><span style="display:flex;"><span>    upsert_param<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#34;partial_update&#34;</span>: <span style="color:#66d9ef">True</span>}  <span style="color:#75715e"># Enable merge mode</span>
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><h3 id="34-upsert-best-practices">3.4 Upsert Best Practices
+</h3><h4 id="suitable-scenarios">Suitable Scenarios
+</h4><ul>
+<li>✅ Need to update records without knowing existence</li>
+<li>✅ Batch data import avoiding duplicate checks</li>
+<li>✅ Real-time data synchronization scenarios</li>
+</ul>
+<h4 id="important-notes">Important Notes
+</h4><ul>
+<li>❌ Merge mode doesn&rsquo;t support STRUCT type field updates</li>
+<li>❌ Primary key field must be provided to locate records</li>
+<li>❌ Vector fields must be completely provided in overwrite mode</li>
+</ul>
+<h2 id="iv-data-deletion-operations-delete">IV. Data Deletion Operations (Delete)
+</h2><h3 id="41-basic-deletion-syntax">4.1 Basic Deletion Syntax
+</h3><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># Delete by primary key</span>
+</span></span><span style="display:flex;"><span>result <span style="color:#f92672">=</span> client<span style="color:#f92672">.</span>delete(
+</span></span><span style="display:flex;"><span>    collection_name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;articles&#34;</span>,
+</span></span><span style="display:flex;"><span>    filter<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;id == 1&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Batch delete multiple IDs</span>
+</span></span><span style="display:flex;"><span>result <span style="color:#f92672">=</span> client<span style="color:#f92672">.</span>delete(
+</span></span><span style="display:flex;"><span>    collection_name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;articles&#34;</span>,
+</span></span><span style="display:flex;"><span>    filter<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;id in [1, 2, 3, 4, 5]&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><h3 id="42-conditional-deletion">4.2 Conditional Deletion
+</h3><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># Delete based on business conditions</span>
+</span></span><span style="display:flex;"><span>client<span style="color:#f92672">.</span>delete(
+</span></span><span style="display:flex;"><span>    collection_name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;articles&#34;</span>,
+</span></span><span style="display:flex;"><span>    filter<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;price &lt; 10.0&#34;</span>  <span style="color:#75715e"># Delete products with price less than 10</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Combined condition deletion</span>
+</span></span><span style="display:flex;"><span>client<span style="color:#f92672">.</span>delete(
+</span></span><span style="display:flex;"><span>    collection_name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;articles&#34;</span>,
+</span></span><span style="display:flex;"><span>    filter<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;category == &#39;expired&#39; and created_time &lt; &#39;2024-01-01&#39;&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><h3 id="43-deletion-expression-syntax">4.3 Deletion Expression Syntax
+</h3><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>Operator</th>
+          <th>Example</th>
+          <th>Description</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Equal</td>
+          <td><code>id == 1</code></td>
+          <td>Exact match</td>
+      </tr>
+      <tr>
+          <td>Not equal</td>
+          <td><code>status != 'active'</code></td>
+          <td>Exclude match</td>
+      </tr>
+      <tr>
+          <td>Greater/Less than</td>
+          <td><code>score &gt; 3.0</code></td>
+          <td>Numeric comparison</td>
+      </tr>
+      <tr>
+          <td>Contains</td>
+          <td><code>tags contains 'AI'</code></td>
+          <td>Array contains</td>
+      </tr>
+      <tr>
+          <td>Range</td>
+          <td><code>price &gt;= 10.0 and price &lt;= 100.0</code></td>
+          <td>Range query</td>
+      </tr>
+  </tbody>
+</table></div>
+<h3 id="44-deletion-operation-considerations">4.4 Deletion Operation Considerations
+</h3><h4 id="performance-considerations">Performance Considerations
+</h4><ul>
+<li>Deletion operations are mark deletions, actual cleanup is asynchronous</li>
+<li>Large batch deletions should be executed in batches</li>
+<li>Index may need rebuilding after deletion</li>
+</ul>
+<h4 id="security-recommendations">Security Recommendations
+</h4><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># Query to confirm impact scope before deletion</span>
+</span></span><span style="display:flex;"><span>entities_to_delete <span style="color:#f92672">=</span> client<span style="color:#f92672">.</span>query(
+</span></span><span style="display:flex;"><span>    collection_name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;articles&#34;</span>,
+</span></span><span style="display:flex;"><span>    filter<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;score &lt; 3.0&#34;</span>,
+</span></span><span style="display:flex;"><span>    output_fields<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;id&#34;</span>, <span style="color:#e6db74">&#34;title&#34;</span>]
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;Will delete </span><span style="color:#e6db74">{</span>len(entities_to_delete)<span style="color:#e6db74">}</span><span style="color:#e6db74"> records:&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> entity <span style="color:#f92672">in</span> entities_to_delete:
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;  - ID: </span><span style="color:#e6db74">{</span>entity[<span style="color:#e6db74">&#39;id&#39;</span>]<span style="color:#e6db74">}</span><span style="color:#e6db74">, Title: </span><span style="color:#e6db74">{</span>entity[<span style="color:#e6db74">&#39;title&#39;</span>]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Confirm before executing deletion</span>
+</span></span><span style="display:flex;"><span>confirm <span style="color:#f92672">=</span> input(<span style="color:#e6db74">&#34;Confirm deleting the above records? (y/N): &#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> confirm<span style="color:#f92672">.</span>lower() <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;y&#39;</span>:
+</span></span><span style="display:flex;"><span>    client<span style="color:#f92672">.</span>delete(collection_name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;articles&#34;</span>, filter<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;score &lt; 3.0&#34;</span>)
+</span></span></code></pre></div><h2 id="v-operation-comparison-summary">V. Operation Comparison Summary
+</h2><h3 id="51-core-method-comparison">5.1 Core Method Comparison
+</h3><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>Operation</th>
+          <th>Method</th>
+          <th>When Primary Key Exists</th>
+          <th>When Primary Key Doesn&rsquo;t Exist</th>
+          <th>Data Requirements</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Insert</td>
+          <td><code>insert()</code></td>
+          <td>Fail/Duplicate</td>
+          <td>Success</td>
+          <td>Must include all required fields</td>
+      </tr>
+      <tr>
+          <td>Overwrite Update</td>
+          <td><code>upsert(partial_update=False)</code></td>
+          <td>Complete overwrite</td>
+          <td>Success</td>
+          <td>Must include all fields</td>
+      </tr>
+      <tr>
+          <td>Merge Update</td>
+          <td><code>upsert(partial_update=True)</code></td>
+          <td>Partial update</td>
+          <td>Success</td>
+          <td>Only provide fields to update</td>
+      </tr>
+      <tr>
+          <td>Delete</td>
+          <td><code>delete()</code></td>
+          <td>Success</td>
+          <td>No operation</td>
+          <td>Only provide filter conditions</td>
+      </tr>
+  </tbody>
+</table></div>
+<h3 id="52-usage-scenario-recommendations">5.2 Usage Scenario Recommendations
+</h3><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>Scenario</th>
+          <th>Recommended Method</th>
+          <th>Reason</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Initial data import</td>
+          <td><code>insert()</code></td>
+          <td>Ensure data integrity</td>
+      </tr>
+      <tr>
+          <td>Data update</td>
+          <td><code>upsert()</code></td>
+          <td>Automatically handle existence checking</td>
+      </tr>
+      <tr>
+          <td>Batch synchronization</td>
+          <td><code>upsert()</code></td>
+          <td>Avoid complexity of query-then-update</td>
+      </tr>
+      <tr>
+          <td>Data cleanup</td>
+          <td><code>delete()</code></td>
+          <td>Precise control of deletion scope</td>
+      </tr>
+      <tr>
+          <td>Real-time updates</td>
+          <td><code>upsert(partial_update=True)</code></td>
+          <td>Only update changed fields, improve efficiency</td>
+      </tr>
+  </tbody>
+</table></div>
+<h2 id="vi-complete-example-article-management-system">VI. Complete Example: Article Management System
+</h2><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> random
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> pymilvus <span style="color:#f92672">import</span> MilvusClient
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ArticleManager</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">__init__</span>(self, uri<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;http://localhost:19530&#34;</span>):
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>client <span style="color:#f92672">=</span> MilvusClient(uri<span style="color:#f92672">=</span>uri)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>collection_name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;articles&#34;</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">create_article</span>(self, article_data):
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;&#34;&#34;Create new article&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Generate vector (example)</span>
+</span></span><span style="display:flex;"><span>        embedding <span style="color:#f92672">=</span> [random<span style="color:#f92672">.</span>random() <span style="color:#66d9ef">for</span> _ <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">128</span>)]
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        data <span style="color:#f92672">=</span> [{
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;id&#34;</span>: article_data<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;id&#34;</span>),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;title&#34;</span>: article_data[<span style="color:#e6db74">&#34;title&#34;</span>],
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;content&#34;</span>: article_data[<span style="color:#e6db74">&#34;content&#34;</span>],
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;author&#34;</span>: article_data<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;author&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;category&#34;</span>: article_data<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;category&#34;</span>, <span style="color:#e6db74">&#34;default&#34;</span>),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;tags&#34;</span>: article_data<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;tags&#34;</span>, []),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;created_time&#34;</span>: article_data<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;created_time&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;embedding&#34;</span>: embedding
+</span></span><span style="display:flex;"><span>        }]
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        result <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>client<span style="color:#f92672">.</span>insert(
+</span></span><span style="display:flex;"><span>            collection_name<span style="color:#f92672">=</span>self<span style="color:#f92672">.</span>collection_name,
+</span></span><span style="display:flex;"><span>            data<span style="color:#f92672">=</span>data
+</span></span><span style="display:flex;"><span>        )
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> result<span style="color:#f92672">.</span>ids[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">update_article</span>(self, article_id, update_fields):
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;&#34;&#34;Update article (merge mode)&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>        update_data <span style="color:#f92672">=</span> [{<span style="color:#e6db74">&#34;id&#34;</span>: article_id, <span style="color:#f92672">**</span>update_fields}]
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        result <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>client<span style="color:#f92672">.</span>upsert(
+</span></span><span style="display:flex;"><span>            collection_name<span style="color:#f92672">=</span>self<span style="color:#f92672">.</span>collection_name,
+</span></span><span style="display:flex;"><span>            data<span style="color:#f92672">=</span>update_data,
+</span></span><span style="display:flex;"><span>            upsert_param<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#34;partial_update&#34;</span>: <span style="color:#66d9ef">True</span>}
+</span></span><span style="display:flex;"><span>        )
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> result<span style="color:#f92672">.</span>upsert_count
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">delete_article</span>(self, article_id):
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;&#34;&#34;Delete article&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>        result <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>client<span style="color:#f92672">.</span>delete(
+</span></span><span style="display:flex;"><span>            collection_name<span style="color:#f92672">=</span>self<span style="color:#f92672">.</span>collection_name,
+</span></span><span style="display:flex;"><span>            filter<span style="color:#f92672">=</span><span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;id == </span><span style="color:#e6db74">{</span>article_id<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>        )
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> result<span style="color:#f92672">.</span>delete_count
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">batch_import_articles</span>(self, articles_data):
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;&#34;&#34;Batch import articles&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>        batch_size <span style="color:#f92672">=</span> <span style="color:#ae81ff">100</span>
+</span></span><span style="display:flex;"><span>        total_imported <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">0</span>, len(articles_data), batch_size):
+</span></span><span style="display:flex;"><span>            batch <span style="color:#f92672">=</span> articles_data[i:i <span style="color:#f92672">+</span> batch_size]
+</span></span><span style="display:flex;"><span>            formatted_batch <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> article <span style="color:#f92672">in</span> batch:
+</span></span><span style="display:flex;"><span>                embedding <span style="color:#f92672">=</span> [random<span style="color:#f92672">.</span>random() <span style="color:#66d9ef">for</span> _ <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">128</span>)]
+</span></span><span style="display:flex;"><span>                formatted_batch<span style="color:#f92672">.</span>append({
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#34;id&#34;</span>: article<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;id&#34;</span>),
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#34;title&#34;</span>: article[<span style="color:#e6db74">&#34;title&#34;</span>],
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#34;content&#34;</span>: article[<span style="color:#e6db74">&#34;content&#34;</span>],
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#34;author&#34;</span>: article<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;author&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>),
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#34;embedding&#34;</span>: embedding
+</span></span><span style="display:flex;"><span>                })
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            result <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>client<span style="color:#f92672">.</span>insert(
+</span></span><span style="display:flex;"><span>                collection_name<span style="color:#f92672">=</span>self<span style="color:#f92672">.</span>collection_name,
+</span></span><span style="display:flex;"><span>                data<span style="color:#f92672">=</span>formatted_batch
+</span></span><span style="display:flex;"><span>            )
+</span></span><span style="display:flex;"><span>            total_imported <span style="color:#f92672">+=</span> result<span style="color:#f92672">.</span>insert_count
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> total_imported
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Usage example</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
+</span></span><span style="display:flex;"><span>    manager <span style="color:#f92672">=</span> ArticleManager()
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Create article</span>
+</span></span><span style="display:flex;"><span>    article_id <span style="color:#f92672">=</span> manager<span style="color:#f92672">.</span>create_article({
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;title&#34;</span>: <span style="color:#e6db74">&#34;Milvus Getting Started Guide&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;content&#34;</span>: <span style="color:#e6db74">&#34;This is a detailed tutorial about using Milvus...&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;author&#34;</span>: <span style="color:#e6db74">&#34;Zhang San&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;category&#34;</span>: <span style="color:#e6db74">&#34;Technical Tutorial&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;tags&#34;</span>: [<span style="color:#e6db74">&#34;Milvus&#34;</span>, <span style="color:#e6db74">&#34;Vector Database&#34;</span>, <span style="color:#e6db74">&#34;Tutorial&#34;</span>]
+</span></span><span style="display:flex;"><span>    })
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Update article</span>
+</span></span><span style="display:flex;"><span>    manager<span style="color:#f92672">.</span>update_article(article_id, {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;title&#34;</span>: <span style="color:#e6db74">&#34;Milvus Advanced Guide&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;category&#34;</span>: <span style="color:#e6db74">&#34;Advanced Tutorial&#34;</span>
+</span></span><span style="display:flex;"><span>    })
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Delete article</span>
+</span></span><span style="display:flex;"><span>    manager<span style="color:#f92672">.</span>delete_article(article_id)
+</span></span></code></pre></div><h2 id="vii-frequently-asked-questions">VII. Frequently Asked Questions
+</h2><h3 id="q1-whats-the-difference-between-upsert-and-insert">Q1: What&rsquo;s the difference between Upsert and Insert?
+</h3><p><strong>A</strong>: Insert can only insert new data and will error if the primary key already exists; Upsert can intelligently handle both cases - update if exists, insert if not.</p>
+<h3 id="q2-are-deletion-operations-effective-immediately">Q2: Are deletion operations effective immediately?
+</h3><p><strong>A</strong>: Deletion operations are mark deletions, data is cleaned up asynchronously in the background, so statistics may have temporary delays after deletion.</p>
+<h3 id="q3-how-to-handle-large-scale-data-operations">Q3: How to handle large-scale data operations?
+</h3><p><strong>A</strong>: It&rsquo;s recommended to use batch operations, break large tasks into smaller batches, and add appropriate delays to avoid system overload.</p>
+<h3 id="q4-what-are-the-limitations-of-partial-update-mode">Q4: What are the limitations of Partial Update mode?
+</h3><p><strong>A</strong>: Doesn&rsquo;t support updating STRUCT type fields; for complex nested structures, it&rsquo;s recommended to use overwrite mode.</p>
+<h3 id="q5-how-to-ensure-atomicity-of-data-operations">Q5: How to ensure atomicity of data operations?
+</h3><p><strong>A</strong>: Milvus doesn&rsquo;t support traditional transactions; it&rsquo;s recommended to implement idempotent operations and retry mechanisms at the application layer.</p>
+<hr>
+<p><em>This document will be continuously updated, welcome suggestions for improvements</em></p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/en/tags/milvus/">Milvus</a>
+        
+            <a href="/en/tags/crud/">CRUD</a>
+        
+            <a href="/en/tags/data-operations/">Data Operations</a>
+        
+    </section>
+
+
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">Related content</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="">
+    <a href="/en/stu/milvus-index-explained/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Milvus Index Detailed Guide - Vector Search Performance Optimization</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/en/stu/milvus-collection-operations/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Milvus Collection Operations Detailed Guide</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/en/stu/milvus-stu-schema/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Milvus Schema Detailed Guide - Field Types and Data Modeling</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/en/stu/milvus-install-guide/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Complete Guide to Installing Milvus Standalone Mode and Common Problem Solutions</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    <script
+    src="https://giscus.app/client.js"
+    data-repo="zg-dd/zg-dd.github.io"
+    data-repo-id="R_kgDOQwB7tw"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOQwB7t84C0WGD"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="bottom"
+    data-theme="preferred_color_scheme"
+    data-lang="zh-CN"
+    data-loading=""
+    crossorigin="anonymous"
+    async
+></script>
+<script>
+    function setGiscusTheme(theme) {
+        let giscus = document.querySelector("iframe.giscus-frame");
+        if (giscus) {
+            giscus.contentWindow.postMessage(
+                {
+                    giscus: {
+                        setConfig: {
+                            theme: theme,
+                        },
+                    },
+                },
+                "https://giscus.app"
+            );
+        }
+    }
+
+    (function () {
+        addEventListener("message", (e) => {
+            if (event.origin !== "https://giscus.app") return;
+            handler();
+        });
+        window.addEventListener("onColorSchemeChange", handler);
+
+        function handler() {
+            if (document.documentElement.dataset.scheme === "light") {
+                setGiscusTheme('preferred_color_scheme');
+            } else {
+                setGiscusTheme('preferred_color_scheme');
+            }
+        }
+    })();
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2026 小巷 Blog
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.33.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+    
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.45aad63e0378c1185109134874d406d25af802b2faa021ec5fd0dfa8bbfa4d2a.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>
