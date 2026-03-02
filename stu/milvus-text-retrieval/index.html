@@ -1,0 +1,411 @@
+<!doctype html><html lang=zh-cn dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content=" 覆盖内容：LIKE、TEXT_MATCH、PHRASE_MATCH、全文检索（BM25）四种文本匹配方法 官方文档：Text Match | Full Text Search\n一、文本检索概述\r1.1 文本检索 vs 向量搜索\r对比项 文本检索 向量搜索 匹配方式 基于文本内容的字符/词汇匹配 基于向量相似度计算 查询输入 文本字符串或关键词 向量（embedding） 是否涉及向量计算 否（除全文检索可选） 是 返回结果排序 按主键或相关性评分 按相似度从高到低 典型场景 关键词搜索、精确匹配 语义搜索、推荐系统 1.2 为什么需要全文检索？向量搜索不够吗？\r通俗解释：稠密向量 vs 稀疏向量\n"><title>Milvus文本检索四种方法对比与实践</title><link rel=canonical href=https://zg-dd.github.io/stu/milvus-text-retrieval/><link rel=stylesheet href=/scss/style.min.ff560f1cad7a040e336f2dd6880b9ee1ad344d6e3d8f5411e5a1aaa8b23bbdd0.css><meta property='og:title' content="Milvus文本检索四种方法对比与实践"><meta property='og:description' content=" 覆盖内容：LIKE、TEXT_MATCH、PHRASE_MATCH、全文检索（BM25）四种文本匹配方法 官方文档：Text Match | Full Text Search\n一、文本检索概述\r1.1 文本检索 vs 向量搜索\r对比项 文本检索 向量搜索 匹配方式 基于文本内容的字符/词汇匹配 基于向量相似度计算 查询输入 文本字符串或关键词 向量（embedding） 是否涉及向量计算 否（除全文检索可选） 是 返回结果排序 按主键或相关性评分 按相似度从高到低 典型场景 关键词搜索、精确匹配 语义搜索、推荐系统 1.2 为什么需要全文检索？向量搜索不够吗？\r通俗解释：稠密向量 vs 稀疏向量\n"><meta property='og:url' content='https://zg-dd.github.io/stu/milvus-text-retrieval/'><meta property='og:site_name' content='小巷的随笔'><meta property='og:type' content='article'><meta property='article:section' content='Stu'><meta property='article:tag' content='Milvus'><meta property='article:tag' content='Milvus查询'><meta property='article:published_time' content='2026-03-02T18:11:46+08:00'><meta property='article:modified_time' content='2026-03-02T18:11:46+08:00'><meta name=twitter:title content="Milvus文本检索四种方法对比与实践"><meta name=twitter:description content=" 覆盖内容：LIKE、TEXT_MATCH、PHRASE_MATCH、全文检索（BM25）四种文本匹配方法 官方文档：Text Match | Full Text Search\n一、文本检索概述\r1.1 文本检索 vs 向量搜索\r对比项 文本检索 向量搜索 匹配方式 基于文本内容的字符/词汇匹配 基于向量相似度计算 查询输入 文本字符串或关键词 向量（embedding） 是否涉及向量计算 否（除全文检索可选） 是 返回结果排序 按主键或相关性评分 按相似度从高到低 典型场景 关键词搜索、精确匹配 语义搜索、推荐系统 1.2 为什么需要全文检索？向量搜索不够吗？\r通俗解释：稠密向量 vs 稀疏向量\n"></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/avatar_hu_a0cc1cf57968b27d.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a><span class=emoji>🌱</span></figure><div class=site-meta><h1 class=site-name><a href=/>小巷的随笔</a></h1><h2 class=site-description>记录，不是为了证明自己；而是把“解决问题 → 思考 → 沉淀”形成习惯。</h2></div></header><ol class=menu id=main-menu><li class=current><a href=/stu/><span>学习笔记</span></a></li><li><a href=/blog/><span>随笔思考</span></a></li><li><a href=/life/><span>生活记录</span></a></li><li><a href=/categories/><span>分类</span></a></li><li><a href=/tags/><span>标签</span></a></li><li class=menu-bottom-section><ol class=menu><li id=i18n-switch><svg class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5h7"/><path d="M9 3v2c0 4.418-2.239 8-5 8"/><path d="M5 9c-.003 2.144 2.952 3.908 6.7 4"/><path d="M12 20l4-9 4 9"/><path d="M19.1 18h-6.2"/></svg>
+<select name=language title=language onchange="window.location.href=this.selectedOptions[0].value"><option value=https://zg-dd.github.io/ selected>简体中文</option><option value=https://zg-dd.github.io/en/>English</option></select></li><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav id=TableOfContents><ul><li><a href=#一文本检索概述>一、文本检索概述</a><ul><li><a href=#11-文本检索-vs-向量搜索>1.1 文本检索 vs 向量搜索</a></li><li><a href=#12-为什么需要全文检索向量搜索不够吗>1.2 为什么需要全文检索？向量搜索不够吗？</a></li><li><a href=#13-四种文本检索方法对比>1.3 四种文本检索方法对比</a></li></ul></li><li><a href=#二like-操作符字符模式匹配>二、LIKE 操作符：字符模式匹配</a><ul><li><a href=#21-核心特点>2.1 核心特点</a></li><li><a href=#22-通配符说明>2.2 通配符说明</a></li><li><a href=#23-代码示例>2.3 代码示例</a></li><li><a href=#24-适用场景>2.4 适用场景</a></li><li><a href=#25-局限性>2.5 局限性</a></li></ul></li><li><a href=#三text_match关键词匹配>三、TEXT_MATCH：关键词匹配</a><ul><li><a href=#31-核心特点>3.1 核心特点</a></li><li><a href=#32-基础用法>3.2 基础用法</a></li><li><a href=#33-逻辑组合>3.3 逻辑组合</a></li><li><a href=#34-适用场景>3.4 适用场景</a></li></ul></li><li><a href=#四phrase_match短语匹配>四、PHRASE_MATCH：短语匹配</a><ul><li><a href=#41-核心特点>4.1 核心特点</a></li><li><a href=#42-slop-参数详解>4.2 slop 参数详解</a></li><li><a href=#43-代码示例>4.3 代码示例</a></li><li><a href=#44-适用场景>4.4 适用场景</a></li></ul></li><li><a href=#五全文检索bm25>五、全文检索（BM25）</a><ul><li><a href=#51-核心特点>5.1 核心特点</a></li><li><a href=#52-bm25-算法简介>5.2 BM25 算法简介</a></li><li><a href=#53-你需要做什么milvus-会做什么>5.3 你需要做什么？Milvus 会做什么？</a></li><li><a href=#54-完整配置流程>5.4 完整配置流程</a></li><li><a href=#55-完整示例>5.5 完整示例</a></li><li><a href=#56-适用场景>5.6 适用场景</a></li><li><a href=#57-与-text_match-的区别>5.7 与 TEXT_MATCH 的区别</a></li></ul></li><li><a href=#六方法选择指南>六、方法选择指南</a><ul><li><a href=#61-决策树>6.1 决策树</a></li><li><a href=#62-场景对照表>6.2 场景对照表</a></li></ul></li><li><a href=#七实践建议>七、实践建议</a><ul><li><a href=#71-性能优化>7.1 性能优化</a></li><li><a href=#72-字段配置>7.2 字段配置</a></li><li><a href=#73-常见组合模式>7.3 常见组合模式</a></li></ul></li><li><a href=#八常见问题>八、常见问题</a><ul><li><a href=#81-text_match-报错>8.1 TEXT_MATCH 报错</a></li><li><a href=#82-like-匹配不到中文>8.2 LIKE 匹配不到中文</a></li><li><a href=#83-phrase_match-匹配不到结果>8.3 PHRASE_MATCH 匹配不到结果</a></li></ul></li><li><a href=#九本节知识点总结>九、本节知识点总结</a></li><li><a href=#十与其他查询方法的关系>十、与其他查询方法的关系</a></li></ul></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93/>向量数据库</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/stu/milvus-text-retrieval/>Milvus文本检索四种方法对比与实践</a></h2></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published datetime=2026-03-02T18:11:46+08:00>Mar 02, 2026</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>阅读时长: 11 分钟</time></div></footer><footer class=article-translations><svg class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 5h7"/><path d="M9 3v2c0 4.418-2.239 8-5 8"/><path d="M5 9c-.003 2.144 2.952 3.908 6.7 4"/><path d="M12 20l4-9 4 9"/><path d="M19.1 18h-6.2"/></svg><div><a href=https://zg-dd.github.io/en/stu/milvus-text-retrieval/ class=link>English</a></div></footer></div></header><section class=article-content><blockquote><p>覆盖内容：LIKE、TEXT_MATCH、PHRASE_MATCH、全文检索（BM25）四种文本匹配方法
+官方文档：<a class=link href=https://milvus.io/docs/keyword-match.md target=_blank rel=noopener>Text Match</a> | <a class=link href=https://milvus.io/docs/full-text-search.md target=_blank rel=noopener>Full Text Search</a></p></blockquote><hr><h2 id=一文本检索概述>一、文本检索概述</h2><h3 id=11-文本检索-vs-向量搜索>1.1 文本检索 vs 向量搜索</h3><div class=table-wrapper><table><thead><tr><th>对比项</th><th>文本检索</th><th>向量搜索</th></tr></thead><tbody><tr><td>匹配方式</td><td>基于文本内容的字符/词汇匹配</td><td>基于向量相似度计算</td></tr><tr><td>查询输入</td><td>文本字符串或关键词</td><td>向量（embedding）</td></tr><tr><td>是否涉及向量计算</td><td>否（除全文检索可选）</td><td>是</td></tr><tr><td>返回结果排序</td><td>按主键或相关性评分</td><td>按相似度从高到低</td></tr><tr><td>典型场景</td><td>关键词搜索、精确匹配</td><td>语义搜索、推荐系统</td></tr></tbody></table></div><h3 id=12-为什么需要全文检索向量搜索不够吗>1.2 为什么需要全文检索？向量搜索不够吗？</h3><p><strong>通俗解释：稠密向量 vs 稀疏向量</strong></p><p>你的理解是对的：<strong>全文检索（BM25）确实使用稀疏向量</strong>。让我们用例子说明两者的区别：</p><h4 id=稠密向量搜索dense-vector-search>稠密向量搜索（Dense Vector Search）</h4><pre tabindex=0><code>使用：BERT、OpenAI embeddings 等模型生成的向量
+特点：每个维度都有值，向量&#34;稠密&#34;
+
+例子：搜索 &#34;苹果手机&#34;
+✅ 能匹配到：&#34;iPhone 13&#34;、&#34;iOS 设备&#34;（理解语义）
+❌ 但可能匹配到：&#34;Python 3.11 教程&#34;（如果搜索 &#34;Python 3.11&#34;）
+   因为它理解&#34;编程语言&#34;的语义，但对版本号不敏感
+</code></pre><p><strong>优势</strong>：理解语义，&ldquo;苹果手机&rdquo; = &ldquo;iPhone&rdquo;
+<strong>劣势</strong>：对精确关键词（如版本号、型号）不敏感</p><h4 id=稀疏向量搜索sparse-vector-search--bm25>稀疏向量搜索（Sparse Vector Search / BM25）</h4><pre tabindex=0><code>使用：基于词频统计的 BM25 算法
+特点：只有出现的词对应的维度有值，向量&#34;稀疏&#34;
+
+例子：搜索 &#34;Python 3.11 新特性&#34;
+✅ 精确匹配包含 &#34;3.11&#34; 的文档
+✅ 对关键词 &#34;Python&#34;、&#34;3.11&#34;、&#34;新特性&#34; 精确匹配
+❌ 但不理解 &#34;iPhone&#34; 和 &#34;苹果手机&#34; 是同一个意思
+</code></pre><p><strong>优势</strong>：精确关键词匹配，对版本号、型号、专有名词敏感
+<strong>劣势</strong>：不理解语义，&ldquo;苹果手机&rdquo; ≠ &ldquo;iPhone&rdquo;</p><h4 id=实际应用场景对比>实际应用场景对比</h4><div class=table-wrapper><table><thead><tr><th>场景</th><th>推荐方法</th><th>原因</th></tr></thead><tbody><tr><td>搜索 &ldquo;机器学习入门教程&rdquo;</td><td>稠密向量</td><td>需要理解"入门"、&ldquo;教程"的语义</td></tr><tr><td>搜索 &ldquo;Python 3.11.5 bug&rdquo;</td><td>稀疏向量（BM25）</td><td>版本号必须精确匹配</td></tr><tr><td>搜索 &ldquo;iPhone 14 Pro Max&rdquo;</td><td>稀疏向量（BM25）</td><td>型号必须精确</td></tr><tr><td>搜索 &ldquo;如何提高代码质量&rdquo;</td><td>稠密向量</td><td>需要理解意图，匹配相关内容</td></tr><tr><td>搜索 &ldquo;ISBN: 978-7-115-12345-6&rdquo;</td><td>稀疏向量（BM25）</td><td>精确匹配编号</td></tr></tbody></table></div><h4 id=为什么-milvus-同时支持两种>为什么 Milvus 同时支持两种？</h4><p><strong>最佳实践：混合搜索（Hybrid Search）</strong></p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># 同时使用稠密向量和稀疏向量</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 稠密向量：理解语义</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 稀疏向量：精确匹配关键词</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 结果融合：既有语义理解，又有关键词精确度</span>
+</span></span></code></pre></div><p><strong>典型 RAG 应用场景：</strong></p><ul><li>用户问：&ldquo;Python 3.11 有哪些新特性？&rdquo;</li><li>稠密向量：找到语义相关的"Python 新版本介绍"文档</li><li>稀疏向量：精确匹配包含 &ldquo;3.11&rdquo; 的段落</li><li>融合结果：既相关又精确</li></ul><p><strong>总结：</strong></p><ul><li>全文检索（BM25）不是替代向量搜索，而是<strong>互补</strong></li><li>稠密向量擅长语义理解，稀疏向量擅长精确匹配</li><li>实际应用中常常<strong>混合使用</strong>，发挥各自优势</li></ul><h3 id=13-四种文本检索方法对比>1.3 四种文本检索方法对比</h3><div class=table-wrapper><table><thead><tr><th>方法</th><th>LIKE</th><th>TEXT_MATCH</th><th>PHRASE_MATCH</th><th>全文检索(BM25)</th></tr></thead><tbody><tr><td><strong>核心特点</strong></td><td>字符模式匹配</td><td>关键词精确匹配</td><td>顺序敏感短语匹配</td><td>相关性搜索</td></tr><tr><td><strong>匹配逻辑</strong></td><td>字符级匹配</td><td>OR逻辑（默认）</td><td>严格顺序</td><td>BM25评分排序</td></tr><tr><td><strong>分词处理</strong></td><td>无分词</td><td>智能分词</td><td>智能分词</td><td>智能分词</td></tr><tr><td><strong>评分机制</strong></td><td>无评分</td><td>无评分</td><td>无评分</td><td>BM25评分</td></tr><tr><td><strong>配置复杂度</strong></td><td>低</td><td>中</td><td>中</td><td>高</td></tr><tr><td><strong>性能</strong></td><td>最快</td><td>快</td><td>中</td><td>中</td></tr><tr><td><strong>字段要求</strong></td><td>无特殊要求</td><td>需要 <code>enable_match=True</code></td><td>需要 <code>enable_match=True</code></td><td>需要特殊配置</td></tr></tbody></table></div><hr><h2 id=二like-操作符字符模式匹配>二、LIKE 操作符：字符模式匹配</h2><h3 id=21-核心特点>2.1 核心特点</h3><ul><li><strong>最简单的文本匹配方式</strong>：基于字符级的模式匹配</li><li><strong>无需分词处理</strong>：直接进行字符串匹配</li><li><strong>性能最好</strong>：不涉及复杂的文本分析</li><li><strong>无特殊配置要求</strong>：任何 VARCHAR 字段都支持</li></ul><h3 id=22-通配符说明>2.2 通配符说明</h3><div class=table-wrapper><table><thead><tr><th>通配符</th><th>含义</th><th>示例</th><th>匹配结果</th></tr></thead><tbody><tr><td><code>%</code></td><td>匹配任意长度字符（包括0个）</td><td><code>"Python%"</code></td><td>Python、Python编程、Python3</td></tr><tr><td><code>%</code></td><td>匹配任意长度字符</td><td><code>"%编程"</code></td><td>Python编程、Java编程</td></tr><tr><td><code>%</code></td><td>匹配任意长度字符</td><td><code>"%机器学习%"</code></td><td>深度学习与机器学习、机器学习实战</td></tr></tbody></table></div><h3 id=23-代码示例>2.3 代码示例</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#f92672>from</span> pymilvus <span style=color:#f92672>import</span> MilvusClient
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>client <span style=color:#f92672>=</span> MilvusClient(uri<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;http://localhost:19530&#34;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 1. 前缀匹配</span>
+</span></span><span style=display:flex><span>result <span style=color:#f92672>=</span> client<span style=color:#f92672>.</span>query(
+</span></span><span style=display:flex><span>    collection_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;book_collection&#34;</span>,
+</span></span><span style=display:flex><span>    filter<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;title LIKE &#34;Python%&#34;&#39;</span>,
+</span></span><span style=display:flex><span>    output_fields<span style=color:#f92672>=</span>[<span style=color:#e6db74>&#34;book_id&#34;</span>, <span style=color:#e6db74>&#34;title&#34;</span>],
+</span></span><span style=display:flex><span>    limit<span style=color:#f92672>=</span><span style=color:#ae81ff>5</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 2. 后缀匹配</span>
+</span></span><span style=display:flex><span>result <span style=color:#f92672>=</span> client<span style=color:#f92672>.</span>query(
+</span></span><span style=display:flex><span>    collection_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;book_collection&#34;</span>,
+</span></span><span style=display:flex><span>    filter<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;title LIKE &#34;%编程&#34;&#39;</span>,
+</span></span><span style=display:flex><span>    output_fields<span style=color:#f92672>=</span>[<span style=color:#e6db74>&#34;book_id&#34;</span>, <span style=color:#e6db74>&#34;title&#34;</span>],
+</span></span><span style=display:flex><span>    limit<span style=color:#f92672>=</span><span style=color:#ae81ff>5</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 3. 中缀匹配（包含）</span>
+</span></span><span style=display:flex><span>result <span style=color:#f92672>=</span> client<span style=color:#f92672>.</span>query(
+</span></span><span style=display:flex><span>    collection_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;book_collection&#34;</span>,
+</span></span><span style=display:flex><span>    filter<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;title LIKE &#34;%机器学习%&#34;&#39;</span>,
+</span></span><span style=display:flex><span>    output_fields<span style=color:#f92672>=</span>[<span style=color:#e6db74>&#34;book_id&#34;</span>, <span style=color:#e6db74>&#34;title&#34;</span>],
+</span></span><span style=display:flex><span>    limit<span style=color:#f92672>=</span><span style=color:#ae81ff>5</span>
+</span></span><span style=display:flex><span>)
+</span></span></code></pre></div><h3 id=24-适用场景>2.4 适用场景</h3><ul><li>简单的前缀、后缀、中缀匹配</li><li>不需要分词的精确字符串查找</li><li>对性能要求高的场景</li><li>英文单词或固定格式的匹配</li></ul><h3 id=25-局限性>2.5 局限性</h3><ul><li>不支持智能分词</li><li>无法处理同义词</li><li>对中文分词不友好</li><li>无相关性评分</li></ul><hr><h2 id=三text_match关键词匹配>三、TEXT_MATCH：关键词匹配</h2><h3 id=31-核心特点>3.1 核心特点</h3><ul><li><strong>智能分词</strong>：自动对查询文本进行分词处理</li><li><strong>OR 逻辑</strong>：默认使用 OR 逻辑匹配多个关键词</li><li><strong>支持逻辑组合</strong>：可与 AND、OR、NOT 组合使用</li><li><strong>需要字段配置</strong>：字段必须启用 <code>enable_match=True</code></li></ul><h3 id=32-基础用法>3.2 基础用法</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># 单关键词匹配</span>
+</span></span><span style=display:flex><span>result <span style=color:#f92672>=</span> client<span style=color:#f92672>.</span>query(
+</span></span><span style=display:flex><span>    collection_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;book_collection&#34;</span>,
+</span></span><span style=display:flex><span>    filter<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;TEXT_MATCH(title, &#39;Python&#39;)&#34;</span>,
+</span></span><span style=display:flex><span>    output_fields<span style=color:#f92672>=</span>[<span style=color:#e6db74>&#34;book_id&#34;</span>, <span style=color:#e6db74>&#34;title&#34;</span>],
+</span></span><span style=display:flex><span>    limit<span style=color:#f92672>=</span><span style=color:#ae81ff>5</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 多关键词匹配（OR逻辑）</span>
+</span></span><span style=display:flex><span>result <span style=color:#f92672>=</span> client<span style=color:#f92672>.</span>query(
+</span></span><span style=display:flex><span>    collection_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;book_collection&#34;</span>,
+</span></span><span style=display:flex><span>    filter<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;TEXT_MATCH(title, &#39;Python 机器学习&#39;)&#34;</span>,
+</span></span><span style=display:flex><span>    output_fields<span style=color:#f92672>=</span>[<span style=color:#e6db74>&#34;book_id&#34;</span>, <span style=color:#e6db74>&#34;title&#34;</span>],
+</span></span><span style=display:flex><span>    limit<span style=color:#f92672>=</span><span style=color:#ae81ff>5</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span><span style=color:#75715e># 匹配包含 &#34;Python&#34; 或 &#34;机器学习&#34; 的记录</span>
+</span></span></code></pre></div><h3 id=33-逻辑组合>3.3 逻辑组合</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># AND 逻辑：同时包含多个关键词</span>
+</span></span><span style=display:flex><span>result <span style=color:#f92672>=</span> client<span style=color:#f92672>.</span>query(
+</span></span><span style=display:flex><span>    collection_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;book_collection&#34;</span>,
+</span></span><span style=display:flex><span>    filter<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;TEXT_MATCH(title, &#39;Python&#39;) AND TEXT_MATCH(title, &#39;编程&#39;)&#34;</span>,
+</span></span><span style=display:flex><span>    output_fields<span style=color:#f92672>=</span>[<span style=color:#e6db74>&#34;book_id&#34;</span>, <span style=color:#e6db74>&#34;title&#34;</span>],
+</span></span><span style=display:flex><span>    limit<span style=color:#f92672>=</span><span style=color:#ae81ff>5</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># NOT 逻辑：排除特定关键词</span>
+</span></span><span style=display:flex><span>result <span style=color:#f92672>=</span> client<span style=color:#f92672>.</span>query(
+</span></span><span style=display:flex><span>    collection_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;book_collection&#34;</span>,
+</span></span><span style=display:flex><span>    filter<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;TEXT_MATCH(title, &#39;Python&#39;) AND NOT TEXT_MATCH(title, &#39;Web&#39;)&#34;</span>,
+</span></span><span style=display:flex><span>    output_fields<span style=color:#f92672>=</span>[<span style=color:#e6db74>&#34;book_id&#34;</span>, <span style=color:#e6db74>&#34;title&#34;</span>],
+</span></span><span style=display:flex><span>    limit<span style=color:#f92672>=</span><span style=color:#ae81ff>5</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 与标量过滤组合</span>
+</span></span><span style=display:flex><span>result <span style=color:#f92672>=</span> client<span style=color:#f92672>.</span>query(
+</span></span><span style=display:flex><span>    collection_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;book_collection&#34;</span>,
+</span></span><span style=display:flex><span>    filter<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;TEXT_MATCH(title, &#39;Python&#39;) AND rating &gt;= 4.5&#34;</span>,
+</span></span><span style=display:flex><span>    output_fields<span style=color:#f92672>=</span>[<span style=color:#e6db74>&#34;book_id&#34;</span>, <span style=color:#e6db74>&#34;title&#34;</span>, <span style=color:#e6db74>&#34;rating&#34;</span>],
+</span></span><span style=display:flex><span>    limit<span style=color:#f92672>=</span><span style=color:#ae81ff>5</span>
+</span></span><span style=display:flex><span>)
+</span></span></code></pre></div><h3 id=34-适用场景>3.4 适用场景</h3><ul><li>关键词检索</li><li>需要逻辑组合的复杂查询</li><li>中文分词场景</li><li>需要与标量过滤结合的查询</li></ul><hr><h2 id=四phrase_match短语匹配>四、PHRASE_MATCH：短语匹配</h2><h3 id=41-核心特点>4.1 核心特点</h3><ul><li><strong>顺序敏感</strong>：严格匹配词汇的顺序</li><li><strong>精确短语匹配</strong>：适合查找特定短语</li><li><strong>支持 slop 参数</strong>：允许词汇间的灵活性</li><li><strong>需要字段配置</strong>：字段必须启用 <code>enable_match=True</code></li></ul><h3 id=42-slop-参数详解>4.2 slop 参数详解</h3><div class=table-wrapper><table><thead><tr><th>slop 值</th><th>含义</th><th>示例查询</th><th>匹配结果</th></tr></thead><tbody><tr><td>0（默认）</td><td>完全匹配，词序和位置完全一致</td><td>&ldquo;machine learning&rdquo;</td><td>✓ &ldquo;machine learning&rdquo;✗ &ldquo;machine boosts learning&rdquo;</td></tr><tr><td>1</td><td>允许一个词的间隔或位置调整</td><td>&ldquo;machine learning&rdquo;</td><td>✓ &ldquo;machine learning&rdquo;✓ &ldquo;machine boosts learning&rdquo;</td></tr><tr><td>2</td><td>允许两个词的间隔或词序颠倒</td><td>&ldquo;machine learning&rdquo;</td><td>✓ &ldquo;learning machine&rdquo;✓ &ldquo;machine quickly boosts learning&rdquo;</td></tr></tbody></table></div><h3 id=43-代码示例>4.3 代码示例</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># 精确短语匹配（slop=0，默认）</span>
+</span></span><span style=display:flex><span>result <span style=color:#f92672>=</span> client<span style=color:#f92672>.</span>query(
+</span></span><span style=display:flex><span>    collection_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;book_collection&#34;</span>,
+</span></span><span style=display:flex><span>    filter<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;PHRASE_MATCH(title, &#39;Python编程&#39;)&#34;</span>,
+</span></span><span style=display:flex><span>    output_fields<span style=color:#f92672>=</span>[<span style=color:#e6db74>&#34;book_id&#34;</span>, <span style=color:#e6db74>&#34;title&#34;</span>],
+</span></span><span style=display:flex><span>    limit<span style=color:#f92672>=</span><span style=color:#ae81ff>5</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 带 slop 参数的模糊匹配</span>
+</span></span><span style=display:flex><span>result <span style=color:#f92672>=</span> client<span style=color:#f92672>.</span>query(
+</span></span><span style=display:flex><span>    collection_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;book_collection&#34;</span>,
+</span></span><span style=display:flex><span>    filter<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;PHRASE_MATCH(title, &#39;机器学习&#39;, 2)&#34;</span>,
+</span></span><span style=display:flex><span>    output_fields<span style=color:#f92672>=</span>[<span style=color:#e6db74>&#34;book_id&#34;</span>, <span style=color:#e6db74>&#34;title&#34;</span>],
+</span></span><span style=display:flex><span>    limit<span style=color:#f92672>=</span><span style=color:#ae81ff>5</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 与标量过滤组合</span>
+</span></span><span style=display:flex><span>result <span style=color:#f92672>=</span> client<span style=color:#f92672>.</span>query(
+</span></span><span style=display:flex><span>    collection_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;book_collection&#34;</span>,
+</span></span><span style=display:flex><span>    filter<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;PHRASE_MATCH(title, &#39;Python&#39;) AND is_available == True&#34;</span>,
+</span></span><span style=display:flex><span>    output_fields<span style=color:#f92672>=</span>[<span style=color:#e6db74>&#34;book_id&#34;</span>, <span style=color:#e6db74>&#34;title&#34;</span>, <span style=color:#e6db74>&#34;is_available&#34;</span>],
+</span></span><span style=display:flex><span>    limit<span style=color:#f92672>=</span><span style=color:#ae81ff>5</span>
+</span></span><span style=display:flex><span>)
+</span></span></code></pre></div><h3 id=44-适用场景>4.4 适用场景</h3><ul><li>需要精确短语匹配的场景</li><li>词序重要的查询（如专有名词、固定搭配）</li><li>需要控制词汇间距的模糊匹配</li><li>引用或特定表达的查找</li></ul><hr><h2 id=五全文检索bm25>五、全文检索（BM25）</h2><h3 id=51-核心特点>5.1 核心特点</h3><ul><li><strong>BM25 算法</strong>：基于概率检索模型的相关性评分</li><li><strong>自动向量化</strong>：文本自动转换为稀疏向量，无需手动生成</li><li><strong>相关性排序</strong>：返回结果按 BM25 评分排序</li><li><strong>适合 RAG 场景</strong>：特别适用于检索增强生成（RAG）应用</li></ul><h3 id=52-bm25-算法简介>5.2 BM25 算法简介</h3><p>BM25（Best Matching 25）是一种用于信息检索的排序函数，考虑以下因素：</p><ul><li><strong>词频（TF）</strong>：关键词在文档中出现的频率</li><li><strong>逆文档频率（IDF）</strong>：关键词在整个集合中的稀有程度</li><li><strong>文档长度归一化</strong>：避免长文档的偏向</li></ul><h3 id=53-你需要做什么milvus-会做什么>5.3 你需要做什么？Milvus 会做什么？</h3><p><strong>重要说明：稀疏向量是自动生成的！</strong></p><p>很多人误以为需要同时手动生成稠密向量和稀疏向量，实际上：</p><h4 id=数据准备工作分工>数据准备工作分工</h4><div class=table-wrapper><table><thead><tr><th>数据类型</th><th>是否需要你生成</th><th>说明</th></tr></thead><tbody><tr><td><strong>原始文本</strong></td><td>✅ 需要</td><td>存储文件内容，用于返回结果和生成稀疏向量</td></tr><tr><td><strong>稠密向量</strong></td><td>✅ 需要</td><td>用 OpenAI/BERT 等模型生成，用于语义搜索</td></tr><tr><td><strong>稀疏向量（BM25）</strong></td><td>❌ 不需要</td><td>Milvus 根据原始文本自动生成（配置 BM25 函数）</td></tr></tbody></table></div><h4 id=实际工作流程示例>实际工作流程示例</h4><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># ========== 第一步：读取文件内容 ==========</span>
+</span></span><span style=display:flex><span>file_content <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Python 3.11 引入了新的异常组功能，提升了错误处理能力...&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># ========== 第二步：生成稠密向量（你需要做） ==========</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> openai
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>dense_vector <span style=color:#f92672>=</span> openai<span style=color:#f92672>.</span>Embedding<span style=color:#f92672>.</span>create(
+</span></span><span style=display:flex><span>    input<span style=color:#f92672>=</span>file_content,
+</span></span><span style=display:flex><span>    model<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;text-embedding-ada-002&#34;</span>
+</span></span><span style=display:flex><span>)[<span style=color:#e6db74>&#39;data&#39;</span>][<span style=color:#ae81ff>0</span>][<span style=color:#e6db74>&#39;embedding&#39;</span>]
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># ========== 第三步：插入 Milvus ==========</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 只需要提供：原始文本 + 稠密向量</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 稀疏向量会自动生成！</span>
+</span></span><span style=display:flex><span>client<span style=color:#f92672>.</span>insert(<span style=color:#e6db74>&#39;my_collection&#39;</span>, [{
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;text&#34;</span>: file_content,           <span style=color:#75715e># 原始文本</span>
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;dense_vector&#34;</span>: dense_vector,   <span style=color:#75715e># 你生成的稠密向量</span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e># sparse_vector 不需要提供，Milvus 自动生成！</span>
+</span></span><span style=display:flex><span>}])
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># ========== 第四步：混合搜索 ==========</span>
+</span></span><span style=display:flex><span>query <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Python 3.11 新特性&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 生成查询的稠密向量（你需要做）</span>
+</span></span><span style=display:flex><span>query_dense <span style=color:#f92672>=</span> openai<span style=color:#f92672>.</span>Embedding<span style=color:#f92672>.</span>create(
+</span></span><span style=display:flex><span>    input<span style=color:#f92672>=</span>query,
+</span></span><span style=display:flex><span>    model<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;text-embedding-ada-002&#34;</span>
+</span></span><span style=display:flex><span>)[<span style=color:#e6db74>&#39;data&#39;</span>][<span style=color:#ae81ff>0</span>][<span style=color:#e6db74>&#39;embedding&#39;</span>]
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 稠密向量搜索请求</span>
+</span></span><span style=display:flex><span>dense_req <span style=color:#f92672>=</span> AnnSearchRequest(
+</span></span><span style=display:flex><span>    data<span style=color:#f92672>=</span>[query_dense],
+</span></span><span style=display:flex><span>    anns_field<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;dense_vector&#34;</span>,
+</span></span><span style=display:flex><span>    param<span style=color:#f92672>=</span>{<span style=color:#e6db74>&#34;metric_type&#34;</span>: <span style=color:#e6db74>&#34;COSINE&#34;</span>},
+</span></span><span style=display:flex><span>    limit<span style=color:#f92672>=</span><span style=color:#ae81ff>5</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 稀疏向量搜索请求</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 注意：直接传文本，Milvus 自动转换为稀疏向量！</span>
+</span></span><span style=display:flex><span>sparse_req <span style=color:#f92672>=</span> AnnSearchRequest(
+</span></span><span style=display:flex><span>    data<span style=color:#f92672>=</span>[query],  <span style=color:#75715e># 直接传查询文本</span>
+</span></span><span style=display:flex><span>    anns_field<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;sparse_vector&#34;</span>,
+</span></span><span style=display:flex><span>    param<span style=color:#f92672>=</span>{<span style=color:#e6db74>&#34;metric_type&#34;</span>: <span style=color:#e6db74>&#34;BM25&#34;</span>},
+</span></span><span style=display:flex><span>    limit<span style=color:#f92672>=</span><span style=color:#ae81ff>5</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 执行混合搜索</span>
+</span></span><span style=display:flex><span>result <span style=color:#f92672>=</span> client<span style=color:#f92672>.</span>hybrid_search(
+</span></span><span style=display:flex><span>    collection_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;my_collection&#39;</span>,
+</span></span><span style=display:flex><span>    reqs<span style=color:#f92672>=</span>[dense_req, sparse_req],
+</span></span><span style=display:flex><span>    ranker<span style=color:#f92672>=</span>rrf_ranker,
+</span></span><span style=display:flex><span>    limit<span style=color:#f92672>=</span><span style=color:#ae81ff>10</span>
+</span></span><span style=display:flex><span>)
+</span></span></code></pre></div><h4 id=关键要点总结>关键要点总结</h4><p>✅ <strong>你只需要关心稠密向量的生成</strong>（使用 OpenAI、BERT、sentence-transformers 等）</p><p>✅ <strong>稀疏向量完全由 Milvus 内部处理</strong>（配置 BM25 函数后自动生成）</p><p>✅ <strong>搜索时也不需要手动生成稀疏向量</strong>（直接传文本，Milvus 自动转换）</p><p>❌ <strong>不需要自己实现 BM25 算法</strong></p><p>❌ <strong>不需要手动计算词频和 IDF</strong></p><p><strong>这就是为什么 Milvus 的全文检索很强大</strong>：它把复杂的 BM25 计算封装起来，你只需要提供原始文本即可！</p><h3 id=54-完整配置流程>5.4 完整配置流程</h3><h4 id=步骤-1创建支持全文搜索的-schema>步骤 1：创建支持全文搜索的 Schema</h4><p>需要定义三个必需字段：主键、文本字段、稀疏向量字段</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#f92672>from</span> pymilvus <span style=color:#f92672>import</span> MilvusClient, DataType, Function, FunctionType
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>client <span style=color:#f92672>=</span> MilvusClient(
+</span></span><span style=display:flex><span>    uri<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;http://localhost:19530&#34;</span>,
+</span></span><span style=display:flex><span>    token<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;root:Milvus&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 创建 Schema</span>
+</span></span><span style=display:flex><span>schema <span style=color:#f92672>=</span> client<span style=color:#f92672>.</span>create_schema()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 1. 主键字段</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;id&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>INT64,
+</span></span><span style=display:flex><span>    is_primary<span style=color:#f92672>=</span><span style=color:#66d9ef>True</span>,
+</span></span><span style=display:flex><span>    auto_id<span style=color:#f92672>=</span><span style=color:#66d9ef>True</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 2. 文本字段（启用分词器）</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;text&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>VARCHAR,
+</span></span><span style=display:flex><span>    max_length<span style=color:#f92672>=</span><span style=color:#ae81ff>1000</span>,
+</span></span><span style=display:flex><span>    enable_analyzer<span style=color:#f92672>=</span><span style=color:#66d9ef>True</span>  <span style=color:#75715e># 必须启用分词器</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 3. 稀疏向量字段（存储 BM25 向量）</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;sparse&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>SPARSE_FLOAT_VECTOR
+</span></span><span style=display:flex><span>)
+</span></span></code></pre></div><h4 id=步骤-2定义-bm25-函数>步骤 2：定义 BM25 函数</h4><p>BM25 函数将文本自动转换为稀疏向量：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># 定义 BM25 函数</span>
+</span></span><span style=display:flex><span>bm25_function <span style=color:#f92672>=</span> Function(
+</span></span><span style=display:flex><span>    name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;text_bm25_emb&#34;</span>,              <span style=color:#75715e># 函数名称</span>
+</span></span><span style=display:flex><span>    input_field_names<span style=color:#f92672>=</span>[<span style=color:#e6db74>&#34;text&#34;</span>],         <span style=color:#75715e># 输入：文本字段</span>
+</span></span><span style=display:flex><span>    output_field_names<span style=color:#f92672>=</span>[<span style=color:#e6db74>&#34;sparse&#34;</span>],      <span style=color:#75715e># 输出：稀疏向量字段</span>
+</span></span><span style=display:flex><span>    function_type<span style=color:#f92672>=</span>FunctionType<span style=color:#f92672>.</span>BM25,    <span style=color:#75715e># 函数类型：BM25</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 将函数添加到 Schema</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_function(bm25_function)
+</span></span></code></pre></div><h4 id=步骤-3配置稀疏向量索引>步骤 3：配置稀疏向量索引</h4><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># 准备索引参数</span>
+</span></span><span style=display:flex><span>index_params <span style=color:#f92672>=</span> client<span style=color:#f92672>.</span>prepare_index_params()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 为稀疏向量字段添加索引</span>
+</span></span><span style=display:flex><span>index_params<span style=color:#f92672>.</span>add_index(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;sparse&#34;</span>,
+</span></span><span style=display:flex><span>    index_type<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;SPARSE_INVERTED_INDEX&#34;</span>,  <span style=color:#75715e># 稀疏倒排索引</span>
+</span></span><span style=display:flex><span>    metric_type<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;BM25&#34;</span>,                   <span style=color:#75715e># 度量类型：BM25</span>
+</span></span><span style=display:flex><span>    params<span style=color:#f92672>=</span>{
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;inverted_index_algo&#34;</span>: <span style=color:#e6db74>&#34;DAAT_MAXSCORE&#34;</span>,  <span style=color:#75715e># 倒排索引算法</span>
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;bm25_k1&#34;</span>: <span style=color:#ae81ff>1.2</span>,                          <span style=color:#75715e># BM25 参数 k1（词频饱和度）</span>
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;bm25_b&#34;</span>: <span style=color:#ae81ff>0.75</span>                           <span style=color:#75715e># BM25 参数 b（长度归一化）</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>)
+</span></span></code></pre></div><p><strong>BM25 参数说明：</strong></p><ul><li><code>bm25_k1</code>（默认 1.2）：控制词频的饱和度，值越大词频影响越大</li><li><code>bm25_b</code>（默认 0.75）：控制文档长度归一化程度，0 表示不归一化，1 表示完全归一化</li></ul><h4 id=步骤-4创建集合>步骤 4：创建集合</h4><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># 创建集合</span>
+</span></span><span style=display:flex><span>client<span style=color:#f92672>.</span>create_collection(
+</span></span><span style=display:flex><span>    collection_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;my_collection&#39;</span>,
+</span></span><span style=display:flex><span>    schema<span style=color:#f92672>=</span>schema,
+</span></span><span style=display:flex><span>    index_params<span style=color:#f92672>=</span>index_params
+</span></span><span style=display:flex><span>)
+</span></span></code></pre></div><h4 id=步骤-5插入文本数据>步骤 5：插入文本数据</h4><p>直接插入原始文本即可，BM25 函数会自动生成稀疏向量：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># 插入文本数据（无需手动生成向量）</span>
+</span></span><span style=display:flex><span>client<span style=color:#f92672>.</span>insert(<span style=color:#e6db74>&#39;my_collection&#39;</span>, [
+</span></span><span style=display:flex><span>    {<span style=color:#e6db74>&#39;text&#39;</span>: <span style=color:#e6db74>&#39;information retrieval is a field of study.&#39;</span>},
+</span></span><span style=display:flex><span>    {<span style=color:#e6db74>&#39;text&#39;</span>: <span style=color:#e6db74>&#39;information retrieval focuses on finding relevant information in large datasets.&#39;</span>},
+</span></span><span style=display:flex><span>    {<span style=color:#e6db74>&#39;text&#39;</span>: <span style=color:#e6db74>&#39;data mining and information retrieval overlap in research.&#39;</span>},
+</span></span><span style=display:flex><span>])
+</span></span></code></pre></div><h4 id=步骤-6执行全文搜索>步骤 6：执行全文搜索</h4><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># 执行全文搜索</span>
+</span></span><span style=display:flex><span>search_params <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;metric_type&#34;</span>: <span style=color:#e6db74>&#34;BM25&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;params&#34;</span>: {}
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>results <span style=color:#f92672>=</span> client<span style=color:#f92672>.</span>search(
+</span></span><span style=display:flex><span>    collection_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;my_collection&#34;</span>,
+</span></span><span style=display:flex><span>    data<span style=color:#f92672>=</span>[<span style=color:#e6db74>&#34;What is information retrieval?&#34;</span>],  <span style=color:#75715e># 查询文本</span>
+</span></span><span style=display:flex><span>    anns_field<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;sparse&#34;</span>,                      <span style=color:#75715e># 搜索稀疏向量字段</span>
+</span></span><span style=display:flex><span>    search_params<span style=color:#f92672>=</span>search_params,
+</span></span><span style=display:flex><span>    limit<span style=color:#f92672>=</span><span style=color:#ae81ff>5</span>,
+</span></span><span style=display:flex><span>    output_fields<span style=color:#f92672>=</span>[<span style=color:#e6db74>&#34;text&#34;</span>]
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 输出结果</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>for</span> i, hit <span style=color:#f92672>in</span> enumerate(results[<span style=color:#ae81ff>0</span>]):
+</span></span><span style=display:flex><span>    print(<span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;</span><span style=color:#e6db74>{</span>i<span style=color:#f92672>+</span><span style=color:#ae81ff>1</span><span style=color:#e6db74>}</span><span style=color:#e6db74>. 文本: </span><span style=color:#e6db74>{</span>hit[<span style=color:#e6db74>&#39;entity&#39;</span>][<span style=color:#e6db74>&#39;text&#39;</span>]<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>)
+</span></span><span style=display:flex><span>    print(<span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;   相关性评分: </span><span style=color:#e6db74>{</span>hit[<span style=color:#e6db74>&#39;distance&#39;</span>]<span style=color:#e6db74>:</span><span style=color:#e6db74>.4f</span><span style=color:#e6db74>}</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>)
+</span></span></code></pre></div><h3 id=55-完整示例>5.5 完整示例</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#f92672>from</span> pymilvus <span style=color:#f92672>import</span> MilvusClient, DataType, Function, FunctionType
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 1. 连接 Milvus</span>
+</span></span><span style=display:flex><span>client <span style=color:#f92672>=</span> MilvusClient(uri<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;http://localhost:19530&#34;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 2. 创建 Schema</span>
+</span></span><span style=display:flex><span>schema <span style=color:#f92672>=</span> client<span style=color:#f92672>.</span>create_schema()
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;id&#34;</span>, datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>INT64, is_primary<span style=color:#f92672>=</span><span style=color:#66d9ef>True</span>, auto_id<span style=color:#f92672>=</span><span style=color:#66d9ef>True</span>)
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;text&#34;</span>, datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>VARCHAR, max_length<span style=color:#f92672>=</span><span style=color:#ae81ff>1000</span>, enable_analyzer<span style=color:#f92672>=</span><span style=color:#66d9ef>True</span>)
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;sparse&#34;</span>, datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>SPARSE_FLOAT_VECTOR)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 3. 添加 BM25 函数</span>
+</span></span><span style=display:flex><span>bm25_function <span style=color:#f92672>=</span> Function(
+</span></span><span style=display:flex><span>    name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;text_bm25_emb&#34;</span>,
+</span></span><span style=display:flex><span>    input_field_names<span style=color:#f92672>=</span>[<span style=color:#e6db74>&#34;text&#34;</span>],
+</span></span><span style=display:flex><span>    output_field_names<span style=color:#f92672>=</span>[<span style=color:#e6db74>&#34;sparse&#34;</span>],
+</span></span><span style=display:flex><span>    function_type<span style=color:#f92672>=</span>FunctionType<span style=color:#f92672>.</span>BM25,
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_function(bm25_function)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 4. 配置索引</span>
+</span></span><span style=display:flex><span>index_params <span style=color:#f92672>=</span> client<span style=color:#f92672>.</span>prepare_index_params()
+</span></span><span style=display:flex><span>index_params<span style=color:#f92672>.</span>add_index(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;sparse&#34;</span>,
+</span></span><span style=display:flex><span>    index_type<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;SPARSE_INVERTED_INDEX&#34;</span>,
+</span></span><span style=display:flex><span>    metric_type<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;BM25&#34;</span>,
+</span></span><span style=display:flex><span>    params<span style=color:#f92672>=</span>{<span style=color:#e6db74>&#34;bm25_k1&#34;</span>: <span style=color:#ae81ff>1.2</span>, <span style=color:#e6db74>&#34;bm25_b&#34;</span>: <span style=color:#ae81ff>0.75</span>}
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 5. 创建集合</span>
+</span></span><span style=display:flex><span>client<span style=color:#f92672>.</span>create_collection(
+</span></span><span style=display:flex><span>    collection_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;full_text_demo&#39;</span>,
+</span></span><span style=display:flex><span>    schema<span style=color:#f92672>=</span>schema,
+</span></span><span style=display:flex><span>    index_params<span style=color:#f92672>=</span>index_params
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 6. 插入数据</span>
+</span></span><span style=display:flex><span>client<span style=color:#f92672>.</span>insert(<span style=color:#e6db74>&#39;full_text_demo&#39;</span>, [
+</span></span><span style=display:flex><span>    {<span style=color:#e6db74>&#39;text&#39;</span>: <span style=color:#e6db74>&#39;Artificial intelligence is transforming the world.&#39;</span>},
+</span></span><span style=display:flex><span>    {<span style=color:#e6db74>&#39;text&#39;</span>: <span style=color:#e6db74>&#39;Machine learning is a subset of artificial intelligence.&#39;</span>},
+</span></span><span style=display:flex><span>    {<span style=color:#e6db74>&#39;text&#39;</span>: <span style=color:#e6db74>&#39;Deep learning uses neural networks for complex tasks.&#39;</span>},
+</span></span><span style=display:flex><span>])
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 7. 执行搜索</span>
+</span></span><span style=display:flex><span>results <span style=color:#f92672>=</span> client<span style=color:#f92672>.</span>search(
+</span></span><span style=display:flex><span>    collection_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;full_text_demo&#34;</span>,
+</span></span><span style=display:flex><span>    data<span style=color:#f92672>=</span>[<span style=color:#e6db74>&#34;What is artificial intelligence?&#34;</span>],
+</span></span><span style=display:flex><span>    anns_field<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;sparse&#34;</span>,
+</span></span><span style=display:flex><span>    search_params<span style=color:#f92672>=</span>{<span style=color:#e6db74>&#34;metric_type&#34;</span>: <span style=color:#e6db74>&#34;BM25&#34;</span>},
+</span></span><span style=display:flex><span>    limit<span style=color:#f92672>=</span><span style=color:#ae81ff>3</span>,
+</span></span><span style=display:flex><span>    output_fields<span style=color:#f92672>=</span>[<span style=color:#e6db74>&#34;text&#34;</span>]
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 8. 输出结果</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>for</span> i, hit <span style=color:#f92672>in</span> enumerate(results[<span style=color:#ae81ff>0</span>]):
+</span></span><span style=display:flex><span>    print(<span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;</span><span style=color:#e6db74>{</span>i<span style=color:#f92672>+</span><span style=color:#ae81ff>1</span><span style=color:#e6db74>}</span><span style=color:#e6db74>. </span><span style=color:#e6db74>{</span>hit[<span style=color:#e6db74>&#39;entity&#39;</span>][<span style=color:#e6db74>&#39;text&#39;</span>]<span style=color:#e6db74>}</span><span style=color:#e6db74> (评分: </span><span style=color:#e6db74>{</span>hit[<span style=color:#e6db74>&#39;distance&#39;</span>]<span style=color:#e6db74>:</span><span style=color:#e6db74>.4f</span><span style=color:#e6db74>}</span><span style=color:#e6db74>)&#34;</span>)
+</span></span></code></pre></div><h3 id=56-适用场景>5.6 适用场景</h3><ul><li>复杂的文本内容搜索</li><li>需要相关性排序的场景</li><li>大规模文档检索</li><li>检索增强生成（RAG）应用</li><li>搜索引擎类应用</li></ul><h3 id=57-与-text_match-的区别>5.7 与 TEXT_MATCH 的区别</h3><div class=table-wrapper><table><thead><tr><th>对比项</th><th>TEXT_MATCH</th><th>全文检索（BM25）</th></tr></thead><tbody><tr><td>返回结果</td><td>无评分排序</td><td>按 BM25 评分排序</td></tr><tr><td>向量化</td><td>不涉及</td><td>自动生成稀疏向量</td></tr><tr><td>配置复杂度</td><td>低</td><td>高</td></tr><tr><td>相关性评分</td><td>无</td><td>有（BM25）</td></tr><tr><td>适用场景</td><td>简单关键词匹配</td><td>复杂文本检索、RAG</td></tr></tbody></table></div><hr><h2 id=六方法选择指南>六、方法选择指南</h2><h3 id=61-决策树>6.1 决策树</h3><pre tabindex=0><code>需要文本检索？
+├── 简单字符匹配？
+│   └── 是 → 使用 LIKE（性能最好）
+└── 否 → 需要分词
+    ├── 精确短语匹配？
+    │   └── 是 → 使用 PHRASE_MATCH
+    ├── 关键词检索？
+    │   └── 是 → 使用 TEXT_MATCH
+    └── 需要相关性排序？
+        └── 是 → 使用全文检索（BM25）
+</code></pre><h3 id=62-场景对照表>6.2 场景对照表</h3><div class=table-wrapper><table><thead><tr><th>场景</th><th>推荐方法</th><th>理由</th></tr></thead><tbody><tr><td>搜索以"Python"开头的书名</td><td>LIKE</td><td>简单前缀匹配，性能最好</td></tr><tr><td>搜索包含"机器学习"的书名</td><td>TEXT_MATCH</td><td>支持中文分词</td></tr><tr><td>搜索"深度学习实战"这个短语</td><td>PHRASE_MATCH</td><td>词序敏感</td></tr><tr><td>搜索与"AI技术"最相关的文章</td><td>全文检索</td><td>需要相关性评分</td></tr><tr><td>搜索包含"Python"但不含"Web"的书</td><td>TEXT_MATCH</td><td>支持逻辑组合</td></tr></tbody></table></div><hr><h2 id=七实践建议>七、实践建议</h2><h3 id=71-性能优化>7.1 性能优化</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># 1. 优先使用 LIKE（性能最好）</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 适合：简单的前缀/后缀匹配</span>
+</span></span><span style=display:flex><span>filter<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;title LIKE &#34;Python%&#34;&#39;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 2. TEXT_MATCH 适合大多数场景</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 适合：关键词检索，支持逻辑组合</span>
+</span></span><span style=display:flex><span>filter<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;TEXT_MATCH(title, &#39;Python&#39;) AND rating &gt;= 4.0&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 3. PHRASE_MATCH 用于精确匹配</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 适合：需要保持词序的场景</span>
+</span></span><span style=display:flex><span>filter<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;PHRASE_MATCH(title, &#39;Python编程&#39;)&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 4. 全文检索用于复杂场景</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 适合：需要相关性排序的大规模文本搜索</span>
+</span></span></code></pre></div><h3 id=72-字段配置>7.2 字段配置</h3><p><strong>使用 TEXT_MATCH 或 PHRASE_MATCH 前，需要配置字段：</strong></p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#f92672>from</span> pymilvus <span style=color:#f92672>import</span> MilvusClient, DataType
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>schema <span style=color:#f92672>=</span> client<span style=color:#f92672>.</span>create_schema()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 添加支持文本匹配的字段</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;title&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>VARCHAR,
+</span></span><span style=display:flex><span>    max_length<span style=color:#f92672>=</span><span style=color:#ae81ff>500</span>,
+</span></span><span style=display:flex><span>    enable_match<span style=color:#f92672>=</span><span style=color:#66d9ef>True</span>,        <span style=color:#75715e># 启用文本匹配</span>
+</span></span><span style=display:flex><span>    enable_analyzer<span style=color:#f92672>=</span><span style=color:#66d9ef>True</span>      <span style=color:#75715e># 启用分词器（可选）</span>
+</span></span><span style=display:flex><span>)
+</span></span></code></pre></div><h3 id=73-常见组合模式>7.3 常见组合模式</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># 模式1：文本匹配 + 标量过滤</span>
+</span></span><span style=display:flex><span>filter<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;TEXT_MATCH(title, &#39;Python&#39;) AND rating &gt;= 4.5 AND is_available == True&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 模式2：多字段文本匹配</span>
+</span></span><span style=display:flex><span>filter<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;TEXT_MATCH(title, &#39;Python&#39;) OR TEXT_MATCH(description, &#39;Python&#39;)&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 模式3：短语匹配 + 排除</span>
+</span></span><span style=display:flex><span>filter<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;PHRASE_MATCH(title, &#39;机器学习&#39;) AND NOT TEXT_MATCH(title, &#39;入门&#39;)&#34;</span>
+</span></span></code></pre></div><hr><h2 id=八常见问题>八、常见问题</h2><h3 id=81-text_match-报错>8.1 TEXT_MATCH 报错</h3><p><strong>错误信息：</strong> <code>field 'title' doesn't support text match</code></p><p><strong>原因：</strong> 字段未启用 <code>enable_match=True</code></p><p><strong>解决方法：</strong></p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># 创建集合时配置字段</span>
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;title&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>VARCHAR,
+</span></span><span style=display:flex><span>    max_length<span style=color:#f92672>=</span><span style=color:#ae81ff>500</span>,
+</span></span><span style=display:flex><span>    enable_analyzer<span style=color:#f92672>=</span><span style=color:#66d9ef>True</span>, <span style=color:#75715e># 启用分词器</span>
+</span></span><span style=display:flex><span>    enable_match<span style=color:#f92672>=</span><span style=color:#66d9ef>True</span>  <span style=color:#75715e># 必须启用</span>
+</span></span><span style=display:flex><span>)
+</span></span></code></pre></div><h3 id=82-like-匹配不到中文>8.2 LIKE 匹配不到中文</h3><p><strong>原因：</strong> LIKE 是字符级匹配，中文分词可能导致匹配失败</p><p><strong>解决方法：</strong></p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># 方案1：使用 TEXT_MATCH（推荐）</span>
+</span></span><span style=display:flex><span>filter<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;TEXT_MATCH(title, &#39;机器学习&#39;)&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 方案2：使用完整字符串</span>
+</span></span><span style=display:flex><span>filter<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;title LIKE &#34;%机器学习%&#34;&#39;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 方案3：配置分词器方法</span>
+</span></span><span style=display:flex><span>analyzer_params <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;type&#34;</span>: <span style=color:#e6db74>&#34;english&#34;</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>schema<span style=color:#f92672>.</span>add_field(
+</span></span><span style=display:flex><span>    field_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;title&#34;</span>,
+</span></span><span style=display:flex><span>    datatype<span style=color:#f92672>=</span>DataType<span style=color:#f92672>.</span>VARCHAR,
+</span></span><span style=display:flex><span>    max_length<span style=color:#f92672>=</span><span style=color:#ae81ff>500</span>,
+</span></span><span style=display:flex><span>    enable_analyzer<span style=color:#f92672>=</span><span style=color:#66d9ef>True</span>, <span style=color:#75715e># 启用分词器</span>
+</span></span><span style=display:flex><span>    analyzer_params <span style=color:#f92672>=</span> analyzer_params,
+</span></span><span style=display:flex><span>    enable_match<span style=color:#f92672>=</span><span style=color:#66d9ef>True</span>  <span style=color:#75715e># 必须启用</span>
+</span></span><span style=display:flex><span>)
+</span></span></code></pre></div><h3 id=83-phrase_match-匹配不到结果>8.3 PHRASE_MATCH 匹配不到结果</h3><p><strong>原因：</strong> 词序严格，可能因为分词或词序问题</p><p><strong>解决方法：</strong></p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># 增加 slop 参数，允许词汇间隔</span>
+</span></span><span style=display:flex><span>filter<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;PHRASE_MATCH(title, &#39;机器学习&#39;, 2)&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 或改用 TEXT_MATCH</span>
+</span></span><span style=display:flex><span>filter<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;TEXT_MATCH(title, &#39;机器学习&#39;)&#34;</span>
+</span></span></code></pre></div><hr><h2 id=九本节知识点总结>九、本节知识点总结</h2><div class=table-wrapper><table><thead><tr><th>方法</th><th>关键参数</th><th>适用场景</th></tr></thead><tbody><tr><td>LIKE</td><td><code>%</code> 通配符</td><td>简单字符模式匹配</td></tr><tr><td>TEXT_MATCH</td><td>关键词字符串</td><td>关键词检索，逻辑组合</td></tr><tr><td>PHRASE_MATCH</td><td>短语字符串，<code>slop</code></td><td>精确短语匹配</td></tr><tr><td>全文检索</td><td>BM25 配置</td><td>复杂文本搜索，相关性排序</td></tr></tbody></table></div><p><strong>核心要点：</strong></p><ul><li>LIKE 最简单，性能最好，但功能有限</li><li>TEXT_MATCH 支持分词和逻辑组合，适合大多数场景</li><li>PHRASE_MATCH 适合需要保持词序的精确匹配</li><li>全文检索功能最强，但配置复杂</li></ul><hr><h2 id=十与其他查询方法的关系>十、与其他查询方法的关系</h2><p>文本检索方法可以与之前学习的查询方法结合使用：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># 与 Query 结合</span>
+</span></span><span style=display:flex><span>result <span style=color:#f92672>=</span> client<span style=color:#f92672>.</span>query(
+</span></span><span style=display:flex><span>    collection_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;book_collection&#34;</span>,
+</span></span><span style=display:flex><span>    filter<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;TEXT_MATCH(title, &#39;Python&#39;) AND rating &gt;= 4.5&#34;</span>,
+</span></span><span style=display:flex><span>    output_fields<span style=color:#f92672>=</span>[<span style=color:#e6db74>&#34;book_id&#34;</span>, <span style=color:#e6db74>&#34;title&#34;</span>, <span style=color:#e6db74>&#34;rating&#34;</span>],
+</span></span><span style=display:flex><span>    limit<span style=color:#f92672>=</span><span style=color:#ae81ff>10</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 与 Search 结合（混合搜索）</span>
+</span></span><span style=display:flex><span>result <span style=color:#f92672>=</span> client<span style=color:#f92672>.</span>search(
+</span></span><span style=display:flex><span>    collection_name<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;book_collection&#34;</span>,
+</span></span><span style=display:flex><span>    data<span style=color:#f92672>=</span>[query_vector],
+</span></span><span style=display:flex><span>    anns_field<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;content_vector&#34;</span>,
+</span></span><span style=display:flex><span>    filter<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;TEXT_MATCH(title, &#39;Python&#39;)&#34;</span>,  <span style=color:#75715e># 文本过滤</span>
+</span></span><span style=display:flex><span>    limit<span style=color:#f92672>=</span><span style=color:#ae81ff>5</span>
+</span></span><span style=display:flex><span>)
+</span></span></code></pre></div></section><footer class=article-footer><section class=article-tags><a href=/tags/milvus/>Milvus</a>
+<a href=/tags/milvus%E6%9F%A5%E8%AF%A2/>Milvus查询</a></section></footer></article><aside class=related-content--wrapper><h2 class=section-title>相关文章</h2><div class=related-content><div class="flex article-list--tile"><article><a href=/stu/milvus-scalar-query/><div class=article-details><h2 class=article-title>Milvus标量查询方法全面解析</h2></div></a></article><article><a href=/stu/milvus-advanced-search/><div class=article-details><h2 class=article-title>Milvus高级搜索技术：范围、分组与混合搜索</h2></div></a></article><article><a href=/stu/milvus-basic-search-filtering/><div class=article-details><h2 class=article-title>Milvus基础搜索与过滤查询详解</h2></div></a></article><article><a href=/stu/milvus-entity-operations/><div class=article-details><h2 class=article-title>Milvus 数据操作详解 - 实体增删改实战指南</h2></div></a></article><article><a href=/stu/milvus-index-explained/><div class=article-details><h2 class=article-title>Milvus 索引详解 - 向量搜索性能优化指南</h2></div></a></article></div></div></aside><script src=https://giscus.app/client.js data-repo=zg-dd/zg-dd.github.io data-repo-id=R_kgDOQwB7tw data-category=Announcements data-category-id=DIC_kwDOQwB7t84C0WGD data-mapping=pathname data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=preferred_color_scheme data-lang=zh-CN data-loading crossorigin=anonymous async></script><script>function setGiscusTheme(e){let t=document.querySelector("iframe.giscus-frame");t&&t.contentWindow.postMessage({giscus:{setConfig:{theme:e}}},"https://giscus.app")}(function(){addEventListener("message",t=>{if(event.origin!=="https://giscus.app")return;e()}),window.addEventListener("onColorSchemeChange",e);function e(){setGiscusTheme(document.documentElement.dataset.scheme==="light"?"preferred_color_scheme":"preferred_color_scheme")}})()</script><footer class=site-footer><section class=copyright>&copy;
+2026 小巷的随笔</section><section class=powerby>使用 <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> 构建<br>主题 <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.33.0>Stack</a></b> 由 <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> 设计</section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.c922af694cc257bf1ecc41c0dd7b0430f9114ec280ccf67cd2c6ad55f5316c4e.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>
