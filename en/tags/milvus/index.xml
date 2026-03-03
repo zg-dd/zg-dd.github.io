@@ -5438,7 +5438,51 @@ data=[{
 &lt;li&gt;&lt;strong&gt;Timezone Awareness&lt;/strong&gt;: TIMESTAMPTZ provides native timezone support&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;Index Optimization&lt;/strong&gt;: JSON shredding, vector indexing and other optimization techniques&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;NoSQL Integration&lt;/strong&gt;: Dynamic fields similar to MongoDB, but retain Schema constraint advantages&lt;/li&gt;
-&lt;/ol&gt;</description></item><item><title>Complete Guide to Installing Milvus Standalone Mode and Common Problem Solutions</title><link>https://zg-dd.github.io/en/stu/milvus-install-guide/</link><pubDate>Tue, 24 Feb 2026 19:07:58 +0800</pubDate><guid>https://zg-dd.github.io/en/stu/milvus-install-guide/</guid><description>&lt;h2 id="introduction"&gt;Introduction
+&lt;/ol&gt;</description></item><item><title>Milvus Database Management - To Be Completed</title><link>https://zg-dd.github.io/en/stu/milvus-stu-db/</link><pubDate>Thu, 26 Feb 2026 18:51:45 +0800</pubDate><guid>https://zg-dd.github.io/en/stu/milvus-stu-db/</guid><description>&lt;h1 id="milvus-database-management-guide"&gt;Milvus Database Management Guide
+&lt;/h1&gt;&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: This document is currently under development and will be updated with complete content soon.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id="coming-soon"&gt;Coming Soon
+&lt;/h2&gt;&lt;p&gt;This guide will cover comprehensive Milvus database management topics including:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Database creation and configuration&lt;/li&gt;
+&lt;li&gt;Collection management&lt;/li&gt;
+&lt;li&gt;Performance optimization&lt;/li&gt;
+&lt;li&gt;Backup and recovery&lt;/li&gt;
+&lt;li&gt;Monitoring and maintenance&lt;/li&gt;
+&lt;li&gt;Security and access control&lt;/li&gt;
+&lt;li&gt;Cluster management&lt;/li&gt;
+&lt;li&gt;Resource allocation and scaling&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="planned-content-structure"&gt;Planned Content Structure
+&lt;/h2&gt;&lt;h3 id="1-database-fundamentals"&gt;1. Database Fundamentals
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;Understanding Milvus architecture&lt;/li&gt;
+&lt;li&gt;Database vs Collection concepts&lt;/li&gt;
+&lt;li&gt;Storage engines overview&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="2-administration-tasks"&gt;2. Administration Tasks
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;Creating and managing databases&lt;/li&gt;
+&lt;li&gt;User and permission management&lt;/li&gt;
+&lt;li&gt;Configuration tuning&lt;/li&gt;
+&lt;li&gt;Health monitoring&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="3-performance-optimization"&gt;3. Performance Optimization
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;Index selection strategies&lt;/li&gt;
+&lt;li&gt;Query optimization techniques&lt;/li&gt;
+&lt;li&gt;Resource allocation best practices&lt;/li&gt;
+&lt;li&gt;Troubleshooting common issues&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="4-production-operations"&gt;4. Production Operations
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;Backup and disaster recovery&lt;/li&gt;
+&lt;li&gt;Scaling strategies&lt;/li&gt;
+&lt;li&gt;Monitoring and alerting&lt;/li&gt;
+&lt;li&gt;Maintenance procedures&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Stay tuned for updates!&lt;/p&gt;</description></item><item><title>Complete Guide to Installing Milvus Standalone Mode and Common Problem Solutions</title><link>https://zg-dd.github.io/en/stu/milvus-install-guide/</link><pubDate>Tue, 24 Feb 2026 19:07:58 +0800</pubDate><guid>https://zg-dd.github.io/en/stu/milvus-install-guide/</guid><description>&lt;h2 id="introduction"&gt;Introduction
 &lt;/h2&gt;&lt;p&gt;Milvus is an open-source vector database designed specifically for handling large-scale vector data, supporting vector similarity search, real-time queries, and other features. The Standalone mode is Milvus&amp;rsquo;s single-machine embedded deployment method, suitable for learning, testing, and small-scale applications. It runs using Docker containers with embedded etcd as metadata storage, requiring no external dependencies.&lt;/p&gt;
 &lt;p&gt;During the actual installation process, I encountered multiple issues including non-existent image tags, network connection refusals, container permission issues causing startup failures (Exited 134), and scripts getting stuck in waiting states. This article is based on real installation experience on a VMware Ubuntu virtual machine on February 24, 2026, providing complete steps and systematically summarizing problems and solutions. The host machine configuration is Intel Core i9-12900H + 16 GB RAM.&lt;/p&gt;
 &lt;h2 id="environment-preparation"&gt;Environment Preparation

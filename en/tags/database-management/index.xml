@@ -1,1 +1,45 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Database Management on 小巷 Blog</title><link>https://zg-dd.github.io/en/tags/database-management/</link><description>Recent content in Database Management on 小巷 Blog</description><generator>Hugo -- gohugo.io</generator><language>en</language><atom:link href="https://zg-dd.github.io/en/tags/database-management/index.xml" rel="self" type="application/rss+xml"/></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Database Management on 小巷 Blog</title><link>https://zg-dd.github.io/en/tags/database-management/</link><description>Recent content in Database Management on 小巷 Blog</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Thu, 26 Feb 2026 18:51:45 +0800</lastBuildDate><atom:link href="https://zg-dd.github.io/en/tags/database-management/index.xml" rel="self" type="application/rss+xml"/><item><title>Milvus Database Management - To Be Completed</title><link>https://zg-dd.github.io/en/stu/milvus-stu-db/</link><pubDate>Thu, 26 Feb 2026 18:51:45 +0800</pubDate><guid>https://zg-dd.github.io/en/stu/milvus-stu-db/</guid><description>&lt;h1 id="milvus-database-management-guide"&gt;Milvus Database Management Guide
+&lt;/h1&gt;&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: This document is currently under development and will be updated with complete content soon.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id="coming-soon"&gt;Coming Soon
+&lt;/h2&gt;&lt;p&gt;This guide will cover comprehensive Milvus database management topics including:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Database creation and configuration&lt;/li&gt;
+&lt;li&gt;Collection management&lt;/li&gt;
+&lt;li&gt;Performance optimization&lt;/li&gt;
+&lt;li&gt;Backup and recovery&lt;/li&gt;
+&lt;li&gt;Monitoring and maintenance&lt;/li&gt;
+&lt;li&gt;Security and access control&lt;/li&gt;
+&lt;li&gt;Cluster management&lt;/li&gt;
+&lt;li&gt;Resource allocation and scaling&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="planned-content-structure"&gt;Planned Content Structure
+&lt;/h2&gt;&lt;h3 id="1-database-fundamentals"&gt;1. Database Fundamentals
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;Understanding Milvus architecture&lt;/li&gt;
+&lt;li&gt;Database vs Collection concepts&lt;/li&gt;
+&lt;li&gt;Storage engines overview&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="2-administration-tasks"&gt;2. Administration Tasks
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;Creating and managing databases&lt;/li&gt;
+&lt;li&gt;User and permission management&lt;/li&gt;
+&lt;li&gt;Configuration tuning&lt;/li&gt;
+&lt;li&gt;Health monitoring&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="3-performance-optimization"&gt;3. Performance Optimization
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;Index selection strategies&lt;/li&gt;
+&lt;li&gt;Query optimization techniques&lt;/li&gt;
+&lt;li&gt;Resource allocation best practices&lt;/li&gt;
+&lt;li&gt;Troubleshooting common issues&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="4-production-operations"&gt;4. Production Operations
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;Backup and disaster recovery&lt;/li&gt;
+&lt;li&gt;Scaling strategies&lt;/li&gt;
+&lt;li&gt;Monitoring and alerting&lt;/li&gt;
+&lt;li&gt;Maintenance procedures&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Stay tuned for updates!&lt;/p&gt;</description></item></channel></rss>
