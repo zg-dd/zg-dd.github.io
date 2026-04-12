@@ -1,4 +1,186 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>AI on 小巷的随笔</title><link>https://zg-dd.github.io/categories/ai/</link><description>Recent content in AI on 小巷的随笔</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Tue, 24 Feb 2026 19:07:58 +0800</lastBuildDate><atom:link href="https://zg-dd.github.io/categories/ai/index.xml" rel="self" type="application/rss+xml"/><item><title>Milvus Standalone 模式安装完整指南及常见问题解决</title><link>https://zg-dd.github.io/stu/milvus-install-guide/</link><pubDate>Tue, 24 Feb 2026 19:07:58 +0800</pubDate><guid>https://zg-dd.github.io/stu/milvus-install-guide/</guid><description>&lt;h2 id="引言"&gt;引言
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>AI on 小巷的随笔</title><link>https://zg-dd.github.io/categories/ai/</link><description>Recent content in AI on 小巷的随笔</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sat, 11 Apr 2026 18:40:55 +0800</lastBuildDate><atom:link href="https://zg-dd.github.io/categories/ai/index.xml" rel="self" type="application/rss+xml"/><item><title>LLaMA-Factory 使用实战</title><link>https://zg-dd.github.io/stu/llama-factory-use/</link><pubDate>Sat, 11 Apr 2026 18:40:55 +0800</pubDate><guid>https://zg-dd.github.io/stu/llama-factory-use/</guid><description>&lt;h2 id="一前置安装"&gt;一、前置安装
+&lt;/h2&gt;&lt;h3 id="11-环境依赖概览"&gt;1.1 环境依赖概览
+&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;工具&lt;/th&gt;
+&lt;th&gt;说明&lt;/th&gt;
+&lt;th&gt;官方下载地址&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;NVIDIA 驱动&lt;/td&gt;
+&lt;td&gt;显卡硬件驱动，是一切的基础&lt;/td&gt;
+&lt;td&gt;&lt;a class="link" href="https://www.nvidia.com/Download/index.aspx" target="_blank" rel="noopener"
+&gt;NVIDIA 驱动官方下载&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;CUDA Toolkit&lt;/td&gt;
+&lt;td&gt;GPU 编程的开发工具包（建议 12.4）&lt;/td&gt;
+&lt;td&gt;&lt;a class="link" href="https://developer.nvidia.com/cuda-toolkit-archive" target="_blank" rel="noopener"
+&gt;CUDA 官方下载&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;cuDNN&lt;/td&gt;
+&lt;td&gt;GPU 加速库&lt;/td&gt;
+&lt;td&gt;&lt;a class="link" href="https://developer.nvidia.com/cudnn" target="_blank" rel="noopener"
+&gt;cuDNN 官方下载&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Conda&lt;/td&gt;
+&lt;td&gt;包管理和环境管理工具（推荐 miniforge）&lt;/td&gt;
+&lt;td&gt;&lt;a class="link" href="https://conda-forge.org/miniforge/" target="_blank" rel="noopener"
+&gt;miniforge 下载&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="12-安装步骤"&gt;1.2 安装步骤
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;第一步：安装 NVIDIA 驱动&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;必须是 NVIDIA 显卡，驱动是一切的基础。安装完成后验证：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;nvidia-smi
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;输出显卡信息即表示安装成功。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;第二步：查询支持的 CUDA 版本&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;打开 NVIDIA 控制面板，查看当前显卡支持的最高 CUDA 版本：&lt;/p&gt;
+&lt;figure&gt;&lt;img src="https://zg-dd.github.io/img/lfu/lfu01.png"
+alt="NVIDIA 控制面板 - 查看支持的 CUDA 版本"&gt;&lt;figcaption&gt;
+&lt;p&gt;NVIDIA 控制面板 - 查看支持的 CUDA 版本&lt;/p&gt;
+&lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;p&gt;&lt;strong&gt;第三步：安装 CUDA Toolkit&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;前往官网下载对应版本，选择支持范围内的最新版本即可（我这里支持到 13.2.0）。安装方式选择&lt;strong&gt;精简安装&lt;/strong&gt;。验证：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;nvcc -V
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;第四步：安装 cuDNN&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;安装最新版本即可，按默认选项安装。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;第五步：安装 Conda&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;推荐使用 miniforge，安装完成后 mamba 命令也会一并可用（速度比 conda 更快）。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id="二创建虚拟环境"&gt;二、创建虚拟环境
+&lt;/h2&gt;&lt;p&gt;这里使用 mamba 创建虚拟环境，速度比 conda 更快。如果安装 miniforge 后 mamba 不存在，手动安装：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;conda install -c conda-forge mamba
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;创建 Python 3.12 虚拟环境：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# -p 指定虚拟环境的完整路径（与 -n 二选一）&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Python 版本建议 3.10 以上，版本过低可能导致拉取操作失败&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;mamba create -p &lt;span style="color:#e6db74"&gt;&amp;#34;F:\llama_factory\env&amp;#34;&lt;/span&gt; python&lt;span style="color:#f92672"&gt;=&lt;/span&gt;3.12 -y
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;激活虚拟环境：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;mamba activate &lt;span style="color:#e6db74"&gt;&amp;#34;F:\llama_factory\env&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
+&lt;h2 id="三安装-pytorch"&gt;三、安装 PyTorch
+&lt;/h2&gt;&lt;p&gt;安装 PyTorch 前，需确保版本与本机 CUDA 兼容。在 &lt;a class="link" href="https://pytorch.org/get-started/previous-versions/" target="_blank" rel="noopener"
+&gt;PyTorch 历史版本对照表&lt;/a&gt; 查询对应命令，在虚拟环境中执行：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 示例，具体版本号以官网查询结果为准&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;pip install torch&lt;span style="color:#f92672"&gt;==&lt;/span&gt;2.10.0 torchvision&lt;span style="color:#f92672"&gt;==&lt;/span&gt;0.25.0 torchaudio&lt;span style="color:#f92672"&gt;==&lt;/span&gt;2.10.0 --index-url https://download.pytorch.org/whl/cu130
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;安装完成后验证 CUDA 是否正常识别：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;python -c &lt;span style="color:#e6db74"&gt;&amp;#34;import torch; print(f&amp;#39;PyTorch版本: {torch.__version__}&amp;#39;); print(f&amp;#39;CUDA版本: {torch.version.cuda}&amp;#39;); print(f&amp;#39;CUDA可用: {torch.cuda.is_available()}&amp;#39;); print(f&amp;#39;GPU设备: {torch.cuda.get_device_name(0)}&amp;#39;)&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;本机运行结果：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;PyTorch版本: 2.10.0+cu130
+CUDA版本: 13.0
+CUDA可用: True
+GPU设备: NVIDIA GeForce RTX 3060 Laptop GPU
+&lt;/code&gt;&lt;/pre&gt;&lt;hr&gt;
+&lt;h2 id="四安装-llama-factory"&gt;四、安装 LLaMA-Factory
+&lt;/h2&gt;&lt;h3 id="41-克隆仓库"&gt;4.1 克隆仓库
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;git clone --depth &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt; https://github.com/hiyouga/LLaMA-Factory.git
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;cd LLaMA-Factory
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;也可以去 &lt;a class="link" href="https://github.com/haotian-liu/LLaMA-Factory" target="_blank" rel="noopener"
+&gt;GitHub 页面&lt;/a&gt; 手动下载。&lt;/p&gt;
+&lt;h3 id="42-安装依赖"&gt;4.2 安装依赖
+&lt;/h3&gt;&lt;p&gt;使用清华镜像源加速下载：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;pip install -e &lt;span style="color:#e6db74"&gt;&amp;#34;.[torch,metrics]&amp;#34;&lt;/span&gt; -i https://pypi.tuna.tsinghua.edu.cn/simple
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;注意&lt;/strong&gt;：如果安装失败，检查 Python 版本。我最初使用 3.10 失败，换为 3.12 后成功。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id="43-验证安装"&gt;4.3 验证安装
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;llamafactory-cli version
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;能正确输出版本号即表示安装成功。&lt;/p&gt;
+&lt;h3 id="44-启动-web-ui"&gt;4.4 启动 Web UI
+&lt;/h3&gt;&lt;p&gt;在项目目录下执行：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;llamafactory-cli webui
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;启动后访问 &lt;code&gt;http://localhost:7860/&lt;/code&gt; 进入可视化操作界面。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id="五训练模型"&gt;五、训练模型
+&lt;/h2&gt;&lt;p&gt;以 Qwen2.5-0.5B-Instruct 模型为例进行微调训练。&lt;/p&gt;
+&lt;h3 id="51-准备数据集"&gt;5.1 准备数据集
+&lt;/h3&gt;&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;将数据集文件放入项目 &lt;code&gt;data&lt;/code&gt; 目录，例如 &lt;code&gt;F:\LlamaFactory-main\data\train-fc-1000.json&lt;/code&gt;，文件内容参考：&lt;a class="link" href="../../../static/files/train-fc-1000.json" &gt;train-fc-1000.json&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;在 &lt;code&gt;F:\LlamaFactory-main\data\dataset_info.json&lt;/code&gt; 中注册数据集，按照文件中已有的格式添加：&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-json" data-lang="json"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;train-fc-1000&amp;#34;&lt;/span&gt;: {
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;#34;file_name&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;train-fc-1000.json&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="52-配置训练参数"&gt;5.2 配置训练参数
+&lt;/h3&gt;&lt;p&gt;在 Web UI 中选择模型和数据集，配置训练参数：&lt;/p&gt;
+&lt;figure&gt;&lt;img src="https://zg-dd.github.io/img/lfu/lfu02.png"
+alt="训练参数配置"&gt;&lt;figcaption&gt;
+&lt;p&gt;训练参数配置&lt;/p&gt;
+&lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;p&gt;&lt;strong&gt;内存不足问题处理：&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;笔记本 16G 内存，训练时默认启用 16 个进程并发，导致内存溢出。在额外参数中添加 &lt;code&gt;preprocessing_num_workers&lt;/code&gt; 限制预处理进程数：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-json" data-lang="json"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;{&lt;span style="color:#f92672"&gt;&amp;#34;optim&amp;#34;&lt;/span&gt;: &lt;span style="color:#e6db74"&gt;&amp;#34;adamw_torch&amp;#34;&lt;/span&gt;, &lt;span style="color:#f92672"&gt;&amp;#34;preprocessing_num_workers&amp;#34;&lt;/span&gt;: &lt;span style="color:#ae81ff"&gt;8&lt;/span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;figure&gt;&lt;img src="https://zg-dd.github.io/img/lfu/lfu03.png"
+alt="添加额外参数解决内存溢出"&gt;&lt;figcaption&gt;
+&lt;p&gt;添加额外参数解决内存溢出&lt;/p&gt;
+&lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;h3 id="53-加载测试模型"&gt;5.3 加载测试模型
+&lt;/h3&gt;&lt;p&gt;训练完成后，在 Web UI 中加载模型验证效果：&lt;/p&gt;
+&lt;figure&gt;&lt;img src="https://zg-dd.github.io/img/lfu/lfu04.png"
+alt="加载训练后的模型进行测试"&gt;&lt;figcaption&gt;
+&lt;p&gt;加载训练后的模型进行测试&lt;/p&gt;
+&lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;h3 id="54-导出模型"&gt;5.4 导出模型
+&lt;/h3&gt;&lt;p&gt;在 Chat 同级菜单的 &lt;strong&gt;Export&lt;/strong&gt; 页面，调整导出目录后点击导出，保存模型文件。&lt;/p&gt;
+&lt;h3 id="55-通过-ollama-加载模型"&gt;5.5 通过 Ollama 加载模型
+&lt;/h3&gt;&lt;p&gt;导出目录下会自动生成 &lt;code&gt;Modelfile&lt;/code&gt; 文件，可直接通过 ollama 加载：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# mymodel 为自定义模型名称&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;ollama create mymodel -f ./Modelfile
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
+&lt;h2 id="六问题排查"&gt;六、问题排查
+&lt;/h2&gt;&lt;h3 id="61-ollama-模型加载报错-500"&gt;6.1 ollama 模型加载报错 500
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;现象&lt;/strong&gt;：ollama 加载模型成功，但聊天时报错 500；跑官方 qwen2.5-0.5B-Instruct 模型正常。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;原因&lt;/strong&gt;：LLaMA-Factory 内置的 llama.cpp 版本过低，导致转换的 GGUF 文件与 ollama 不兼容。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;解决方案&lt;/strong&gt;：单独使用最新版 llama.cpp 重新转换模型。&lt;/p&gt;
+&lt;h4 id="611-克隆-llamacpp"&gt;6.1.1 克隆 llama.cpp
+&lt;/h4&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;git clone https://github.com/ggerganov/llama.cpp
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;cd llama.cpp
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;pip install -r requirements/requirements-convert_hf_to_gguf.txt
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id="612-转换模型"&gt;6.1.2 转换模型
+&lt;/h4&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 将训练好的模型转换为 GGUF 格式&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;python convert_hf_to_gguf&lt;span style="color:#f92672"&gt;.&lt;/span&gt;py &lt;span style="color:#e6db74"&gt;&amp;#34;I:&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;\a&lt;/span&gt;&lt;span style="color:#e6db74"&gt;i-model&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;\t&lt;/span&gt;&lt;span style="color:#e6db74"&gt;rain_2026-04-11-12-40-19&amp;#34;&lt;/span&gt; &lt;span style="color:#f92672"&gt;--&lt;/span&gt;outtype f16 &lt;span style="color:#f92672"&gt;--&lt;/span&gt;outfile &lt;span style="color:#e6db74"&gt;&amp;#34;I:&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;\a&lt;/span&gt;&lt;span style="color:#e6db74"&gt;i-model\my-qwen\qwen-finetuned.gguf&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id="613-创建-modelfile"&gt;6.1.3 创建 Modelfile
+&lt;/h4&gt;&lt;p&gt;在 &lt;code&gt;I:\ai-model\my-qwen\&lt;/code&gt; 目录下创建 &lt;code&gt;Modelfile&lt;/code&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;FROM I:\ai-model\my-qwen\qwen-finetuned.gguf
+TEMPLATE &amp;#34;&amp;#34;&amp;#34;{{ if .System }}&amp;lt;|im_start|&amp;gt;system
+{{ .System }}&amp;lt;|im_end|&amp;gt;
+{{ end }}{{ range .Messages }}{{ if eq .Role &amp;#34;user&amp;#34; }}&amp;lt;|im_start|&amp;gt;user
+{{ .Content }}&amp;lt;|im_end|&amp;gt;
+&amp;lt;|im_start|&amp;gt;assistant
+{{ else if eq .Role &amp;#34;assistant&amp;#34; }}{{ .Content }}&amp;lt;|im_end|&amp;gt;
+{{ end }}{{ end }}&amp;#34;&amp;#34;&amp;#34;
+SYSTEM &amp;#34;&amp;#34;&amp;#34;You are Qwen, created by Alibaba Cloud. You are a helpful assistant.&amp;#34;&amp;#34;&amp;#34;
+PARAMETER stop &amp;#34;&amp;lt;|im_end|&amp;gt;&amp;#34;
+PARAMETER num_ctx 4096
+&lt;/code&gt;&lt;/pre&gt;&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;说明&lt;/strong&gt;：内容与导出时的 Modelfile 一致，只需在开头添加 &lt;code&gt;FROM&lt;/code&gt; 指向新的 GGUF 文件路径。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h4 id="614-重新加载模型"&gt;6.1.4 重新加载模型
+&lt;/h4&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 移除旧模型&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;ollama rm mymodel-Qwen2.5-0.5B-Instruct
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 创建新模型&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;ollama create mymodel-Qwen2.5-0.5B-Instruct -f I:&lt;span style="color:#ae81ff"&gt;\a&lt;/span&gt;i-model&lt;span style="color:#ae81ff"&gt;\m&lt;/span&gt;y-qwen&lt;span style="color:#ae81ff"&gt;\M&lt;/span&gt;odelfile
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 测试运行&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;ollama run mymodel-Qwen2.5-0.5B-Instruct &lt;span style="color:#e6db74"&gt;&amp;#34;hello&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description></item><item><title>Milvus Standalone 模式安装完整指南及常见问题解决</title><link>https://zg-dd.github.io/stu/milvus-install-guide/</link><pubDate>Tue, 24 Feb 2026 19:07:58 +0800</pubDate><guid>https://zg-dd.github.io/stu/milvus-install-guide/</guid><description>&lt;h2 id="引言"&gt;引言
 &lt;/h2&gt;&lt;p&gt;Milvus 是一个开源向量数据库，专为处理大规模向量数据而设计，支持向量相似性搜索、实时查询等功能。Standalone 模式是 Milvus 的单机嵌入式部署方式，适合学习、测试和小规模应用。它使用 Docker 容器运行，嵌入 etcd 作为元数据存储，无需外部依赖。&lt;/p&gt;
 &lt;p&gt;在实际安装过程中，我遇到了镜像标签不存在、网络连接拒绝、容器权限不足导致启动失败（Exited 134）、脚本卡在等待状态等多个问题。本文基于 2026 年 2 月 24 日在 VMware Ubuntu 虚拟机中的真实安装经验，提供完整步骤，并系统归纳问题及解决方案。宿主机配置为 Intel Core i9-12900H + 16 GB RAM。&lt;/p&gt;
 &lt;h2 id="环境准备"&gt;环境准备

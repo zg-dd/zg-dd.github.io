@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="前置安装\r说明： 工具\t说明\t官方下载/安装地址 NVIDIA 驱动\t显卡硬件驱动，是一切的基础\tNVIDIA 驱动官方下载 ：https://www.nvidia.com/Download/index.aspx CUDA Toolkit\tGPU 编程的开发工具包\tCUDA官方下载(建议12.4) ：https://developer.nvidia.com/cuda-toolkit-archive cuDNN\tGPU加速库\tcuDNN官方下载：https://developer.nvidia.com/cudnn Conda\t包管理和环境管理工具\t推荐使用miniforge：https://conda-forge.org/miniforge/\n">
+<title>llama_factory 使用介绍</title>
+
+<link rel='canonical' href='http://localhost:1313/stu/llama_factory-use/'>
+
+<link rel="stylesheet" href="/scss/style.min.ff560f1cad7a040e336f2dd6880b9ee1ad344d6e3d8f5411e5a1aaa8b23bbdd0.css"><meta property='og:title' content="llama_factory 使用介绍">
+<meta property='og:description' content="前置安装\r说明： 工具\t说明\t官方下载/安装地址 NVIDIA 驱动\t显卡硬件驱动，是一切的基础\tNVIDIA 驱动官方下载 ：https://www.nvidia.com/Download/index.aspx CUDA Toolkit\tGPU 编程的开发工具包\tCUDA官方下载(建议12.4) ：https://developer.nvidia.com/cuda-toolkit-archive cuDNN\tGPU加速库\tcuDNN官方下载：https://developer.nvidia.com/cudnn Conda\t包管理和环境管理工具\t推荐使用miniforge：https://conda-forge.org/miniforge/\n">
+<meta property='og:url' content='http://localhost:1313/stu/llama_factory-use/'>
+<meta property='og:site_name' content='小巷的随笔'>
+<meta property='og:type' content='article'><meta property='article:section' content='Stu' /><meta property='article:tag' content='AI模型训练' /><meta property='article:published_time' content='2026-04-11T18:40:55&#43;08:00'/><meta property='article:modified_time' content='2026-04-11T18:40:55&#43;08:00'/>
+<meta name="twitter:title" content="llama_factory 使用介绍">
+<meta name="twitter:description" content="前置安装\r说明： 工具\t说明\t官方下载/安装地址 NVIDIA 驱动\t显卡硬件驱动，是一切的基础\tNVIDIA 驱动官方下载 ：https://www.nvidia.com/Download/index.aspx CUDA Toolkit\tGPU 编程的开发工具包\tCUDA官方下载(建议12.4) ：https://developer.nvidia.com/cuda-toolkit-archive cuDNN\tGPU加速库\tcuDNN官方下载：https://developer.nvidia.com/cudnn Conda\t包管理和环境管理工具\t推荐使用miniforge：https://conda-forge.org/miniforge/\n">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_a0cc1cf57968b27d.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🌱</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">小巷的随笔</a></h1>
+            <h2 class="site-description">记录，不是为了证明自己；而是把“解决问题 → 思考 → 沉淀”形成习惯。</h2>
+        </div>
+    </header><ol class="menu" id="main-menu">
+        
+        
+        
+        <li  class='current' >
+            <a href='/stu/' >
+                
+                
+                
+                <span>学习笔记</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/blog/' >
+                
+                
+                
+                <span>随笔思考</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/life/' >
+                
+                
+                
+                <span>生活记录</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/categories/' >
+                
+                
+                
+                <span>分类</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/tags/' >
+                
+                
+                
+                <span>标签</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+                    
+                        <li id="i18n-switch">  
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                            <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
+                                
+                                    <option value="http://localhost:1313/" selected>简体中文</option>
+                                
+                                    <option value="http://localhost:1313/en/" >English</option>
+                                
+                            </select>
+                        </li>
+                    
+                
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ul>
+    <li><a href="#前置安装">前置安装</a></li>
+    <li><a href="#创建虚拟环境">创建虚拟环境</a></li>
+    <li><a href="#安装pytorch">安装PyTorch</a></li>
+    <li><a href="#训练模型">训练模型</a></li>
+  </ul>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/ai/" >
+                AI
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/stu/llama_factory-use/">llama_factory 使用介绍</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published" datetime='2026-04-11T18:40:55&#43;08:00'>Apr 11, 2026</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 6 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="前置安装">前置安装
+</h2><p>说明：
+工具	说明	官方下载/安装地址
+NVIDIA 驱动	显卡硬件驱动，是一切的基础	NVIDIA 驱动官方下载 ：https://www.nvidia.com/Download/index.aspx
+CUDA Toolkit	GPU 编程的开发工具包	CUDA官方下载(建议12.4) ：https://developer.nvidia.com/cuda-toolkit-archive
+cuDNN	GPU加速库	cuDNN官方下载：https://developer.nvidia.com/cudnn
+Conda	包管理和环境管理工具	推荐使用miniforge：https://conda-forge.org/miniforge/</p>
+<p>首先必须是NVIDIA显卡，显卡硬件驱动，是一切的基础	NVIDIA 驱动官方下载 ：https://www.nvidia.com/Download/index.aspx， 检查显卡是否安装成功：nvidia-smi后会显示显卡信息</p>
+<p>安装好显卡之后，打开NVIDIA控制面板查询支持的CUDA版本</p>
+<figure><img src="/img/golang_stu/lfu/lfu01.png">
+</figure>
+
+<p>去官网下载对应版本的CUDA，CUDA官方下载：https://developer.nvidia.com/cuda-toolkit-archive，只要是支持的显卡版本以下都可以，尽量选择可支持的最新版本（我这里支持的是13.2.0）。 以上全部选择精简安装即可。检查CUDA是否安装成功：nvcc -V</p>
+<p>然后安装cuDNN：cuDNN官方下载：https://developer.nvidia.com/cudnn . 安装最新版本即可。</p>
+<p>然后安装Conda：推荐使用miniforge：https://conda-forge.org/miniforge/, 如果本地有安装Python环境，也没有关系，可以安装。为的是方便创建虚拟环境，使用。</p>
+<hr>
+<h2 id="创建虚拟环境">创建虚拟环境
+</h2><p>我这里是用的是mamba ，使用canda也可以，但是mamba速度更快，我当前情况是，安装canda之后mamba已经存在，如果不存在可以使用以下命令安装（都是在终端命令执行）：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>conda install -c conda-forge mamba
+</span></span></code></pre></div><p>创建虚拟环境llama_factory：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 这里需要注意， -n是虚拟环境名称，-p是虚拟环境路径+名称，-n和-p只能使用一个参数，这里我使用的是-p；注意python=3.12版本号。有时候可能应为版本过低会导致拉取操作失败。一般建议在在3.10以上尝试。-y是自动安装依赖包</span>
+</span></span><span style="display:flex;"><span>mamba create -p <span style="color:#e6db74">&#34;F:\llama_factory\env&#34;</span> python<span style="color:#f92672">=</span>3.12 -y
+</span></span></code></pre></div><p>激活环境：
+创建虚拟环境成功之后，进入虚拟环境：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>mamba activate <span style="color:#e6db74">&#34;F:\llama_factory\env&#34;</span>
+</span></span></code></pre></div><p>接下来就可以尽情使用python以及环境安装了。</p>
+<h2 id="安装pytorch">安装PyTorch
+</h2><p>确保安装的PyTorch与CUDA版本环境兼容（我这里是13.2.0）。直接从PyTorch官方使用pip安装，这通常能获得更好的CUDA支持。<a class="link" href="https://pytorch.org/get-started/previous-versions/"  target="_blank" rel="noopener"
+    >PyTorch与CUDA对照命令查看</a> 。
+复制命令在虚拟环境安装执行：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e">#这里是参考，具体到官网查询指定命令</span>
+</span></span><span style="display:flex;"><span>pip install torch<span style="color:#f92672">==</span>2.10.0 torchvision<span style="color:#f92672">==</span>0.25.0 torchaudio<span style="color:#f92672">==</span>2.10.0 --index-url https://download.pytorch.org/whl/cu130
+</span></span></code></pre></div><p>安装完成后，检验，pytorch是否能正常识别CUDA：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>python -c <span style="color:#e6db74">&#34;import torch; print(f&#39;PyTorch版本: {torch.__version__}&#39;); print(f&#39;PyTorch使用的CUDA版本: {torch.version.cuda}&#39;); print(f&#39;CUDA是否可用: {torch.cuda.is_available()}&#39;); print(f&#39;当前GPU设备: {torch.cuda.get_device_name(0)}&#39;)&#34;</span>
+</span></span></code></pre></div><p>我本机运行结果</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>PyTorch版本: 2.10.0+cu130
+</span></span><span style="display:flex;"><span>PyTorch使用的CUDA版本: 13.0
+</span></span><span style="display:flex;"><span>CUDA是否可用: True
+</span></span><span style="display:flex;"><span>当前GPU设备: NVIDIA GeForce RTX <span style="color:#ae81ff">3060</span> Laptop GPU
+</span></span></code></pre></div><hr>
+<p>安装LLaMa-factory：</p>
+<ol>
+<li>克隆LLaMA-Factory仓库，或者去官网下载：https://github.com/haotian-liu/LLaMA-Factory</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git clone --depth <span style="color:#ae81ff">1</span> https://github.com/hiyouga/LLaMA-Factory.git
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 进入项目目录</span>
+</span></span><span style="display:flex;"><span>cd LLaMA-Factory
+</span></span></code></pre></div><ol start="2">
+<li>安装LLaMA-Factory及其依赖，指定使用清华镜像源以加速下载(这里我当初执行失败了，查看是python版本安装了3.10，之后我就更换为3.12，成功安装)</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>pip install -e <span style="color:#e6db74">&#34;.[torch,metrics]&#34;</span> -i https://pypi.tuna.tsinghua.edu.cn/simple
+</span></span></code></pre></div><ol start="3">
+<li>验证安装
+安装完成后，通过以下命令验证LLaMA-Factory是否安装成功：</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>llamafactory-cli version
+</span></span></code></pre></div><p>如果该命令能正确输出LLaMA-Factory的版本号，说明安装成功。</p>
+<ol start="4">
+<li>启动与使用
+安装成功后，你可以在安装目录下，使用Dos命令启动LLaMA-Factory的Web界面进行可视化操作：</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>llamafactory-cli webui
+</span></span></code></pre></div><p>启动成功后，访问http://localhost:7860/，即可进入LLaMA-Factory的Web界面。</p>
+<h2 id="训练模型">训练模型
+</h2><p>这里使用一个简单模型训练：Qwen2.5-0.5B-Instruct 模型</p>
+<ol>
+<li>首先将数据集放在项目目录下，这里我放在F:\LlamaFactory-main\data\train-fc-1000.json。文件内容：<a class="link" href="../../../static/files/train-fc-1000.json" >text</a>。同时需要配置F:\LlamaFactory-main\data\dataset_info.json。 将你的配置按照原样模版添加到json文件中。
+这里示例：</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;train-fc-1000&#34;</span>: {
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;file_name&#34;</span>: <span style="color:#e6db74">&#34;train-fc-1000.json&#34;</span>
+</span></span><span style="display:flex;"><span>  },
+</span></span><span style="display:flex;"><span>  <span style="color:#960050;background-color:#1e0010">...</span>
+</span></span></code></pre></div><ol start="2">
+<li>配置训练参数：</li>
+</ol>
+<figure><img src="/img/golang_stu/lfu/lfu02.png">
+</figure>
+
+<p><strong>注意：</strong>：我的笔记本是16G，模型训练默认启用16个进程并发进行。这里启动时出现了内存溢出。</p>
+<p>这里需要额外配置了其他参数以此解决这个问题，preprocessing_num_workers参数含义是预处理数据时使用的进程数：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{<span style="color:#f92672">&#34;optim&#34;</span>: <span style="color:#e6db74">&#34;adamw_torch&#34;</span>,<span style="color:#f92672">&#34;preprocessing_num_workers&#34;</span>: <span style="color:#ae81ff">8</span>}
+</span></span></code></pre></div><figure><img src="/img/golang_stu/lfu/lfu03.png">
+</figure>
+
+<ol start="3">
+<li>加载模型，测试效果：</li>
+</ol>
+<figure><img src="/img/golang_stu/lfu/lfu04.png">
+</figure>
+
+<ol start="4">
+<li>
+<p>导出模型，在Chat同级菜单路径有Export按钮，调整必要参数，我这里只调整了导出目录，点击导出，保存模型。</p>
+</li>
+<li>
+<p>模型加载：</p>
+</li>
+</ol>
+<p>模型下载导出完成之后, 在导出目录下，存在Modelfile文件，可以通过ollama加载自己训练好的模型：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># mymodel 可自定义，为模型名称，./Modelfile为模型文件路径，可使用绝对路径，也可使用相对路径（前提在当前目录下）</span>
+</span></span><span style="display:flex;"><span>ollama create mymodel -f ./Modelfile
+</span></span></code></pre></div><p>注：我这里可能因为下载LLaMA-Factory版本问题，加载模型可以成功，启动模型时聊天会报错500，但是跑官方qwen2.5-0.5B-Instruct模型没有问题。了解后，发现可能LLaMA-Factory内置的llama.cpp 版本太低导致的。这里采用单独的llama.cpp 模型转换：
+第一步：克隆 llama.cpp</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git clone https://github.com/ggerganov/llama.cpp
+</span></span><span style="display:flex;"><span>cd llama.cpp
+</span></span><span style="display:flex;"><span>pip install -r requirements/requirements-convert_hf_to_gguf.txt
+</span></span></code></pre></div><p>第二步: 转换模型</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># I:\ai-model\train_2026-04-11-12-40-19 是训练的模型路径，I:\ai-model\qwen-finetuned.gguf 是转换后的模型路径</span>
+</span></span><span style="display:flex;"><span>python convert_hf_to_gguf<span style="color:#f92672">.</span>py <span style="color:#e6db74">&#34;I:</span><span style="color:#ae81ff">\a</span><span style="color:#e6db74">i-model</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">rain_2026-04-11-12-40-19&#34;</span> <span style="color:#f92672">--</span>outtype f16 <span style="color:#f92672">--</span>outfile <span style="color:#e6db74">&#34;I:</span><span style="color:#ae81ff">\a</span><span style="color:#e6db74">i-model\my-qwen\qwen-finetuned.gguf&#34;</span>
+</span></span></code></pre></div><p>第三步：在I:\ai-model\my-qwen目录下创建Modelfile文件，内容是：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">FROM</span> <span style="color:#960050;background-color:#1e0010">I:\ai-model\my-qwen\qwen-finetuned.gguf</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">TEMPLATE</span> <span style="color:#e6db74">&#34;&#34;&#34;{{ if .System }}&lt;|im_start|&gt;system
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">{{ .System }}&lt;|im_end|&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">{{ end }}{{ range .Messages }}{{ if eq .Role &#34;</span><span style="color:#960050;background-color:#1e0010">user</span><span style="color:#e6db74">&#34; }}&lt;|im_start|&gt;user
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">{{ .Content }}&lt;|im_end|&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&lt;|im_start|&gt;assistant
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">{{ else if eq .Role &#34;</span><span style="color:#960050;background-color:#1e0010">assistant</span><span style="color:#e6db74">&#34; }}{{ .Content }}&lt;|im_end|&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">{{ end }}{{ end }}&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">SYSTEM</span> <span style="color:#e6db74">&#34;&#34;&#34;You are Qwen, created by Alibaba Cloud. You are a helpful assistant.&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">PARAMETER</span> <span style="color:#960050;background-color:#1e0010">stop</span> <span style="color:#e6db74">&#34;&lt;|im_end|&gt;&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">PARAMETER</span> <span style="color:#960050;background-color:#1e0010">num_ctx</span> <span style="color:#ae81ff">4096</span>
+</span></span></code></pre></div><p>Modelfile文件主体内容和源导出文件一致，只是在开头添加了FROM参数，指定模型文件路径。FROM I:\ai-model\my-qwen\qwen-finetuned.gguf</p>
+<p>然后通过如下命令重新安装模型：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 移除旧模型</span>
+</span></span><span style="display:flex;"><span>ollama rm mymodel-Qwen2.5-0.5B-Instruct
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 安装新模型</span>
+</span></span><span style="display:flex;"><span>ollama create mymodel-Qwen2.5-0.5B-Instruct -f I:<span style="color:#ae81ff">\a</span>i-model<span style="color:#ae81ff">\m</span>y-qwen<span style="color:#ae81ff">\M</span>odelfile
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 测试运行模型</span>
+</span></span><span style="display:flex;"><span>ollama run mymodel-Qwen2.5-0.5B-Instruct <span style="color:#e6db74">&#34;hello&#34;</span>
+</span></span></code></pre></div>
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/ai%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83/">AI模型训练</a>
+        
+    </section>
+
+
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    <script
+    src="https://giscus.app/client.js"
+    data-repo="zg-dd/zg-dd.github.io"
+    data-repo-id="R_kgDOQwB7tw"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOQwB7t84C0WGD"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="bottom"
+    data-theme="preferred_color_scheme"
+    data-lang="zh-CN"
+    data-loading=""
+    crossorigin="anonymous"
+    async
+></script>
+<script>
+    function setGiscusTheme(theme) {
+        let giscus = document.querySelector("iframe.giscus-frame");
+        if (giscus) {
+            giscus.contentWindow.postMessage(
+                {
+                    giscus: {
+                        setConfig: {
+                            theme: theme,
+                        },
+                    },
+                },
+                "https://giscus.app"
+            );
+        }
+    }
+
+    (function () {
+        addEventListener("message", (e) => {
+            if (event.origin !== "https://giscus.app") return;
+            handler();
+        });
+        window.addEventListener("onColorSchemeChange", handler);
+
+        function handler() {
+            if (document.documentElement.dataset.scheme === "light") {
+                setGiscusTheme('preferred_color_scheme');
+            } else {
+                setGiscusTheme('preferred_color_scheme');
+            }
+        }
+    })();
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2026 小巷的随笔
+    </section>
+    
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.33.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+    
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.45aad63e0378c1185109134874d406d25af802b2faa021ec5fd0dfa8bbfa4d2a.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>
