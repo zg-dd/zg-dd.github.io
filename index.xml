@@ -143,19 +143,697 @@ alt="加载训练后的模型进行测试"&gt;&lt;figcaption&gt;
 &lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# mymodel 为自定义模型名称&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;ollama create mymodel -f ./Modelfile
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
-&lt;h2 id="六问题排查"&gt;六、问题排查
-&lt;/h2&gt;&lt;h3 id="61-ollama-模型加载报错-500"&gt;6.1 ollama 模型加载报错 500
+&lt;h2 id="六llamafactory-模型参数详解"&gt;六、LLaMaFactory 模型参数详解
+&lt;/h2&gt;&lt;h3 id="61-基本选择"&gt;6.1 基本选择
+&lt;/h3&gt;&lt;h4 id="611-模型分类"&gt;6.1.1 模型分类
+&lt;/h4&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;分类类型&lt;/th&gt;
+&lt;th&gt;子类型&lt;/th&gt;
+&lt;th&gt;说明&lt;/th&gt;
+&lt;th&gt;适用场景&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;基础类型&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;base&lt;/td&gt;
+&lt;td&gt;通用基础模型，百科全书式知识&lt;/td&gt;
+&lt;td&gt;通用任务&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;chat&lt;/td&gt;
+&lt;td&gt;对话类模型&lt;/td&gt;
+&lt;td&gt;聊天、交互式对话&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;instruct&lt;/td&gt;
+&lt;td&gt;指令类模型&lt;/td&gt;
+&lt;td&gt;根据指令执行任务&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;Math&amp;amp;Coder&lt;/td&gt;
+&lt;td&gt;数学或代码专用模型&lt;/td&gt;
+&lt;td&gt;数学计算、代码生成&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;多模态&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;VL&lt;/td&gt;
+&lt;td&gt;视觉语言模型&lt;/td&gt;
+&lt;td&gt;图文混合处理&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;video&lt;/td&gt;
+&lt;td&gt;视频理解模型&lt;/td&gt;
+&lt;td&gt;视频内容分析&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;audio&lt;/td&gt;
+&lt;td&gt;语音模型&lt;/td&gt;
+&lt;td&gt;音频处理、语音识别&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h4 id="612-微调方法对比"&gt;6.1.2 微调方法对比
+&lt;/h4&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;方法&lt;/th&gt;
+&lt;th&gt;原理&lt;/th&gt;
+&lt;th&gt;优点&lt;/th&gt;
+&lt;th&gt;缺点&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Full（全参数）&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;重新训练所有参数&lt;/td&gt;
+&lt;td&gt;• 适应能力最强&lt;!-- raw HTML omitted --&gt;• 调优后性能最优&lt;/td&gt;
+&lt;td&gt;• 资源消耗大&lt;!-- raw HTML omitted --&gt;• 可能丢失原有知识&lt;!-- raw HTML omitted --&gt;• 容易过拟合&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Freeze（冻结）&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;冻结部分参数，只训练部分层&lt;/td&gt;
+&lt;td&gt;• 训练速度快&lt;!-- raw HTML omitted --&gt;• 过拟合风险小&lt;!-- raw HTML omitted --&gt;• 资源占用较少&lt;/td&gt;
+&lt;td&gt;• 性能不如全参&lt;!-- raw HTML omitted --&gt;• 冻结点难以确定&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;LoRA&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;在关键节点插入可训练的小模块&lt;/td&gt;
+&lt;td&gt;• 资源占用少&lt;!-- raw HTML omitted --&gt;• 避免灾难性遗忘&lt;!-- raw HTML omitted --&gt;• 目前最热门&lt;/td&gt;
+&lt;td&gt;• 复杂任务性能低于全参&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;blockquote&gt;
+&lt;p&gt;💡 &lt;strong&gt;推荐&lt;/strong&gt;：大多数场景下推荐使用 &lt;strong&gt;LoRA&lt;/strong&gt; 微调方法。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h4 id="613-其他参数"&gt;6.1.3 其他参数
+&lt;/h4&gt;&lt;h5 id="模型量化"&gt;模型量化
+&lt;/h5&gt;&lt;p&gt;&lt;strong&gt;概念&lt;/strong&gt;：通过压缩浮点数位数来减小模型体积（如 32位浮点 → 8位整数）&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;量化类型&lt;/th&gt;
+&lt;th&gt;说明&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;8位量化&lt;/td&gt;
+&lt;td&gt;精度损失较小，资源节省明显&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;4位量化&lt;/td&gt;
+&lt;td&gt;资源占用最小，精度损失较大&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;量化公式&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;scale = 量化位数 / (max - min)
+量化后值 = round(scale × 量化前值)
+&lt;/code&gt;&lt;/pre&gt;&lt;blockquote&gt;
+&lt;p&gt;⚠️ &lt;strong&gt;注意&lt;/strong&gt;：还原后会损失精度。如果资源充足，建议不启用量化。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h5 id="加速方式"&gt;加速方式
+&lt;/h5&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;默认选项&lt;/strong&gt;：&lt;code&gt;auto&lt;/code&gt;（推荐）&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;资源受限方案&lt;/strong&gt;：&lt;code&gt;unsloth + 4位量化&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h3 id="62-微调参数详解"&gt;6.2 微调参数详解
+&lt;/h3&gt;&lt;h4 id="621-学习率learning-rate"&gt;6.2.1 学习率（Learning Rate）
+&lt;/h4&gt;&lt;blockquote&gt;
+&lt;p&gt;📖 &lt;strong&gt;类比&lt;/strong&gt;：学习时每次对知识的调整幅度&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;项目&lt;/th&gt;
+&lt;th&gt;说明&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;取值范围&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;通常在 0-1 之间&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;影响&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;• &lt;strong&gt;太大&lt;/strong&gt;：调整幅度大，学习快，但容易受单次训练影响而走偏&lt;!-- raw HTML omitted --&gt;• &lt;strong&gt;太小&lt;/strong&gt;：过于谨慎，进步慢，但稳定不易改变已学知识&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;显存影响&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;❌ 无影响&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;推荐配置&lt;/strong&gt;：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;场景&lt;/th&gt;
+&lt;th&gt;学习率&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;LoRA 一般微调&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;5e-5&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;保守微调&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;4e-5&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;小数据集微调&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;4e-5 ~ 5e-5&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;全参数微调&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;1e-5&lt;/code&gt;（更谨慎）&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;blockquote&gt;
+&lt;p&gt;🔧 &lt;strong&gt;辅助工具&lt;/strong&gt;：使用学习率调节器（Scheduler）动态自我调整，兼顾速度和精度。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h4 id="622-训练轮数epochs"&gt;6.2.2 训练轮数（Epochs）
+&lt;/h4&gt;&lt;blockquote&gt;
+&lt;p&gt;📖 &lt;strong&gt;类比&lt;/strong&gt;：完整阅读一本书的遍数&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;项目&lt;/th&gt;
+&lt;th&gt;说明&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;定义&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;完整遍历数据集的次数&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;影响&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;• &lt;strong&gt;太大&lt;/strong&gt;：过度学习，出现过拟合，&amp;ldquo;学傻了&amp;rdquo;&lt;!-- raw HTML omitted --&gt;• &lt;strong&gt;太小&lt;/strong&gt;：学习不充分，出现欠拟合&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;显存影响&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;❌ 无影响，仅影响训练时间&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;推荐配置&lt;/strong&gt;：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;指标&lt;/th&gt;
+&lt;th&gt;建议值&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;常规设置&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;3&lt;/code&gt; 轮&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;取值范围&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;3-6&lt;/code&gt; 轮，不超过 &lt;code&gt;10&lt;/code&gt; 轮&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Loss 监控&lt;/td&gt;
+&lt;td&gt;控制在 &lt;code&gt;0.5-1.5&lt;/code&gt; 之间&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;调整策略&lt;/td&gt;
+&lt;td&gt;若 Loss 未增大，可适当增加轮数&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;数据集大小&lt;/td&gt;
+&lt;td&gt;数据集越小，轮数应越少&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h4 id="623-批量大小batch-size"&gt;6.2.3 批量大小（Batch Size）
+&lt;/h4&gt;&lt;blockquote&gt;
+&lt;p&gt;📖 &lt;strong&gt;类比&lt;/strong&gt;：一口气学完多少章节再总结&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;项目&lt;/th&gt;
+&lt;th&gt;说明&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;定义&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;每次更新参数所使用的样本数量&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;影响&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;• &lt;strong&gt;大批量&lt;/strong&gt;：学得快，掌握全局，但泛化能力差，易过拟合&lt;!-- raw HTML omitted --&gt;• &lt;strong&gt;小批量&lt;/strong&gt;：学得精细，细节到位，泛化能力强，但速度慢&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;显存影响&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;✅ &lt;strong&gt;影响很大&lt;/strong&gt;，单批量越大，显存消耗越大&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;核心参数&lt;/strong&gt;：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;参数&lt;/th&gt;
+&lt;th&gt;符号&lt;/th&gt;
+&lt;th&gt;说明&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;批处理大小&lt;/td&gt;
+&lt;td&gt;A&lt;/td&gt;
+&lt;td&gt;每个 GPU 一次处理的样本量&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;梯度累积&lt;/td&gt;
+&lt;td&gt;B&lt;/td&gt;
+&lt;td&gt;累计多少次才更新参数&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;理解案例&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;设 A=2, B=5
+→ 每个 GPU 一次学 2 条
+→ 等学完 5 次（攒了 10 条）后算一个批次完成，调整参数
+&lt;/code&gt;&lt;/pre&gt;&lt;blockquote&gt;
+&lt;p&gt;💡 &lt;strong&gt;设计目的&lt;/strong&gt;：梯度累积用于解决 GPU 单次处理显存有限但又需要大批次训练的场景。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;strong&gt;推荐配置&lt;/strong&gt;：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;场景&lt;/th&gt;
+&lt;th&gt;批处理大小(A)&lt;/th&gt;
+&lt;th&gt;梯度累积(B)&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;小数据集微调&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;1-2&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;6-10&lt;/code&gt;，逐步调大以加快速度&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;blockquote&gt;
+&lt;p&gt;🔗 &lt;strong&gt;配合原则&lt;/strong&gt;：大学习率配大批量，小学习率配小批量。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h4 id="624-截断长度cutoff-length"&gt;6.2.4 截断长度（Cutoff Length）
+&lt;/h4&gt;&lt;blockquote&gt;
+&lt;p&gt;📖 &lt;strong&gt;类比&lt;/strong&gt;：一次能记住的某一章相关知识的量&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;项目&lt;/th&gt;
+&lt;th&gt;说明&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;定义&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;模型处理文本时一次能接受的最大 token 数量&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;理想值&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;数据集中 token 最多的那条样本的长度&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;影响&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;• &lt;strong&gt;过小&lt;/strong&gt;：学到不完整知识，影响学习效果&lt;!-- raw HTML omitted --&gt;• &lt;strong&gt;过大&lt;/strong&gt;：浪费显存，需压低批次防止溢出&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;显存影响&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;✅ &lt;strong&gt;影响较大&lt;/strong&gt;：&lt;code&gt;显存 ∝ (cutoff_len)² × batch_size&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;显存估算案例&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;截断长度 1024，单批次 8
+→ 改为 2048 时，单批次可能需要降到 4
+→ 否则显存可能溢出导致训练终止
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;推荐策略&lt;/strong&gt;：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;数据分布&lt;/th&gt;
+&lt;th&gt;建议&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;样本长度均衡&lt;/td&gt;
+&lt;td&gt;设置为最大样本的 token 长度&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;极少数超长样本&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;方案1&lt;/strong&gt;（推荐）：剔除异常样本&lt;!-- raw HTML omitted --&gt;&lt;strong&gt;方案2&lt;/strong&gt;：选择 99% 分位线的长度&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;辅助工具&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a class="link" href="https://tiktokenizer.vercel.app/" target="_blank" rel="noopener"
+&gt;Tiktokenizer&lt;/a&gt; - 在线 Token 计算器&lt;/li&gt;
+&lt;li&gt;LLaMAFactory 自带 &lt;code&gt;length_cdf.py&lt;/code&gt; 脚本&lt;/li&gt;
+&lt;li&gt;直接将最长样本丢给 AI 助手估算 Token 数&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h4 id="625-lora-秩lora-rank"&gt;6.2.5 LoRA 秩（LoRA Rank）
+&lt;/h4&gt;&lt;blockquote&gt;
+&lt;p&gt;📖 &lt;strong&gt;类比&lt;/strong&gt;：学习时采用的解题方法种类&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;strong&gt;技术原理&lt;/strong&gt;：&lt;/p&gt;
+&lt;p&gt;LoRA 微调不动原始模型参数，用两个小矩阵相乘得到增量矩阵 ΔW：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;假设 512×1024 的大矩阵
+可用 512×8 和 8×1024 两个小矩阵乘积得到
+→ LoRA 的秩就是 8
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;缩放系数 α&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;最终权重 W = W₁ + α × ΔW
+一般设置 α = 2 × rank
+&lt;/code&gt;&lt;/pre&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;项目&lt;/th&gt;
+&lt;th&gt;说明&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;定义&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;使用 LoRA 微调时参数关联性的程度&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;影响&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;• &lt;strong&gt;秩小&lt;/strong&gt;：方法稳定，不易过拟合，显存占用小，但可能无法处理复杂问题&lt;!-- raw HTML omitted --&gt;• &lt;strong&gt;秩大&lt;/strong&gt;：思路更多，能解决复杂问题，但容易强行关联不相关内容，造成过拟合&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;显存影响&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;✅ 有影响，但不是太大&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;推荐配置&lt;/strong&gt;：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;参数&lt;/th&gt;
+&lt;th&gt;建议值&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;初始秩&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;8&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;尝试范围&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;8-16&lt;/code&gt; 逐渐尝试&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;缩放系数&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;2 × rank&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;调整策略&lt;/td&gt;
+&lt;td&gt;若学习效果不足，逐渐调大&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h4 id="626-验证集比例validation-split"&gt;6.2.6 验证集比例（Validation Split）
+&lt;/h4&gt;&lt;blockquote&gt;
+&lt;p&gt;📖 &lt;strong&gt;类比&lt;/strong&gt;：留多少题目用于考试测验学习效果&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;项目&lt;/th&gt;
+&lt;th&gt;说明&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;定义&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;数据集中用于验证的比例（0-1 之间）&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;影响&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;• 不设置也可&lt;!-- raw HTML omitted --&gt;• 设置后可在 Loss 曲线中观测验证集表现&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;显存影响&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;❌ 无影响，仅划分数据比例&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;推荐配置&lt;/strong&gt;：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;数据集规模&lt;/th&gt;
+&lt;th&gt;验证比例&lt;/th&gt;
+&lt;th&gt;说明&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;小数据集（&amp;lt;1000）&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;0.1-0.2&lt;/code&gt;（10%-20%）&lt;/td&gt;
+&lt;td&gt;保证验证集总数 ≥100&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;大数据集（&amp;gt;10000）&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;0.05-0.1&lt;/code&gt;（5%-10%）&lt;/td&gt;
+&lt;td&gt;-&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;复杂任务&lt;/td&gt;
+&lt;td&gt;适当调大&lt;/td&gt;
+&lt;td&gt;用于监控防止过拟合&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;简单任务&lt;/td&gt;
+&lt;td&gt;适当调小&lt;/td&gt;
+&lt;td&gt;避免浪费训练数据&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;blockquote&gt;
+&lt;p&gt;⚠️ &lt;strong&gt;重要&lt;/strong&gt;：验证集总数尽量不要小于 100，否则验证结果不足以反映学习情况。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h3 id="63-开始训练"&gt;6.3 开始训练
+&lt;/h3&gt;&lt;h4 id="631-显存估算仅供参考"&gt;6.3.1 显存估算（仅供参考）
+&lt;/h4&gt;&lt;p&gt;&lt;strong&gt;显存组成&lt;/strong&gt;：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;组成部分&lt;/th&gt;
+&lt;th&gt;估算值&lt;/th&gt;
+&lt;th&gt;说明&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;基础模型&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;0.5B ≈ 1GB&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;经验数据&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;LLaMAFactory&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;≈ 1GB&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;框架占用&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;LoRA 适配器&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;≈ 0.5GB&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;适配器占用&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;训练过程数据&lt;/td&gt;
+&lt;td&gt;与 &lt;code&gt;(token截断长度 × 单批量大小)&lt;/code&gt; 相关&lt;/td&gt;
+&lt;td&gt;见下方公式&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;训练数据显存公式&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;1024 截断长度，批次为 1 的情况下 ≈ 2.5GB
+单次处理 token 每加 1k → 显存增加 2.5GB
+批量每 +1 → 显存增加 2.5GB
+与梯度累计无关（梯度累积本身就是为降低大批量显存占用设计的）
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;实战案例&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;硬件：RTX 4060（8GB 显存）
+模型：Qwen2.5-0.5B-Instruct
+配置：截断长度 1024，单批量 2，梯度累积 8，LoRA 微调
+显存计算 = 1 + 1 + 0.5 + 2.5 × 2 = 7.5 GB ✅ 够用
+&lt;/code&gt;&lt;/pre&gt;&lt;hr&gt;
+&lt;h4 id="632-loss-曲线分析与调优"&gt;6.3.2 Loss 曲线分析与调优
+&lt;/h4&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Loss 表现&lt;/th&gt;
+&lt;th&gt;可能原因&lt;/th&gt;
+&lt;th&gt;解决方案&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;平稳小波动但不下降&lt;/strong&gt;&lt;figure&gt;&lt;img src="https://zg-dd.github.io/img/lfu/lfu05.png" width="80%"&gt;
+&lt;/figure&gt;
+&lt;/td&gt;
+&lt;td&gt;• 模型没学到东西&lt;!-- raw HTML omitted --&gt;• 数据集无规律或存在大量异常数据&lt;/td&gt;
+&lt;td&gt;调大学习率&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;下降太慢，未触底&lt;/strong&gt;&lt;figure&gt;&lt;img src="https://zg-dd.github.io/img/lfu/lfu06.png" width="80%"&gt;
+&lt;/figure&gt;
+&lt;/td&gt;
+&lt;td&gt;• 数据集没学完&lt;!-- raw HTML omitted --&gt;• 学习不够彻底&lt;/td&gt;
+&lt;td&gt;调大训练轮数&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;上下大幅震荡&lt;/strong&gt;&lt;figure&gt;&lt;img src="https://zg-dd.github.io/img/lfu/lfu07.png" width="80%"&gt;
+&lt;/figure&gt;
+&lt;/td&gt;
+&lt;td&gt;• 学习率过大，参数调整过度&lt;!-- raw HTML omitted --&gt;• 批量太小，受单批次噪声影响大&lt;/td&gt;
+&lt;td&gt;适当调低学习率或调大批量&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;开始快降，最后平缓不触底&lt;/strong&gt;&lt;figure&gt;&lt;img src="https://zg-dd.github.io/img/lfu/lfu08.png" width="80%"&gt;
+&lt;/figure&gt;
+&lt;/td&gt;
+&lt;td&gt;• 学习率达到瓶颈&lt;!-- raw HTML omitted --&gt;• 达到局部最优解&lt;/td&gt;
+&lt;td&gt;适当调大学习率，配合调大批量&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;下降后回升&lt;/strong&gt;&lt;figure&gt;&lt;img src="https://zg-dd.github.io/img/lfu/lfu09.png" width="80%"&gt;
+&lt;/figure&gt;
+&lt;/td&gt;
+&lt;td&gt;• 数据集有问题&lt;!-- raw HTML omitted --&gt;• 学习率异常大，破坏最优解&lt;/td&gt;
+&lt;td&gt;修正数据集，去除异常数据&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;Loss 目标区间&lt;/strong&gt;：&lt;code&gt;0.5 - 1.5&lt;/code&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id="64-参数调优流程建议"&gt;6.4 参数调优流程建议
+&lt;/h3&gt;&lt;pre class="mermaid"&gt;
+graph TD
+A[开始训练] --&amp;gt; B{观察 Loss 曲线}
+B --&amp;gt;|平稳不下降| C[调大学习率]
+B --&amp;gt;|下降太慢| D[增加训练轮数]
+B --&amp;gt;|大幅震荡| E[调低学习率或增大批量]
+B --&amp;gt;|平缓不触底| F[调大学习率+批量]
+B --&amp;gt;|下降后回升| G[检查并清理数据集]
+C --&amp;gt; H[重新训练]
+D --&amp;gt; H
+E --&amp;gt; H
+F --&amp;gt; H
+G --&amp;gt; H
+H --&amp;gt; I{Loss 是否在 0.5-1.5?}
+I --&amp;gt;|是| J[✅ 训练成功]
+I --&amp;gt;|否| B
+&lt;/pre&gt;
+&lt;hr&gt;
+&lt;h3 id="65-快速参考表"&gt;6.5 快速参考表
+&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;参数&lt;/th&gt;
+&lt;th&gt;推荐值&lt;/th&gt;
+&lt;th&gt;显存影响&lt;/th&gt;
+&lt;th&gt;关键提示&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;学习率&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;5e-5&lt;/code&gt;（LoRA）&lt;/td&gt;
+&lt;td&gt;❌&lt;/td&gt;
+&lt;td&gt;全参用 &lt;code&gt;1e-5&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;训练轮数&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;3-6&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;❌&lt;/td&gt;
+&lt;td&gt;不超过 10&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;批处理大小&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;1-2&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;✅ 大&lt;/td&gt;
+&lt;td&gt;小数据集从 1 开始&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;梯度累积&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;6-10&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;❌&lt;/td&gt;
+&lt;td&gt;配合批处理大小&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;截断长度&lt;/td&gt;
+&lt;td&gt;按数据分布&lt;/td&gt;
+&lt;td&gt;✅ 很大&lt;/td&gt;
+&lt;td&gt;平方级影响显存&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;LoRA 秩&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;8-16&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;⚠️ 中等&lt;/td&gt;
+&lt;td&gt;从 8 开始尝试&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;缩放系数&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;2 × rank&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;-&lt;/td&gt;
+&lt;td&gt;固定倍数关系&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;验证集比例&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;0.05-0.2&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;❌&lt;/td&gt;
+&lt;td&gt;总数≥100&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;blockquote&gt;
+&lt;p&gt;🎯 &lt;strong&gt;新手建议&lt;/strong&gt;：先从推荐值开始，根据 Loss 曲线逐步调整，不要一次性改动多个参数。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id="七问题排查"&gt;七、问题排查
+&lt;/h2&gt;&lt;h3 id="71-ollama-模型加载报错-500"&gt;7.1 ollama 模型加载报错 500
 &lt;/h3&gt;&lt;p&gt;&lt;strong&gt;现象&lt;/strong&gt;：ollama 加载模型成功，但聊天时报错 500；跑官方 qwen2.5-0.5B-Instruct 模型正常。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;原因&lt;/strong&gt;：LLaMA-Factory 内置的 llama.cpp 版本过低，导致转换的 GGUF 文件与 ollama 不兼容。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;解决方案&lt;/strong&gt;：单独使用最新版 llama.cpp 重新转换模型。&lt;/p&gt;
-&lt;h4 id="611-克隆-llamacpp"&gt;6.1.1 克隆 llama.cpp
+&lt;h4 id="711-克隆-llamacpp"&gt;7.1.1 克隆 llama.cpp
 &lt;/h4&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;git clone https://github.com/ggerganov/llama.cpp
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;cd llama.cpp
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;pip install -r requirements/requirements-convert_hf_to_gguf.txt
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id="612-转换模型"&gt;6.1.2 转换模型
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id="712-转换模型"&gt;7.1.2 转换模型
 &lt;/h4&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 将训练好的模型转换为 GGUF 格式&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;python convert_hf_to_gguf&lt;span style="color:#f92672"&gt;.&lt;/span&gt;py &lt;span style="color:#e6db74"&gt;&amp;#34;I:&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;\a&lt;/span&gt;&lt;span style="color:#e6db74"&gt;i-model&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;\t&lt;/span&gt;&lt;span style="color:#e6db74"&gt;rain_2026-04-11-12-40-19&amp;#34;&lt;/span&gt; &lt;span style="color:#f92672"&gt;--&lt;/span&gt;outtype f16 &lt;span style="color:#f92672"&gt;--&lt;/span&gt;outfile &lt;span style="color:#e6db74"&gt;&amp;#34;I:&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;\a&lt;/span&gt;&lt;span style="color:#e6db74"&gt;i-model\my-qwen\qwen-finetuned.gguf&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id="613-创建-modelfile"&gt;6.1.3 创建 Modelfile
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id="713-创建-modelfile"&gt;7.1.3 创建 Modelfile
 &lt;/h4&gt;&lt;p&gt;在 &lt;code&gt;I:\ai-model\my-qwen\&lt;/code&gt; 目录下创建 &lt;code&gt;Modelfile&lt;/code&gt;：&lt;/p&gt;
 &lt;pre tabindex="0"&gt;&lt;code&gt;FROM I:\ai-model\my-qwen\qwen-finetuned.gguf
 TEMPLATE &amp;#34;&amp;#34;&amp;#34;{{ if .System }}&amp;lt;|im_start|&amp;gt;system
@@ -171,7 +849,7 @@ PARAMETER num_ctx 4096
 &lt;/code&gt;&lt;/pre&gt;&lt;blockquote&gt;
 &lt;p&gt;&lt;strong&gt;说明&lt;/strong&gt;：内容与导出时的 Modelfile 一致，只需在开头添加 &lt;code&gt;FROM&lt;/code&gt; 指向新的 GGUF 文件路径。&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;h4 id="614-重新加载模型"&gt;6.1.4 重新加载模型
+&lt;h4 id="714-重新加载模型"&gt;7.1.4 重新加载模型
 &lt;/h4&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 移除旧模型&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;ollama rm mymodel-Qwen2.5-0.5B-Instruct
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
