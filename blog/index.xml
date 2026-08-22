@@ -1,4 +1,379 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>随笔思考 on 小巷的随笔</title><link>https://zg-dd.github.io/blog/</link><description>Recent content in 随笔思考 on 小巷的随笔</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Mon, 09 Feb 2026 00:32:40 +0800</lastBuildDate><atom:link href="https://zg-dd.github.io/blog/index.xml" rel="self" type="application/rss+xml"/><item><title>Properties转YAML转换工具</title><link>https://zg-dd.github.io/blog/properties-to-yaml/</link><pubDate>Mon, 09 Feb 2026 00:32:40 +0800</pubDate><guid>https://zg-dd.github.io/blog/properties-to-yaml/</guid><description>&lt;h1 id="properties转yaml转换工具使用手册"&gt;Properties转YAML转换工具使用手册
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>随笔思考 on 小巷的随笔</title><link>https://zg-dd.github.io/blog/</link><description>Recent content in 随笔思考 on 小巷的随笔</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Sun, 23 Aug 2026 00:00:00 +0800</lastBuildDate><atom:link href="https://zg-dd.github.io/blog/index.xml" rel="self" type="application/rss+xml"/><item><title>基于牛顿迭代法的内部收益率 IRR 求解算法</title><link>https://zg-dd.github.io/blog/irr-newton-method/</link><pubDate>Sun, 23 Aug 2026 00:00:00 +0800</pubDate><guid>https://zg-dd.github.io/blog/irr-newton-method/</guid><description>&lt;h1 id="从简化分摊到牛顿迭代一个-irr-求解器的进化之路"&gt;从&amp;quot;简化分摊&amp;quot;到&amp;quot;牛顿迭代&amp;quot;：一个 IRR 求解器的进化之路
+&lt;/h1&gt;&lt;blockquote&gt;
+&lt;p&gt;今天记录一个内部收益率（IRR）求解算法的优化过程。这个问题看起来像一个普通的公式计算，但实际落到工程实现里，会同时碰到精度、收敛速度、初始值估算和批量计算性能几个问题。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h2 id="1-背景问题模型"&gt;1. 背景：问题模型
+&lt;/h2&gt;&lt;p&gt;内部收益率（IRR）求解，本质是寻找一个折现率 $R$，使净现值为零：&lt;/p&gt;
+&lt;p&gt;$$
+f(R) = A - \sum_{t} \frac{P_{jt}}{(1 + f_t \cdot R)(1 + R)^{s_t}} = 0
+$$&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;参数&lt;/th&gt;
+&lt;th&gt;含义&lt;/th&gt;
+&lt;th&gt;数据特征&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;$A$&lt;/td&gt;
+&lt;td&gt;本金&lt;/td&gt;
+&lt;td&gt;BigDecimal，精度控制要求高&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;$P_{jt}$&lt;/td&gt;
+&lt;td&gt;第 t 笔现金流金额&lt;/td&gt;
+&lt;td&gt;非负，可为零&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;$s_t$&lt;/td&gt;
+&lt;td&gt;完整周期数&lt;/td&gt;
+&lt;td&gt;非负整数，取值范围 0 ~ 数百&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;$f_t$&lt;/td&gt;
+&lt;td&gt;小数周期部分&lt;/td&gt;
+&lt;td&gt;浮点数，$0 \leq f_t &amp;lt; 1$&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;$R$&lt;/td&gt;
+&lt;td&gt;求解目标（单位周期费率）&lt;/td&gt;
+&lt;td&gt;小型正小数，如 0.000805&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;该方程无解析解，必须通过数值方法逼近。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id="2-核心算法演进"&gt;2. 核心算法演进
+&lt;/h2&gt;&lt;h3 id="21-v10暴力求解为什么慢"&gt;2.1 V1.0：暴力求解——为什么慢？
+&lt;/h3&gt;&lt;p&gt;最直接的做法：&lt;strong&gt;二分法&lt;/strong&gt;。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-text" data-lang="text"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;LOW = 0, HIGH = 1.0
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;WHILE HIGH - LOW &amp;gt; TOLERANCE:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; MID = (LOW + HIGH) / 2
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; IF f(MID) &amp;gt; 0: LOW = MID
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; ELSE: HIGH = MID
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;性能瓶颈分析：&lt;/strong&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;维度&lt;/th&gt;
+&lt;th&gt;数据&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;收敛速度&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;线性收敛&lt;/strong&gt;，每轮有效位数增加约 log10(2) ≈ 0.3 位&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;达到 1e-12 精度所需轮数&lt;/td&gt;
+&lt;td&gt;约 40 轮&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;每轮计算量&lt;/td&gt;
+&lt;td&gt;遍历一次现金流列表 O(n)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;100 期现金流总耗时&lt;/td&gt;
+&lt;td&gt;O(40n) ~ 4000 次除法运算&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;二分法稳定但慢。它没有利用函数本身的导数信息，每次迭代只用了 f(R) 的符号，丢掉了 f(R) 的大小和变化趋势。&lt;/p&gt;
+&lt;h3 id="22-v20牛顿迭代为什么快"&gt;2.2 V2.0：牛顿迭代——为什么快？
+&lt;/h3&gt;&lt;p&gt;牛顿迭代法利用&lt;strong&gt;一阶泰勒展开&lt;/strong&gt;逼近根：&lt;/p&gt;
+&lt;p&gt;$$
+R_{n+1} = R_n - \frac{f(R_n)}{f&amp;rsquo;(R_n)}
+$$&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;关键差异：&lt;/strong&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;对比维度&lt;/th&gt;
+&lt;th&gt;二分法&lt;/th&gt;
+&lt;th&gt;牛顿迭代&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;收敛阶&lt;/td&gt;
+&lt;td&gt;线性（一阶）&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;二次收敛（二阶）&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;有效位数增长&lt;/td&gt;
+&lt;td&gt;每轮 +0.3 位&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;每轮翻倍&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;1e-12 所需轮数&lt;/td&gt;
+&lt;td&gt;~40 轮&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;~7 轮&lt;/strong&gt;（初始值够好时 3~5 轮）&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;每轮计算量&lt;/td&gt;
+&lt;td&gt;O(n) 算 f(R)&lt;/td&gt;
+&lt;td&gt;O(n) 算 f(R) + f&amp;rsquo;(R)（合并在一次遍历）&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;为什么二次收敛这么快？&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;牛顿迭代的本质是：在 $R_n$ 处用切线近似代替原函数，切线的根是下一步的近似值。当 $R_n$ 足够接近真根时，误差满足：&lt;/p&gt;
+&lt;p&gt;$$
+|R_{n+1} - R^&lt;em&gt;| \approx C \cdot |R_n - R^&lt;/em&gt;|^2
+$$&lt;/p&gt;
+&lt;p&gt;这意味着精度每轮翻倍。从 1e-3 到 1e-6 只需要 1 轮，从 1e-6 到 1e-12 也只需要 1 轮。最后几轮基本是&amp;quot;秒收&amp;quot;。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;联合计算策略：&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;$f(R)$ 和 $f&amp;rsquo;(R)$ 的表达式共享大量子表达式，合并在一次遍历中计算：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-text" data-lang="text"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;f(R) = A - Σ P / (1+f·R)(1+R)^s
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;f&amp;#39;(R) = Σ [ s·P / (1+f·R)(1+R)^(s+1) + f·P / (1+f·R)²(1+R)^s ]
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;共享计算路径：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-text" data-lang="text"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;FOR EACH (P, ft, st):
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; IF ft == 0:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; denom = (1+R)^st ← 只需算一次幂
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; f -= P / denom
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; fd += st·P / (1+R)^(st+1) ← denom × (1+R) 复用了 denom
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; ELSE:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; onePlusFtR = 1 + ft·R
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; baseDenom = onePlusFtR × (1+R)^st
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; f -= P / baseDenom
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; ↓
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; fd += st·P / [onePlusFtR × (1+R)^(st+1)] ← baseDenom × (1+R)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; + ft·P / [onePlusFtR² × (1+R)^st] ← baseDenom × onePlusFtR
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;收益：&lt;/strong&gt; 一次遍历同时产出 f 和 fd，计算量只比单独算 f 多了约 30%（两条额外的乘除法），却省掉了第二遍 O(n) 遍历。&lt;/p&gt;
+&lt;h3 id="23-初始值策略简化分摊法"&gt;2.3 初始值策略：简化分摊法
+&lt;/h3&gt;&lt;p&gt;牛顿迭代对初始值敏感，初始值不好可能导致发散或收敛到错误根。因此初始值估算本身就是独立的优化课题。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;设计思路：&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;将期初费用（$s_t = 0$ 的现金流）视为融资成本，按&amp;quot;剩余本金 × 占用周期数&amp;quot;加权分摊到未来各期：&lt;/p&gt;
+&lt;p&gt;$$
+R_0 = \frac{\sum_{t: s_t = 0} P_{jt}}{\sum_{t: s_t &amp;gt; 0} (剩余本金_t \times s_t)}
+$$&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;为什么这比固定初始值（如 0.1）更好？&lt;/strong&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;初始值策略&lt;/th&gt;
+&lt;th&gt;收敛轮数&lt;/th&gt;
+&lt;th&gt;风险&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;固定 R0 = 0.1（10%）&lt;/td&gt;
+&lt;td&gt;7~10 轮&lt;/td&gt;
+&lt;td&gt;对低费率场景（小于 1%）严重偏离，可能震荡&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;固定 R0 = 0.01（1%）&lt;/td&gt;
+&lt;td&gt;5~8 轮&lt;/td&gt;
+&lt;td&gt;对高费率场景同样偏离&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;简化分摊法&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;3~5 轮&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;自适应，真实解无论高低都能逼近到同一量级&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;实测对比&lt;/strong&gt;（100 万本金，1 万费用，2 年后还本，真实 R≈0.005）：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;初始值&lt;/th&gt;
+&lt;th&gt;第 1 轮后&lt;/th&gt;
+&lt;th&gt;第 2 轮后&lt;/th&gt;
+&lt;th&gt;第 3 轮后&lt;/th&gt;
+&lt;th&gt;收敛至 1e-12&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;R0 = 0.1&lt;/td&gt;
+&lt;td&gt;0.004975&lt;/td&gt;
+&lt;td&gt;0.005013&lt;/td&gt;
+&lt;td&gt;0.005013&lt;/td&gt;
+&lt;td&gt;4 轮&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;R0 = 0.01&lt;/td&gt;
+&lt;td&gt;0.005013&lt;/td&gt;
+&lt;td&gt;0.005013&lt;/td&gt;
+&lt;td&gt;收敛&lt;/td&gt;
+&lt;td&gt;3 轮&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;R0 = 0.005（分摊法）&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;0.005013&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;收敛&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;-&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;2 轮&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;简化分摊法直接把初始值猜到了真实解的同一数量级，牛顿迭代的二次收敛特性在这里发挥到了极致，有时 2 轮就收工。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id="3-并发与性能策略"&gt;3. 并发与性能策略
+&lt;/h2&gt;&lt;h3 id="31-单次计算性能基准"&gt;3.1 单次计算性能基准
+&lt;/h3&gt;&lt;p&gt;一次完整的 IRR 计算包含：1 次初始值估算 + N 次牛顿迭代 × 1 次联合遍历。&lt;/p&gt;
+&lt;p&gt;以 100 期现金流为例：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;阶段&lt;/th&gt;
+&lt;th&gt;操作&lt;/th&gt;
+&lt;th&gt;除法和幂运算次数&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;初始值估算&lt;/td&gt;
+&lt;td&gt;2 次遍历（st=0 求和 → st&amp;gt;0 分摊）&lt;/td&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;每轮迭代&lt;/td&gt;
+&lt;td&gt;1 次联合遍历算 f 和 fd&lt;/td&gt;
+&lt;td&gt;2n ~ 3n 次除法&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;5 轮收敛&lt;/td&gt;
+&lt;td&gt;5 次联合遍历&lt;/td&gt;
+&lt;td&gt;~15n 次除法&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;单次计算在微秒级。瓶颈不在单次，而在&lt;strong&gt;高并发下的批量计算&lt;/strong&gt;。&lt;/p&gt;
+&lt;h3 id="32-并发场景分析"&gt;3.2 并发场景分析
+&lt;/h3&gt;&lt;p&gt;典型的批处理场景：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-text" data-lang="text"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;请求：一批 N 笔贷款，每笔需要独立计算 IRR
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;约束：每笔的 cashFlows 长度不同（10 ~ 500 期不等）
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;目标：总吞吐量最大化
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;策略一：无状态并行（推荐）&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;每个 IRR 计算任务完全独立，无共享状态、无锁竞争、无 IO 阻塞。天然适合并行：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-text" data-lang="text"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;线程池（N 个 worker）：
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; FOR EACH loan:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; submit(Callable&amp;lt;BigDecimal&amp;gt; task)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;每个 task 内部：
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; cashFlows.sort_by_st() ← O(m log m)，m 为该笔期数
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; R0 = calcInitialRate(A, cfs) ← O(m)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; R = newtonRaphson(A, cfs, R0) ← O(k·m)，k≈5
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; RETURN R
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;为什么无状态就够快？&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;计算密集型，无 IO 等待，线程数 = CPU 核数即可跑满&lt;/li&gt;
+&lt;li&gt;没有共享资源，不需要锁或原子变量&lt;/li&gt;
+&lt;li&gt;每个任务内存占用仅：1 个 &lt;code&gt;BigDecimal&lt;/code&gt; + 1 个 &lt;code&gt;List&amp;lt;CashFlow&amp;gt;&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;策略二：批量预排序&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;当 N 较大时，排序可以提前做。调用方按 $s_t$ 排好序再传入，引擎侧省掉 &lt;code&gt;sort_by_st()&lt;/code&gt; 的开销：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;场景&lt;/th&gt;
+&lt;th&gt;调用方预排序&lt;/th&gt;
+&lt;th&gt;引擎自排序&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;批量离线（N&amp;gt;1000）&lt;/td&gt;
+&lt;td&gt;推荐，省掉 N 次 O(m log m)&lt;/td&gt;
+&lt;td&gt;冗余&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;实时单笔&lt;/td&gt;
+&lt;td&gt;无所谓&lt;/td&gt;
+&lt;td&gt;隐形开销可忽略&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="33-精度与性能的平衡"&gt;3.3 精度与性能的平衡
+&lt;/h3&gt;&lt;p&gt;精度要求直接决定了牛顿迭代的轮数：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;目标精度&lt;/th&gt;
+&lt;th&gt;大致轮数&lt;/th&gt;
+&lt;th&gt;单笔耗时（100期）&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;1e-8&lt;/td&gt;
+&lt;td&gt;3~4 轮&lt;/td&gt;
+&lt;td&gt;~3μs&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;1e-12&lt;/td&gt;
+&lt;td&gt;4~5 轮&lt;/td&gt;
+&lt;td&gt;~4μs&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;1e-15&lt;/td&gt;
+&lt;td&gt;5~6 轮&lt;/td&gt;
+&lt;td&gt;~5μs&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;从 1e-8 到 1e-12，精度提升了 4 个数量级，耗时仅增加 ~30%。牛顿二次收敛的特性让高精度几乎免费。&lt;/p&gt;
+&lt;h3 id="34-幂运算优化"&gt;3.4 幂运算优化
+&lt;/h3&gt;&lt;p&gt;&lt;code&gt;(1+R)^s&lt;/code&gt; 是每次迭代中最重的操作。当 s 较大（如 s=360）时，标准幂运算的复杂度为 O(log s)。&lt;/p&gt;
+&lt;p&gt;但观察公式中的实际用例：s 通常是连续递增的自然数序列。这时可以采用&lt;strong&gt;递推法&lt;/strong&gt;：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-text" data-lang="text"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;onePlusR_pow_s = 1+R
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;FOR s = 1 TO max_st:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; onePlusR_pow_s = onePlusR_pow_s × (1+R)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; f 中用 onePlusR_pow_s 作为 (1+R)^s
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; fd 中用 onePlusR_pow_s × (1+R) 作为 (1+R)^(s+1)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;收益：&lt;/strong&gt; 将 O(n log S) 降为 O(n)，n 为期数，S 为最大 st。对 st 较大的场景（如 360 期日还款）效果显著。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id="4-演进路线总结"&gt;4. 演进路线总结
+&lt;/h2&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;版本&lt;/th&gt;
+&lt;th&gt;核心策略&lt;/th&gt;
+&lt;th&gt;收敛速度&lt;/th&gt;
+&lt;th&gt;初始值依赖&lt;/th&gt;
+&lt;th&gt;适用场景&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;V1&lt;/td&gt;
+&lt;td&gt;二分法&lt;/td&gt;
+&lt;td&gt;线性，~40 轮&lt;/td&gt;
+&lt;td&gt;无&lt;/td&gt;
+&lt;td&gt;容忍低性能的简单计算&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;V2&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;牛顿迭代 + 简化分摊法&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;二次收敛，3~5 轮&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;轻（分摊法自适应）&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;通用，推荐&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;V3 可选&lt;/td&gt;
+&lt;td&gt;牛顿 + 二分段混合法&lt;/td&gt;
+&lt;td&gt;~4 轮&lt;/td&gt;
+&lt;td&gt;极轻&lt;/td&gt;
+&lt;td&gt;极端不稳定场景保底&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="为什么最终的方案快"&gt;为什么最终的方案&amp;quot;快&amp;quot;？
+&lt;/h3&gt;&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;牛顿迭代的二次收敛&lt;/strong&gt;：精度每轮翻倍，最后几轮像开了加速&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;联合算 f 和 f&amp;rsquo;&lt;/strong&gt;：一次遍历产出两个结果，减少一半的遍历开销&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;简化分摊法做初始值&lt;/strong&gt;：把起点直接放在真根附近，省掉前面 N 轮&amp;quot;摸索&amp;quot;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;无状态并行架构&lt;/strong&gt;：利用 CPU 多核做批量计算，无锁无阻塞&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;递推幂运算&lt;/strong&gt;：把 O(n log S) 压到 O(n)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;这些策略单独拎出来都不是什么黑科技，但组合在一起，就是一个&lt;strong&gt;微秒级收敛、线性可扩展&lt;/strong&gt;的 IRR 求解引擎。&lt;/p&gt;
+&lt;hr&gt;</description></item><item><title>Properties转YAML转换工具</title><link>https://zg-dd.github.io/blog/properties-to-yaml/</link><pubDate>Mon, 09 Feb 2026 00:32:40 +0800</pubDate><guid>https://zg-dd.github.io/blog/properties-to-yaml/</guid><description>&lt;h1 id="properties转yaml转换工具使用手册"&gt;Properties转YAML转换工具使用手册
 &lt;/h1&gt;&lt;h2 id="-概述"&gt;📋 概述
 &lt;/h2&gt;&lt;p&gt;这是一个功能强大的Python脚本工具，用于将Java &lt;code&gt;.properties&lt;/code&gt; 配置文件转换为YAML格式。该工具不仅支持基本的格式转换，还具备智能的注释保留、类型推断和结构保持功能。&lt;/p&gt;
 &lt;h2 id="脚本"&gt;📜脚本
