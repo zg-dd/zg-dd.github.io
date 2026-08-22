@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Newtons Method on 小巷 Blog</title><link>https://zg-dd.github.io/en/tags/newtons-method/</link><description>Recent content in Newtons Method on 小巷 Blog</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Sun, 23 Aug 2026 00:00:00 +0800</lastBuildDate><atom:link href="https://zg-dd.github.io/en/tags/newtons-method/index.xml" rel="self" type="application/rss+xml"/><item><title>Internal Rate of Return (IRR) Solver Using Newtons Method</title><link>https://zg-dd.github.io/en/blog/irr-newton-method/</link><pubDate>Sun, 23 Aug 2026 00:00:00 +0800</pubDate><guid>https://zg-dd.github.io/en/blog/irr-newton-method/</guid><description>&lt;h1 id="from-simplified-amortization-to-newton-iteration-the-evolution-of-an-irr-solver"&gt;From &amp;ldquo;Simplified Amortization&amp;rdquo; to &amp;ldquo;Newton Iteration&amp;rdquo;: The Evolution of an IRR Solver
+&lt;/h1&gt;&lt;blockquote&gt;
+&lt;p&gt;This post documents the optimization process of an Internal Rate of Return (IRR) solving algorithm. What appears to be a straightforward formula calculation actually involves several engineering challenges: precision, convergence speed, initial value estimation, and batch computation performance.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h2 id="1-background-the-problem-model"&gt;1. Background: The Problem Model
+&lt;/h2&gt;&lt;p&gt;Solving for the Internal Rate of Return (IRR) essentially means finding a discount rate $R$ such that the Net Present Value equals zero:&lt;/p&gt;
+&lt;p&gt;$$
+f(R) = A - \sum_{t} \frac{P_{jt}}{(1 + f_t \cdot R)(1 + R)^{s_t}} = 0
+$$&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Parameter&lt;/th&gt;
+&lt;th&gt;Meaning&lt;/th&gt;
+&lt;th&gt;Data Characteristics&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;$A$&lt;/td&gt;
+&lt;td&gt;Principal amount&lt;/td&gt;
+&lt;td&gt;BigDecimal, requires high precision control&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;$P_{jt}$&lt;/td&gt;
+&lt;td&gt;Cash flow amount at period t&lt;/td&gt;
+&lt;td&gt;Non-negative, can be zero&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;$s_t$&lt;/td&gt;
+&lt;td&gt;Number of complete periods&lt;/td&gt;
+&lt;td&gt;Non-negative integer, range 0 to hundreds&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;$f_t$&lt;/td&gt;
+&lt;td&gt;Fractional period part&lt;/td&gt;
+&lt;td&gt;Float, $0 \leq f_t &amp;lt; 1$&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;$R$&lt;/td&gt;
+&lt;td&gt;Target rate (per-period rate)&lt;/td&gt;
+&lt;td&gt;Small positive decimal, e.g., 0.000805&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;This equation has no closed-form solution and must be approximated using numerical methods.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id="2-core-algorithm-evolution"&gt;2. Core Algorithm Evolution
+&lt;/h2&gt;&lt;h3 id="21-v10-brute-force--why-is-it-slow"&gt;2.1 V1.0: Brute Force — Why Is It Slow?
+&lt;/h3&gt;&lt;p&gt;The most straightforward approach: &lt;strong&gt;Bisection method&lt;/strong&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-text" data-lang="text"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;LOW = 0, HIGH = 1.0
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;WHILE HIGH - LOW &amp;gt; TOLERANCE:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; MID = (LOW + HIGH) / 2
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; IF f(MID) &amp;gt; 0: LOW = MID
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; ELSE: HIGH = MID
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;Performance bottleneck analysis:&lt;/strong&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Dimension&lt;/th&gt;
+&lt;th&gt;Data&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Convergence rate&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;Linear convergence&lt;/strong&gt;, each round gains approximately log10(2) ≈ 0.3 significant digits&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Rounds needed for 1e-12 precision&lt;/td&gt;
+&lt;td&gt;~40 rounds&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Computation per round&lt;/td&gt;
+&lt;td&gt;One pass through cash flow list O(n)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Total cost for 100-period cash flows&lt;/td&gt;
+&lt;td&gt;O(40n) ~ 4,000 division operations&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Bisection is stable but slow. It doesn&amp;rsquo;t leverage the derivative information of the function — each iteration only uses the sign of f(R), discarding both its magnitude and rate of change.&lt;/p&gt;
+&lt;h3 id="22-v20-newton-iteration--why-is-it-fast"&gt;2.2 V2.0: Newton Iteration — Why Is It Fast?
+&lt;/h3&gt;&lt;p&gt;Newton&amp;rsquo;s method uses a &lt;strong&gt;first-order Taylor expansion&lt;/strong&gt; to approximate the root:&lt;/p&gt;
+&lt;p&gt;$$
+R_{n+1} = R_n - \frac{f(R_n)}{f&amp;rsquo;(R_n)}
+$$&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Key differences:&lt;/strong&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Comparison&lt;/th&gt;
+&lt;th&gt;Bisection&lt;/th&gt;
+&lt;th&gt;Newton Iteration&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Convergence order&lt;/td&gt;
+&lt;td&gt;Linear (first-order)&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;Quadratic convergence (second-order)&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Significant digits gained per round&lt;/td&gt;
+&lt;td&gt;+0.3 digits&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;Doubles each round&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Rounds needed for 1e-12&lt;/td&gt;
+&lt;td&gt;~40 rounds&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;~7 rounds&lt;/strong&gt; (3–5 when initial value is good)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Computation per round&lt;/td&gt;
+&lt;td&gt;O(n) for f(R)&lt;/td&gt;
+&lt;td&gt;O(n) for f(R) + f&amp;rsquo;(R), merged in a single pass&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;Why is quadratic convergence so fast?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;The essence of Newton iteration: approximate the function with its tangent line at $R_n$, and use the tangent&amp;rsquo;s root as the next approximation. When $R_n$ is sufficiently close to the true root, the error satisfies:&lt;/p&gt;
+&lt;p&gt;$$
+|R_{n+1} - R^&lt;em&gt;| \approx C \cdot |R_n - R^&lt;/em&gt;|^2
+$$&lt;/p&gt;
+&lt;p&gt;This means precision doubles each round. Going from 1e-3 to 1e-6 takes just 1 round, and from 1e-6 to 1e-12 also takes just 1 round. The last few rounds essentially converge instantly.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Joint computation strategy:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;The expressions for $f(R)$ and $f&amp;rsquo;(R)$ share many sub-expressions, so they can be computed in a single pass:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-text" data-lang="text"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;f(R) = A - Σ P / (1+f·R)(1+R)^s
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;f&amp;#39;(R) = Σ [ s·P / (1+f·R)(1+R)^(s+1) + f·P / (1+f·R)²(1+R)^s ]
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Shared computation path:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-text" data-lang="text"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;FOR EACH (P, ft, st):
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; IF ft == 0:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; denom = (1+R)^st ← compute power only once
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; f -= P / denom
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; fd += st·P / (1+R)^(st+1) ← denom × (1+R) reuses denom
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; ELSE:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; onePlusFtR = 1 + ft·R
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; baseDenom = onePlusFtR × (1+R)^st
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; f -= P / baseDenom
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; ↓
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; fd += st·P / [onePlusFtR × (1+R)^(st+1)] ← baseDenom × (1+R)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; + ft·P / [onePlusFtR² × (1+R)^st] ← baseDenom × onePlusFtR
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;Benefit:&lt;/strong&gt; A single pass produces both f and fd, with only ~30% more computation than f alone (two extra multiply-divide operations), while eliminating the second O(n) pass.&lt;/p&gt;
+&lt;h3 id="23-initial-value-strategy-simplified-amortization-method"&gt;2.3 Initial Value Strategy: Simplified Amortization Method
+&lt;/h3&gt;&lt;p&gt;Newton iteration is sensitive to the initial value — a poor choice can cause divergence or convergence to the wrong root. Therefore, initial value estimation is itself an independent optimization problem.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Design concept:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Treat upfront fees (cash flows where $s_t = 0$) as financing costs, and amortize them proportionally over future periods weighted by &amp;ldquo;remaining principal × number of periods occupied&amp;rdquo;:&lt;/p&gt;
+&lt;p&gt;$$
+R_0 = \frac{\sum_{t: s_t = 0} P_{jt}}{\sum_{t: s_t &amp;gt; 0} (剩余本金_t \times s_t)}
+$$&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Why is this better than fixed initial values (e.g., 0.1)?&lt;/strong&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Initial Value Strategy&lt;/th&gt;
+&lt;th&gt;Convergence Rounds&lt;/th&gt;
+&lt;th&gt;Risk&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Fixed R0 = 0.1 (10%)&lt;/td&gt;
+&lt;td&gt;7–10 rounds&lt;/td&gt;
+&lt;td&gt;Severely deviates for low-rate scenarios (&amp;lt;1%), may oscillate&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Fixed R0 = 0.01 (1%)&lt;/td&gt;
+&lt;td&gt;5–8 rounds&lt;/td&gt;
+&lt;td&gt;Also deviates for high-rate scenarios&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Simplified amortization method&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;3–5 rounds&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;Adaptive — converges to the right magnitude regardless of whether the true solution is high or low&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;Empirical comparison&lt;/strong&gt; (1,000,000 principal, 10,000 fees, repayment after 2 years, true R≈0.005):&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Initial Value&lt;/th&gt;
+&lt;th&gt;After Round 1&lt;/th&gt;
+&lt;th&gt;After Round 2&lt;/th&gt;
+&lt;th&gt;After Round 3&lt;/th&gt;
+&lt;th&gt;Converges to 1e-12&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;R0 = 0.1&lt;/td&gt;
+&lt;td&gt;0.004975&lt;/td&gt;
+&lt;td&gt;0.005013&lt;/td&gt;
+&lt;td&gt;0.005013&lt;/td&gt;
+&lt;td&gt;4 rounds&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;R0 = 0.01&lt;/td&gt;
+&lt;td&gt;0.005013&lt;/td&gt;
+&lt;td&gt;0.005013&lt;/td&gt;
+&lt;td&gt;converged&lt;/td&gt;
+&lt;td&gt;3 rounds&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;R0 = 0.005 (amortization)&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;0.005013&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;converged&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;—&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;2 rounds&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;The simplified amortization method places the initial value directly in the same order of magnitude as the true solution. Newton&amp;rsquo;s quadratic convergence property is maximized here — sometimes just 2 rounds are enough.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id="3-concurrency-and-performance-strategies"&gt;3. Concurrency and Performance Strategies
+&lt;/h2&gt;&lt;h3 id="31-single-computation-performance-baseline"&gt;3.1 Single-Computation Performance Baseline
+&lt;/h3&gt;&lt;p&gt;A complete IRR computation consists of: 1 initial value estimation + N Newton iterations × 1 joint pass.&lt;/p&gt;
+&lt;p&gt;Using 100-period cash flows as an example:&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Phase&lt;/th&gt;
+&lt;th&gt;Operation&lt;/th&gt;
+&lt;th&gt;Division and Power Operations&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Initial value estimation&lt;/td&gt;
+&lt;td&gt;2 passes (sum st=0 → amortize st&amp;gt;0)&lt;/td&gt;
+&lt;td&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Each iteration round&lt;/td&gt;
+&lt;td&gt;1 joint pass computing f and fd&lt;/td&gt;
+&lt;td&gt;2n ~ 3n divisions&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;5 rounds to convergence&lt;/td&gt;
+&lt;td&gt;5 joint passes&lt;/td&gt;
+&lt;td&gt;~15n divisions&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Single computation is in the microsecond range. The bottleneck isn&amp;rsquo;t single computation, but &lt;strong&gt;batch computation under high concurrency&lt;/strong&gt;.&lt;/p&gt;
+&lt;h3 id="32-concurrency-scenario-analysis"&gt;3.2 Concurrency Scenario Analysis
+&lt;/h3&gt;&lt;p&gt;Typical batch processing scenario:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-text" data-lang="text"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Request: A batch of N loans, each requiring independent IRR calculation
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Constraint: Each loan&amp;#39;s cashFlows has different length (10 ~ 500 periods)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Goal: Maximize total throughput
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;Strategy 1: Stateless parallelism (Recommended)&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Each IRR computation task is completely independent — no shared state, no lock contention, no I/O blocking. Naturally suited for parallelism:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-text" data-lang="text"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Thread pool (N workers):
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; FOR EACH loan:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; submit(Callable&amp;lt;BigDecimal&amp;gt; task)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Inside each task:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; cashFlows.sort_by_st() ← O(m log m), m is the number of periods
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; R0 = calcInitialRate(A, cfs) ← O(m)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; R = newtonRaphson(A, cfs, R0) ← O(k·m), k≈5
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; RETURN R
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;Why is stateless parallelism fast enough?&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;CPU-bound with no I/O wait — thread count = CPU core count saturates the CPU&lt;/li&gt;
+&lt;li&gt;No shared resources, no locks or atomic variables needed&lt;/li&gt;
+&lt;li&gt;Each task&amp;rsquo;s memory footprint: just 1 &lt;code&gt;BigDecimal&lt;/code&gt; + 1 &lt;code&gt;List&amp;lt;CashFlow&amp;gt;&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;Strategy 2: Batch pre-sorting&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;When N is large, sorting can be done in advance. Callers sort by $s_t$ before passing data in, and the engine skips the &lt;code&gt;sort_by_st()&lt;/code&gt; overhead:&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Scenario&lt;/th&gt;
+&lt;th&gt;Caller pre-sorts&lt;/th&gt;
+&lt;th&gt;Engine self-sorts&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Batch offline (N&amp;gt;1000)&lt;/td&gt;
+&lt;td&gt;Recommended, saves N × O(m log m)&lt;/td&gt;
+&lt;td&gt;Redundant&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Real-time single&lt;/td&gt;
+&lt;td&gt;Doesn&amp;rsquo;t matter&lt;/td&gt;
+&lt;td&gt;Negligible overhead&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="33-balancing-precision-and-performance"&gt;3.3 Balancing Precision and Performance
+&lt;/h3&gt;&lt;p&gt;Precision requirements directly determine the number of Newton iteration rounds:&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Target Precision&lt;/th&gt;
+&lt;th&gt;Approximate Rounds&lt;/th&gt;
+&lt;th&gt;Single Computation Time (100 periods)&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;1e-8&lt;/td&gt;
+&lt;td&gt;3–4 rounds&lt;/td&gt;
+&lt;td&gt;~3μs&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;1e-12&lt;/td&gt;
+&lt;td&gt;4–5 rounds&lt;/td&gt;
+&lt;td&gt;~4μs&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;1e-15&lt;/td&gt;
+&lt;td&gt;5–6 rounds&lt;/td&gt;
+&lt;td&gt;~5μs&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Going from 1e-8 to 1e-12 improves precision by 4 orders of magnitude, with only ~30% increase in time. Newton&amp;rsquo;s quadratic convergence makes high precision nearly free.&lt;/p&gt;
+&lt;h3 id="34-power-operation-optimization"&gt;3.4 Power Operation Optimization
+&lt;/h3&gt;&lt;p&gt;&lt;code&gt;(1+R)^s&lt;/code&gt; is the most expensive operation in each iteration. When s is large (e.g., s=360), standard power computation has complexity O(log s).&lt;/p&gt;
+&lt;p&gt;However, observing the actual usage patterns in the formula: s is typically a consecutive sequence of natural numbers. In this case, an &lt;strong&gt;iterative approach&lt;/strong&gt; can be used:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-text" data-lang="text"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;onePlusR_pow_s = 1+R
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;FOR s = 1 TO max_st:
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; onePlusR_pow_s = onePlusR_pow_s × (1+R)
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; f uses onePlusR_pow_s as (1+R)^s
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; fd uses onePlusR_pow_s × (1+R) as (1+R)^(s+1)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;Benefit:&lt;/strong&gt; Reduces complexity from O(n log S) to O(n), where n is the number of periods and S is the maximum st. The improvement is significant for scenarios with large st values (e.g., 360-period daily repayments).&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id="4-evolution-summary"&gt;4. Evolution Summary
+&lt;/h2&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Version&lt;/th&gt;
+&lt;th&gt;Core Strategy&lt;/th&gt;
+&lt;th&gt;Convergence Rate&lt;/th&gt;
+&lt;th&gt;Initial Value Dependency&lt;/th&gt;
+&lt;th&gt;Use Case&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;V1&lt;/td&gt;
+&lt;td&gt;Bisection&lt;/td&gt;
+&lt;td&gt;Linear, ~40 rounds&lt;/td&gt;
+&lt;td&gt;None&lt;/td&gt;
+&lt;td&gt;Simple calculations where low performance is acceptable&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;V2&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;Newton iteration + simplified amortization&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;Quadratic convergence, 3–5 rounds&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;Light (adaptive amortization)&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;General purpose, recommended&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;V3 (optional)&lt;/td&gt;
+&lt;td&gt;Newton + bisection hybrid&lt;/td&gt;
+&lt;td&gt;~4 rounds&lt;/td&gt;
+&lt;td&gt;Very light&lt;/td&gt;
+&lt;td&gt;Fallback for extremely unstable scenarios&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="why-is-the-final-solution-fast"&gt;Why is the final solution &amp;ldquo;fast&amp;rdquo;?
+&lt;/h3&gt;&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Quadratic convergence of Newton iteration&lt;/strong&gt;: Precision doubles each round — the last few rounds feel like acceleration kicked in&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Joint computation of f and f&amp;rsquo;&lt;/strong&gt;: One pass produces two results, halving the pass overhead&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Simplified amortization for initial value&lt;/strong&gt;: Places the starting point directly near the true root, saving the initial N rounds of &amp;ldquo;searching&amp;rdquo;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Stateless parallel architecture&lt;/strong&gt;: Leverages multi-core CPUs for batch computation — lock-free and blocking-free&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Iterative power computation&lt;/strong&gt;: Compresses O(n log S) down to O(n)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;None of these strategies are particularly groundbreaking on their own, but combined, they form an &lt;strong&gt;IRR solver engine with microsecond-level convergence and linear scalability&lt;/strong&gt;.&lt;/p&gt;
+&lt;hr&gt;</description></item></channel></rss>
